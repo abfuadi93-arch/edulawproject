@@ -1,0 +1,376 @@
+@import url('https://fonts.googleapis.com/css2?family=Fira+Sans:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800;900&display=swap');
+@import 'tailwindcss';
+
+/*
+|--------------------------------------------------------------------------
+| Edulaw Project Theme
+|--------------------------------------------------------------------------
+| Tailwind CSS v4 style.
+| Jika memakai Tailwind v3, bagian @theme harus dipindahkan ke tailwind.config.js.
+|--------------------------------------------------------------------------
+*/
+
+@theme {
+    --font-sans: 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+        'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --font-display: 'Fira Sans', 'Plus Jakarta Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji',
+        'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+    --color-brand-navy: #1f3c69;
+    --color-brand-ink: #231f20;
+    --color-brand-blue: #556b8d;
+    --color-brand-silver: #aeb9c9;
+    --color-brand-mist: #e8ebef;
+    --color-brand-paper: #f4f6f8;
+    --color-brand-black: #111111;
+    --color-brand-charcoal: #2b313e;
+
+    --color-brand-amber: #f5b943;
+    --color-brand-amber-soft: #fff3cf;
+
+    --color-brand-coral: #f26f5e;
+    --color-brand-coral-soft: #ffe3dd;
+
+    --color-brand-teal: #25b7a0;
+    --color-brand-teal-soft: #dcfbf5;
+
+    --color-brand-sky: #38a4d8;
+    --color-brand-sky-soft: #e0f2fe;
+}
+
+@layer base {
+    *,
+    *::before,
+    *::after {
+        box-sizing: border-box;
+    }
+
+    html {
+        scroll-behavior: smooth;
+        text-rendering: optimizeLegibility;
+    }
+
+    body {
+        min-height: 100vh;
+        margin: 0;
+        background-color: var(--color-brand-paper);
+        font-family: var(--font-sans);
+        color: var(--color-brand-ink);
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    [x-cloak] {
+        display: none !important;
+    }
+
+    img,
+    video,
+    canvas,
+    svg {
+        display: block;
+        max-width: 100%;
+    }
+
+    img,
+    video {
+        height: auto;
+        vertical-align: middle;
+    }
+
+    a {
+        color: inherit;
+        text-decoration: none;
+        transition-property: color, background-color, border-color, text-decoration-color, fill, stroke;
+        transition-duration: 200ms;
+    }
+
+    button,
+    a {
+        -webkit-tap-highlight-color: transparent;
+    }
+
+    button,
+    input,
+    textarea,
+    select {
+        font: inherit;
+    }
+
+    :focus-visible {
+        outline: 2px solid var(--color-brand-amber);
+        outline-offset: 3px;
+    }
+
+    ::selection {
+        background-color: var(--color-brand-amber);
+        color: var(--color-brand-black);
+    }
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5,
+    h6 {
+        font-family: var(--font-display);
+        color: var(--color-brand-navy);
+        letter-spacing: -0.015em;
+    }
+
+    p {
+        line-height: 1.75;
+    }
+}
+
+@layer components {
+    /*
+    |--------------------------------------------------------------------------
+    | Layout
+    |--------------------------------------------------------------------------
+    */
+
+    .section-shell {
+        @apply mx-auto w-full max-w-7xl px-5 sm:px-6 lg:px-8;
+    }
+
+    .section-padding {
+        @apply py-14 sm:py-16 lg:py-20;
+    }
+
+    .section-padding-sm {
+        @apply py-10 sm:py-12 lg:py-14;
+    }
+
+    .section-header {
+        @apply mb-8 sm:mb-10 lg:mb-12;
+    }
+
+    .section-header-row {
+        @apply mb-8 flex flex-col gap-5 sm:mb-10 lg:mb-12 lg:flex-row lg:items-end lg:justify-between;
+    }
+
+    .section-white {
+        @apply bg-white;
+    }
+
+    .section-paper {
+        @apply bg-brand-paper;
+    }
+
+    .section-mist {
+        @apply bg-brand-mist/45;
+    }
+
+    .section-kicker {
+        @apply text-xs font-extrabold uppercase tracking-[0.24em] text-brand-teal;
+    }
+
+    .section-title {
+        @apply mt-3 max-w-3xl font-display text-2xl font-bold leading-tight text-brand-navy sm:text-3xl lg:text-4xl;
+    }
+
+    .section-title-sm {
+        @apply mt-3 max-w-2xl font-display text-xl font-bold leading-tight text-brand-navy sm:text-2xl lg:text-3xl;
+    }
+
+    .section-description {
+        @apply mt-4 max-w-2xl text-sm leading-7 text-brand-blue sm:text-base;
+    }
+
+    .section-description-wide {
+        @apply mt-4 max-w-3xl text-sm leading-7 text-brand-blue sm:text-base;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Cards
+    |--------------------------------------------------------------------------
+    */
+
+    .card-soft {
+        @apply rounded-[1.75rem] border border-brand-ink/10 bg-white/85 shadow-sm shadow-brand-ink/5 backdrop-blur;
+    }
+
+    .card-soft-hover {
+        @apply transition duration-300 hover:-translate-y-1 hover:border-brand-teal/30 hover:shadow-xl hover:shadow-brand-ink/10;
+    }
+
+    .card-muted {
+        @apply rounded-[1.75rem] border border-brand-ink/10 bg-brand-paper/80 shadow-sm shadow-brand-ink/5;
+    }
+
+    .card-dark {
+        @apply rounded-[1.75rem] border border-white/10 bg-brand-navy text-white shadow-xl shadow-brand-navy/20;
+    }
+
+    .card-inner {
+        @apply p-5 sm:p-6;
+    }
+
+    .card-inner-lg {
+        @apply p-6 sm:p-8;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Buttons
+    |--------------------------------------------------------------------------
+    */
+
+    .btn-primary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-amber px-5 py-3 text-sm font-bold text-brand-black shadow-sm shadow-brand-ink/10 transition duration-300 hover:-translate-y-0.5 hover:bg-brand-amber/90 hover:shadow-md focus:outline-none;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-brand-navy/15 bg-white px-5 py-3 text-sm font-bold text-brand-navy shadow-sm shadow-brand-ink/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-teal/40 hover:bg-brand-teal-soft;
+    }
+
+    .btn-dark {
+        @apply inline-flex items-center justify-center gap-2 rounded-full bg-brand-navy px-5 py-3 text-sm font-bold text-white shadow-sm shadow-brand-navy/20 transition duration-300 hover:-translate-y-0.5 hover:bg-brand-charcoal hover:shadow-md;
+    }
+
+    .btn-light {
+        @apply inline-flex items-center justify-center gap-2 rounded-full border border-white/20 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition duration-300 hover:-translate-y-0.5 hover:bg-white/15;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center justify-center gap-2 rounded-full px-5 py-3 text-sm font-bold text-brand-navy transition duration-300 hover:bg-brand-navy/5;
+    }
+
+    .filter-chip {
+        @apply shrink-0 rounded-full border border-brand-ink/10 bg-white px-3 py-1.5 text-xs font-semibold text-brand-charcoal shadow-sm shadow-brand-ink/5 transition duration-300 hover:border-brand-navy hover:bg-brand-navy hover:text-white;
+    }
+
+    .filter-chip-active {
+        @apply border-brand-navy bg-brand-navy text-white shadow-sm shadow-brand-ink/10;
+    }
+
+    .section-link {
+        @apply inline-flex items-center gap-2 rounded-full px-2.5 py-1.5 text-sm font-extrabold text-brand-ink transition duration-300 hover:bg-white hover:text-brand-navy;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Labels & Meta
+    |--------------------------------------------------------------------------
+    */
+
+    .pill {
+        @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold;
+    }
+
+    .pill-amber {
+        @apply bg-brand-amber-soft text-brand-black;
+    }
+
+    .pill-teal {
+        @apply bg-brand-teal-soft text-brand-ink;
+    }
+
+    .pill-coral {
+        @apply bg-brand-coral-soft text-brand-ink;
+    }
+
+    .pill-sky {
+        @apply bg-brand-sky-soft text-brand-navy;
+    }
+
+    .meta-label {
+        @apply text-[11px] font-bold uppercase tracking-[0.18em] text-brand-blue/75;
+    }
+
+    .meta-value {
+        @apply mt-1 text-sm font-bold text-brand-navy;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Images
+    |--------------------------------------------------------------------------
+    */
+
+    .image-frame {
+        @apply overflow-hidden rounded-3xl bg-brand-mist;
+    }
+
+    .image-cover {
+        @apply h-full w-full object-cover transition duration-700;
+    }
+
+    .image-hover-zoom {
+        @apply transition duration-700 group-hover:scale-105;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Links
+    |--------------------------------------------------------------------------
+    */
+
+    .link-inline {
+        @apply font-bold text-brand-teal underline decoration-brand-teal/30 underline-offset-4 transition hover:text-brand-navy hover:decoration-brand-navy/40;
+    }
+
+    .link-arrow {
+        @apply inline-flex items-center gap-2 text-sm font-bold text-brand-navy transition-all duration-300 hover:gap-3 hover:text-brand-teal;
+    }
+
+    /*
+    |--------------------------------------------------------------------------
+    | Decorative
+    |--------------------------------------------------------------------------
+    */
+
+    .soft-divider {
+        @apply border-t border-brand-ink/10;
+    }
+
+    .subtle-ring {
+        @apply ring-1 ring-brand-ink/10;
+    }
+
+    .glass-panel {
+        @apply border border-white/20 bg-white/75 shadow-sm shadow-brand-ink/5 backdrop-blur-xl;
+    }
+
+    .gradient-paper {
+        background-image: linear-gradient(to bottom, #ffffff, var(--color-brand-paper), var(--color-brand-paper));
+    }
+
+    .gradient-navy {
+        background-image: linear-gradient(to bottom right, var(--color-brand-navy), var(--color-brand-charcoal), var(--color-brand-navy));
+    }
+
+    .decor-orb-amber {
+        @apply pointer-events-none absolute rounded-full bg-brand-amber/20 blur-3xl;
+    }
+
+    .decor-orb-teal {
+        @apply pointer-events-none absolute rounded-full bg-brand-teal/20 blur-3xl;
+    }
+
+    .decor-orb-coral {
+        @apply pointer-events-none absolute rounded-full bg-brand-coral/20 blur-3xl;
+    }
+}
+
+@layer utilities {
+    .text-balance {
+        text-wrap: balance;
+    }
+
+    .text-pretty {
+        text-wrap: pretty;
+    }
+
+    .no-scrollbar::-webkit-scrollbar {
+        display: none;
+    }
+
+    .no-scrollbar {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+}
