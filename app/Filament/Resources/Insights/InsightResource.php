@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Insights;
 
+use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Insights\InsightResource\Pages;
 use App\Models\Insight;
 use BackedEnum;
@@ -13,20 +14,23 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
+use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class InsightResource extends Resource
 {
+    use HasSlugFormBehavior;
+
     protected static ?string $model = Insight::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -50,57 +54,87 @@ class InsightResource extends Resource
                 Section::make('Informasi Utama')
                     ->description('Isi identitas utama artikel Insight.')
                     ->schema([
-                        TextInput::make('title')
-                            ->label('Judul')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state))),
+                        Grid::make([
+                            'default' => 1,
+                            'lg' => 2,
+                        ])
+                            ->schema([
+                                Group::make()
+                                    ->schema([
+                                        TextInput::make('title')
+                                            ->label('1. Judul')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(static::syncSlugFrom()),
 
-                        TextInput::make('slug')
-                            ->label('Slug')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                                        TextInput::make('slug')
+                                            ->label('2. Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->placeholder('pembakaran-buku-tidak-selalu-menggunakan-api')
+                                            ->helperText('Slug digunakan sebagai alamat artikel di website.'),
 
-                        Select::make('insight_category_id')
-                            ->label('Kategori')
-                            ->relationship('category', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
+                                        Select::make('insight_category_id')
+                                            ->label('3. Kategori')
+                                            ->relationship('category', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->required()
+                                            ->placeholder('Pilih kategori Insight')
+                                            ->helperText('Pilih kategori Insight yang sesuai.'),
 
-                        Select::make('authors')
-                            ->label('Penulis')
-                            ->relationship('authors', 'name')
-                            ->multiple()
-                            ->searchable()
-                            ->preload()
-                            ->required(),
+                                        Select::make('authors')
+                                            ->label('4. Profil Terkait')
+                                            ->relationship('authors', 'name')
+                                            ->multiple()
+                                            ->searchable()
+                                            ->preload()
+                                            ->required()
+                                            ->placeholder('Pilih profil')
+                                            ->helperText('Pilih satu atau lebih profil yang berperan sebagai penulis atau kontributor artikel.'),
+                                    ]),
 
-                        Select::make('tags')
-                            ->label('Tag')
-                            ->relationship('tags', 'name')
-                            ->multiple()
-                            ->searchable()
-                            ->preload(),
+                                Group::make()
+                                    ->schema([
+                                        Select::make('tags')
+                                            ->label('5. Tag')
+                                            ->relationship('tags', 'name')
+                                            ->multiple()
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Select an option')
+                                            ->helperText('Pilih satu atau lebih tag yang relevan dengan artikel.'),
 
-                        Textarea::make('excerpt')
-                            ->label('Ringkasan')
-                            ->rows(4)
-                            ->maxLength(500),
+                                        Textarea::make('excerpt')
+                                            ->label('6. Ringkasan')
+                                            ->rows(9)
+                                            ->maxLength(300)
+                                            ->live()
+                                            ->placeholder('Tulis ringkasan artikel secara singkat dan jelas...')
+                                            ->helperText('Maksimal 300 karakter termasuk spasi.'),
+                                    ]),
+                            ]),
                     ])
-                    ->columns(2)
+                    ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                Section::make('Konten Artikel')
-                    ->description('Tulis isi artikel utama.')
+                Section::make('Isi Artikel')
+                    ->description('Tulis isi lengkap artikel Insight.')
                     ->schema([
                         RichEditor::make('content')
                             ->label('Isi Artikel')
                             ->required()
+                            ->helperText('Tulis isi lengkap artikel Insight.')
                             ->columnSpanFull(),
+                    ])
+                    ->columnSpanFull(),
 
+                Section::make('Media Artikel')
+                    ->description('Unggah gambar sampul artikel.')
+                    ->schema([
                         FileUpload::make('cover_image')
                             ->label('Gambar Sampul')
                             ->image()
@@ -110,10 +144,15 @@ class InsightResource extends Resource
                             ->imageEditor()
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                             ->maxSize(4096)
+                            ->helperText('Gambar akan ditampilkan sebagai sampul artikel.')
                             ->columnSpanFull(),
-                    ]),
+                    ])
+                    ->columnSpanFull(),
 
-                Grid::make(2)
+                Grid::make([
+                    'default' => 1,
+                    'lg' => 2,
+                ])
                     ->schema([
                         Section::make('Publikasi dan Editorial')
                             ->description('Atur status, waktu tayang, dan penanda artikel pilihan.')
@@ -131,35 +170,41 @@ class InsightResource extends Resource
                                     ->required(),
 
                                 DateTimePicker::make('published_at')
-                                    ->label('Tanggal Tayang')
+                                    ->label('Tanggal Terbit')
                                     ->seconds(false),
 
                                 TextInput::make('reading_time')
-                                    ->label('Estimasi Baca')
+                                    ->label('Reading Time')
                                     ->numeric()
                                     ->suffix('menit')
-                                    ->default(3),
+                                    ->default(3)
+                                    ->placeholder('Contoh: 8')
+                                    ->helperText('Estimasi waktu baca artikel dalam menit.'),
 
                                 Toggle::make('featured')
-                                    ->label('Featured')
+                                    ->label('Tampilkan sebagai unggulan')
+                                    ->helperText('Aktifkan untuk menampilkan artikel ini di beranda.')
                                     ->default(false),
                             ])
                             ->columns(1),
 
-                        Section::make('SEO')
+                        Section::make('SEO (Opsional)')
                             ->description('Metadata untuk kebutuhan mesin pencari dan preview media sosial.')
                             ->schema([
                                 TextInput::make('seo_title')
-                                    ->label('SEO Title')
-                                    ->maxLength(255),
+                                    ->label('Judul SEO')
+                                    ->maxLength(60)
+                                    ->placeholder('Tulis judul SEO'),
 
                                 Textarea::make('seo_description')
-                                    ->label('SEO Description')
+                                    ->label('Deskripsi SEO')
                                     ->rows(3)
-                                    ->maxLength(500),
+                                    ->maxLength(180)
+                                    ->placeholder('Tulis deskripsi SEO...')
+                                    ->helperText('Maksimal 180 karakter termasuk spasi.'),
 
                                 FileUpload::make('og_image')
-                                    ->label('OG Image')
+                                    ->label('Gambar OG')
                                     ->image()
                                     ->disk('public')
                                     ->directory('seo/insights')
@@ -168,8 +213,11 @@ class InsightResource extends Resource
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(4096),
                             ])
-                            ->columns(1),
+                            ->columns(1)
+                            ->collapsible()
+                            ->collapsed(),
                     ])
+                    ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
             ]);
     }
@@ -218,6 +266,18 @@ class InsightResource extends Resource
                         default => ucfirst($state),
                     }),
 
+                IconColumn::make('featured')
+                    ->label('Unggulan')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('published_at')
+                    ->label('Terbit')
+                    ->date('d M Y')
+                    ->sortable()
+                    ->toggleable(),
+
                 TextColumn::make('updated_at')
                     ->label('Update')
                     ->since()
@@ -248,6 +308,13 @@ class InsightResource extends Resource
                         'reviewed' => 'Reviewed',
                         'published' => 'Published',
                         'archived' => 'Archived',
+                    ]),
+
+                SelectFilter::make('featured')
+                    ->label('Unggulan')
+                    ->options([
+                        '1' => 'Unggulan',
+                        '0' => 'Bukan Unggulan',
                     ]),
             ])
             ->recordActions([

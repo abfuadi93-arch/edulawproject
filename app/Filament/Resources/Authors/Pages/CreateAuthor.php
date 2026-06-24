@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Authors\Pages;
 
 use App\Filament\Resources\Authors\AuthorResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 
-class CreateAuthor extends CreateRecord
+class CreateAuthor extends CreateRecordAndReturn
 {
     protected static string $resource = AuthorResource::class;
 }

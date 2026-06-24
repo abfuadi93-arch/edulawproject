@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\ContactMessages\Pages;
 
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
+use App\Filament\Resources\Pages\EditRecordAndReturn;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditContactMessage extends EditRecord
+class EditContactMessage extends EditRecordAndReturn
 {
     protected static string $resource = ContactMessageResource::class;
 

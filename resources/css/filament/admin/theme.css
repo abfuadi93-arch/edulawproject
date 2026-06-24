@@ -166,31 +166,41 @@
 
 .fi-page-content > .fi-sc-form {
     width: 100%;
-    max-width: 64rem;
+    max-width: 80rem;
 }
 
-.fi-sc-form .fi-sc.fi-grid {
+.fi-sc-form > .fi-sc.fi-grid {
     grid-template-columns: minmax(0, 1fr) !important;
 }
 
-.fi-sc-form .fi-grid-col {
+.fi-sc-form > .fi-sc.fi-grid > .fi-grid-col {
     grid-column: 1 / -1 !important;
 }
 
 .fi-sc-form .edulaw-admin-two-column-section .fi-section-content.fi-sc.fi-grid {
-    grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    grid-template-columns: minmax(0, 1fr) !important;
 }
 
 .fi-sc-form .edulaw-admin-two-column-section .fi-section-content > .fi-grid-col {
-    grid-column: auto !important;
+    grid-column: 1 / -1 !important;
 }
 
-.fi-sc-form .edulaw-admin-section-pair > .fi-sc.fi-grid {
+.fi-sc-form .edulaw-admin-section-pair.fi-sc.fi-grid {
     grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
 }
 
-.fi-sc-form .edulaw-admin-section-pair > .fi-sc.fi-grid > .fi-grid-col {
+.fi-sc-form .edulaw-admin-section-pair.fi-sc.fi-grid > .fi-grid-col {
     grid-column: auto !important;
+}
+
+@media (min-width: 1024px) {
+    .fi-sc-form .edulaw-admin-two-column-section .fi-section-content > .fi-grid-col > .fi-sc.fi-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+    }
+
+    .fi-sc-form .edulaw-admin-two-column-section .fi-section-content > .fi-grid-col > .fi-sc.fi-grid > .fi-grid-col {
+        grid-column: auto !important;
+    }
 }
 
 @media (max-width: 768px) {
@@ -202,12 +212,74 @@
         grid-column: 1 / -1 !important;
     }
 
-    .fi-sc-form .edulaw-admin-section-pair > .fi-sc.fi-grid {
+    .fi-sc-form .edulaw-admin-section-pair.fi-sc.fi-grid {
         grid-template-columns: minmax(0, 1fr) !important;
     }
 
-    .fi-sc-form .edulaw-admin-section-pair > .fi-sc.fi-grid > .fi-grid-col {
+    .fi-sc-form .edulaw-admin-section-pair.fi-sc.fi-grid > .fi-grid-col {
         grid-column: 1 / -1 !important;
+    }
+}
+
+.fi-resource-authors .edulaw-admin-profile-form {
+    align-items: start;
+}
+
+.fi-resource-authors .edulaw-admin-profile-form .fi-section {
+    overflow: hidden;
+}
+
+.fi-resource-authors .edulaw-admin-profile-form .fi-fo-file-upload {
+    --file-upload-panel-height: 10rem;
+}
+
+.fi-resource-authors .edulaw-admin-profile-form .fi-fo-repeater {
+    min-width: 0;
+}
+
+.fi-resource-authors .edulaw-admin-profile-form .fi-fo-repeater table {
+    overflow: hidden;
+    border-radius: 0.75rem;
+}
+
+.fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions {
+    position: sticky;
+    bottom: 1rem;
+    z-index: 20;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    padding: 1rem 1.25rem;
+    border: 1px solid var(--edulaw-admin-border);
+    border-radius: 0.9rem;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 18px 40px rgba(15, 23, 42, 0.12);
+    backdrop-filter: blur(16px);
+}
+
+.fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions::before {
+    content: "Perubahan belum disimpan";
+    color: #0f172a;
+    font-size: 0.88rem;
+    font-weight: 800;
+}
+
+.fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions > .fi-ac {
+    margin-left: auto;
+}
+
+@media (max-width: 768px) {
+    .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions {
+        bottom: 0.75rem;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions > .fi-ac {
+        justify-content: stretch;
+        width: 100%;
     }
 }
 
@@ -230,6 +302,24 @@
 
 .fi-ta-table {
     background: #ffffff;
+}
+
+.fi-page-content,
+.fi-ta,
+.fi-ta-ctn,
+.fi-ta-main,
+.fi-ta-content-ctn {
+    min-width: 0;
+    max-width: 100%;
+}
+
+.fi-ta-ctn {
+    overflow: hidden;
+}
+
+.fi-ta-content {
+    max-width: 100%;
+    overflow-x: auto;
 }
 
 .fi-ta-header-cell {

@@ -108,35 +108,47 @@ class SiteSettingResource extends Resource
                 TextColumn::make('group')
                     ->label('Grup')
                     ->badge()
+                    ->grow(false)
                     ->sortable()
                     ->searchable(),
 
                 TextColumn::make('label')
-                    ->label('Label')
+                    ->label('Pengaturan')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->limit(42)
+                    ->wrap()
+                    ->width('18rem')
+                    ->description(fn (SiteSetting $record): string => $record->key),
 
                 TextColumn::make('key')
                     ->label('Key')
                     ->searchable()
-                    ->copyable(),
+                    ->copyable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('value')
                     ->label('Value')
-                    ->limit(60)
-                    ->searchable(),
+                    ->limit(72)
+                    ->wrap()
+                    ->searchable()
+                    ->placeholder('-'),
 
                 IconColumn::make('is_public')
                     ->label('Publik')
                     ->boolean()
+                    ->grow(false)
                     ->sortable(),
 
                 TextColumn::make('updated_at')
                     ->label('Diubah')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('group')
+            ->searchPlaceholder('Cari pengaturan...')
+            ->paginationPageOptions([10, 25, 50])
             ->filters([
                 SelectFilter::make('group')
                     ->label('Grup')

@@ -42,10 +42,11 @@ class RelevantDataSeeder extends Seeder
     private function seedAuthors(User $admin): void
     {
         $this->authorByName('Edulaw Project', [
-            'user_id' => $admin->id,
             'email' => 'projectedulaw@gmail.com',
             'institution' => 'Edulaw Project',
             'position' => 'Editorial Team',
+            'profile_type' => 'team',
+            'interests' => 'Literasi hukum, publikasi, program edukasi, kebijakan publik.',
             'bio' => 'Tim editorial Edulaw Project yang mengelola publikasi, program, dan literasi hukum untuk publik.',
         ]);
 
@@ -56,6 +57,7 @@ class RelevantDataSeeder extends Seeder
                 'photo' => $row['photo'] ?? null,
                 'institution' => $row['affiliation'] ?? 'Edulaw Project',
                 'position' => $row['title'] ?? $row['role'] ?? null,
+                'profile_type' => Str::contains(Str::lower((string) ($row['title'] ?? $row['role'] ?? '')), 'founder') ? 'founder' : 'team',
                 'social_links' => $row['linkedin_url'] ? ['linkedin' => $row['linkedin_url']] : null,
             ]);
         }
@@ -71,18 +73,20 @@ class RelevantDataSeeder extends Seeder
                 'photo' => $row['author_photo'] ?? null,
                 'institution' => $row['author_affiliation'] ?: 'Edulaw Project',
                 'position' => isset($row['role']) ? Str::headline($row['role']) : null,
+                'profile_type' => 'internal_author',
             ]);
         }
 
         foreach ($this->legacyRows('users') as $row) {
             $name = $row['full_name']
-                ?: trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+                ?: trim(($row['first_name'] ?? '').' '.($row['last_name'] ?? ''));
 
             $this->authorByName($name, [
                 'email' => $row['email'] ?? null,
                 'photo' => $row['image'] ?? null,
                 'institution' => 'Edulaw Project',
                 'position' => isset($row['role']) ? Str::headline($row['role']) : null,
+                'profile_type' => 'contributor',
             ]);
         }
     }
@@ -127,7 +131,7 @@ class RelevantDataSeeder extends Seeder
 
         foreach ($this->abfuadiRows('users') as $row) {
             $this->userFromDump([
-                'name' => $row['full_name'] ?: trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? '')),
+                'name' => $row['full_name'] ?: trim(($row['first_name'] ?? '').' '.($row['last_name'] ?? '')),
                 'email' => $row['email'] ?? null,
                 'password' => $row['password'] ?? null,
                 'avatar' => $row['image'] ?? null,
@@ -193,6 +197,8 @@ class RelevantDataSeeder extends Seeder
         if ($author && ! $author->user_id) {
             $author->forceFill(['user_id' => $user->id])->save();
         }
+
+        $user->ensureProfile();
 
         return $user;
     }
@@ -504,15 +510,21 @@ class RelevantDataSeeder extends Seeder
                 'media_url' => 'https://www.youtube.com/',
                 'platform' => 'youtube',
                 'duration' => '08:24',
+                'serial' => 'kelas_konstitusi',
+                'topic' => 'konstitusi',
+                'display_section' => 'latest',
                 'featured' => true,
             ],
             [
                 'title' => 'Apa itu Judicial Review?',
-                'type' => 'short',
+                'type' => 'shorts',
                 'description' => 'Konten singkat untuk mengenalkan pengujian undang-undang dan peran Mahkamah Konstitusi.',
                 'media_url' => 'https://www.instagram.com/',
                 'platform' => 'instagram',
                 'duration' => '01:12',
+                'serial' => 'hukum_dalam_60_detik',
+                'topic' => 'mahkamah_konstitusi',
+                'display_section' => 'short_video',
                 'featured' => false,
             ],
             [
@@ -521,7 +533,11 @@ class RelevantDataSeeder extends Seeder
                 'description' => 'Galeri kegiatan diskusi dan ruang belajar konstitusi Edulaw Project.',
                 'media_url' => 'https://photos.google.com/',
                 'platform' => 'gallery',
-                'duration' => '24 Foto',
+                'duration' => null,
+                'photo_count' => 24,
+                'serial' => 'kelas_konstitusi',
+                'topic' => 'konstitusi',
+                'display_section' => 'topic_multimedia',
                 'featured' => false,
             ],
         ];
@@ -642,9 +658,11 @@ class RelevantDataSeeder extends Seeder
             'name' => $name,
             'email' => $attributes['email'] ?? null,
             'bio' => $attributes['bio'] ?? null,
+            'interests' => $attributes['interests'] ?? null,
             'photo' => $attributes['photo'] ?? null,
             'institution' => $attributes['institution'] ?? 'Edulaw Project',
             'position' => $attributes['position'] ?? null,
+            'profile_type' => $attributes['profile_type'] ?? null,
             'social_links' => $attributes['social_links'] ?? null,
             'is_active' => true,
         ], fn ($value) => $value !== null && $value !== '');
@@ -769,7 +787,7 @@ class RelevantDataSeeder extends Seeder
             return [];
         }
 
-        $cacheKey = $filename . ':' . $table;
+        $cacheKey = $filename.':'.$table;
 
         if (! array_key_exists($cacheKey, $this->dumpCache)) {
             $this->dumpCache[$cacheKey] = $this->parseInsertRows($path, $table);
@@ -782,8 +800,8 @@ class RelevantDataSeeder extends Seeder
     {
         $home = $_SERVER['HOME'] ?? getenv('HOME') ?: null;
         $candidates = array_filter([
-            database_path('dumps/' . $filename),
-            $home ? $home . '/Downloads/' . $filename : null,
+            database_path('dumps/'.$filename),
+            $home ? $home.'/Downloads/'.$filename : null,
         ]);
 
         foreach ($candidates as $candidate) {
@@ -800,14 +818,14 @@ class RelevantDataSeeder extends Seeder
         $rows = [];
         $statement = '';
         $collecting = false;
-        $prefix = 'INSERT INTO `' . $table . '`';
+        $prefix = 'INSERT INTO `'.$table.'`';
 
         foreach (file($path, FILE_IGNORE_NEW_LINES) ?: [] as $line) {
             if (! $collecting && str_starts_with($line, $prefix)) {
                 $collecting = true;
-                $statement = $line . "\n";
+                $statement = $line."\n";
             } elseif ($collecting) {
-                $statement .= $line . "\n";
+                $statement .= $line."\n";
             }
 
             if ($collecting && str_ends_with(rtrim($line), ';')) {
@@ -863,11 +881,13 @@ class RelevantDataSeeder extends Seeder
 
                 if ($escaped) {
                     $escaped = false;
+
                     continue;
                 }
 
                 if ($char === '\\') {
                     $escaped = true;
+
                     continue;
                 }
 
@@ -894,6 +914,7 @@ class RelevantDataSeeder extends Seeder
                 }
 
                 $depth++;
+
                 continue;
             }
 
@@ -903,10 +924,12 @@ class RelevantDataSeeder extends Seeder
                 if ($depth === 0) {
                     $rows[] = $buffer;
                     $buffer = '';
+
                     continue;
                 }
 
                 $buffer .= $char;
+
                 continue;
             }
 
@@ -934,11 +957,13 @@ class RelevantDataSeeder extends Seeder
 
                 if ($escaped) {
                     $escaped = false;
+
                     continue;
                 }
 
                 if ($char === '\\') {
                     $escaped = true;
+
                     continue;
                 }
 
@@ -952,12 +977,14 @@ class RelevantDataSeeder extends Seeder
             if ($char === "'") {
                 $inQuote = true;
                 $buffer .= $char;
+
                 continue;
             }
 
             if ($char === ',') {
                 $values[] = $this->parseValue($buffer);
                 $buffer = '';
+
                 continue;
             }
 
@@ -1001,7 +1028,7 @@ class RelevantDataSeeder extends Seeder
             return $path;
         }
 
-        return is_file(storage_path('app/public/' . $path)) ? $path : null;
+        return is_file(storage_path('app/public/'.$path)) ? $path : null;
     }
 
     private function normalizedFormat(?string $format): ?string
@@ -1049,7 +1076,7 @@ class RelevantDataSeeder extends Seeder
         }
 
         $name = $row['full_name']
-            ?: trim(($row['first_name'] ?? '') . ' ' . ($row['last_name'] ?? ''));
+            ?: trim(($row['first_name'] ?? '').' '.($row['last_name'] ?? ''));
 
         return $this->authorByName($name, [
             'email' => $row['email'] ?? null,

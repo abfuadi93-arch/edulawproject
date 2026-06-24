@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Insights\InsightResource\Pages;
 
 use App\Filament\Resources\Insights\InsightResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 
-class CreateInsight extends CreateRecord
+class CreateInsight extends CreateRecordAndReturn
 {
     protected static string $resource = InsightResource::class;
 }

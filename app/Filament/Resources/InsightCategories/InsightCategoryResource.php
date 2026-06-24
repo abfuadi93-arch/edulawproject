@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\InsightCategories;
 
+use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\InsightCategories\Pages\CreateInsightCategory;
 use App\Filament\Resources\InsightCategories\Pages\EditInsightCategory;
 use App\Filament\Resources\InsightCategories\Pages\ListInsightCategories;
@@ -10,8 +11,8 @@ use BackedEnum;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
@@ -20,10 +21,11 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class InsightCategoryResource extends Resource
 {
+    use HasSlugFormBehavior;
+
     protected static ?string $model = InsightCategory::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
@@ -42,21 +44,23 @@ class InsightCategoryResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Kategori Insight')
+                Section::make('Informasi')
                     ->description('Kategori untuk artikel, opini hukum, regulatory update, dan edukasi hukum.')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama Kategori')
+                            ->label('Nama')
                             ->required()
                             ->maxLength(255)
+                            ->placeholder('Nama kategori Insight')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state))),
+                            ->afterStateUpdated(static::syncSlugFrom()),
 
                         TextInput::make('slug')
                             ->label('Slug')
                             ->required()
                             ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Slug digunakan sebagai identitas kategori di website.'),
 
                         Textarea::make('description')
                             ->label('Deskripsi')
@@ -81,7 +85,7 @@ class InsightCategoryResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama Kategori')
+                    ->label('Nama')
                     ->searchable()
                     ->sortable(),
 
@@ -101,6 +105,12 @@ class InsightCategoryResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
                     ->dateTime('d M Y, H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

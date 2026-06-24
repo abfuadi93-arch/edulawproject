@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Services\PdfCoverGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -37,6 +38,24 @@ class Publication extends Model
         'featured' => 'boolean',
         'page_count' => 'integer',
     ];
+
+    protected static function booted(): void
+    {
+        static::saving(function (Publication $publication): void {
+            if (! $publication->needsPdfCover()) {
+                return;
+            }
+
+            $coverImage = app(PdfCoverGenerator::class)->generate(
+                $publication->pdf_file,
+                $publication->slug ?: $publication->title,
+            );
+
+            if ($coverImage !== null) {
+                $publication->cover_image = $coverImage;
+            }
+        });
+    }
 
     public function type(): BelongsTo
     {
@@ -75,5 +94,14 @@ class Publication extends Model
     {
         return SiteSetting::assetUrl($this->attributes['pdf_file'] ?? null)
             ?: SiteSetting::resolveUrl($this->attributes['external_url'] ?? null);
+    }
+
+    private function needsPdfCover(): bool
+    {
+        if (blank($this->pdf_file)) {
+            return false;
+        }
+
+        return $this->isDirty('pdf_file') || blank($this->cover_image);
     }
 }

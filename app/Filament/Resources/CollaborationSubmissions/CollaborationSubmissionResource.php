@@ -16,7 +16,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -46,48 +45,59 @@ class CollaborationSubmissionResource extends Resource
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('email')
                             ->label('Email')
                             ->email()
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('phone')
                             ->label('Nomor Telepon')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('institution')
                             ->label('Institusi')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('position')
                             ->label('Posisi')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('collaboration_type')
                             ->label('Jenis Kolaborasi')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
                     ])
-                    ->columns(1),
+                    ->columns(2),
 
                 Section::make('Isi Pengajuan')
+                    ->description('Konten pengajuan dari publik. Data ini tidak diedit dari panel admin.')
                     ->schema([
                         TextInput::make('subject')
                             ->label('Subjek')
                             ->disabled()
+                            ->dehydrated(false)
                             ->columnSpanFull(),
 
                         Textarea::make('message')
                             ->label('Pesan')
                             ->rows(8)
                             ->disabled()
+                            ->dehydrated(false)
                             ->columnSpanFull(),
 
                         FileUpload::make('attachment')
                             ->label('Lampiran')
+                            ->disk('public')
                             ->directory('collaboration-submissions')
                             ->disabled()
+                            ->dehydrated(false)
                             ->downloadable()
                             ->openable()
                             ->columnSpanFull(),
@@ -124,7 +134,7 @@ class CollaborationSubmissionResource extends Resource
                             ->rows(5)
                             ->columnSpanFull(),
                     ])
-                    ->columns(1),
+                    ->columns(2),
             ]);
     }
 
@@ -181,6 +191,12 @@ class CollaborationSubmissionResource extends Resource
                     ->label('Masuk')
                     ->dateTime('d M Y, H:i')
                     ->sortable(),
+
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

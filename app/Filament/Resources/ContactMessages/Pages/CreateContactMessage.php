@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\ContactMessages\Pages;
 
 use App\Filament\Resources\ContactMessages\ContactMessageResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 
-class CreateContactMessage extends CreateRecord
+class CreateContactMessage extends CreateRecordAndReturn
 {
     protected static string $resource = ContactMessageResource::class;
 }

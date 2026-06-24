@@ -838,17 +838,17 @@
 
                                     <article class="publication-related-card">
                                         <div class="publication-related-preview">
-                                            @if ($relatedPdfPreview)
+                                            @if ($relatedCover)
+                                                <img
+                                                    src="{{ $relatedCover }}"
+                                                    alt="{{ $relatedPublication->title }}"
+                                                >
+                                            @elseif ($relatedPdfPreview)
                                                 <iframe
                                                     src="{{ $relatedPdfPreview }}"
                                                     title="Preview {{ $relatedPublication->title }}"
                                                     loading="lazy"
                                                 ></iframe>
-                                            @elseif ($relatedCover)
-                                                <img
-                                                    src="{{ $relatedCover }}"
-                                                    alt="{{ $relatedPublication->title }}"
-                                                >
                                             @else
                                                 <div
                                                     style="height:150px;background:linear-gradient(135deg, {{ $palette['from'] }}, {{ $palette['via'] }}, {{ $palette['to'] }});"

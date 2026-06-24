@@ -725,18 +725,18 @@
                             </div>
 
                             <div class="publication-thumb">
-                                @if ($previewUrl)
-                                    <iframe
-                                        src="{{ $previewUrl }}"
-                                        title="Preview PDF {{ $publication->title }}"
-                                        loading="lazy"
-                                    ></iframe>
-                                @elseif ($coverImage)
+                                @if ($coverImage)
                                     <img
                                         src="{{ $coverImage }}"
                                         alt="{{ $publication->title }}"
                                         class="publication-cover-image"
                                     >
+                                @elseif ($previewUrl)
+                                    <iframe
+                                        src="{{ $previewUrl }}"
+                                        title="Preview PDF {{ $publication->title }}"
+                                        loading="lazy"
+                                    ></iframe>
                                 @else
                                     <div
                                         class="publication-thumb-placeholder"

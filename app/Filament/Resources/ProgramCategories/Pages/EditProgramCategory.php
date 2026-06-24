@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\ProgramCategories\Pages;
 
+use App\Filament\Resources\Pages\EditRecordAndReturn;
 use App\Filament\Resources\ProgramCategories\ProgramCategoryResource;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditProgramCategory extends EditRecord
+class EditProgramCategory extends EditRecordAndReturn
 {
     protected static string $resource = ProgramCategoryResource::class;
 

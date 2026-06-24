@@ -10,13 +10,12 @@ use BackedEnum;
 use Filament\Actions;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -28,13 +27,13 @@ class UserResource extends Resource
 {
     protected static ?string $model = User::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Pengaturan Website';
+    protected static string|\UnitEnum|null $navigationGroup = 'Akses Admin';
 
-    protected static ?string $navigationLabel = 'Pengguna';
+    protected static ?string $navigationLabel = 'Akun Admin';
 
-    protected static ?string $modelLabel = 'Pengguna';
+    protected static ?string $modelLabel = 'Akun Admin';
 
-    protected static ?string $pluralModelLabel = 'Pengguna';
+    protected static ?string $pluralModelLabel = 'Akun Admin';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-users';
 
@@ -44,11 +43,11 @@ class UserResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Akun')
-                    ->description('Kelola akun pengguna panel admin Edulaw.')
+                Section::make('Informasi Akun Admin')
+                    ->description('Kelola akun login panel admin. Identitas publik dikelola sebagai Profil dan otomatis terhubung ke akun ini.')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama')
+                            ->label('Nama Akun')
                             ->required()
                             ->maxLength(255),
 
@@ -69,21 +68,24 @@ class UserResource extends Resource
                             ->maxLength(255),
 
                         FileUpload::make('avatar')
-                            ->label('Avatar')
+                            ->label('Avatar Akun')
                             ->image()
+                            ->disk('public')
                             ->directory('users')
+                            ->visibility('public')
                             ->imageEditor(),
 
                         TextInput::make('institution')
                             ->label('Institusi')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Untuk profil publik, gunakan menu Profil.'),
 
                         TextInput::make('position')
                             ->label('Posisi')
                             ->maxLength(255),
 
                         Textarea::make('bio')
-                            ->label('Bio')
+                            ->label('Catatan Internal')
                             ->rows(4)
                             ->columnSpanFull(),
 
@@ -129,6 +131,12 @@ class UserResource extends Resource
                     ->badge()
                     ->separator(',')
                     ->limitList(3),
+
+                TextColumn::make('profile.name')
+                    ->label('Profil')
+                    ->searchable()
+                    ->placeholder('Profil otomatis dibuat')
+                    ->description(fn (User $record): ?string => $record->profile?->affiliation_label),
 
                 TextColumn::make('institution')
                     ->label('Institusi')

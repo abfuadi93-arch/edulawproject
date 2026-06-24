@@ -2,19 +2,24 @@
 
 namespace App\Filament\Resources\Authors;
 
+use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Authors\Pages\CreateAuthor;
 use App\Filament\Resources\Authors\Pages\EditAuthor;
 use App\Filament\Resources\Authors\Pages\ListAuthors;
 use App\Models\Author;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\Repeater\TableColumn;
+use Filament\Forms\Components\Select;
+use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -22,19 +27,20 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class AuthorResource extends Resource
 {
+    use HasSlugFormBehavior;
+
     protected static ?string $model = Author::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
+    protected static string|\UnitEnum|null $navigationGroup = 'Profil & Tim';
 
-    protected static ?string $navigationLabel = 'Penulis';
+    protected static ?string $navigationLabel = 'Profil';
 
-    protected static ?string $modelLabel = 'Penulis';
+    protected static ?string $modelLabel = 'Profil';
 
-    protected static ?string $pluralModelLabel = 'Penulis';
+    protected static ?string $pluralModelLabel = 'Profil';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
@@ -43,52 +49,169 @@ class AuthorResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->extraAttributes(['class' => 'edulaw-admin-profile-form'])
             ->components([
-                Section::make('Profil Penulis')
-                    ->description('Kelola profil penulis internal maupun eksternal Edulaw.')
+                Grid::make([
+                    'default' => 1,
+                    'lg' => 5,
+                ])
                     ->schema([
-                        TextInput::make('name')
-                            ->label('Nama')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state))),
+                        Section::make('Informasi Profil')
+                            ->description('Kelola identitas publik, penulis, narasumber, moderator, founder, co-founder, dan tim Edulaw.')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('Nama')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(static::syncSlugFrom())
+                                    ->columnSpanFull(),
 
-                        TextInput::make('slug')
-                            ->label('Slug')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                                TextInput::make('slug')
+                                    ->label('Slug')
+                                    ->required()
+                                    ->unique(ignoreRecord: true)
+                                    ->maxLength(255)
+                                    ->helperText('Digunakan sebagai identitas unik profil di website.')
+                                    ->columnSpanFull(),
 
-                        TextInput::make('email')
-                            ->label('Email')
-                            ->email()
-                            ->maxLength(255),
+                                Grid::make([
+                                    'default' => 1,
+                                    'lg' => 2,
+                                ])
+                                    ->schema([
+                                        Group::make()
+                                            ->schema([
+                                                TextInput::make('position')
+                                                    ->label('Jabatan')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Founder / Narasumber / Tim Edulaw'),
 
-                        TextInput::make('institution')
-                            ->label('Institusi')
-                            ->maxLength(255),
+                                                TextInput::make('institution')
+                                                    ->label('Afiliasi')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Edulaw Project / Institusi asal'),
 
-                        TextInput::make('position')
-                            ->label('Posisi')
-                            ->maxLength(255),
+                                                Select::make('profile_type')
+                                                    ->label('Jenis Profil')
+                                                    ->options(Author::PROFILE_TYPES)
+                                                    ->searchable()
+                                                    ->placeholder('Pilih jenis profil'),
+                                            ]),
 
-                        FileUpload::make('photo')
-                            ->label('Foto')
-                            ->image()
-                            ->directory('authors')
-                            ->imageEditor(),
+                                        Group::make()
+                                            ->schema([
+                                                Textarea::make('bio')
+                                                    ->label('Bio Singkat')
+                                                    ->rows(5)
+                                                    ->maxLength(500)
+                                                    ->live()
+                                                    ->helperText(fn (?string $state): string => sprintf('%d/500 karakter', mb_strlen((string) $state)))
+                                                    ->placeholder('Tulis bio singkat yang dapat ditampilkan pada website.'),
 
-                        Textarea::make('bio')
-                            ->label('Bio')
-                            ->rows(5)
-                            ->columnSpanFull(),
+                                                TagsInput::make('interests')
+                                                    ->label('Minat / Keahlian')
+                                                    ->separator(',')
+                                                    ->splitKeys([',', 'Enter'])
+                                                    ->placeholder('Tambah minat atau keahlian...')
+                                                    ->helperText('Pisahkan tiap minat dengan enter atau koma.')
+                                                    ->suggestions([
+                                                        'Hukum Tata Negara',
+                                                        'Pemilu',
+                                                        'Kebijakan Publik',
+                                                        'Hukum Administrasi',
+                                                        'Advokasi',
+                                                        'Riset Hukum',
+                                                    ]),
 
-                        Toggle::make('is_active')
-                            ->label('Aktif')
-                            ->default(true),
+                                                Toggle::make('is_active')
+                                                    ->label('Status Aktif')
+                                                    ->helperText('Profil ini ditampilkan di website.')
+                                                    ->default(true),
+                                            ]),
+                                    ])
+                                    ->columnSpanFull(),
+                            ])
+                            ->columnSpan([
+                                'default' => 1,
+                                'lg' => 3,
+                            ])
+                            ->extraAttributes(['class' => 'edulaw-admin-profile-info']),
+
+                        Group::make()
+                            ->schema([
+                                Section::make('Foto Profil')
+                                    ->description('Unggah foto profil untuk ditampilkan di website.')
+                                    ->schema([
+                                        FileUpload::make('photo')
+                                            ->label('Ganti Foto')
+                                            ->avatar()
+                                            ->disk('public')
+                                            ->directory('profiles')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(2048)
+                                            ->helperText('Tarik & letakkan foto atau pilih berkas. Rekomendasi ukuran 400 x 400 px. Format: JPG, PNG, WebP. Maks. 2 MB.')
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('Akun Admin dan Kontak (Opsional)')
+                                    ->description('Profil boleh tidak punya akun admin. Akun admin wajib memiliki profil yang terhubung.')
+                                    ->schema([
+                                        Select::make('user_id')
+                                            ->label('Akun Admin Terkait')
+                                            ->relationship('user', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->placeholder('Profil publik tanpa akun admin')
+                                            ->helperText('Opsional. Tidak semua profil adalah akun admin.'),
+
+                                        TextInput::make('email')
+                                            ->label('Email Kontak')
+                                            ->email()
+                                            ->maxLength(255)
+                                            ->helperText('Email ini akan digunakan untuk komunikasi resmi.'),
+                                    ])
+                                    ->columns(1),
+
+                                Section::make('Tautan Sosial')
+                                    ->description('Kelola tautan sosial profil secara ringkas.')
+                                    ->schema([
+                                        Repeater::make('social_links')
+                                            ->label('Tautan Sosial')
+                                            ->schema([
+                                                TextInput::make('platform')
+                                                    ->label('Platform')
+                                                    ->prefixIcon('heroicon-o-globe-alt')
+                                                    ->placeholder('LinkedIn / Instagram / Website'),
+
+                                                TextInput::make('url')
+                                                    ->label('URL')
+                                                    ->url()
+                                                    ->placeholder('https://...'),
+                                            ])
+                                            ->table([
+                                                TableColumn::make('Platform'),
+                                                TableColumn::make('URL'),
+                                            ])
+                                            ->itemLabel(fn (array $state): ?string => collect([
+                                                $state['platform'] ?? null,
+                                                $state['url'] ?? null,
+                                            ])->filter()->join(' - ') ?: 'Tautan sosial')
+                                            ->addActionLabel('Tambah Tautan Sosial')
+                                            ->reorderable()
+                                            ->collapsed()
+                                            ->columnSpanFull(),
+                                    ]),
+                            ])
+                            ->columnSpan([
+                                'default' => 1,
+                                'lg' => 2,
+                            ]),
                     ])
-                    ->columns(1),
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'edulaw-admin-profile-form']),
             ]);
     }
 
@@ -97,38 +220,55 @@ class AuthorResource extends Resource
         return $table
             ->columns([
                 ImageColumn::make('photo')
-                    ->label('Foto')
-                    ->circular(),
+                    ->label('Photo Profil')
+                    ->disk('public')
+                    ->circular()
+                    ->size(44)
+                    ->width(64)
+                    ->grow(false)
+                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
 
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()
+                    ->sortable()
+                    ->limit(42)
+                    ->wrap()
+                    ->description(fn (Author $record): ?string => $record->profile_type_label),
+
+                TextColumn::make('affiliation_label')
+                    ->label('Afiliasi / Jabatan')
+                    ->state(fn (Author $record): string => $record->affiliation_label)
+                    ->searchable(['position', 'institution'])
+                    ->limit(48)
+                    ->wrap(),
+
+                TextColumn::make('interests')
+                    ->label('Minat')
+                    ->searchable()
+                    ->limit(54)
+                    ->wrap()
+                    ->placeholder('-'),
+
+                IconColumn::make('is_active')
+                    ->label('Status')
+                    ->boolean()
                     ->sortable(),
 
-                TextColumn::make('institution')
-                    ->label('Institusi')
-                    ->searchable()
-                    ->toggleable(),
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('position')
-                    ->label('Posisi')
+                TextColumn::make('user.name')
+                    ->label('Akun Admin')
                     ->searchable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('email')
                     ->label('Email')
                     ->searchable()
-                    ->toggleable(),
-
-                IconColumn::make('is_active')
-                    ->label('Aktif')
-                    ->boolean()
-                    ->sortable(),
-
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
@@ -137,11 +277,6 @@ class AuthorResource extends Resource
             ])
             ->recordActions([
                 EditAction::make(),
-            ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
             ]);
     }
 

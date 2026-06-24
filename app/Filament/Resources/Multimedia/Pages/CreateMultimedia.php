@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Multimedia\Pages;
 
 use App\Filament\Resources\Multimedia\MultimediaResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 
-class CreateMultimedia extends CreateRecord
+class CreateMultimedia extends CreateRecordAndReturn
 {
     protected static string $resource = MultimediaResource::class;
 }

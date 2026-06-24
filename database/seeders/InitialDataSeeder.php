@@ -65,17 +65,19 @@ class InitialDataSeeder extends Seeder
 
     private function seedAuthor(User $admin): void
     {
-        Author::firstOrCreate(
-            ['slug' => 'abdul-basid-fuadi'],
-            [
-                'user_id' => $admin->id,
-                'name' => 'Abdul Basid Fuadi',
-                'email' => 'admin@edulaw.test',
-                'institution' => 'Edulaw Project',
-                'position' => 'Founder',
-                'is_active' => true,
-            ]
-        );
+        $profile = $admin->profile()->first() ?? new Author;
+
+        $profile->forceFill([
+            'user_id' => $admin->id,
+            'name' => 'Abdul Basid Fuadi',
+            'slug' => Author::uniqueSlugFor('Abdul Basid Fuadi', $profile->exists ? $profile->id : null),
+            'email' => 'admin@edulaw.test',
+            'institution' => 'Edulaw Project',
+            'position' => 'Founder',
+            'profile_type' => 'founder',
+            'interests' => 'Hukum tata negara, demokrasi, kebijakan publik, literasi hukum.',
+            'is_active' => true,
+        ])->save();
     }
 
     private function seedInsightCategories(): void

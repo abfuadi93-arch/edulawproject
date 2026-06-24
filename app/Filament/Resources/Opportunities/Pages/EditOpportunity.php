@@ -3,16 +3,25 @@
 namespace App\Filament\Resources\Opportunities\Pages;
 
 use App\Filament\Resources\Opportunities\OpportunityResource;
+use App\Filament\Resources\Pages\EditRecordAndReturn;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditOpportunity extends EditRecord
+class EditOpportunity extends EditRecordAndReturn
 {
     protected static string $resource = OpportunityResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('preview')
+                ->label('Pratinjau')
+                ->icon('heroicon-o-eye')
+                ->url(fn (): string => route('opportunities.index', [
+                    'q' => $this->record?->title,
+                ]))
+                ->openUrlInNewTab(),
+
             DeleteAction::make(),
         ];
     }

@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\InsightCategories\Pages;
 
 use App\Filament\Resources\InsightCategories\InsightCategoryResource;
+use App\Filament\Resources\Pages\EditRecordAndReturn;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditInsightCategory extends EditRecord
+class EditInsightCategory extends EditRecordAndReturn
 {
     protected static string $resource = InsightCategoryResource::class;
 

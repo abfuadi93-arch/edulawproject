@@ -3,10 +3,10 @@
 namespace App\Filament\Resources\CollaborationSubmissions\Pages;
 
 use App\Filament\Resources\CollaborationSubmissions\CollaborationSubmissionResource;
+use App\Filament\Resources\Pages\EditRecordAndReturn;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditCollaborationSubmission extends EditRecord
+class EditCollaborationSubmission extends EditRecordAndReturn
 {
     protected static string $resource = CollaborationSubmissionResource::class;
 

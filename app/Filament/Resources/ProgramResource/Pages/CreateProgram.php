@@ -2,10 +2,10 @@
 
 namespace App\Filament\Resources\ProgramResource\Pages;
 
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 use App\Filament\Resources\ProgramResource;
-use Filament\Resources\Pages\CreateRecord;
 
-class CreateProgram extends CreateRecord
+class CreateProgram extends CreateRecordAndReturn
 {
     protected static string $resource = ProgramResource::class;
 }

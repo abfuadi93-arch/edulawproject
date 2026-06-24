@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Opportunities\Pages;
 
 use App\Filament\Resources\Opportunities\OpportunityResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 
-class CreateOpportunity extends CreateRecord
+class CreateOpportunity extends CreateRecordAndReturn
 {
     protected static string $resource = OpportunityResource::class;
 }

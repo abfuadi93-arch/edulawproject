@@ -15,7 +15,6 @@ use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
@@ -45,26 +44,36 @@ class ContactMessageResource extends Resource
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('email')
                             ->label('Email')
                             ->email()
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
 
                         TextInput::make('phone')
                             ->label('Nomor Telepon')
-                            ->disabled(),
+                            ->disabled()
+                            ->dehydrated(false),
+                    ])
+                    ->columns(2),
 
+                Section::make('Isi Pesan')
+                    ->description('Isi pesan dari formulir kontak publik.')
+                    ->schema([
                         TextInput::make('subject')
                             ->label('Subjek')
                             ->disabled()
+                            ->dehydrated(false)
                             ->columnSpanFull(),
 
                         Textarea::make('message')
                             ->label('Pesan')
                             ->rows(8)
                             ->disabled()
+                            ->dehydrated(false)
                             ->columnSpanFull(),
                     ])
                     ->columns(1),
@@ -98,7 +107,7 @@ class ContactMessageResource extends Resource
                             ->rows(5)
                             ->columnSpanFull(),
                     ])
-                    ->columns(1),
+                    ->columns(2),
             ]);
     }
 
@@ -147,6 +156,12 @@ class ContactMessageResource extends Resource
                     ->label('Masuk')
                     ->dateTime('d M Y, H:i')
                     ->sortable(),
+
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
             ->filters([

@@ -10,12 +10,18 @@
         : collect($multimediaCollection);
 
     $shortItems = collect($shortMultimedia ?? []);
+    $serialItems = collect($serialMultimedia ?? []);
+    $topicItems = collect($topicMultimedia ?? []);
+    $serialLabels = collect($serialOptions ?? []);
+    $topicLabels = collect($topicOptions ?? []);
     $selectedTypes = collect($selectedTypes ?? request('type', []))
         ->flatten()
         ->filter(fn ($value) => filled($value))
         ->values()
         ->all();
     $selectedType = $selectedTypes[0] ?? null;
+    $selectedSerial = $selectedSerial ?? request('serial');
+    $selectedTopic = $selectedTopic ?? request('topic');
 
     $indexUrl = route('multimedia.index');
     $contactUrl = route('contact.index');
@@ -25,20 +31,22 @@
     $isExternalUrl = fn ($url) => filled($url) && \Illuminate\Support\Str::startsWith($url, ['http://', 'https://']);
     $contentUrl = fn ($item) => $mediaUrl($item) ?: $indexUrl;
     $itemDate = fn ($item) => optional($item?->published_at)->translatedFormat('d M Y') ?: 'Belum terjadwal';
-    $itemMeta = fn ($item) => $item?->duration ?: $itemDate($item);
+    $itemMeta = fn ($item) => $item?->display_meta ?: $itemDate($item);
     $itemDescription = fn ($item, int $limit = 132) => \Illuminate\Support\Str::limit(
-        trim(strip_tags((string) $item?->description)) ?: 'Konten multimedia Edulaw Project tentang hukum, konstitusi, demokrasi, dan kebijakan publik.',
+        trim(strip_tags((string) $item?->description)) ?: 'Ringkasan belum tersedia.',
         $limit
     );
 
-    $categoryFilters = [
-        ['label' => 'Semua', 'type' => null],
-        ['label' => 'Video', 'type' => 'video'],
-        ['label' => 'Podcast', 'type' => 'podcast'],
-        ['label' => 'Dokumentasi', 'type' => 'documentation'],
-        ['label' => 'Shorts', 'type' => 'shorts'],
-        ['label' => 'Webinar', 'type' => 'webinar'],
-    ];
+    $categoryFilters = collect([['label' => 'Semua', 'type' => null]])
+        ->merge(
+            collect($typeOptions ?? [])
+                ->map(fn ($option) => [
+                    'label' => $option['label'] ?? $option['value'] ?? 'Multimedia',
+                    'type' => $option['value'] ?? null,
+                ])
+        )
+        ->values()
+        ->all();
 
     $filterUrl = fn ($type) => filled($type)
         ? route('multimedia.index', ['type' => $type])
@@ -74,52 +82,30 @@
         };
     };
 
-    $serials = [
-        [
-            'title' => 'Diksi',
-            'description' => 'Membedah istilah hukum agar lebih dekat dengan bahasa publik.',
-            'label' => 'Serial istilah hukum',
-            'href' => route('multimedia.index', ['type' => 'shorts']),
-            'accent' => 'bg-teal-50 text-teal-700 border-teal-100',
-        ],
-        [
-            'title' => 'Gali Putusan',
-            'description' => 'Membaca putusan penting dan dampaknya bagi hak warga negara.',
-            'label' => 'Analisis putusan',
-            'href' => route('multimedia.index', ['type' => 'video']),
-            'accent' => 'bg-blue-50 text-blue-700 border-blue-100',
-        ],
-        [
-            'title' => 'Hukum dalam 60 Detik',
-            'description' => 'Penjelasan cepat tentang konsep hukum yang sering muncul di ruang publik.',
-            'label' => 'Format pendek',
-            'href' => route('multimedia.index', ['type' => 'shorts']),
-            'accent' => 'bg-rose-50 text-rose-700 border-rose-100',
-        ],
-        [
-            'title' => 'Edulaw Talks',
-            'description' => 'Percakapan bersama akademisi, peneliti, dan praktisi hukum.',
-            'label' => 'Podcast dan webinar',
-            'href' => route('multimedia.index', ['type' => 'podcast']),
-            'accent' => 'bg-brand-amber/15 text-brand-navy border-brand-amber/30',
-        ],
-        [
-            'title' => 'Kelas Konstitusi',
-            'description' => 'Kelas tematik tentang konstitusi, demokrasi, dan kebijakan publik.',
-            'label' => 'Kelas edukasi',
-            'href' => route('multimedia.index', ['type' => 'webinar']),
-            'accent' => 'bg-slate-50 text-slate-700 border-slate-200',
-        ],
-    ];
+    $serialAccent = fn ($serial) => match ($serial) {
+        'diksi' => 'bg-teal-50 text-teal-700 border-teal-100',
+        'gali_putusan' => 'bg-blue-50 text-blue-700 border-blue-100',
+        'hukum_dalam_60_detik' => 'bg-rose-50 text-rose-700 border-rose-100',
+        'edulaw_talks' => 'bg-brand-amber/15 text-brand-navy border-brand-amber/30',
+        default => 'bg-slate-50 text-slate-700 border-slate-200',
+    };
 
-    $topics = [
-        ['title' => 'Konstitusi', 'tone' => 'text-brand-navy bg-blue-50'],
-        ['title' => 'Mahkamah Konstitusi', 'tone' => 'text-teal-700 bg-teal-50'],
-        ['title' => 'Pemilu dan Demokrasi', 'tone' => 'text-brand-coral bg-brand-coral-soft'],
-        ['title' => 'Hak Konstitusional', 'tone' => 'text-brand-navy bg-brand-amber/15'],
-        ['title' => 'Hukum Digital', 'tone' => 'text-slate-700 bg-slate-100'],
-        ['title' => 'Kebijakan Publik', 'tone' => 'text-teal-700 bg-teal-50'],
-    ];
+    $topicTone = fn ($topic) => match ($topic) {
+        'konstitusi' => 'text-brand-navy bg-blue-50',
+        'mahkamah_konstitusi' => 'text-teal-700 bg-teal-50',
+        'pemilu_dan_demokrasi' => 'text-brand-coral bg-brand-coral-soft',
+        'hak_konstitusional' => 'text-brand-navy bg-brand-amber/15',
+        'hukum_digital' => 'text-slate-700 bg-slate-100',
+        default => 'text-teal-700 bg-teal-50',
+    };
+
+    $serialGroups = $serialItems
+        ->groupBy(fn ($item) => $item?->serial ?: 'serial_edulaw')
+        ->filter(fn ($items) => $items->isNotEmpty());
+
+    $topicGroups = $topicItems
+        ->groupBy(fn ($item) => $item?->topic ?: 'topik_multimedia')
+        ->filter(fn ($items) => $items->isNotEmpty());
 @endphp
 
 <main class="bg-[#f6f8fb] text-brand-ink">
@@ -256,6 +242,22 @@
                                     <p class="mt-3 line-clamp-2 min-h-12 text-sm leading-6 text-slate-600">
                                         {{ $itemDescription($item) }}
                                     </p>
+
+                                    @if ($item->display_serial || $item->display_topic)
+                                        <div class="mt-4 flex flex-wrap gap-2">
+                                            @if ($item->display_serial)
+                                                <span class="rounded-full bg-brand-mist px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-brand-navy">
+                                                    {{ $item->display_serial }}
+                                                </span>
+                                            @endif
+
+                                            @if ($item->display_topic)
+                                                <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-600">
+                                                    {{ $item->display_topic }}
+                                                </span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </a>
                         </article>
@@ -365,7 +367,7 @@
                             </h3>
 
                             <p class="mt-2 max-w-2xl text-sm leading-7 text-slate-600">
-                                Publikasikan konten bertipe Shorts atau Reels dari panel admin untuk mengisi section ini.
+                                Pilih section tampilan Video Singkat atau publikasikan konten bertipe Shorts dari panel admin untuk mengisi section ini.
                             </p>
                         </div>
                     </div>
@@ -390,33 +392,53 @@
                 </p>
             </div>
 
-            <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
-                @foreach ($serials as $serial)
-                    <article class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
-                        <span class="inline-flex rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] {{ $serial['accent'] }}">
-                            {{ $serial['label'] }}
-                        </span>
+            @if ($serialGroups->isNotEmpty())
+                <div class="mt-8 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($serialGroups as $serialKey => $items)
+                        @php
+                            $firstItem = $items->first();
+                            $serialTitle = $serialLabels->get($serialKey) ?: $firstItem?->display_serial ?: 'Serial Edulaw';
+                            $serialHref = filled($serialKey) && $serialKey !== 'serial_edulaw'
+                                ? route('multimedia.index', ['serial' => $serialKey])
+                                : route('multimedia.index', ['q' => $serialTitle]);
+                        @endphp
 
-                        <h3 class="mt-5 text-2xl font-black text-brand-ink">
-                            {{ $serial['title'] }}
-                        </h3>
+                        <article class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
+                            <span class="inline-flex rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] {{ $serialAccent($serialKey) }}">
+                                {{ $items->count() }} konten
+                            </span>
 
-                        <p class="mt-3 min-h-14 text-sm leading-7 text-slate-600">
-                            {{ $serial['description'] }}
-                        </p>
+                            <h3 class="mt-5 text-2xl font-black text-brand-ink">
+                                {{ $serialTitle }}
+                            </h3>
 
-                        <a
-                            href="{{ $serial['href'] }}"
-                            class="mt-6 inline-flex items-center gap-2 text-sm font-black text-brand-navy transition group-hover:text-brand-ink"
-                        >
-                            Lihat Serial
-                            <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </a>
-                    </article>
-                @endforeach
-            </div>
+                            <p class="mt-3 min-h-14 text-sm leading-7 text-slate-600">
+                                {{ $itemDescription($firstItem, 128) }}
+                            </p>
+
+                            <a
+                                href="{{ $serialHref }}"
+                                class="mt-6 inline-flex items-center gap-2 text-sm font-black text-brand-navy transition group-hover:text-brand-ink"
+                            >
+                                Lihat Serial
+                                <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </a>
+                        </article>
+                    @endforeach
+                </div>
+            @else
+                <div class="mt-8 rounded-3xl border border-dashed border-slate-300 bg-white p-8 text-center shadow-sm shadow-slate-900/5">
+                    <h3 class="text-lg font-black text-brand-ink">
+                        Serial multimedia belum tersedia
+                    </h3>
+
+                    <p class="mx-auto mt-2 max-w-2xl text-sm leading-7 text-slate-600">
+                        Pilih serial multimedia dan section tampilan Serial Edulaw dari panel admin untuk mengisi bagian ini.
+                    </p>
+                </div>
+            @endif
         </div>
     </section>
 
@@ -432,27 +454,47 @@
                 </h2>
             </div>
 
-            <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                @foreach ($topics as $topic)
-                    <article class="group flex items-center gap-4 rounded-3xl border border-slate-200 bg-[#f8fafc] p-5 transition hover:-translate-y-1 hover:bg-white hover:shadow-lg hover:shadow-slate-900/8">
-                        <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl {{ $topic['tone'] }}">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M5 5h14v14H5V5Zm4 4h6M9 13h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </span>
+            @if ($topicGroups->isNotEmpty())
+                <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($topicGroups as $topicKey => $items)
+                        @php
+                            $firstItem = $items->first();
+                            $topicTitle = $topicLabels->get($topicKey) ?: $firstItem?->display_topic ?: 'Topik Multimedia';
+                        @endphp
 
-                        <div>
-                            <h3 class="text-base font-black text-brand-ink">
-                                {{ $topic['title'] }}
-                            </h3>
+                        <a
+                            href="{{ filled($topicKey) && $topicKey !== 'topik_multimedia' ? route('multimedia.index', ['topic' => $topicKey]) : route('multimedia.index', ['q' => $topicTitle]) }}"
+                            class="group flex items-center gap-4 rounded-3xl border border-slate-200 bg-[#f8fafc] p-5 transition hover:-translate-y-1 hover:bg-white hover:shadow-lg hover:shadow-slate-900/8"
+                        >
+                            <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl {{ $topicTone($topicKey) }}">
+                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="M5 5h14v14H5V5Zm4 4h6M9 13h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                </svg>
+                            </span>
 
-                            <p class="mt-1 text-sm text-slate-500">
-                                Kumpulan video dan dokumentasi terkait.
-                            </p>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+                            <div>
+                                <h3 class="text-base font-black text-brand-ink">
+                                    {{ $topicTitle }}
+                                </h3>
+
+                                <p class="mt-1 text-sm text-slate-500">
+                                    {{ $items->count() }} konten terkait.
+                                </p>
+                            </div>
+                        </a>
+                    @endforeach
+                </div>
+            @else
+                <div class="mt-8 rounded-3xl border border-dashed border-slate-300 bg-[#f8fafc] p-8 text-center">
+                    <h3 class="text-lg font-black text-brand-ink">
+                        Topik multimedia belum tersedia
+                    </h3>
+
+                    <p class="mx-auto mt-2 max-w-2xl text-sm leading-7 text-slate-600">
+                        Pilih topik multimedia dan section tampilan Topik Multimedia dari panel admin untuk menampilkan daftar topik di sini.
+                    </p>
+                </div>
+            @endif
         </div>
     </section>
 

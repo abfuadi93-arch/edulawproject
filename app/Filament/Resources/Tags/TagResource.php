@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tags;
 
+use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Tags\Pages\CreateTag;
 use App\Filament\Resources\Tags\Pages\EditTag;
 use App\Filament\Resources\Tags\Pages\ListTags;
@@ -16,10 +17,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
-use Illuminate\Support\Str;
 
 class TagResource extends Resource
 {
+    use HasSlugFormBehavior;
+
     protected static ?string $model = Tag::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
@@ -38,23 +40,25 @@ class TagResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Data Tag')
+                Section::make('Informasi')
                     ->description('Tag digunakan lintas Insight dan Publikasi.')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama Tag')
+                            ->label('Nama')
                             ->required()
                             ->maxLength(255)
+                            ->placeholder('Nama tag')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state))),
+                            ->afterStateUpdated(static::syncSlugFrom()),
 
                         TextInput::make('slug')
                             ->label('Slug')
                             ->required()
                             ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->helperText('Slug digunakan sebagai identitas tag di website.'),
                     ])
-                    ->columns(1),
+                    ->columns(2),
             ]);
     }
 
@@ -63,7 +67,7 @@ class TagResource extends Resource
         return $table
             ->columns([
                 TextColumn::make('name')
-                    ->label('Nama Tag')
+                    ->label('Nama')
                     ->searchable()
                     ->sortable(),
 
@@ -74,6 +78,12 @@ class TagResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
                     ->dateTime('d M Y, H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

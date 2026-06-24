@@ -2,17 +2,27 @@
 
 namespace App\Filament\Resources\Publications\Pages;
 
+use App\Filament\Resources\Pages\EditRecordAndReturn;
 use App\Filament\Resources\Publications\PublicationResource;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditPublication extends EditRecord
+class EditPublication extends EditRecordAndReturn
 {
     protected static string $resource = PublicationResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('preview')
+                ->label('Pratinjau')
+                ->icon('heroicon-o-eye')
+                ->url(fn (): ?string => filled($this->record?->slug)
+                    ? route('publications.show', $this->record->slug)
+                    : null)
+                ->openUrlInNewTab()
+                ->visible(fn (): bool => filled($this->record?->slug)),
+
             DeleteAction::make(),
         ];
     }

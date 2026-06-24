@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
 use BackedEnum;
@@ -13,10 +14,11 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Textarea;
+use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
@@ -28,6 +30,8 @@ use Illuminate\Support\Str;
 
 class ProgramResource extends Resource
 {
+    use HasSlugFormBehavior;
+
     protected static ?string $model = Program::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -48,95 +52,139 @@ class ProgramResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Program')
-                    ->description('Isi identitas utama program Edulaw.')
+                Grid::make([
+                    'default' => 1,
+                    'lg' => 2,
+                ])
                     ->schema([
-                        TextInput::make('name')
-                            ->label('Nama Program')
-                            ->required()
-                            ->maxLength(255)
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(fn ($set, $state) => $set('slug', Str::slug($state))),
+                        Section::make('Informasi Utama')
+                            ->description('Informasi dasar program yang akan ditampilkan di website.')
+                            ->schema([
+                                TextInput::make('name')
+                                    ->label('1. Nama Program')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->placeholder('Nama program Edulaw')
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(static::syncSlugFrom())
+                                    ->columnSpanFull(),
 
-                        TextInput::make('slug')
-                            ->label('Slug')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255),
+                                TextInput::make('slug')
+                                    ->label('2. Slug')
+                                    ->required()
+                                    ->unique(ignoreRecord: true)
+                                    ->maxLength(255)
+                                    ->helperText('Slug digunakan sebagai alamat program di website.')
+                                    ->columnSpanFull(),
 
-                        Select::make('program_category_id')
-                            ->label('Kategori Program')
-                            ->relationship('category', 'name')
-                            ->searchable()
-                            ->preload()
-                            ->required(),
+                                Grid::make([
+                                    'default' => 1,
+                                    'md' => 2,
+                                ])
+                                    ->schema([
+                                        Select::make('program_category_id')
+                                            ->label('3. Kategori')
+                                            ->relationship('category', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->required()
+                                            ->placeholder('Pilih kategori program'),
 
-                        Textarea::make('short_description')
-                            ->label('Deskripsi Singkat')
-                            ->rows(4)
-                            ->maxLength(600)
-                            ->columnSpanFull(),
+                                        Select::make('format')
+                                            ->label('4. Format')
+                                            ->options([
+                                                'online' => 'Online',
+                                                'offline' => 'Offline',
+                                                'hybrid' => 'Hybrid',
+                                            ])
+                                            ->required(),
+                                    ])
+                                    ->columnSpanFull(),
 
-                        FileUpload::make('image')
-                            ->label('Gambar / Poster Program')
-                            ->image()
-                            ->disk('public')
-                            ->directory('programs')
-                            ->visibility('public')
-                            ->imageEditor()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(4096)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(1),
+                                Grid::make([
+                                    'default' => 1,
+                                    'md' => 2,
+                                ])
+                                    ->schema([
+                                        TextInput::make('level')
+                                            ->label('5. Level')
+                                            ->placeholder('Beginner, Intermediate, Advanced'),
 
-                Section::make('Detail Pelaksanaan')
-                    ->schema([
-                        Select::make('format')
-                            ->label('Format')
-                            ->options([
-                                'online' => 'Online',
-                                'offline' => 'Offline',
-                                'hybrid' => 'Hybrid',
+                                        TextInput::make('audience')
+                                            ->label('6. Audiens')
+                                            ->placeholder('Mahasiswa, umum, peneliti, praktisi'),
+                                    ])
+                                    ->columnSpanFull(),
+
+                                Textarea::make('short_description')
+                                    ->label('7. Ringkasan')
+                                    ->rows(6)
+                                    ->maxLength(300)
+                                    ->live()
+                                    ->placeholder('Tulis ringkasan program secara singkat dan jelas...')
+                                    ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                    ->columnSpanFull(),
+
+                                Select::make('status')
+                                    ->label('8. Status')
+                                    ->options([
+                                        'upcoming' => 'Upcoming',
+                                        'ongoing' => 'Ongoing',
+                                        'archived' => 'Archived',
+                                    ])
+                                    ->default('upcoming')
+                                    ->required()
+                                    ->helperText('Program akan disimpan sesuai status dan ditampilkan mengikuti aturan publikasi website.')
+                                    ->columnSpanFull(),
                             ])
-                            ->required(),
+                            ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                        TextInput::make('level')
-                            ->label('Level')
-                            ->placeholder('Beginner, Intermediate, Advanced'),
+                        Section::make('Jadwal dan Lokasi')
+                            ->description('Atur waktu, lokasi, dan akses pendaftaran program.')
+                            ->schema([
+                                Grid::make([
+                                    'default' => 1,
+                                    'md' => 2,
+                                ])
+                                    ->schema([
+                                        DateTimePicker::make('event_date')
+                                            ->label('Tanggal Mulai')
+                                            ->seconds(false)
+                                            ->helperText('Pilih tanggal dan waktu mulai program.'),
 
-                        TextInput::make('audience')
-                            ->label('Audiens')
-                            ->placeholder('Mahasiswa, umum, peneliti, praktisi'),
+                                        DateTimePicker::make('end_date')
+                                            ->label('Tanggal Selesai')
+                                            ->seconds(false)
+                                            ->helperText('Pilih tanggal dan waktu selesai program.'),
 
-                        DateTimePicker::make('event_date')
-                            ->label('Tanggal Mulai')
-                            ->seconds(false),
+                                        TextInput::make('location')
+                                            ->label('Lokasi')
+                                            ->maxLength(255)
+                                            ->columnSpanFull(),
 
-                        DateTimePicker::make('end_date')
-                            ->label('Tanggal Selesai')
-                            ->seconds(false),
+                                        TextInput::make('registration_link')
+                                            ->label('Link Pendaftaran')
+                                            ->url()
+                                            ->maxLength(255)
+                                            ->helperText('Link yang akan diarahkan ke peserta untuk mendaftar.')
+                                            ->columnSpanFull(),
 
-                        TextInput::make('location')
-                            ->label('Lokasi')
-                            ->maxLength(255),
+                                        TextInput::make('price_type')
+                                            ->label('Jenis Biaya')
+                                            ->placeholder('Gratis / Berbayar / Donasi'),
 
-                        TextInput::make('registration_link')
-                            ->label('Link Pendaftaran')
-                            ->url()
-                            ->maxLength(255),
-
-                        TextInput::make('price_type')
-                            ->label('Jenis Biaya')
-                            ->placeholder('Gratis / Berbayar / Donasi'),
-
-                        Toggle::make('certificate_available')
-                            ->label('Sertifikat Tersedia')
-                            ->default(false),
+                                        Toggle::make('certificate_available')
+                                            ->label('Sertifikat Tersedia')
+                                            ->helperText('Peserta akan menerima sertifikat.')
+                                            ->default(false),
+                                    ]),
+                            ]),
                     ])
-                    ->columns(1),
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
 
-                Section::make('Materi dan Narasumber')
+                Section::make('Poin Pembelajaran (Learning Points)')
+                    ->description('Tuliskan poin pembelajaran program secara ringkas dan jelas.')
                     ->schema([
                         Repeater::make('learning_points')
                             ->label('Learning Points')
@@ -145,57 +193,108 @@ class ProgramResource extends Resource
                                     ->label('Poin Pembelajaran')
                                     ->required(),
                             ])
+                            ->itemLabel(fn (array $state): ?string => filled($state['point'] ?? null)
+                                ? $state['point']
+                                : 'Poin pembelajaran')
+                            ->addActionLabel('Tambah Poin Pembelajaran')
+                            ->reorderable()
+                            ->collapsed()
                             ->columnSpanFull()
                             ->defaultItems(3),
-
-                        Repeater::make('speakers')
-                            ->label('Narasumber')
-                            ->schema([
-                                TextInput::make('name')
-                                    ->label('Nama')
-                                    ->required(),
-
-                                TextInput::make('title')
-                                    ->label('Jabatan/Afiliasi'),
-                            ])
-                            ->columns(1)
-                            ->columnSpanFull(),
-                    ]),
-
-                Section::make('Status dan SEO')
-                    ->schema([
-                        Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'upcoming' => 'Upcoming',
-                                'ongoing' => 'Ongoing',
-                                'archived' => 'Archived',
-                            ])
-                            ->default('upcoming')
-                            ->required(),
-
-                        Toggle::make('featured')
-                            ->label('Featured')
-                            ->default(false),
-
-                        TextInput::make('seo_title')
-                            ->label('SEO Title')
-                            ->maxLength(255),
-
-                        Textarea::make('seo_description')
-                            ->label('SEO Description')
-                            ->rows(3)
-                            ->maxLength(500),
-
-                        FileUpload::make('og_image')
-                            ->label('OG Image')
-                            ->image()
-                            ->disk('public')
-                            ->directory('seo/programs')
-                            ->visibility('public')
-                            ->imageEditor(),
                     ])
-                    ->columns(1),
+                    ->columnSpanFull(),
+
+                Grid::make([
+                    'default' => 1,
+                    'lg' => 2,
+                ])
+                    ->schema([
+                        Section::make('Narasumber')
+                            ->description('Tambahkan narasumber atau fasilitator program.')
+                            ->schema([
+                                Repeater::make('speakers')
+                                    ->label('Narasumber')
+                                    ->schema([
+                                        TextInput::make('name')
+                                            ->label('Nama')
+                                            ->required(),
+
+                                        TextInput::make('title')
+                                            ->label('Jabatan/Afiliasi'),
+                                    ])
+                                    ->columns(2)
+                                    ->itemLabel(fn (array $state): ?string => filled($state['name'] ?? null)
+                                        ? $state['name']
+                                        : 'Narasumber')
+                                    ->addActionLabel('Tambah Narasumber')
+                                    ->reorderable()
+                                    ->collapsed()
+                                    ->columnSpanFull(),
+                            ]),
+
+                        Section::make('Media Program')
+                            ->description('Unggah gambar utama atau poster program.')
+                            ->schema([
+                                FileUpload::make('image')
+                                    ->label('Gambar Sampul')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('programs')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->imagePreviewHeight('220')
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096)
+                                    ->helperText('Rekomendasi ukuran 1200 x 675 px. Format: JPG, PNG, WebP. Maks. 4 MB.')
+                                    ->columnSpanFull(),
+                            ]),
+                    ])
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
+
+                Grid::make([
+                    'default' => 1,
+                    'lg' => 2,
+                ])
+                    ->schema([
+                        Section::make('Publikasi')
+                            ->description('Atur penayangan program di website.')
+                            ->schema([
+                                Toggle::make('featured')
+                                    ->label('Tampilkan sebagai unggulan')
+                                    ->helperText('Aktifkan untuk menampilkan program sebagai pilihan utama.')
+                                    ->default(false),
+                            ])
+                            ->columns(1),
+
+                        Section::make('SEO (Opsional)')
+                            ->description('Optimasi mesin pencari untuk program ini.')
+                            ->schema([
+                                TextInput::make('seo_title')
+                                    ->label('Meta Title')
+                                    ->maxLength(60)
+                                    ->helperText('Maksimal 60 karakter.'),
+
+                                Textarea::make('seo_description')
+                                    ->label('Meta Description')
+                                    ->rows(3)
+                                    ->maxLength(180)
+                                    ->helperText('Maksimal 180 karakter termasuk spasi.'),
+
+                                FileUpload::make('og_image')
+                                    ->label('Gambar OG')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('seo/programs')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096),
+                            ])
+                            ->columns(1),
+                    ])
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
             ]);
     }
 
@@ -254,6 +353,12 @@ class ProgramResource extends Resource
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')
+                    ->dateTime('d M Y, H:i')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('updated_at')
+                    ->label('Diperbarui')
                     ->dateTime('d M Y, H:i')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),

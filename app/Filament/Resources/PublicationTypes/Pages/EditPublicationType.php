@@ -2,11 +2,11 @@
 
 namespace App\Filament\Resources\PublicationTypes\Pages;
 
+use App\Filament\Resources\Pages\EditRecordAndReturn;
 use App\Filament\Resources\PublicationTypes\PublicationTypeResource;
 use Filament\Actions\DeleteAction;
-use Filament\Resources\Pages\EditRecord;
 
-class EditPublicationType extends EditRecord
+class EditPublicationType extends EditRecordAndReturn
 {
     protected static string $resource = PublicationTypeResource::class;
 

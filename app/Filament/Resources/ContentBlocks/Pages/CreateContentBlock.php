@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\ContentBlocks\Pages;
 
 use App\Filament\Resources\ContentBlocks\ContentBlockResource;
-use Filament\Resources\Pages\CreateRecord;
+use App\Filament\Resources\Pages\CreateRecordAndReturn;
 
-class CreateContentBlock extends CreateRecord
+class CreateContentBlock extends CreateRecordAndReturn
 {
     protected static string $resource = ContentBlockResource::class;
 }
