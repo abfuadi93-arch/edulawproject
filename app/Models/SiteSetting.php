@@ -5,7 +5,6 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Throwable;
 
@@ -75,21 +74,21 @@ class SiteSetting extends Model
         }
 
         if (Str::startsWith($value, '/')) {
-            return url($value);
+            return $value;
         }
 
         if (Str::startsWith($value, 'storage/')) {
-            return asset($value);
+            return '/'.$value;
         }
 
         if (Str::startsWith($value, 'public/')) {
-            return Storage::disk('public')->url(Str::after($value, 'public/'));
+            return '/storage/'.ltrim(Str::after($value, 'public/'), '/');
         }
 
         if (Str::startsWith($value, ['images/', 'build/', 'favicon'])) {
-            return asset($value);
+            return '/'.$value;
         }
 
-        return Storage::disk('public')->url($value);
+        return '/storage/'.ltrim($value, '/');
     }
 }
