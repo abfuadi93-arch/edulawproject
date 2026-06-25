@@ -43,6 +43,13 @@ class Author extends Model
         'is_active' => 'boolean',
     ];
 
+    protected static function booted(): void
+    {
+        static::saved(function (Author $author): void {
+            $author->syncLinkedUserAvatar();
+        });
+    }
+
     public static function uniqueSlugFor(string $name, ?int $ignoreId = null): string
     {
         $baseSlug = Str::slug($name) ?: 'profil';
@@ -71,6 +78,34 @@ class Author extends Model
     public function getProfileTypeLabelAttribute(): ?string
     {
         return self::PROFILE_TYPES[$this->profile_type] ?? null;
+    }
+
+    public function getPhotoUrlAttribute(): ?string
+    {
+        return SiteSetting::assetUrl($this->attributes['photo'] ?? null);
+    }
+
+    public function syncLinkedUserAvatar(): void
+    {
+        if (! $this->user_id) {
+            return;
+        }
+
+        $user = $this->user()->first();
+
+        if (! $user) {
+            return;
+        }
+
+        if (filled($this->photo) && $user->avatar !== $this->photo) {
+            $user->forceFill(['avatar' => $this->photo])->saveQuietly();
+
+            return;
+        }
+
+        if (blank($this->photo) && $this->wasChanged('photo') && $user->avatar === $this->getOriginal('photo')) {
+            $user->forceFill(['avatar' => null])->saveQuietly();
+        }
     }
 
     public function user(): BelongsTo

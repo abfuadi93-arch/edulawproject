@@ -8,7 +8,6 @@ use App\Filament\Resources\Publications\PublicationResource;
 use App\Models\Insight;
 use App\Models\Program;
 use App\Models\Publication;
-use App\Models\SiteSetting;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Str;
 
@@ -33,7 +32,7 @@ class EdulawQuickActions extends Widget
                 ->map(fn (string $part): string => Str::substr($part, 0, 1))
                 ->take(2)
                 ->implode(''),
-            'userAvatarUrl' => SiteSetting::assetUrl($user?->avatar),
+            'userAvatarUrl' => $user?->avatar_url,
             'insightCreateUrl' => InsightResource::getUrl('create'),
             'publicationCreateUrl' => PublicationResource::getUrl('create'),
             'programCreateUrl' => ProgramResource::getUrl('create'),

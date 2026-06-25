@@ -114,7 +114,9 @@ class UserResource extends Resource
             ->columns([
                 ImageColumn::make('avatar')
                     ->label('Avatar')
-                    ->circular(),
+                    ->state(fn (User $record): ?string => $record->avatar_url)
+                    ->circular()
+                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
 
                 TextColumn::make('name')
                     ->label('Nama')
