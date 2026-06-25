@@ -12,11 +12,11 @@ use Filament\Widgets\StatsOverviewWidget\Stat;
 
 class AdminStatsOverview extends StatsOverviewWidget
 {
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = -20;
 
-    protected function getColumns(): int | array | null
+    protected function getColumns(): int|array|null
     {
         return [
             'md' => 2,

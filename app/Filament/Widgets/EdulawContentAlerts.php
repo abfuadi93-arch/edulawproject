@@ -12,7 +12,7 @@ class EdulawContentAlerts extends Widget
 {
     protected string $view = 'filament.widgets.edulaw-content-alerts';
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'md' => 6,
         'xl' => 6,
     ];

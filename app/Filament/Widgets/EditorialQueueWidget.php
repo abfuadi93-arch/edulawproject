@@ -10,7 +10,7 @@ class EditorialQueueWidget extends Widget
 {
     protected string $view = 'filament.widgets.editorial-queue';
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'md' => 6,
         'xl' => 6,
     ];

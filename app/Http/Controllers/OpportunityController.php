@@ -12,7 +12,7 @@ class OpportunityController extends Controller
         $query = Opportunity::query()
             ->whereIn('status', ['open', 'closed'])
             ->orderByRaw("CASE WHEN status = 'open' THEN 0 ELSE 1 END")
-            ->orderByRaw("CASE WHEN deadline IS NULL THEN 1 ELSE 0 END")
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline');
 
         if ($request->filled('q')) {
@@ -61,7 +61,7 @@ class OpportunityController extends Controller
         $featuredOpportunity = Opportunity::query()
             ->where('status', 'open')
             ->where('featured', true)
-            ->orderByRaw("CASE WHEN deadline IS NULL THEN 1 ELSE 0 END")
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
             ->first();
 

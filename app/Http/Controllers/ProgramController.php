@@ -49,7 +49,7 @@ class ProgramController extends Controller
                 ->filter()
                 ->unique()
                 ->values(),
-                    ]);
+        ]);
     }
 
     public function show(string $slug)

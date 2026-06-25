@@ -35,7 +35,9 @@ Route::get('/program/{slug}', [ProgramController::class, 'show'])->name('program
 
 Route::get('/opportunities', [OpportunityController::class, 'index'])->name('opportunities.index');
 Route::redirect('/peluang', '/opportunities', 301);
-Route::get('/peluang/{slug}', function () {return redirect('/opportunities', 301);});
+Route::get('/peluang/{slug}', function () {
+    return redirect('/opportunities', 301);
+});
 
 Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');
 Route::get('/search', [SearchController::class, 'index'])->name('search.index');

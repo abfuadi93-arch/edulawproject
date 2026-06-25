@@ -221,7 +221,7 @@ class MultimediaResource extends Resource
                             ->helperText('Rekomendasi format JPG, PNG, atau WebP. Maksimal 5 MB.')
                             ->columnSpanFull(),
                     ])
-                    ->columnSpanFull()
+                    ->columnSpanFull(),
             ]);
     }
 

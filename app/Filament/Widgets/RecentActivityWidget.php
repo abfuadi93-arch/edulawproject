@@ -19,7 +19,7 @@ class RecentActivityWidget extends Widget
 {
     protected string $view = 'filament.widgets.recent-activity';
 
-    protected int | string | array $columnSpan = [
+    protected int|string|array $columnSpan = [
         'md' => 6,
         'xl' => 6,
     ];
