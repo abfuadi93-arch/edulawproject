@@ -9,7 +9,7 @@
     $heroDescription = $hero?->body ?? 'Edulaw Project menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum dalam satu platform digital yang terintegrasi.';
     $primaryUrl = $hero?->resolved_url ?? url('/insight');
     $primaryLabel = $hero?->url_label ?? 'Jelajahi Insight';
-    $secondaryUrl = \App\Models\SiteSetting::resolveUrl($heroMeta['secondary_url'] ?? null, url('/program'));
+    $secondaryUrl = \App\Support\EdulawSite::resolveUrl($heroMeta['secondary_url'] ?? null, url('/program'));
     $secondaryLabel = $heroMeta['secondary_label'] ?? 'Lihat Program';
 
     $fallbackValues = [

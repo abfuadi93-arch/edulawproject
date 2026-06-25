@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -51,7 +52,7 @@ class Opportunity extends Model
 
     public function getPosterUrlAttribute(): ?string
     {
-        return SiteSetting::assetUrl($this->attributes['poster'] ?? null);
+        return EdulawSite::assetUrl($this->attributes['poster'] ?? null);
     }
 
     public function getDisplayTypeAttribute(): string

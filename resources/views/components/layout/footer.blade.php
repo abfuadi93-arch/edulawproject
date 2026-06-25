@@ -1,16 +1,16 @@
 @php
     $siteSettings = $siteSettings ?? [];
     $siteName = $siteSettings['site.name'] ?? 'Edulaw Project';
-    $footerLogo = \App\Models\SiteSetting::assetUrl($siteSettings['site.footer_logo'] ?? null, 'images/logo/edulaw-logo.png');
+    $footerLogo = \App\Support\EdulawSite::assetUrl($siteSettings['site.footer_logo'] ?? null, 'images/logo/edulaw-logo.png');
     $siteDescription = $siteSettings['site.short_description'] ?? 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.';
-    $tagline = $siteSettings['site.tagline'] ?? '#TemanBelajarHukumTerbaikmu';
+    $tagline = $siteSettings['site.tagline'] ?? 'Equal. Educative. Embrace.';
     $email = $siteSettings['contact.email'] ?? 'hello@edulawproject.id';
     $whatsappLabel = $siteSettings['contact.whatsapp_label'] ?? '0815-2992-7677';
-    $whatsappUrl = \App\Models\SiteSetting::resolveUrl($siteSettings['contact.whatsapp_url'] ?? null, 'https://wa.me/6281529927677');
+    $whatsappUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['contact.whatsapp_url'] ?? null, 'https://wa.me/6281529927677');
     $location = $siteSettings['contact.location'] ?? 'Jakarta, Indonesia';
-    $instagramUrl = \App\Models\SiteSetting::resolveUrl($siteSettings['social.instagram_url'] ?? null, 'https://www.instagram.com/edulaw.project');
-    $youtubeUrl = \App\Models\SiteSetting::resolveUrl($siteSettings['social.youtube_url'] ?? null, 'https://www.youtube.com/@EdulawProject');
-    $linkedinUrl = \App\Models\SiteSetting::resolveUrl($siteSettings['social.linkedin_url'] ?? null, 'https://www.linkedin.com/company/edulaw-project/');
+    $instagramUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['social.instagram_url'] ?? null, 'https://www.instagram.com/edulaw.project');
+    $youtubeUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['social.youtube_url'] ?? null, 'https://www.youtube.com/@EdulawProject');
+    $linkedinUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['social.linkedin_url'] ?? null, 'https://www.linkedin.com/company/edulaw-project/');
 @endphp
 
 <footer class="border-t border-slate-200 bg-white text-brand-ink">

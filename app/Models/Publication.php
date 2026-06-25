@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Services\PdfCoverGenerator;
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -87,13 +88,13 @@ class Publication extends Model
 
     public function getCoverImageUrlAttribute(): ?string
     {
-        return SiteSetting::assetUrl($this->attributes['cover_image'] ?? null);
+        return EdulawSite::assetUrl($this->attributes['cover_image'] ?? null);
     }
 
     public function getDownloadUrlAttribute(): ?string
     {
-        return SiteSetting::assetUrl($this->attributes['pdf_file'] ?? null)
-            ?: SiteSetting::resolveUrl($this->attributes['external_url'] ?? null);
+        return EdulawSite::assetUrl($this->attributes['pdf_file'] ?? null)
+            ?: EdulawSite::resolveUrl($this->attributes['external_url'] ?? null);
     }
 
     private function needsPdfCover(): bool

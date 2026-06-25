@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -152,7 +153,7 @@ class Multimedia extends Model
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        return SiteSetting::assetUrl($this->attributes['thumbnail'] ?? null);
+        return EdulawSite::assetUrl($this->attributes['thumbnail'] ?? null);
     }
 
     public function getDisplayTypeAttribute(): string
@@ -207,7 +208,7 @@ class Multimedia extends Model
         $type = self::normalizeType($this->attributes['type'] ?? null);
 
         if (in_array($type, self::GALLERY_TYPES, true) && filled($this->attributes['photo_count'] ?? null)) {
-            return number_format((int) $this->attributes['photo_count']) . ' foto';
+            return number_format((int) $this->attributes['photo_count']).' foto';
         }
 
         if ($type === 'poster') {

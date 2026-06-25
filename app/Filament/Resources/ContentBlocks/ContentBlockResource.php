@@ -23,7 +23,11 @@ use Filament\Tables\Table;
 
 class ContentBlockResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = ContentBlock::class;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Pengaturan Website';
 
@@ -38,6 +42,11 @@ class ContentBlockResource extends Resource
     protected static ?int $navigationSort = 2;
 
     protected static ?string $recordTitleAttribute = 'title';
+
+    public static function canAccess(): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {

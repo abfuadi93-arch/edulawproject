@@ -2,10 +2,10 @@
 
 namespace App\Providers;
 
-use App\Models\SiteSetting;
-use Illuminate\Support\ServiceProvider;
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\ServiceProvider;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -27,7 +27,7 @@ class AppServiceProvider extends ServiceProvider
         View::composer('*', function ($view): void {
             static $siteSettings = null;
 
-            $siteSettings ??= SiteSetting::publicValues();
+            $siteSettings ??= EdulawSite::settings();
 
             $view->with('siteSettings', $siteSettings);
         });

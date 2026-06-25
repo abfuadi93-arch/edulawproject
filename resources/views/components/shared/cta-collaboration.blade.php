@@ -20,7 +20,7 @@
     $resolvedBody = $body ?? $block?->body ?? 'Edulaw Project terbuka untuk kerja sama program edukasi hukum, diskusi publik, riset, publikasi, pelatihan, dan pengembangan ekosistem literasi hukum.';
     $resolvedPrimaryUrl = $primaryUrl ?? $block?->resolved_url ?? route('collaboration.index');
     $resolvedPrimaryLabel = $primaryLabel ?? $block?->url_label ?? 'Ajukan Kerja Sama';
-    $resolvedSecondaryUrl = $secondaryUrl ?? \App\Models\SiteSetting::resolveUrl($meta['secondary_url'] ?? null, route('programs.index'));
+    $resolvedSecondaryUrl = $secondaryUrl ?? \App\Support\EdulawSite::resolveUrl($meta['secondary_url'] ?? null, route('programs.index'));
     $resolvedSecondaryLabel = $secondaryLabel ?? $meta['secondary_label'] ?? 'Lihat Program';
     $resolvedBackgroundAlt = $backgroundAlt ?? $block?->image_alt ?? '';
 @endphp

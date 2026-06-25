@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Collection;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -75,11 +76,11 @@ class ContentBlock extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        return SiteSetting::assetUrl($this->image);
+        return EdulawSite::assetUrl($this->image);
     }
 
     public function getResolvedUrlAttribute(): ?string
     {
-        return SiteSetting::resolveUrl($this->url);
+        return EdulawSite::resolveUrl($this->url);
     }
 }

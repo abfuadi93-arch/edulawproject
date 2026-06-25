@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\ContentBlock;
 use App\Models\Insight;
 use App\Models\Multimedia;
 use App\Models\Opportunity;
 use App\Models\Program;
 use App\Models\Publication;
+use App\Support\EdulawSite;
 use Illuminate\View\View;
 
 class HomeController extends Controller
@@ -60,11 +60,11 @@ class HomeController extends Controller
             ->limit(3)
             ->get();
 
-        $homeHero = ContentBlock::firstForArea('home.hero');
-        $homeValues = ContentBlock::forArea('home.values');
-        $homeAudienceIntro = ContentBlock::firstForArea('home.audience_intro');
-        $homeAudiences = ContentBlock::forArea('home.audience');
-        $sharedCta = ContentBlock::firstForArea('shared.cta');
+        $homeHero = EdulawSite::block('home.hero');
+        $homeValues = EdulawSite::blocks('home.values');
+        $homeAudienceIntro = EdulawSite::block('home.audience_intro');
+        $homeAudiences = EdulawSite::blocks('home.audience');
+        $sharedCta = EdulawSite::block('shared.cta');
 
         return view('home', compact(
             'featuredInsight',

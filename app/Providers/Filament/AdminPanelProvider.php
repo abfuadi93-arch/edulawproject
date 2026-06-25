@@ -2,7 +2,7 @@
 
 namespace App\Providers\Filament;
 
-use App\Models\SiteSetting;
+use App\Support\EdulawSite;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -32,8 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->login()
             ->brandName('Edulaw Dashboard')
             ->brandLogo(function (): HtmlString {
-                $siteSettings = SiteSetting::publicValues();
-                $footerLogo = SiteSetting::assetUrl($siteSettings['site.footer_logo'] ?? null, 'images/logo/edulaw-logo.png');
+                $footerLogo = EdulawSite::assetUrl(EdulawSite::value('site.footer_logo'), 'images/logo/edulaw-logo.png');
 
                 return new HtmlString('
                     <span class="edulaw-admin-brand-logo-wrap">
@@ -57,7 +56,6 @@ class AdminPanelProvider extends PanelProvider
                 'Konten Website',
                 'Interaksi',
                 'Referensi Konten',
-                'Pengaturan Website',
                 'Akses Admin',
             ])
             ->userMenuItems([

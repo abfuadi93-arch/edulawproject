@@ -1,5 +1,5 @@
 @php
-    $settings = \App\Models\SiteSetting::publicValues();
+    $settings = $siteSettings ?? \App\Support\EdulawSite::settings();
 
     $siteName = $siteName
         ?? ($settings['site.name'] ?? 'Edulaw Project');
@@ -16,7 +16,7 @@
         ?? ($settings['site.footer_logo'] ?? null);
 
     $logo = $logo
-        ?? \App\Models\SiteSetting::assetUrl($logoValue, 'images/logo/edulaw-logo.png');
+        ?? \App\Support\EdulawSite::assetUrl($logoValue, 'images/logo/edulaw-logo.png');
 
     $navItems = [
         [

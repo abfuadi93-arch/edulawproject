@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
-use Illuminate\Support\Str;
-use Throwable;
 
 class SiteSetting extends Model
 {
@@ -30,65 +28,16 @@ class SiteSetting extends Model
 
     public static function publicValues(): array
     {
-        try {
-            if (! Schema::hasTable('site_settings')) {
-                return [];
-            }
-
-            return static::query()
-                ->where('is_public', true)
-                ->orderBy('group')
-                ->orderBy('sort_order')
-                ->pluck('value', 'key')
-                ->all();
-        } catch (Throwable) {
-            return [];
-        }
+        return EdulawSite::settings();
     }
 
     public static function resolveUrl(?string $value, ?string $default = null): ?string
     {
-        $value = filled($value) ? trim($value) : $default;
-
-        if (! filled($value)) {
-            return null;
-        }
-
-        if (Str::startsWith($value, ['http://', 'https://', 'mailto:', 'tel:', '#'])) {
-            return $value;
-        }
-
-        return url(Str::startsWith($value, '/') ? $value : '/'.$value);
+        return EdulawSite::resolveUrl($value, $default);
     }
 
     public static function assetUrl(?string $value, ?string $default = null): ?string
     {
-        $value = filled($value) ? trim($value) : $default;
-
-        if (! filled($value)) {
-            return null;
-        }
-
-        if (Str::startsWith($value, ['http://', 'https://'])) {
-            return $value;
-        }
-
-        if (Str::startsWith($value, '/')) {
-            return $value;
-        }
-
-        if (Str::startsWith($value, 'storage/')) {
-            return '/'.$value;
-        }
-
-        if (Str::startsWith($value, 'public/')) {
-            return '/storage/'.ltrim(Str::after($value, 'public/'), '/');
-        }
-
-        if (Str::startsWith($value, ['images/', 'build/', 'favicon'])) {
-            return '/'.$value;
-        }
-
-        return '/storage/'.ltrim($value, '/');
+        return EdulawSite::assetUrl($value, $default);
     }
 }

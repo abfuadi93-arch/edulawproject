@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -82,7 +83,7 @@ class Author extends Model
 
     public function getPhotoUrlAttribute(): ?string
     {
-        return SiteSetting::assetUrl($this->attributes['photo'] ?? null);
+        return EdulawSite::assetUrl($this->attributes['photo'] ?? null);
     }
 
     public function syncLinkedUserAvatar(): void

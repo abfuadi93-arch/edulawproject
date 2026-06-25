@@ -22,7 +22,11 @@ use Filament\Tables\Table;
 
 class SiteSettingResource extends Resource
 {
+    protected static bool $isDiscovered = false;
+
     protected static ?string $model = SiteSetting::class;
+
+    protected static bool $shouldRegisterNavigation = false;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Pengaturan Website';
 
@@ -37,6 +41,11 @@ class SiteSettingResource extends Resource
     protected static ?int $navigationSort = 1;
 
     protected static ?string $recordTitleAttribute = 'label';
+
+    public static function canAccess(): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {
