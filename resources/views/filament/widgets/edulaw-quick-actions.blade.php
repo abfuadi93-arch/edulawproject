@@ -4,10 +4,16 @@
             <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
                 <div class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-xl border border-blue-100 bg-white text-2xl font-black text-blue-700 shadow-sm shadow-blue-900/5">
                     @if ($userAvatarUrl)
-                        <img src="{{ $userAvatarUrl }}" alt="{{ $userName }}" class="h-full w-full object-cover">
-                    @else
-                        {{ $userInitials }}
+                        <img
+                            src="{{ $userAvatarUrl }}"
+                            alt="{{ $userName }}"
+                            class="h-full w-full object-cover"
+                            onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
+                        >
                     @endif
+                    <span @class(['hidden' => filled($userAvatarUrl)])>
+                        {{ $userInitials }}
+                    </span>
                 </div>
 
                 <div>

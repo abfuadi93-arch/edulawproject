@@ -17,8 +17,8 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
@@ -71,7 +71,7 @@ class UserResource extends Resource
                             ->label('Foto Profil / Avatar')
                             ->image()
                             ->disk('public')
-                            ->directory('users')
+                            ->directory('avatars')
                             ->visibility('public')
                             ->imageEditor(),
 
@@ -111,11 +111,10 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('avatar')
+                ViewColumn::make('avatar')
                     ->label('Avatar')
-                    ->state(fn (User $record): ?string => $record->avatar_url)
-                    ->circular()
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
+                    ->view('filament.tables.user-avatar')
+                    ->viewData(fn (User $record): array => ['record' => $record]),
 
                 TextColumn::make('name')
                     ->label('Nama')

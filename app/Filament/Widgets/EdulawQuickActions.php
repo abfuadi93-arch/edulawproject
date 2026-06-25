@@ -9,13 +9,12 @@ use App\Models\Insight;
 use App\Models\Program;
 use App\Models\Publication;
 use Filament\Widgets\Widget;
-use Illuminate\Support\Str;
 
 class EdulawQuickActions extends Widget
 {
     protected string $view = 'filament.widgets.edulaw-quick-actions';
 
-    protected int | string | array $columnSpan = 'full';
+    protected int|string|array $columnSpan = 'full';
 
     protected static ?int $sort = -30;
 
@@ -26,12 +25,7 @@ class EdulawQuickActions extends Widget
 
         return [
             'userName' => $userName,
-            'userInitials' => Str::of($userName)
-                ->explode(' ')
-                ->filter()
-                ->map(fn (string $part): string => Str::substr($part, 0, 1))
-                ->take(2)
-                ->implode(''),
+            'userInitials' => $user?->initials ?? 'AD',
             'userAvatarUrl' => $user?->avatar_url,
             'insightCreateUrl' => InsightResource::getUrl('create'),
             'publicationCreateUrl' => PublicationResource::getUrl('create'),

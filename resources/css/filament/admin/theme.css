@@ -93,9 +93,9 @@
 .fi-sidebar-group-label {
     color: #ffffff;
     font-size: 0.72rem;
-    font-weight: 900;
+    font-weight: 600;
     letter-spacing: 0.09em;
-    opacity: 0.92;
+    opacity: 0.86;
 }
 
 .fi-sidebar-item-btn {
@@ -110,7 +110,7 @@
 
 .fi-sidebar-item-label {
     color: #f8fafc;
-    font-weight: 800;
+    font-weight: 500;
 }
 
 .fi-sidebar-item-btn:hover {
@@ -129,10 +129,14 @@
 }
 
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon,
-.fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label,
 .fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
 .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
     color: #ffffff;
+}
+
+.fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
+    color: #ffffff;
+    font-weight: 600;
 }
 
 .fi-section,
