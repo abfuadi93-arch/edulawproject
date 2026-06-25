@@ -34,8 +34,6 @@ class AuthorResource extends Resource
 
     protected static ?string $model = Author::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Profil & Tim';
-
     protected static ?string $navigationLabel = 'Profil';
 
     protected static ?string $modelLabel = 'Profil';
@@ -45,6 +43,16 @@ class AuthorResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?int $navigationSort = 4;
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return false;
+    }
+
+    public static function canAccess(): bool
+    {
+        return false;
+    }
 
     public static function form(Schema $schema): Schema
     {

@@ -55,7 +55,6 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([
                 'Konten Website',
-                'Profil & Tim',
                 'Interaksi',
                 'Referensi Konten',
                 'Pengaturan Website',

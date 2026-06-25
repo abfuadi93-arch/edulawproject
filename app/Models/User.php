@@ -109,11 +109,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
 
         $profile->forceFill([
             'user_id' => $this->id,
-            'email' => $profile->email ?: $this->email,
-            'bio' => $profile->bio ?: $this->bio,
+            'name' => $this->name,
+            'email' => $this->email,
+            'bio' => $this->bio,
             'photo' => $profile->photo ?: $this->avatar,
-            'institution' => $profile->institution ?: $this->institution,
-            'position' => $profile->position ?: $this->position,
+            'institution' => $this->institution,
+            'position' => $this->position,
             'profile_type' => $profile->profile_type ?: 'team',
             'is_active' => $profile->is_active ?? ($this->is_active !== false),
         ])->saveQuietly();
@@ -126,11 +127,12 @@ class User extends Authenticatable implements FilamentUser, HasAvatar
         $profile = $this->ensureProfile();
 
         $profile->forceFill([
-            'email' => $profile->email ?: $this->email,
-            'bio' => $profile->bio ?: $this->bio,
-            'photo' => $profile->photo ?: $this->avatar,
-            'institution' => $profile->institution ?: $this->institution,
-            'position' => $profile->position ?: $this->position,
+            'name' => $this->name,
+            'email' => $this->email,
+            'bio' => $this->bio,
+            'photo' => $this->avatar ?: $profile->photo,
+            'institution' => $this->institution,
+            'position' => $this->position,
             'is_active' => $this->is_active !== false,
         ])->saveQuietly();
     }

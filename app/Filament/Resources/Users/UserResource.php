@@ -44,7 +44,7 @@ class UserResource extends Resource
         return $schema
             ->components([
                 Section::make('Informasi Akun Admin')
-                    ->description('Kelola akun login panel admin. Identitas publik dikelola sebagai Profil dan otomatis terhubung ke akun ini.')
+                    ->description('Kelola akun login, foto, dan identitas dasar admin.')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama Akun')
@@ -68,7 +68,7 @@ class UserResource extends Resource
                             ->maxLength(255),
 
                         FileUpload::make('avatar')
-                            ->label('Avatar Akun')
+                            ->label('Foto Profil / Avatar')
                             ->image()
                             ->disk('public')
                             ->directory('users')
@@ -77,15 +77,14 @@ class UserResource extends Resource
 
                         TextInput::make('institution')
                             ->label('Institusi')
-                            ->maxLength(255)
-                            ->helperText('Untuk profil publik, gunakan menu Profil.'),
+                            ->maxLength(255),
 
                         TextInput::make('position')
                             ->label('Posisi')
                             ->maxLength(255),
 
                         Textarea::make('bio')
-                            ->label('Catatan Internal')
+                            ->label('Bio / Catatan')
                             ->rows(4)
                             ->columnSpanFull(),
 
@@ -133,12 +132,6 @@ class UserResource extends Resource
                     ->badge()
                     ->separator(',')
                     ->limitList(3),
-
-                TextColumn::make('profile.name')
-                    ->label('Profil')
-                    ->searchable()
-                    ->placeholder('Profil otomatis dibuat')
-                    ->description(fn (User $record): ?string => $record->profile?->affiliation_label),
 
                 TextColumn::make('institution')
                     ->label('Institusi')
