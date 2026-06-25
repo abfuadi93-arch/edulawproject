@@ -8,7 +8,6 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -18,7 +17,6 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
-use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Support\Facades\Hash;
@@ -44,7 +42,7 @@ class UserResource extends Resource
         return $schema
             ->components([
                 Section::make('Informasi Akun Admin')
-                    ->description('Kelola akun login, foto, dan identitas dasar admin.')
+                    ->description('Kelola akun login dan identitas dasar admin.')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama Akun')
@@ -66,14 +64,6 @@ class UserResource extends Resource
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $operation): bool => $operation === 'create')
                             ->maxLength(255),
-
-                        FileUpload::make('avatar')
-                            ->label('Foto Profil / Avatar')
-                            ->image()
-                            ->disk('public')
-                            ->directory('avatars')
-                            ->visibility('public')
-                            ->imageEditor(),
 
                         TextInput::make('institution')
                             ->label('Institusi')
@@ -111,11 +101,6 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ViewColumn::make('avatar')
-                    ->label('Avatar')
-                    ->view('filament.tables.user-avatar')
-                    ->viewData(fn (User $record): array => ['record' => $record]),
-
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

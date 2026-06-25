@@ -117,7 +117,6 @@ class RelevantDataSeeder extends Seeder
                 'name' => $row['name'] ?? null,
                 'email' => $row['email'] ?? null,
                 'password' => $row['password'] ?? null,
-                'avatar' => $row['author_photo'] ?? null,
                 'bio' => $row['author_bio'] ?? null,
                 'institution' => $row['author_affiliation'] ?: 'Edulaw Project',
                 'position' => $row['role'] ?? null,
@@ -134,7 +133,6 @@ class RelevantDataSeeder extends Seeder
                 'name' => $row['full_name'] ?: trim(($row['first_name'] ?? '').' '.($row['last_name'] ?? '')),
                 'email' => $row['email'] ?? null,
                 'password' => $row['password'] ?? null,
-                'avatar' => $row['image'] ?? null,
                 'bio' => $row['address'] ?? null,
                 'institution' => 'Edulaw Project',
                 'position' => $row['role'] ?? null,
@@ -160,7 +158,6 @@ class RelevantDataSeeder extends Seeder
         $values = [
             'name' => $name,
             'password' => $data['password'] ?: ($existing->password ?? null),
-            'avatar' => $data['avatar'] ?? ($existing->avatar ?? null),
             'bio' => $data['bio'] ?? ($existing->bio ?? null),
             'institution' => $data['institution'] ?? ($existing->institution ?? null),
             'position' => isset($data['position']) ? Str::headline($data['position']) : ($existing->position ?? null),

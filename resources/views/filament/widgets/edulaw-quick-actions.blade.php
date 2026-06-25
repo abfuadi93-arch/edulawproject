@@ -1,32 +1,16 @@
 <x-filament-widgets::widget>
     <section class="edulaw-admin-card overflow-hidden">
         <div class="grid gap-6 bg-gradient-to-r from-blue-50 via-white to-slate-50 p-6 md:grid-cols-[1fr_auto] md:items-center">
-            <div class="flex flex-col gap-4 sm:flex-row sm:items-center">
-                <div class="grid h-24 w-24 shrink-0 place-items-center overflow-hidden rounded-xl border border-blue-100 bg-white text-2xl font-black text-blue-700 shadow-sm shadow-blue-900/5">
-                    @if ($userAvatarUrl)
-                        <img
-                            src="{{ $userAvatarUrl }}"
-                            alt="{{ $userName }}"
-                            class="h-full w-full object-cover"
-                            onerror="this.classList.add('hidden'); this.nextElementSibling.classList.remove('hidden');"
-                        >
-                    @endif
-                    <span @class(['hidden' => filled($userAvatarUrl)])>
-                        {{ $userInitials }}
-                    </span>
-                </div>
-
-                <div>
-                    <p class="text-xs font-black uppercase tracking-[0.16em] text-blue-600">
-                        Admin Dashboard
-                    </p>
-                    <h2 class="mt-2 text-xl font-black tracking-tight text-slate-950">
-                        Selamat datang kembali, {{ $userName }}.
-                    </h2>
-                    <p class="mt-2 max-w-2xl text-sm leading-6 edulaw-admin-muted">
-                        Gunakan dashboard ini untuk menerbitkan insight, mengunggah publikasi, memantau program, dan menjaga kualitas konten Edulaw Project.
-                    </p>
-                </div>
+            <div>
+                <p class="text-xs font-black uppercase tracking-[0.16em] text-blue-600">
+                    Admin Dashboard
+                </p>
+                <h2 class="mt-2 text-xl font-black tracking-tight text-slate-950">
+                    Selamat datang kembali, {{ $userName }}.
+                </h2>
+                <p class="mt-2 max-w-2xl text-sm leading-6 edulaw-admin-muted">
+                    Gunakan dashboard ini untuk menerbitkan insight, mengunggah publikasi, memantau program, dan menjaga kualitas konten Edulaw Project.
+                </p>
             </div>
 
             <div class="grid gap-2 sm:min-w-56">

@@ -23,8 +23,6 @@ class UsersTable
                 TextColumn::make('email_verified_at')
                     ->dateTime()
                     ->sortable(),
-                TextColumn::make('avatar')
-                    ->searchable(),
                 TextColumn::make('institution')
                     ->searchable(),
                 TextColumn::make('position')

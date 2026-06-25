@@ -25,8 +25,6 @@ class EdulawQuickActions extends Widget
 
         return [
             'userName' => $userName,
-            'userInitials' => $user?->initials ?? 'AD',
-            'userAvatarUrl' => $user?->avatar_url,
             'insightCreateUrl' => InsightResource::getUrl('create'),
             'publicationCreateUrl' => PublicationResource::getUrl('create'),
             'programCreateUrl' => ProgramResource::getUrl('create'),
