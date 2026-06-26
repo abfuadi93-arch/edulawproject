@@ -23,7 +23,7 @@ class SiteContentSeeder extends Seeder
             ['group' => 'Identitas', 'key' => 'site.short_description', 'label' => 'Deskripsi Singkat', 'type' => 'textarea', 'value' => 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.', 'sort_order' => 4],
             ['group' => 'Identitas', 'key' => 'site.tagline', 'label' => 'Tagline', 'value' => '#TemanBelajarHukumTerbaikmu', 'sort_order' => 5],
             ['group' => 'Identitas', 'key' => 'site.nav_subtitle', 'label' => 'Subtitle Navbar', 'value' => 'Legal Education · Research · Policy', 'sort_order' => 6],
-            ['group' => 'Aset', 'key' => 'site.logo', 'label' => 'Logo Navbar', 'type' => 'image', 'value' => 'images/logo/edulaw-logo.png', 'sort_order' => 10],
+            ['group' => 'Aset', 'key' => 'site.logo', 'label' => 'Logo Navbar', 'type' => 'image', 'value' => 'images/logo/edulaw-icon.png', 'sort_order' => 10],
             ['group' => 'Aset', 'key' => 'site.footer_logo', 'label' => 'Logo Footer', 'type' => 'image', 'value' => 'images/logo/edulaw-logo.png', 'sort_order' => 11],
             ['group' => 'Kontak', 'key' => 'contact.email', 'label' => 'Email', 'type' => 'email', 'value' => 'hello@edulawproject.id', 'sort_order' => 20],
             ['group' => 'Kontak', 'key' => 'contact.whatsapp_label', 'label' => 'Label WhatsApp', 'value' => '0815-2992-7677', 'sort_order' => 21],

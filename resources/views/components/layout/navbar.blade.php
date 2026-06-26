@@ -16,7 +16,7 @@
         ?? ($settings['site.footer_logo'] ?? null);
 
     $logo = $logo
-        ?? \App\Support\EdulawSite::assetUrl($logoValue, 'images/logo/edulaw-logo.png');
+        ?? \App\Support\EdulawSite::assetUrl($logoValue, 'images/logo/edulaw-icon.png');
 
     $navItems = [
         [

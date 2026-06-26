@@ -8,7 +8,7 @@ return [
         'short_description' => 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.',
         'meta_title' => 'Edulaw Project - Platform Literasi Hukum Digital',
         'meta_description' => 'Edulaw Project adalah platform literasi hukum digital yang menghadirkan edukasi hukum, riset, program, multimedia, opportunities, dan ruang kolaborasi.',
-        'logo' => 'images/logo/edulaw-logo.png',
+        'logo' => 'images/logo/edulaw-icon.png',
         'footer_logo' => 'images/logo/edulaw-logo.png',
     ],
 
