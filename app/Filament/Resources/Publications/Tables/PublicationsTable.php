@@ -23,9 +23,12 @@ class PublicationsTable
                     ->searchable(),
                 TextColumn::make('slug')
                     ->searchable(),
-                ImageColumn::make('cover_image'),
+                ImageColumn::make('cover_image')
+                    ->disk('public'),
                 TextColumn::make('pdf_file')
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn ($record): ?string => edulaw_file_url($record->pdf_file))
+                    ->openUrlInNewTab(),
                 TextColumn::make('external_url')
                     ->searchable(),
                 TextColumn::make('source_name')
@@ -42,7 +45,8 @@ class PublicationsTable
                     ->boolean(),
                 TextColumn::make('seo_title')
                     ->searchable(),
-                ImageColumn::make('og_image'),
+                ImageColumn::make('og_image')
+                    ->disk('public'),
                 TextColumn::make('created_by')
                     ->numeric()
                     ->sortable(),

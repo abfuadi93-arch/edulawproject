@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 class Program extends Model
@@ -230,28 +229,6 @@ class Program extends Model
 
     public function getImageUrlAttribute(): ?string
     {
-        if (blank($this->attributes['image'] ?? null)) {
-            return null;
-        }
-
-        $path = trim($this->attributes['image']);
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        if (Str::startsWith($path, ['/storage/', 'storage/'])) {
-            return asset(ltrim($path, '/'));
-        }
-
-        if (Str::startsWith($path, ['/images/', 'images/'])) {
-            return asset(ltrim($path, '/'));
-        }
-
-        if (Str::startsWith($path, '/')) {
-            return asset(ltrim($path, '/'));
-        }
-
-        return Storage::disk('public')->url($path);
+        return edulaw_file_url($this->attributes['image'] ?? null);
     }
 }

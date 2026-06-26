@@ -30,7 +30,9 @@ class CollaborationSubmissionsTable
                 TextColumn::make('subject')
                     ->searchable(),
                 TextColumn::make('attachment')
-                    ->searchable(),
+                    ->searchable()
+                    ->url(fn ($record): ?string => edulaw_file_url($record->attachment))
+                    ->openUrlInNewTab(),
                 TextColumn::make('status')
                     ->searchable(),
                 TextColumn::make('handled_by')

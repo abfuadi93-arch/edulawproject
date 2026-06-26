@@ -205,7 +205,7 @@ class InsightResource extends Resource
                                     ->label('Gambar OG')
                                     ->image()
                                     ->disk('public')
-                                    ->directory('seo/insights')
+                                    ->directory('seo/og-images')
                                     ->visibility('public')
                                     ->imageEditor()
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])

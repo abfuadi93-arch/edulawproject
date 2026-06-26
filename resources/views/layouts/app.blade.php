@@ -24,13 +24,13 @@
     <meta property="og:description" content="@yield('og_description', $defaultDescription)">
     <meta property="og:type" content="@yield('og_type', 'website')">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="@yield('og_image', asset('images/og-edulaw.jpg'))">
+    <meta property="og:image" content="@yield('og_image', asset('images/hero/hero-edulaw.jpg'))">
 
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="@yield('twitter_title', $defaultTitle)">
     <meta name="twitter:description" content="@yield('twitter_description', $defaultDescription)">
-    <meta name="twitter:image" content="@yield('twitter_image', asset('images/og-edulaw.jpg'))">
+    <meta name="twitter:image" content="@yield('twitter_image', asset('images/hero/hero-edulaw.jpg'))">
 
     {{-- Favicon placeholder --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}">

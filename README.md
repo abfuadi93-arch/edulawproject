@@ -21,6 +21,30 @@ Laravel is a web application framework with expressive, elegant syntax. We belie
 
 Laravel is accessible, powerful, and provides tools required for large, robust applications.
 
+## Edulaw Deployment Notes
+
+Use these environment values on production:
+
+```env
+APP_URL=https://edulawproject.id
+FILESYSTEM_DISK=public
+```
+
+Manual storage symlink on Hostinger:
+
+```bash
+cd ~/domains/edulawproject.id
+rm -rf public_html/storage
+ln -s ~/domains/edulawproject.id/laravel/storage/app/public ~/domains/edulawproject.id/public_html/storage
+ls -la public_html/storage
+```
+
+Expected result:
+
+```text
+public_html/storage -> /home/u815125696/domains/edulawproject.id/laravel/storage/app/public
+```
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.

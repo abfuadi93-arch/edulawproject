@@ -12,23 +12,7 @@
     ];
 
     $resolveImagePath = function ($path) {
-        if (blank($path)) {
-            return null;
-        }
-
-        if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        if (\Illuminate\Support\Str::startsWith($path, ['/'])) {
-            return $path;
-        }
-
-        if (\Illuminate\Support\Str::startsWith($path, ['storage/', 'images/', 'build/', 'favicon'])) {
-            return asset($path);
-        }
-
-        return asset('storage/'.ltrim($path, '/'));
+        return edulaw_file_url($path);
     };
 
     $resolveImage = function ($program, $fallback) use ($resolveImagePath) {

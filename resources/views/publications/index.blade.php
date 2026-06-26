@@ -26,27 +26,11 @@
     $totalDownloads = $totalDownloads ?? 0;
 
     $imageUrl = function (?string $path) {
-        if (blank($path)) {
-            return null;
-        }
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return edulaw_file_url($path);
     };
 
     $fileUrl = function (?string $path) {
-        if (blank($path)) {
-            return null;
-        }
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return edulaw_file_url($path);
     };
 
     $publicationTypeName = function ($publication) {

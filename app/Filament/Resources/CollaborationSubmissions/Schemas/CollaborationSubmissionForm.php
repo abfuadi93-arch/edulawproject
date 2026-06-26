@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\CollaborationSubmissions\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Schema;
@@ -28,7 +29,12 @@ class CollaborationSubmissionForm
                 Textarea::make('message')
                     ->required()
                     ->columnSpanFull(),
-                TextInput::make('attachment'),
+                FileUpload::make('attachment')
+                    ->label('Attachment')
+                    ->disk('public')
+                    ->directory('collaboration-attachments')
+                    ->visibility('public')
+                    ->maxSize(10240),
                 TextInput::make('status')
                     ->required()
                     ->default('new'),

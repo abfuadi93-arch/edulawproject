@@ -23,29 +23,9 @@
         };
     };
 
-    $resolveImageUrl = function ($path): ?string {
-        if (blank($path) || ! is_string($path)) {
-            return null;
-        }
+    $resolveImageUrl = fn ($path): ?string => is_string($path) ? edulaw_file_url($path) : null;
 
-        $path = trim($path);
-
-        if (\Illuminate\Support\Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        if (\Illuminate\Support\Str::startsWith($path, ['/storage/', 'storage/', '/images/', 'images/'])) {
-            return asset(ltrim($path, '/'));
-        }
-
-        if (\Illuminate\Support\Str::startsWith($path, '/')) {
-            return asset(ltrim($path, '/'));
-        }
-
-        return \Illuminate\Support\Facades\Storage::disk('public')->url($path);
-    };
-
-    $programPoster = $program->image_url ?: $resolveImageUrl($program->image ?? null);
+    $programPoster = $program->image_url ?: edulaw_file_url($program->image ?? null);
     $programImage = $programPoster;
 
     $learningItems = collect($program->learning_points ?? [])

@@ -5,10 +5,10 @@
 @section('og_title', $insight->seo_title ?: $insight->title . ' - Edulaw Project')
 @section('og_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160))
 @section('og_type', 'article')
-@section('og_image', $insight->og_image_url ?: asset('images/og-edulaw.jpg'))
+@section('og_image', edulaw_file_url($insight->og_image ?: $insight->cover_image, 'images/hero/hero-edulaw.jpg'))
 @section('twitter_title', $insight->seo_title ?: $insight->title . ' - Edulaw Project')
 @section('twitter_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160))
-@section('twitter_image', $insight->og_image_url ?: asset('images/og-edulaw.jpg'))
+@section('twitter_image', edulaw_file_url($insight->og_image ?: $insight->cover_image, 'images/hero/hero-edulaw.jpg'))
 
 @push('styles')
     <style>
@@ -57,7 +57,7 @@
         return max(1, (int) ceil($words / 200)) . ' menit baca';
     };
 
-    $coverImage = $insight->cover_image_url;
+    $coverImage = edulaw_file_url($insight->cover_image);
     $categoryName = $insight->display_category;
     $publishedDate = optional($insight->published_at)->translatedFormat('d F Y') ?? 'Belum dijadwalkan';
     $description = $insight->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($insight->content ?? ''), 180);
@@ -293,9 +293,9 @@
                     @foreach ($relatedInsights as $item)
                         <article class="group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
                             <a href="{{ route('insights.show', $item->slug) }}" class="block overflow-hidden bg-slate-100">
-                                @if ($item->cover_image_url)
+                                @if (edulaw_file_url($item->cover_image))
                                     <img
-                                        src="{{ $item->cover_image_url }}"
+                                        src="{{ edulaw_file_url($item->cover_image) }}"
                                         alt="{{ $item->title }}"
                                         class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105"
                                         loading="lazy"

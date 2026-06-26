@@ -8,6 +8,7 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,6 +17,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
+use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -44,6 +46,17 @@ class UserResource extends Resource
                 Section::make('Informasi Akun Admin')
                     ->description('Kelola akun login dan identitas dasar admin.')
                     ->schema([
+                        FileUpload::make('avatar')
+                            ->label('Avatar')
+                            ->image()
+                            ->disk('public')
+                            ->directory('avatars')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->maxSize(2048)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->columnSpanFull(),
+
                         TextInput::make('name')
                             ->label('Nama Akun')
                             ->required()
@@ -101,6 +114,13 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
+                ImageColumn::make('avatar')
+                    ->label('Avatar')
+                    ->disk('public')
+                    ->circular()
+                    ->size(44)
+                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
+
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

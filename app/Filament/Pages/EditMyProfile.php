@@ -76,11 +76,14 @@ class EditMyProfile extends Page
                             ->schema([
                                 FileUpload::make('avatar')
                                     ->label('Avatar')
+                                    ->image()
                                     ->disk('public')
                                     ->directory('avatars')
-                                    ->image()
+                                    ->visibility('public')
                                     ->avatar()
-                                    ->maxSize(2048),
+                                    ->imageEditor()
+                                    ->maxSize(2048)
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                             ])
                             ->columnSpan([
                                 'default' => 1,

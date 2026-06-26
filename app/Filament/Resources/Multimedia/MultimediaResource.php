@@ -217,8 +217,8 @@ class MultimediaResource extends Resource
                             ->imageEditor()
                             ->imagePreviewHeight('180')
                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(5120)
-                            ->helperText('Rekomendasi format JPG, PNG, atau WebP. Maksimal 5 MB.')
+                            ->maxSize(4096)
+                            ->helperText('Rekomendasi format JPG, PNG, atau WebP. Maksimal 4 MB.')
                             ->columnSpanFull(),
                     ])
                     ->columnSpanFull(),

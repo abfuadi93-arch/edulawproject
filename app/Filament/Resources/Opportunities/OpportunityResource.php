@@ -158,12 +158,39 @@ class OpportunityResource extends Resource
                                     ->imageEditor()
                                     ->imagePreviewHeight('180')
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(5120)
+                                    ->maxSize(4096)
                                     ->columnSpanFull(),
                             ]),
                     ])
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
+
+                Section::make('SEO (Opsional)')
+                    ->description('Optimasi mesin pencari untuk opportunity ini.')
+                    ->schema([
+                        TextInput::make('seo_title')
+                            ->label('Meta Title')
+                            ->maxLength(60),
+
+                        Textarea::make('seo_description')
+                            ->label('Meta Description')
+                            ->rows(3)
+                            ->maxLength(180),
+
+                        FileUpload::make('og_image')
+                            ->label('Gambar OG')
+                            ->image()
+                            ->disk('public')
+                            ->directory('seo/og-images')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->maxSize(4096)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+                    ])
+                    ->columns(1)
+                    ->collapsible()
+                    ->collapsed()
+                    ->columnSpanFull(),
             ]);
     }
 

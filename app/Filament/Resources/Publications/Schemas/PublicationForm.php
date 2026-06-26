@@ -26,8 +26,21 @@ class PublicationForm
                 Textarea::make('description')
                     ->columnSpanFull(),
                 FileUpload::make('cover_image')
-                    ->image(),
-                TextInput::make('pdf_file'),
+                    ->label('Cover Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('publications/covers')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(4096)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+                FileUpload::make('pdf_file')
+                    ->label('PDF File')
+                    ->disk('public')
+                    ->directory('publications/pdfs')
+                    ->visibility('public')
+                    ->maxSize(20480)
+                    ->acceptedFileTypes(['application/pdf']),
                 TextInput::make('external_url')
                     ->url(),
                 TextInput::make('source_name'),
@@ -43,7 +56,14 @@ class PublicationForm
                 Textarea::make('seo_description')
                     ->columnSpanFull(),
                 FileUpload::make('og_image')
-                    ->image(),
+                    ->label('OG Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('seo/og-images')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(4096)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 TextInput::make('created_by')
                     ->numeric(),
                 TextInput::make('updated_by')

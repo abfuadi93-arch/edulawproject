@@ -17,27 +17,11 @@
         : url('/kolaborasi');
 
     $imageUrl = function (?string $path) {
-        if (blank($path)) {
-            return null;
-        }
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return edulaw_file_url($path);
     };
 
     $fileUrl = function (?string $path) {
-        if (blank($path)) {
-            return null;
-        }
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return edulaw_file_url($path);
     };
 
     $typeName = $publication?->type?->name

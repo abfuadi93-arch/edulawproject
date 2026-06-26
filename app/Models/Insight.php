@@ -7,8 +7,6 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
-use Illuminate\Support\Facades\Storage;
-use Illuminate\Support\Str;
 
 class Insight extends Model
 {
@@ -177,24 +175,6 @@ class Insight extends Model
 
     private function resolveImageUrl(?string $path): ?string
     {
-        if (blank($path)) {
-            return null;
-        }
-
-        $path = trim($path);
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        if (Str::startsWith($path, ['/storage/', 'storage/', '/images/', 'images/', '/build/', 'build/', '/favicon', 'favicon'])) {
-            return asset(ltrim($path, '/'));
-        }
-
-        if (Str::startsWith($path, ['public/', '/public/'])) {
-            return Storage::disk('public')->url(Str::after(ltrim($path, '/'), 'public/'));
-        }
-
-        return Storage::disk('public')->url($path);
+        return edulaw_file_url($path);
     }
 }

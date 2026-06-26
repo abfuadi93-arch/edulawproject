@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Authors\Schemas;
 
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -25,7 +26,15 @@ class AuthorForm
                     ->email(),
                 Textarea::make('bio')
                     ->columnSpanFull(),
-                TextInput::make('photo'),
+                FileUpload::make('photo')
+                    ->label('Photo')
+                    ->image()
+                    ->disk('public')
+                    ->directory('authors')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(2048)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 TextInput::make('institution'),
                 TextInput::make('position'),
                 Textarea::make('social_links')

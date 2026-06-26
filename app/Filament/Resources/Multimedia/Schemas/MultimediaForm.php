@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\Multimedia\Schemas;
 
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -23,7 +24,15 @@ class MultimediaForm
                     ->default('video'),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('thumbnail'),
+                FileUpload::make('thumbnail')
+                    ->label('Thumbnail')
+                    ->image()
+                    ->disk('public')
+                    ->directory('multimedia')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(4096)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 TextInput::make('media_url')
                     ->url(),
                 TextInput::make('embed_url')

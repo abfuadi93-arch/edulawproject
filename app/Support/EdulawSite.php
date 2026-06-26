@@ -35,23 +35,13 @@ class EdulawSite
             return $value;
         }
 
-        if (Str::startsWith($value, '/')) {
-            return $value;
+        $path = ltrim($value, '/');
+
+        if (Str::startsWith($path, ['images/', 'build/', 'favicon']) && file_exists(public_path($path))) {
+            return asset($path);
         }
 
-        if (Str::startsWith($value, 'storage/')) {
-            return '/'.$value;
-        }
-
-        if (Str::startsWith($value, 'public/')) {
-            return '/storage/'.ltrim(Str::after($value, 'public/'), '/');
-        }
-
-        if (Str::startsWith($value, ['images/', 'build/', 'favicon'])) {
-            return '/'.$value;
-        }
-
-        return '/storage/'.ltrim($value, '/');
+        return edulaw_file_url($value);
     }
 
     public static function resolveUrl(?string $value, ?string $default = null): ?string

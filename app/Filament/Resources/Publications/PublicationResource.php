@@ -160,6 +160,7 @@ class PublicationResource extends Resource
                                             ->visibility('public')
                                             ->imageEditor()
                                             ->maxSize(4096)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->downloadable()
                                             ->openable(),
 
@@ -167,10 +168,10 @@ class PublicationResource extends Resource
                                             ->label('File PDF')
                                             ->helperText('Halaman pertama PDF akan dipakai sebagai cover publikasi.')
                                             ->disk('public')
-                                            ->directory('publications/files')
+                                            ->directory('publications/pdfs')
                                             ->visibility('public')
                                             ->acceptedFileTypes(['application/pdf'])
-                                            ->maxSize(10240)
+                                            ->maxSize(20480)
                                             ->downloadable()
                                             ->openable()
                                             ->previewable(false),
@@ -224,10 +225,11 @@ class PublicationResource extends Resource
                                             ->label('Gambar OG')
                                             ->image()
                                             ->disk('public')
-                                            ->directory('publications/og-images')
+                                            ->directory('seo/og-images')
                                             ->visibility('public')
                                             ->imageEditor()
                                             ->maxSize(4096)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->downloadable()
                                             ->openable(),
                                     ])

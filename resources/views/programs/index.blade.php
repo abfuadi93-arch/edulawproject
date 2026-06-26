@@ -37,15 +37,7 @@
     };
 
     $imageUrl = function ($path) {
-        if (! $path) {
-            return null;
-        }
-
-        if (Str::startsWith($path, ['http://', 'https://'])) {
-            return $path;
-        }
-
-        return asset('storage/' . ltrim($path, '/'));
+        return edulaw_file_url($path);
     };
 
     $programImage = function ($program) use ($imageUrl) {

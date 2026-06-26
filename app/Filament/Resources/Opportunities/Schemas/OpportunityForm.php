@@ -26,7 +26,15 @@ class OpportunityForm
                     ->columnSpanFull(),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                TextInput::make('poster'),
+                FileUpload::make('poster')
+                    ->label('Poster')
+                    ->image()
+                    ->disk('public')
+                    ->directory('opportunities')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(4096)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 DatePicker::make('deadline'),
                 TextInput::make('application_link'),
                 TextInput::make('format'),
@@ -44,7 +52,14 @@ class OpportunityForm
                 Textarea::make('seo_description')
                     ->columnSpanFull(),
                 FileUpload::make('og_image')
-                    ->image(),
+                    ->label('OG Image')
+                    ->image()
+                    ->disk('public')
+                    ->directory('seo/og-images')
+                    ->visibility('public')
+                    ->imageEditor()
+                    ->maxSize(4096)
+                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 TextInput::make('created_by')
                     ->numeric(),
                 TextInput::make('updated_by')

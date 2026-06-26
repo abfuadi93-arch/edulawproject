@@ -145,14 +145,15 @@ class AuthorResource extends Resource
                                     ->description('Unggah foto profil untuk ditampilkan di website.')
                                     ->schema([
                                         FileUpload::make('photo')
-                                            ->label('Ganti Foto')
-                                            ->avatar()
+                                            ->label('Photo')
+                                            ->image()
                                             ->disk('public')
-                                            ->directory('profiles')
+                                            ->directory('authors')
                                             ->visibility('public')
+                                            ->avatar()
                                             ->imageEditor()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(2048)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->helperText('Tarik & letakkan foto atau pilih berkas. Rekomendasi ukuran 400 x 400 px. Format: JPG, PNG, WebP. Maks. 2 MB.')
                                             ->columnSpanFull(),
                                     ]),

@@ -22,8 +22,8 @@ class OpportunitiesTable
                     ->searchable(),
                 TextColumn::make('type')
                     ->searchable(),
-                TextColumn::make('poster')
-                    ->searchable(),
+                ImageColumn::make('poster')
+                    ->disk('public'),
                 TextColumn::make('deadline')
                     ->date()
                     ->sortable(),
@@ -39,7 +39,8 @@ class OpportunitiesTable
                     ->boolean(),
                 TextColumn::make('seo_title')
                     ->searchable(),
-                ImageColumn::make('og_image'),
+                ImageColumn::make('og_image')
+                    ->disk('public'),
                 TextColumn::make('created_by')
                     ->numeric()
                     ->sortable(),

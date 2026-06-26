@@ -69,12 +69,17 @@ class PdfCoverGenerator
 
         $path = ltrim($path, '/');
 
-        if (Str::startsWith($path, 'storage/')) {
-            $path = Str::after($path, 'storage/');
-        }
+        $changed = true;
 
-        if (Str::startsWith($path, 'public/')) {
-            $path = Str::after($path, 'public/');
+        while ($changed) {
+            $changed = false;
+
+            foreach (['public/', 'storage/'] as $prefix) {
+                if (Str::startsWith($path, $prefix)) {
+                    $path = Str::after($path, $prefix);
+                    $changed = true;
+                }
+            }
         }
 
         return $path;
