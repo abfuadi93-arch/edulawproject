@@ -19,6 +19,11 @@ class EdulawContentAlerts extends Widget
 
     protected static ?int $sort = 20;
 
+    public static function canView(): bool
+    {
+        return (bool) auth()->user()?->hasRole('super_admin');
+    }
+
     protected function getViewData(): array
     {
         $debugActive = (bool) config('app.debug');

@@ -18,6 +18,11 @@ class EdulawQuickActions extends Widget
 
     protected static ?int $sort = -30;
 
+    public static function canView(): bool
+    {
+        return auth()->check();
+    }
+
     protected function getViewData(): array
     {
         $user = auth()->user();
@@ -25,10 +30,16 @@ class EdulawQuickActions extends Widget
 
         return [
             'userName' => $userName,
-            'insightCreateUrl' => InsightResource::getUrl('create'),
-            'publicationCreateUrl' => PublicationResource::getUrl('create'),
-            'programCreateUrl' => ProgramResource::getUrl('create'),
-            'insightIndexUrl' => InsightResource::getUrl('index'),
+            'canCreateInsight' => (bool) $user?->can('create insights'),
+            'canCreatePublication' => (bool) $user?->can('create publications'),
+            'canCreateProgram' => (bool) $user?->can('create programs'),
+            'canViewInsights' => (bool) $user?->can('view insights'),
+            'canViewPublications' => (bool) $user?->can('view publications'),
+            'canViewPrograms' => (bool) $user?->can('view programs'),
+            'insightCreateUrl' => $user?->can('create insights') ? InsightResource::getUrl('create') : null,
+            'publicationCreateUrl' => $user?->can('create publications') ? PublicationResource::getUrl('create') : null,
+            'programCreateUrl' => $user?->can('create programs') ? ProgramResource::getUrl('create') : null,
+            'insightIndexUrl' => $user?->can('view insights') ? InsightResource::getUrl('index') : null,
             'websiteUrl' => url('/'),
             'publishedInsights' => Insight::where('status', 'published')->count(),
             'activePrograms' => Program::whereIn('status', ['upcoming', 'ongoing'])->count(),

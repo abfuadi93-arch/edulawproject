@@ -27,12 +27,15 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class AuthorResource extends Resource
 {
     use HasSlugFormBehavior;
 
     protected static ?string $model = Author::class;
+
+    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
 
     protected static ?string $navigationLabel = 'Profil';
 
@@ -43,16 +46,6 @@ class AuthorResource extends Resource
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
     protected static ?int $navigationSort = 4;
-
-    public static function shouldRegisterNavigation(): bool
-    {
-        return false;
-    }
-
-    public static function canAccess(): bool
-    {
-        return false;
-    }
 
     public static function form(Schema $schema): Schema
     {
@@ -286,6 +279,18 @@ class AuthorResource extends Resource
             ->recordActions([
                 EditAction::make(),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if (! $user || $user->can('update authors')) {
+            return $query;
+        }
+
+        return $query->where('user_id', $user->id);
     }
 
     public static function getRelations(): array

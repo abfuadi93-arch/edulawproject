@@ -8,4 +8,22 @@ use App\Filament\Resources\Pages\CreateRecordAndReturn;
 class CreateInsight extends CreateRecordAndReturn
 {
     protected static string $resource = InsightResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        $user = auth()->user();
+
+        $data['created_by'] = $user?->id;
+        $data['updated_by'] = $user?->id;
+
+        if (! InsightResource::canManageEditorialWorkflow()) {
+            $data['status'] = 'draft';
+            $data['published_at'] = null;
+            $data['featured'] = false;
+            $data['reviewed_by'] = null;
+            $data['reviewed_at'] = null;
+        }
+
+        return $data;
+    }
 }

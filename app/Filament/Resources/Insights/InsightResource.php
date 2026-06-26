@@ -26,6 +26,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 
 class InsightResource extends Resource
 {
@@ -159,19 +160,15 @@ class InsightResource extends Resource
                             ->schema([
                                 Select::make('status')
                                     ->label('Status')
-                                    ->options([
-                                        'draft' => 'Draft',
-                                        'submitted' => 'Submitted',
-                                        'reviewed' => 'Reviewed',
-                                        'published' => 'Published',
-                                        'archived' => 'Archived',
-                                    ])
+                                    ->options(fn (): array => static::statusOptionsForCurrentUser())
                                     ->default('draft')
+                                    ->disabled(fn (string $operation): bool => $operation === 'create' && ! static::canManageEditorialWorkflow())
                                     ->required(),
 
                                 DateTimePicker::make('published_at')
                                     ->label('Tanggal Terbit')
-                                    ->seconds(false),
+                                    ->seconds(false)
+                                    ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
 
                                 TextInput::make('reading_time')
                                     ->label('Reading Time')
@@ -184,7 +181,8 @@ class InsightResource extends Resource
                                 Toggle::make('featured')
                                     ->label('Tampilkan sebagai unggulan')
                                     ->helperText('Aktifkan untuk menampilkan artikel ini di beranda.')
-                                    ->default(false),
+                                    ->default(false)
+                                    ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
                             ])
                             ->columns(1),
 
@@ -220,6 +218,54 @@ class InsightResource extends Resource
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $query = parent::getEloquentQuery();
+        $user = auth()->user();
+
+        if (! $user) {
+            return $query->whereRaw('1 = 0');
+        }
+
+        if (
+            $user->can('update all insights')
+            || $user->can('review insights')
+            || $user->can('publish insights')
+        ) {
+            return $query;
+        }
+
+        return $query->where('created_by', $user->id);
+    }
+
+    public static function canManageEditorialWorkflow(): bool
+    {
+        $user = auth()->user();
+
+        return (bool) ($user?->can('update all insights')
+            || $user?->can('review insights')
+            || $user?->can('publish insights')
+            || $user?->can('archive insights'));
+    }
+
+    public static function statusOptionsForCurrentUser(): array
+    {
+        if (! static::canManageEditorialWorkflow()) {
+            return [
+                'draft' => 'Draft',
+                'submitted' => 'Submitted',
+            ];
+        }
+
+        return [
+            'draft' => 'Draft',
+            'submitted' => 'Submitted',
+            'reviewed' => 'Reviewed',
+            'published' => 'Published',
+            'archived' => 'Archived',
+        ];
     }
 
     public static function table(Table $table): Table

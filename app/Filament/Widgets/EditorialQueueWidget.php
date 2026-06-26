@@ -17,13 +17,23 @@ class EditorialQueueWidget extends Widget
 
     protected static ?int $sort = 10;
 
+    public static function canView(): bool
+    {
+        return (bool) auth()->user()?->can('view insights');
+    }
+
     protected function getViewData(): array
     {
-        $items = Insight::query()
+        $query = InsightResource::getEloquentQuery()
             ->with(['authors', 'category'])
             ->whereIn('status', ['draft', 'submitted', 'reviewed'])
-            ->latest('updated_at')
-            ->take(5)
+            ->latest('updated_at');
+
+        if (! InsightResource::canManageEditorialWorkflow()) {
+            $query->where('status', 'draft');
+        }
+
+        $items = $query->take(5)
             ->get()
             ->map(fn (Insight $insight): array => [
                 'title' => $insight->title,

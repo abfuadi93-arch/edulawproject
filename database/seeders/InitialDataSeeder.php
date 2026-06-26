@@ -11,36 +11,19 @@ use App\Models\User;
 use Illuminate\Database\Seeder;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
-use Spatie\Permission\Models\Role;
 
 class InitialDataSeeder extends Seeder
 {
     public function run(): void
     {
-        $this->seedRoles();
+        $this->call(RolePermissionSeeder::class);
+
         $admin = $this->seedAdminUser();
         $this->seedAuthor($admin);
         $this->seedInsightCategories();
         $this->seedProgramCategories();
         $this->seedPublicationTypes();
         $this->seedTags();
-    }
-
-    private function seedRoles(): void
-    {
-        $roles = [
-            'Super Admin',
-            'Editor',
-            'Writer',
-            'Program Admin',
-        ];
-
-        foreach ($roles as $role) {
-            Role::firstOrCreate([
-                'name' => $role,
-                'guard_name' => 'web',
-            ]);
-        }
     }
 
     private function seedAdminUser(): User
@@ -56,8 +39,8 @@ class InitialDataSeeder extends Seeder
             ]
         );
 
-        if (! $admin->hasRole('Super Admin')) {
-            $admin->assignRole('Super Admin');
+        if (! $admin->hasRole('super_admin')) {
+            $admin->assignRole('super_admin');
         }
 
         return $admin;

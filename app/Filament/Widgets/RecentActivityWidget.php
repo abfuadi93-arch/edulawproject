@@ -26,6 +26,19 @@ class RecentActivityWidget extends Widget
 
     protected static ?int $sort = 11;
 
+    public static function canView(): bool
+    {
+        $user = auth()->user();
+
+        return (bool) $user && collect([
+            'view insights',
+            'view publications',
+            'view programs',
+            'view contact messages',
+            'view collaboration submissions',
+        ])->contains(fn (string $permission): bool => $user->can($permission));
+    }
+
     protected function getViewData(): array
     {
         $activities = collect()
@@ -45,9 +58,17 @@ class RecentActivityWidget extends Widget
 
     private function mapInsights(): Collection
     {
-        return Insight::query()
-            ->latest('updated_at')
-            ->take(3)
+        if (! auth()->user()?->can('view insights')) {
+            return collect();
+        }
+
+        $query = InsightResource::getEloquentQuery()->latest('updated_at');
+
+        if (! InsightResource::canManageEditorialWorkflow()) {
+            $query->where('status', 'draft');
+        }
+
+        return $query->take(3)
             ->get()
             ->map(fn (Insight $insight): array => [
                 'label' => 'Insight diperbarui',
@@ -61,6 +82,10 @@ class RecentActivityWidget extends Widget
 
     private function mapPublications(): Collection
     {
+        if (! auth()->user()?->can('view publications')) {
+            return collect();
+        }
+
         return Publication::query()
             ->latest('updated_at')
             ->take(2)
@@ -77,6 +102,10 @@ class RecentActivityWidget extends Widget
 
     private function mapPrograms(): Collection
     {
+        if (! auth()->user()?->can('view programs')) {
+            return collect();
+        }
+
         return Program::query()
             ->latest('updated_at')
             ->take(2)
@@ -93,6 +122,10 @@ class RecentActivityWidget extends Widget
 
     private function mapMessages(): Collection
     {
+        if (! auth()->user()?->can('view contact messages')) {
+            return collect();
+        }
+
         return ContactMessage::query()
             ->latest('updated_at')
             ->take(2)
@@ -109,6 +142,10 @@ class RecentActivityWidget extends Widget
 
     private function mapCollaborations(): Collection
     {
+        if (! auth()->user()?->can('view collaboration submissions')) {
+            return collect();
+        }
+
         return CollaborationSubmission::query()
             ->latest('updated_at')
             ->take(2)

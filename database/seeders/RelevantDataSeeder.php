@@ -186,7 +186,7 @@ class RelevantDataSeeder extends Seeder
         $role = $this->panelRoleFor($data['role'] ?? null);
 
         if ($role) {
-            $user->syncRoles([$role]);
+            $user->assignRole($role);
         }
 
         $author = Author::where('email', $email)->first();
@@ -1108,11 +1108,12 @@ class RelevantDataSeeder extends Seeder
     private function panelRoleFor(?string $role): ?string
     {
         return match (Str::lower(trim((string) $role))) {
-            'superadmin', 'super admin' => 'Super Admin',
-            'admin', 'editor' => 'Editor',
-            'program admin' => 'Program Admin',
-            'user', 'contributor', 'writer' => 'Writer',
-            default => 'Writer',
+            'superadmin', 'super admin', 'super_admin' => 'super_admin',
+            'admin', 'editor' => 'editor',
+            'program admin', 'program_admin' => 'program_admin',
+            'media opportunity admin', 'media & opportunity admin', 'media_opportunity_admin' => 'media_opportunity_admin',
+            'user', 'contributor', 'writer' => 'writer',
+            default => 'writer',
         };
     }
 }

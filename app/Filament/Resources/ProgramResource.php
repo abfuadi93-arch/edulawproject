@@ -25,7 +25,6 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
 class ProgramResource extends Resource
@@ -400,41 +399,6 @@ class ProgramResource extends Resource
                     DeleteBulkAction::make(),
                 ]),
             ]);
-    }
-
-    public static function canAccess(): bool
-    {
-        return auth()->check();
-    }
-
-    public static function canViewAny(): bool
-    {
-        return self::canAccess();
-    }
-
-    public static function canView(Model $record): bool
-    {
-        return self::canAccess();
-    }
-
-    public static function canCreate(): bool
-    {
-        return self::canAccess();
-    }
-
-    public static function canEdit(Model $record): bool
-    {
-        return self::canAccess();
-    }
-
-    public static function canDelete(Model $record): bool
-    {
-        return auth()->check();
-    }
-
-    public static function canDeleteAny(): bool
-    {
-        return auth()->check();
     }
 
     public static function getPages(): array
