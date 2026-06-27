@@ -33,12 +33,13 @@
     };
 @endphp
 
-<section class="bg-[#FDFBF7] py-7 lg:py-10">
+<section class="bg-[#FBF8F1] py-8 lg:py-10">
     <div class="section-shell">
         {{-- Header --}}
         <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
             <div class="max-w-5xl">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-navy">
+                <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-sky shadow-sm ring-1 ring-slate-200">
+                    <span class="h-2 w-2 rounded-full bg-brand-sky"></span>
                     Program Edulaw
                 </p>
 
@@ -75,7 +76,7 @@
                     $eventDate = $program->event_date ?? $program->starts_at ?? null;
                 @endphp
 
-                <article class="group h-full overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
+                <article class="group h-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
                     <a href="{{ route('programs.show', $program->slug) }}" class="flex h-full flex-col">
                         {{-- Image --}}
                         <div class="relative h-63.75 overflow-hidden bg-brand-navy">
@@ -86,7 +87,7 @@
                                 loading="lazy"
                             >
 
-                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/90 via-brand-navy/35 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/86 via-brand-navy/26 to-transparent"></div>
                             <div class="absolute inset-0 bg-linear-to-r from-brand-navy/35 via-transparent to-transparent"></div>
 
                             <div class="absolute left-4 top-4 flex flex-wrap items-center gap-2">
@@ -151,7 +152,7 @@
                                     Lihat Detail
                                 </span>
 
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-navy text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-black text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
                                     <svg class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>

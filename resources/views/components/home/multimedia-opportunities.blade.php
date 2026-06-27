@@ -39,7 +39,7 @@
     };
 @endphp
 
-<section class="bg-[#F9F5F6] py-4 lg:py-5">
+<section class="bg-[#F9F5F6] py-8 lg:py-10">
     <div class="section-shell">
         <div class="grid gap-4 lg:grid-cols-[1.12fr_0.88fr] lg:items-start">
             {{-- Multimedia --}}
@@ -47,7 +47,8 @@
                 {{-- Header --}}
                 <div>
                     <div class="max-w-full">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-navy">
+                        <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-teal shadow-sm ring-1 ring-slate-200">
+                            <span class="h-2 w-2 rounded-full bg-brand-teal"></span>
                             Multimedia
                         </p>
 
@@ -164,9 +165,10 @@
             </div>
 
             {{-- Opportunities --}}
-            <aside class="rounded-2xl border border-brand-ink/10 bg-[#fbf7ef] p-4 shadow-sm shadow-brand-ink/5 lg:mt-13">
+            <aside class="rounded-2xl border border-brand-amber/25 bg-[#fbf7ef] p-4 shadow-sm shadow-brand-ink/5 lg:mt-13">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-navy">
+                    <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber shadow-sm ring-1 ring-brand-amber/25">
+                        <span class="h-2 w-2 rounded-full bg-brand-amber"></span>
                         Opportunities
                     </p>
 

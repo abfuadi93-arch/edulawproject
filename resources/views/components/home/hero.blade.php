@@ -17,19 +17,19 @@
             'title' => 'Belajar',
             'description' => 'Kuasai konsep hukum secara nyata.',
             'icon' => 'book-open',
-            'accent' => 'bg-white/15 text-white',
+            'accent' => 'bg-brand-amber text-brand-black',
         ],
         [
             'title' => 'Memahami',
             'description' => 'Pahami hukum untuk kehidupan publik.',
             'icon' => 'scale',
-            'accent' => 'bg-brand-teal/20 text-brand-teal',
+            'accent' => 'bg-brand-teal text-white',
         ],
         [
             'title' => 'Berkembang',
             'description' => 'Kembangkan peran, ciptakan dampak.',
             'icon' => 'chart',
-            'accent' => 'bg-brand-coral/20 text-brand-coral',
+            'accent' => 'bg-brand-coral text-white',
         ],
     ];
 
@@ -52,13 +52,13 @@
     >
 
     {{-- Overlay --}}
-    <div class="absolute inset-0 z-0 bg-linear-to-r from-[#04142d]/95 via-[#061f43]/82 via-49% to-[#061f43]/25"></div>
-    <div class="absolute inset-0 z-0 bg-linear-to-t from-[#04142d]/75 via-[#04142d]/15 to-[#04142d]/20"></div>
-    <div class="absolute inset-y-0 left-0 z-0 hidden w-[48%] bg-[#04142d]/25 lg:block"></div>
+    <div class="absolute inset-0 z-0 bg-linear-to-r from-[#04142d]/95 via-[#061f43]/78 via-50% to-[#061f43]/24"></div>
+    <div class="absolute inset-0 z-0 bg-linear-to-t from-[#04142d]/76 via-[#04142d]/16 to-[#04142d]/18"></div>
+    <div class="absolute inset-y-0 left-0 z-0 hidden w-[50%] bg-[#04142d]/24 lg:block"></div>
 
     {{-- Decorative soft glows --}}
-    <div class="pointer-events-none absolute -left-24 top-24 z-0 h-72 w-72 rounded-full bg-brand-teal/15 blur-3xl"></div>
-    <div class="pointer-events-none absolute -right-24 bottom-16 z-0 h-80 w-80 rounded-full bg-brand-amber/15 blur-3xl"></div>
+    <div class="pointer-events-none absolute left-0 top-28 z-0 h-80 w-80 rounded-full bg-brand-teal/18 blur-3xl"></div>
+    <div class="pointer-events-none absolute right-8 bottom-20 z-0 h-80 w-80 rounded-full bg-brand-amber/18 blur-3xl"></div>
 
      <div class="relative z-10 mx-auto flex min-h-152 max-w-7xl flex-col justify-end px-5 pb-8 pt-28 sm:px-6 lg:min-h-164 lg:px-8 lg:pb-8 lg:pt-32">
         <div class="max-w-188">
@@ -67,7 +67,7 @@
                 {{ $heroEyebrow }}
             </div>
 
-            <h1 class="mt-5 max-w-188 font-display text-[2.25rem] font-extrabold leading-[1.06] tracking-[-0.035em] text-white sm:text-5xl lg:text-[3.15rem] xl:text-[3.45rem]">
+            <h1 class="mt-5 max-w-188 font-display text-[2.25rem] font-extrabold leading-[1.06] text-white sm:text-5xl lg:text-[3.15rem] xl:text-[3.45rem]">
                 {{ $heroTitle }}
             </h1>
 
@@ -102,10 +102,10 @@
 <div class="mt-10 grid w-full gap-4 sm:grid-cols-3 lg:mt-11">
     @foreach ($valueCards as $value)
         <div
-            class="group flex min-h-34 w-full items-center gap-5 rounded-3xl border border-white/18 bg-white/10 px-5 py-6 shadow-2xl shadow-black/20 backdrop-blur-md transition-all duration-300 hover:-translate-y-1.5 hover:border-white/40 hover:bg-white/15 sm:px-6 lg:px-7"
+            class="group flex min-h-30 w-full items-center gap-4 rounded-2xl border border-white/18 bg-white/14 px-4 py-5 shadow-2xl shadow-black/20 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-white/40 hover:bg-white/18 sm:px-5 lg:px-6"
         >
             <div
-                class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl ring-1 ring-white/10 sm:h-16 sm:w-16 {{ $value['accent'] }}"
+                class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl ring-1 ring-white/10 sm:h-14 sm:w-14 {{ $value['accent'] }}"
             >
                 @if ($value['icon'] === 'book-open')
                     <svg class="h-7 w-7 sm:h-8 sm:w-8" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -128,7 +128,7 @@
                     {{ $value['title'] }}
                 </h3>
 
-                <p class="mt-2 whitespace-nowrap text-sm leading-6 text-white/78">
+                <p class="mt-1.5 text-sm leading-6 text-white/78">
                     {{ $value['description'] }}
                 </p>
             </div>

@@ -43,7 +43,7 @@
 
 <section class="bg-white py-6 lg:py-7">
     <div class="section-shell relative">
-        <div class="grid gap-4 lg:grid-cols-[0.6fr_1.4fr] lg:items-stretch">
+        <div class="grid gap-5 lg:grid-cols-[0.55fr_1.45fr] lg:items-stretch">
             {{-- Left text --}}
             <div class="flex flex-col justify-center">
                 <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-navy">
@@ -58,8 +58,8 @@
             {{-- Right cards --}}
             <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($audienceCards as $audience)
-                    <article class="group flex h-full items-center gap-3 rounded-xl border border-brand-ink/10 bg-white p-4 shadow-sm shadow-brand-ink/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-navy/20 hover:shadow-lg hover:shadow-brand-ink/10">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full {{ $audience['accent'] }} shadow-sm transition duration-300 group-hover:scale-105">
+                    <article class="group flex h-full min-h-28 items-start gap-3 rounded-xl border border-brand-ink/10 bg-white p-4 shadow-sm shadow-brand-ink/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-navy/20 hover:shadow-lg hover:shadow-brand-ink/10">
+                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $audience['accent'] }} shadow-sm transition duration-300 group-hover:scale-105">
                             @if ($audience['icon'] === 'cap')
                                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                     <path d="M3 8.5 12 4l9 4.5-9 4.5L3 8.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -85,6 +85,10 @@
                             <h3 class="text-[15px] font-extrabold leading-snug tracking-normal text-brand-ink">
                                 {{ $audience['title'] }}
                             </h3>
+
+                            <p class="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">
+                                {{ $audience['description'] }}
+                            </p>
                         </div>
                     </article>
                 @endforeach

@@ -30,12 +30,13 @@
     ];
 @endphp
 
-<section class="bg-[#F2F4F2] py-6 lg:py-8">
+<section class="bg-[#F3F6F8] py-7 lg:py-9">
     <div class="section-shell">
         {{-- Header --}}
         <div>
             <div class="flex items-center justify-between gap-4">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-navy">
+                <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-coral shadow-sm ring-1 ring-slate-200">
+                    <span class="h-2 w-2 rounded-full bg-brand-coral"></span>
                     Insight Edulaw
                 </p>
 
@@ -65,7 +66,7 @@
                     @foreach ($categories as $category)
                         <a
                             href="{{ route('insights.index', ['category' => Str::slug($category)]) }}"
-                            class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-extrabold text-slate-600 transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
+                            class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-extrabold text-slate-600 shadow-sm transition hover:border-brand-black hover:bg-brand-black hover:text-white"
                         >
                             {{ $category }}
                         </a>
@@ -77,7 +78,7 @@
         @if ($featured)
             <div class="mt-5 grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
                 {{-- Featured Insight --}}
-                <article class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
+                <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
                     <a href="{{ route('insights.show', $featured->slug) }}" class="block h-full">
                         <div class="relative h-67.5 overflow-hidden bg-slate-100 sm:h-80 lg:h-87.5">
                             <img
@@ -87,10 +88,10 @@
                                 loading="lazy"
                             >
 
-                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/75 via-brand-navy/20 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/82 via-brand-navy/18 to-transparent"></div>
 
                             <div class="absolute left-4 top-4">
-                                <span class="inline-flex items-center rounded-md bg-brand-amber px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-black shadow-sm">
+                                <span class="inline-flex items-center rounded-md bg-brand-coral px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-white shadow-sm">
                                     {{ $featured->display_category }}
                                 </span>
                             </div>
@@ -120,7 +121,7 @@
                                     Baca Insight
                                 </span>
 
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-navy text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-black text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
                                     <svg class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
@@ -138,7 +139,7 @@
                             $thumb = $item->cover_image_url ?: $smallFallbacks[$fallbackIndex];
                         @endphp
 
-                        <article class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-ink/10">
+                        <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-ink/10">
                             <a href="{{ route('insights.show', $item->slug) }}" class="grid min-h-37.5 grid-cols-[132px_1fr] sm:grid-cols-[170px_1fr]">
                                 <div class="relative overflow-hidden bg-slate-100">
                                     <img
@@ -152,7 +153,7 @@
                                 </div>
 
                                 <div class="flex min-h-full flex-col p-3.5 sm:p-4">
-                                    <p class="text-[10px] font-black uppercase tracking-[0.15em] text-brand-navy">
+                                    <p class="text-[10px] font-black uppercase tracking-[0.15em] text-brand-teal">
                                         {{ $item->display_category }}
                                     </p>
 
