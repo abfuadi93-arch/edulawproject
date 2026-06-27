@@ -211,15 +211,15 @@
     }
 
     .publication-badge-primary {
-        border-color: rgba(94, 234, 212, .35);
-        background: rgba(20, 184, 166, .16);
-        color: #a7f3d0;
+        border-color: rgba(56, 164, 216, .38);
+        background: rgba(56, 164, 216, .18);
+        color: #e0f2fe;
     }
 
     .publication-badge-gold {
-        border-color: rgba(244, 185, 66, .42);
-        background: rgba(244, 185, 66, .16);
-        color: #fde68a;
+        border-color: rgba(245, 185, 67, .42);
+        background: rgba(245, 185, 67, .16);
+        color: #fff3cf;
     }
 
     .publication-hero-title {
@@ -580,9 +580,10 @@
     .publication-related-badge {
         display: inline-flex;
         width: fit-content;
+        border: 1px solid rgba(31, 60, 105, .15);
         border-radius: 999px;
-        background: #eaf0fb;
-        color: #0F2868;
+        background: #e8ebef;
+        color: #1f3c69;
         padding: 6px 10px;
         font-size: 10px;
         font-weight: 950;

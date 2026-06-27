@@ -142,7 +142,7 @@
                             </p>
                         </div>
 
-                        <div class="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-slate-600 shadow-sm">
+                        <div class="edulaw-badge edulaw-badge-lg edulaw-badge-neutral normal-case tracking-normal">
                             <span class="h-2 w-2 rounded-full bg-brand-blue"></span>
                             {{ count($shownResults) }} hasil ditemukan
                         </div>
@@ -160,11 +160,11 @@
                                     class="block"
                                 >
                                     <div class="flex flex-wrap items-center gap-3">
-                                        <span class="inline-flex rounded-full bg-brand-mist px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-brand-ink">
+                                        <span class="edulaw-badge edulaw-badge-navy">
                                             {{ $result['type'] }}
                                         </span>
 
-                                        <span class="inline-flex rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-600">
+                                        <span class="edulaw-badge edulaw-badge-muted">
                                             {{ $result['meta'] }}
                                         </span>
                                     </div>
@@ -253,7 +253,7 @@
                                 @foreach ($popularKeywords as $keyword)
                                     <a
                                         href="{{ url('/search') }}?q={{ urlencode($keyword) }}"
-                                        class="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700 transition hover:border-brand-silver hover:bg-brand-paper hover:text-brand-ink"
+                                        class="edulaw-badge edulaw-badge-lg edulaw-badge-muted normal-case tracking-normal transition hover:border-brand-navy hover:bg-brand-mist hover:text-brand-navy"
                                     >
                                         {{ $keyword }}
                                     </a>

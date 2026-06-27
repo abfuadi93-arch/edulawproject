@@ -37,7 +37,7 @@
                 @if ($publication->tags->isNotEmpty())
                     <div class="mt-8 flex flex-wrap gap-2">
                         @foreach ($publication->tags as $tag)
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-xs font-semibold text-slate-700">{{ $tag->name }}</span>
+                            <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">{{ $tag->name }}</span>
                         @endforeach
                     </div>
                 @endif

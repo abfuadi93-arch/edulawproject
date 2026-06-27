@@ -188,7 +188,7 @@
 
         <div class="relative mx-auto grid max-w-7xl gap-8 px-4 py-8 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8 lg:py-10">
             <div class="lg:pl-24">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">
+                <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                     {{ $aboutHero?->eyebrow ?? 'Tentang Kami' }}
                 </p>
 
@@ -212,7 +212,7 @@
 
                 <div class="mt-5 space-y-3">
                     <div class="flex items-center gap-3">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-amber-soft text-brand-navy">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="currentColor"><path d="M12 21s-7-4.35-9.33-9.1C.8 8.05 3.42 4 7.5 4A5.3 5.3 0 0 1 12 6.35 5.3 5.3 0 0 1 16.5 4c4.08 0 6.7 4.05 4.83 7.9C19 16.65 12 21 12 21Z"/></svg>
                         </span>
                         <p class="text-sm font-semibold text-slate-800">
@@ -221,7 +221,7 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-amber-soft text-brand-navy">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"><path d="M8 3h8l3 3v15H5V3h3Z" stroke="currentColor" stroke-width="2"/><path d="M9 13h6M9 17h4M15 3v4h4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                         </span>
                         <p class="text-sm font-semibold text-slate-800">
@@ -230,7 +230,7 @@
                     </div>
 
                     <div class="flex items-center gap-3">
-                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-amber-100 text-amber-600">
+                        <span class="flex h-8 w-8 items-center justify-center rounded-full bg-brand-amber-soft text-brand-navy">
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none"><path d="M12 21a9 9 0 1 0-9-9" stroke="currentColor" stroke-width="2" stroke-linecap="round"/><path d="M12 7v5l3 2M3 21l4-4" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                         </span>
                         <p class="text-sm font-semibold text-slate-800">
@@ -249,7 +249,7 @@
                     @foreach ($stats as $stat)
                         <div class="rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
                             <div class="flex items-center gap-3">
-                                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-amber-50 text-amber-600">
+                                <span class="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-amber-soft text-brand-navy">
                                     @if ($stat['icon'] === 'calendar')
                                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none"><path d="M7 3v4M17 3v4M4 9h16M5 5h14v16H5V5Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
                                     @elseif ($stat['icon'] === 'book')
@@ -312,7 +312,7 @@
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-8">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">
+                    <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                         Tim Kami
                     </p>
                     <h2 class="mt-1 text-2xl font-black tracking-tight text-slate-950">
@@ -386,7 +386,7 @@
     <section class="border-b border-slate-200 bg-white py-8">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[0.55fr_1.45fr] lg:px-8">
             <div class="border-r border-slate-200 pr-8">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">
+                <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                     {{ $aboutWhy?->eyebrow ?? 'Mengapa' }}
                 </p>
 
@@ -424,7 +424,7 @@
     {{-- Focus --}}
     <section class="border-b border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">
+            <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                 {{ $aboutFocusIntro?->eyebrow ?? 'Fokus Kerja' }}
             </p>
 
@@ -435,7 +435,7 @@
             <div class="mt-5 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($focusAreas as $item)
                     <article class="flex gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm">
-                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-indigo-50 text-indigo-700">
+                        <span class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-brand-mist text-brand-navy">
                             @if ($item['icon'] === 'book')
                                 <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" stroke="currentColor" stroke-width="2"/></svg>
                             @elseif ($item['icon'] === 'chart')
@@ -465,7 +465,7 @@
     <section class="bg-white py-8">
         <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-[1.3fr_0.7fr] lg:px-8">
             <div>
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-amber-600">
+                <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                     {{ $aboutTimelineIntro?->eyebrow ?? 'Perjalanan Edulaw' }}
                 </p>
 
@@ -477,8 +477,8 @@
                     @foreach ($timeline as $item)
                         <div class="grid grid-cols-[80px_1fr] gap-4">
                             <div class="relative flex items-start gap-3">
-                                <span class="mt-1 h-3 w-3 rounded-full bg-blue-600"></span>
-                                <span class="text-sm font-black text-blue-700">
+                                <span class="mt-1 h-3 w-3 rounded-full bg-brand-sky"></span>
+                                <span class="text-sm font-black text-brand-navy">
                                     {{ $item['year'] }}
                                 </span>
                             </div>
@@ -500,7 +500,7 @@
                 <div class="space-y-6">
                     @foreach ($timelineMeta as $meta)
                         <div class="flex gap-4">
-                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-blue-50 text-blue-700">
+                            <span class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-brand-sky-soft text-brand-navy">
                                 @if ($meta['icon'] === 'calendar')
                                     <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="M7 3v4M17 3v4M4 9h16M5 5h14v16H5V5Z" stroke="currentColor" stroke-width="2"/></svg>
                                 @elseif ($meta['icon'] === 'users')

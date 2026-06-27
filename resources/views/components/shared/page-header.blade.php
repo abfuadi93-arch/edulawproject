@@ -64,7 +64,7 @@
             @endif
 
             @if ($eyebrow)
-                <p class="{{ $compact ? 'mt-4' : 'mt-6' }} text-xs font-black uppercase tracking-[0.22em] {{ $hasBackground ? 'text-brand-amber' : 'text-brand-navy' }}">
+                <p class="{{ $compact ? 'mt-4' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $hasBackground ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
                     {{ $eyebrow }}
                 </p>
             @endif

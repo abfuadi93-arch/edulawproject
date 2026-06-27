@@ -30,8 +30,8 @@
                         @forelse ($results as $result)
                             <article class="rounded-2xl bg-white p-5 shadow-sm ring-1 ring-slate-200">
                                 <div class="flex items-center gap-2 text-xs">
-                                    <span class="rounded-full bg-brand-mist px-3 py-1 font-bold text-brand-ink">{{ $result['type'] }}</span>
-                                    <span class="rounded-full bg-slate-100 px-3 py-1 font-bold text-slate-600">{{ $result['meta'] }}</span>
+                                    <span class="edulaw-badge edulaw-badge-navy normal-case tracking-normal">{{ $result['type'] }}</span>
+                                    <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">{{ $result['meta'] }}</span>
                                 </div>
                                 <h3 class="mt-3 text-lg font-extrabold text-brand-ink">{{ $result['title'] }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $result['excerpt'] }}</p>

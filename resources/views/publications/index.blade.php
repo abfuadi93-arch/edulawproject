@@ -321,9 +321,10 @@
     .publication-featured-badge {
         display: inline-flex;
         width: fit-content;
+        border: 1px solid rgba(245, 185, 67, .35);
         border-radius: 999px;
-        background: #fff7e6;
-        color: #9a6500;
+        background: #fff3cf;
+        color: #1f3c69;
         padding: 6px 10px;
         font-size: 10px;
         font-weight: 900;

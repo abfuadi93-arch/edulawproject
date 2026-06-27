@@ -12,8 +12,8 @@
         <div class="relative mx-auto grid min-h-[calc(100vh-82px)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
             {{-- Text --}}
             <div>
-                <div class="inline-flex items-center gap-2 rounded-full border border-amber-200 bg-white px-4 py-2 text-[11px] font-black uppercase tracking-[0.16em] text-amber-700 shadow-sm">
-                    <span class="h-2 w-2 rounded-full bg-amber-400"></span>
+                <div class="edulaw-badge edulaw-badge-lg edulaw-badge-amber">
+                    <span class="h-2 w-2 rounded-full bg-brand-amber"></span>
                     Error 404
                 </div>
 

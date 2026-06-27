@@ -49,45 +49,45 @@
     $categoryStyles = [
         'scholarship' => [
             'poster' => 'from-[#211b17] via-[#4f3822] to-[#b77a16]',
-            'badge' => 'bg-brand-amber/15 text-brand-navy border-brand-amber/30',
+            'badge' => 'edulaw-badge-amber',
             'button' => 'border-brand-amber/60 text-brand-navy hover:bg-brand-amber hover:text-brand-ink',
             'dot' => 'bg-brand-amber',
         ],
         'internship' => [
             'poster' => 'from-brand-navy via-[#123d68] to-[#28659d]',
-            'badge' => 'bg-blue-50 text-blue-700 border-blue-100',
-            'button' => 'border-blue-300 text-blue-700 hover:bg-blue-600 hover:text-white',
-            'dot' => 'bg-blue-500',
+            'badge' => 'edulaw-badge-sky',
+            'button' => 'border-brand-sky/40 text-brand-navy hover:bg-brand-sky hover:text-white',
+            'dot' => 'bg-brand-sky',
         ],
         'volunteer' => [
             'poster' => 'from-emerald-950 via-emerald-800 to-emerald-500',
-            'badge' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-            'button' => 'border-emerald-300 text-emerald-700 hover:bg-emerald-600 hover:text-white',
-            'dot' => 'bg-emerald-500',
+            'badge' => 'edulaw-badge-teal',
+            'button' => 'border-brand-teal/40 text-brand-navy hover:bg-brand-teal hover:text-white',
+            'dot' => 'bg-brand-teal',
         ],
         'fellowship' => [
             'poster' => 'from-indigo-950 via-indigo-800 to-indigo-500',
-            'badge' => 'bg-indigo-50 text-indigo-700 border-indigo-100',
-            'button' => 'border-indigo-300 text-indigo-700 hover:bg-indigo-600 hover:text-white',
-            'dot' => 'bg-indigo-500',
+            'badge' => 'edulaw-badge-navy',
+            'button' => 'border-brand-navy/30 text-brand-navy hover:bg-brand-navy hover:text-white',
+            'dot' => 'bg-brand-navy',
         ],
         'call_for_paper' => [
             'poster' => 'from-teal-950 via-teal-800 to-teal-500',
-            'badge' => 'bg-teal-50 text-teal-700 border-teal-100',
-            'button' => 'border-teal-300 text-teal-700 hover:bg-teal-600 hover:text-white',
-            'dot' => 'bg-teal-500',
+            'badge' => 'edulaw-badge-teal',
+            'button' => 'border-brand-teal/40 text-brand-navy hover:bg-brand-teal hover:text-white',
+            'dot' => 'bg-brand-teal',
         ],
         'competition' => [
             'poster' => 'from-orange-950 via-orange-700 to-orange-400',
-            'badge' => 'bg-orange-50 text-orange-700 border-orange-100',
-            'button' => 'border-orange-300 text-orange-700 hover:bg-orange-600 hover:text-white',
-            'dot' => 'bg-orange-500',
+            'badge' => 'edulaw-badge-amber',
+            'button' => 'border-brand-amber/60 text-brand-navy hover:bg-brand-amber hover:text-brand-ink',
+            'dot' => 'bg-brand-amber',
         ],
         'open_collaboration' => [
             'poster' => 'from-rose-950 via-rose-700 to-coral-500',
-            'badge' => 'bg-rose-50 text-rose-700 border-rose-100',
-            'button' => 'border-rose-300 text-rose-700 hover:bg-rose-600 hover:text-white',
-            'dot' => 'bg-rose-500',
+            'badge' => 'edulaw-badge-coral',
+            'button' => 'border-brand-coral/40 text-brand-ink hover:bg-brand-coral hover:text-white',
+            'dot' => 'bg-brand-coral',
         ],
     ];
 
@@ -255,7 +255,7 @@
                                 @endif
 
                                 <div class="relative flex h-full flex-col justify-between">
-                                    <span class="w-fit rounded-full bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.16em] text-brand-ink">
+                                    <span class="edulaw-badge edulaw-badge-on-image">
                                         {{ $opportunityTypeName($featured) }}
                                     </span>
 
@@ -273,11 +273,11 @@
 
                             <div class="flex flex-col justify-center">
                                 <div class="flex flex-wrap items-center gap-2">
-                                    <span class="inline-flex rounded-full border px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] {{ $featuredStyle['badge'] }}">
+                                    <span class="edulaw-badge edulaw-badge-md {{ $featuredStyle['badge'] }}">
                                         {{ $opportunityTypeName($featured) }}
                                     </span>
 
-                                    <span class="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.14em] text-blue-700">
+                                    <span class="edulaw-badge edulaw-badge-md edulaw-badge-sky">
                                         {{ $opportunityStatusName($featured) }}
                                     </span>
                                 </div>
@@ -641,15 +641,15 @@
 
                                             <div class="p-5">
                                                 <div class="flex flex-wrap items-center gap-2">
-                                                    <span class="inline-flex rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] {{ $style['badge'] }}">
+                                                    <span class="edulaw-badge {{ $style['badge'] }}">
                                                         {{ $opportunityTypeName($opportunity) }}
                                                     </span>
 
-                                                    <span class="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">
+                                                    <span class="edulaw-badge edulaw-badge-sky">
                                                         {{ $opportunityStatusName($opportunity) }}
                                                     </span>
 
-                                                    <span class="inline-flex rounded-full border border-slate-200 bg-slate-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-600">
+                                                    <span class="edulaw-badge edulaw-badge-muted">
                                                         {{ $formatName($opportunity->format ?? null) }}
                                                     </span>
                                                 </div>

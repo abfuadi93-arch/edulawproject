@@ -146,10 +146,10 @@
 
     $statusBadgeClass = function ($status) {
         return match ($status) {
-            'upcoming' => 'bg-brand-amber/15 text-brand-navy border-brand-amber/30',
-            'ongoing' => 'bg-emerald-50 text-emerald-700 border-emerald-100',
-            'archived' => 'bg-slate-100 text-slate-600 border-slate-200',
-            default => 'bg-slate-100 text-slate-600 border-slate-200',
+            'upcoming' => 'edulaw-badge-amber',
+            'ongoing' => 'edulaw-badge-teal',
+            'archived' => 'edulaw-badge-muted',
+            default => 'edulaw-badge-muted',
         };
     };
 
@@ -251,15 +251,15 @@
 
                         <div class="py-2">
                             <div class="flex flex-wrap items-center gap-2">
-                                <span class="inline-flex rounded-full border border-brand-amber/30 bg-brand-amber/15 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-brand-navy">
+                                <span class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                                     ★ Program Unggulan
                                 </span>
 
-                                <span class="inline-flex rounded-full border border-blue-100 bg-blue-50 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-blue-700">
+                                <span class="edulaw-badge edulaw-badge-md edulaw-badge-sky">
                                     {{ $categoryName($featuredProgram) }}
                                 </span>
 
-                                <span class="inline-flex rounded-full border px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] {{ $statusBadgeClass($featuredProgram->status ?? null) }}">
+                                <span class="edulaw-badge edulaw-badge-md {{ $statusBadgeClass($featuredProgram->status ?? null) }}">
                                     {{ $statusLabel($featuredProgram->status ?? null) }}
                                 </span>
                             </div>
@@ -463,7 +463,7 @@
                         </div>
 
 @if ($activePrograms->isEmpty())
-    <div class="mt-4 rounded-2xl border border-blue-100 bg-blue-50 p-5 text-sm font-semibold text-brand-navy">
+    <div class="mt-4 rounded-2xl border border-brand-sky/25 bg-brand-sky-soft p-5 text-sm font-semibold text-brand-navy">
         Saat ini belum ada program aktif.
     </div>
 @else
@@ -494,11 +494,11 @@
                         @endif
 
                         <div class="absolute left-4 top-4 flex flex-wrap gap-2">
-                            <span class="rounded-full border border-white/20 bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-brand-ink">
+                            <span class="edulaw-badge edulaw-badge-on-image">
                                 {{ $categoryName($program) }}
                             </span>
 
-                            <span class="rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] {{ $statusBadgeClass($program->status ?? null) }}">
+                            <span class="edulaw-badge {{ $statusBadgeClass($program->status ?? null) }}">
                                 {{ $statusLabel($program->status ?? null) }}
                             </span>
                         </div>
@@ -514,16 +514,16 @@
                         </p>
 
                         <div class="mt-5 flex flex-wrap gap-2">
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600">
+                            <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
                                 {{ $formatLabel($program->format ?? null) }}
                             </span>
 
-                            <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600">
+                            <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
                                 {{ $levelLabel($program->level ?? null) }}
                             </span>
 
                             @if ($programDate($program))
-                                <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600">
+                                <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
                                     {{ $programDate($program) }}
                                 </span>
                             @endif
@@ -580,11 +580,11 @@
                                             @endif
 
                                             <div class="absolute left-4 top-4 flex flex-wrap gap-2">
-                                                <span class="rounded-full border border-white/20 bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-brand-ink">
+                                                <span class="edulaw-badge edulaw-badge-on-image">
                                                     {{ $categoryName($program) }}
                                                 </span>
 
-                                                <span class="rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] {{ $statusBadgeClass($program->status ?? null) }}">
+                                                <span class="edulaw-badge {{ $statusBadgeClass($program->status ?? null) }}">
                                                     {{ $statusLabel($program->status ?? null) }}
                                                 </span>
                                             </div>
@@ -600,16 +600,16 @@
                                             </p>
 
                                             <div class="mt-5 flex flex-wrap gap-2">
-                                                <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600">
+                                                <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
                                                     {{ $formatLabel($program->format ?? null) }}
                                                 </span>
 
-                                                <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600">
+                                                <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
                                                     {{ $levelLabel($program->level ?? null) }}
                                                 </span>
 
                                                 @if ($programDate($program))
-                                                    <span class="rounded-full bg-slate-100 px-3 py-1 text-[11px] font-bold text-slate-600">
+                                                    <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
                                                         {{ $programDate($program) }}
                                                     </span>
                                                 @endif
@@ -657,7 +657,7 @@
 
                         <div class="mt-5 flex flex-wrap gap-2">
                             @foreach ($audiences as $audience)
-                                <span class="rounded-full bg-slate-100 px-3 py-2 text-xs font-bold text-slate-600">
+                                <span class="edulaw-badge edulaw-badge-muted edulaw-badge-md normal-case tracking-normal">
                                     {{ $audience }}
                                 </span>
                             @endforeach

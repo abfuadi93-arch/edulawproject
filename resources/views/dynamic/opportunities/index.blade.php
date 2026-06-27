@@ -70,9 +70,9 @@
 
                             <div class="p-5">
                                 <div class="flex flex-wrap items-center gap-2 text-xs">
-                                    <span class="rounded-full bg-brand-mist px-3 py-1 font-bold text-brand-ink">{{ $opportunity->display_type }}</span>
-                                    <span class="rounded-full bg-slate-100 px-3 py-1 font-bold text-slate-600">{{ $opportunity->format ?: '-' }}</span>
-                                    <span class="rounded-full bg-slate-100 px-3 py-1 font-bold text-slate-600">{{ $opportunity->display_status }}</span>
+                                    <span class="edulaw-badge edulaw-badge-navy normal-case tracking-normal">{{ $opportunity->display_type }}</span>
+                                    <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">{{ $opportunity->format ?: '-' }}</span>
+                                    <span class="edulaw-badge edulaw-badge-sky normal-case tracking-normal">{{ $opportunity->display_status }}</span>
                                 </div>
                                 <h3 class="mt-3 text-xl font-extrabold text-brand-ink">{{ $opportunity->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $opportunity->excerpt }}</p>

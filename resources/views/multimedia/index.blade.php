@@ -56,47 +56,47 @@
         return match ($type) {
             'podcast' => [
                 'visual' => 'from-brand-navy via-[#164d63] to-teal-500',
-                'badge' => 'bg-teal-50 text-teal-700 border-teal-100',
-                'dot' => 'bg-teal-500',
+                'badge' => 'edulaw-badge-teal',
+                'dot' => 'bg-brand-teal',
             ],
             'documentation', 'gallery' => [
                 'visual' => 'from-brand-navy via-slate-700 to-slate-500',
-                'badge' => 'bg-slate-50 text-slate-700 border-slate-200',
+                'badge' => 'edulaw-badge-muted',
                 'dot' => 'bg-slate-500',
             ],
             'shorts', 'reels' => [
                 'visual' => 'from-brand-navy via-[#7b2948] to-brand-coral',
-                'badge' => 'bg-rose-50 text-rose-700 border-rose-100',
+                'badge' => 'edulaw-badge-coral',
                 'dot' => 'bg-brand-coral',
             ],
             'webinar' => [
                 'visual' => 'from-brand-navy via-[#123d68] to-brand-amber',
-                'badge' => 'bg-brand-amber/15 text-brand-navy border-brand-amber/30',
+                'badge' => 'edulaw-badge-amber',
                 'dot' => 'bg-brand-amber',
             ],
             default => [
                 'visual' => 'from-brand-navy via-[#123d68] to-[#28659d]',
-                'badge' => 'bg-blue-50 text-blue-700 border-blue-100',
-                'dot' => 'bg-blue-500',
+                'badge' => 'edulaw-badge-sky',
+                'dot' => 'bg-brand-sky',
             ],
         };
     };
 
     $serialAccent = fn ($serial) => match ($serial) {
-        'diksi' => 'bg-teal-50 text-teal-700 border-teal-100',
-        'gali_putusan' => 'bg-blue-50 text-blue-700 border-blue-100',
-        'hukum_dalam_60_detik' => 'bg-rose-50 text-rose-700 border-rose-100',
-        'edulaw_talks' => 'bg-brand-amber/15 text-brand-navy border-brand-amber/30',
-        default => 'bg-slate-50 text-slate-700 border-slate-200',
+        'diksi' => 'edulaw-badge-teal',
+        'gali_putusan' => 'edulaw-badge-sky',
+        'hukum_dalam_60_detik' => 'edulaw-badge-coral',
+        'edulaw_talks' => 'edulaw-badge-amber',
+        default => 'edulaw-badge-muted',
     };
 
     $topicTone = fn ($topic) => match ($topic) {
-        'konstitusi' => 'text-brand-navy bg-blue-50',
-        'mahkamah_konstitusi' => 'text-teal-700 bg-teal-50',
-        'pemilu_dan_demokrasi' => 'text-brand-coral bg-brand-coral-soft',
-        'hak_konstitusional' => 'text-brand-navy bg-brand-amber/15',
-        'hukum_digital' => 'text-slate-700 bg-slate-100',
-        default => 'text-teal-700 bg-teal-50',
+        'konstitusi' => 'bg-brand-sky-soft text-brand-navy',
+        'mahkamah_konstitusi' => 'bg-brand-teal-soft text-brand-navy',
+        'pemilu_dan_demokrasi' => 'bg-brand-coral-soft text-brand-ink',
+        'hak_konstitusional' => 'bg-brand-amber-soft text-brand-navy',
+        'hukum_digital' => 'bg-brand-paper text-brand-blue',
+        default => 'bg-brand-teal-soft text-brand-navy',
     };
 
     $serialGroups = $serialItems
@@ -180,7 +180,7 @@
                 </div>
 
                 @if ($multimediaCollection instanceof \Illuminate\Pagination\AbstractPaginator && $multimediaCollection->total())
-                    <p class="rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-black uppercase tracking-[0.12em] text-slate-500 shadow-sm">
+                    <p class="edulaw-badge edulaw-badge-lg edulaw-badge-neutral">
                         {{ $multimediaCollection->total() }} konten
                     </p>
                 @endif
@@ -213,7 +213,7 @@
                                         <div class="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(45,212,191,0.45),transparent_34%)]"></div>
                                     @endif
 
-                                    <span class="absolute left-4 top-4 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] {{ $tone['badge'] }}">
+                                    <span class="absolute left-4 top-4 edulaw-badge {{ $tone['badge'] }}">
                                         {{ $item->display_type }}
                                     </span>
 
@@ -246,13 +246,13 @@
                                     @if ($item->display_serial || $item->display_topic)
                                         <div class="mt-4 flex flex-wrap gap-2">
                                             @if ($item->display_serial)
-                                                <span class="rounded-full bg-brand-mist px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-brand-navy">
+                                                <span class="edulaw-badge edulaw-badge-navy">
                                                     {{ $item->display_serial }}
                                                 </span>
                                             @endif
 
                                             @if ($item->display_topic)
-                                                <span class="rounded-full bg-slate-100 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-slate-600">
+                                                <span class="edulaw-badge edulaw-badge-muted">
                                                     {{ $item->display_topic }}
                                                 </span>
                                             @endif
@@ -404,7 +404,7 @@
                         @endphp
 
                         <article class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5 transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
-                            <span class="inline-flex rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] {{ $serialAccent($serialKey) }}">
+                            <span class="edulaw-badge {{ $serialAccent($serialKey) }}">
                                 {{ $items->count() }} konten
                             </span>
 

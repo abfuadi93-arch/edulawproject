@@ -121,7 +121,7 @@
             ['label' => 'Syarat & Ketentuan'],
         ]"
     >
-        <div class="inline-flex rounded-full border border-white/15 bg-white/12 px-4 py-2 text-sm font-bold text-white shadow-sm backdrop-blur">
+        <div class="edulaw-badge edulaw-badge-lg edulaw-badge-dark normal-case tracking-normal">
             Terakhir diperbarui: {{ $updatedAt }}
         </div>
     </x-shared.page-header>

@@ -7,7 +7,7 @@
 
 <div class="{{ $align === 'center' ? 'mx-auto max-w-3xl text-center' : 'max-w-3xl' }}">
     @if ($eyebrow)
-        <p class="mb-3 text-sm font-semibold uppercase tracking-[0.2em] text-blue-700">
+        <p class="mb-3 edulaw-badge edulaw-badge-md edulaw-badge-navy {{ $align === 'center' ? 'mx-auto' : '' }}">
             {{ $eyebrow }}
         </p>
     @endif

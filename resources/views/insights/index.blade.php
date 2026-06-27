@@ -275,7 +275,7 @@
 
                                 <div class="absolute inset-0 bg-linear-to-t from-brand-navy/72 via-brand-navy/18 to-transparent"></div>
 
-                                <span class="absolute left-5 top-5 rounded-full bg-brand-amber px-4 py-2 text-[10px] font-black uppercase tracking-[0.14em] text-brand-black shadow-sm">
+                                <span class="absolute left-5 top-5 edulaw-badge edulaw-badge-amber-solid">
                                     {{ $categoryName($latestLead) }}
                                 </span>
                             </div>
@@ -606,14 +606,14 @@
 
                                         <div class="absolute inset-0 bg-linear-to-t from-brand-navy/58 via-transparent to-transparent"></div>
 
-                                        <span class="absolute left-4 top-4 rounded-full bg-brand-amber px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-brand-black shadow-sm">
+                                        <span class="absolute left-4 top-4 edulaw-badge edulaw-badge-amber-solid">
                                             Pilihan Editor
                                         </span>
                                     </div>
 
                                     <div class="flex flex-1 flex-col p-5">
                                         <div class="flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.12em]">
-                                            <span class="rounded-full bg-brand-amber-soft px-2.5 py-1 text-brand-navy">
+                                            <span class="edulaw-badge edulaw-badge-amber">
                                                 {{ $categoryName($pick) }}
                                             </span>
 

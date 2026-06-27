@@ -107,7 +107,7 @@
                 </span>
             </nav>
 
-            <p class="inline-flex rounded-full bg-brand-amber px-4 py-2 text-[11px] font-black uppercase tracking-[0.22em] text-brand-black shadow-sm shadow-brand-amber/25">
+            <p class="edulaw-badge edulaw-badge-lg edulaw-badge-amber-solid">
                 {{ $categoryName }}
             </p>
 
@@ -129,7 +129,7 @@
             <article class="min-w-0 overflow-hidden">
                 <div class="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                     <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-500">
-                        <span class="inline-flex h-8 items-center rounded-full bg-slate-100 px-3 text-brand-navy">
+                        <span class="edulaw-badge edulaw-badge-navy normal-case tracking-normal">
                             Artikel Insight
                         </span>
                         <span>{{ $publishedDate }}</span>
@@ -181,7 +181,7 @@
 
                         <div class="mt-4 flex flex-wrap gap-2">
                             @foreach ($insight->tags as $tag)
-                                <span class="rounded-full border border-slate-200 bg-slate-50 px-4 py-2 text-xs font-bold text-slate-700">
+                                <span class="edulaw-badge edulaw-badge-lg edulaw-badge-muted normal-case tracking-normal">
                                     {{ $tag->name }}
                                 </span>
                             @endforeach

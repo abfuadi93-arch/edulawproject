@@ -261,6 +261,58 @@
         @apply inline-flex items-center rounded-full px-3 py-1 text-xs font-bold;
     }
 
+    .edulaw-badge {
+        @apply inline-flex w-fit items-center gap-1.5 rounded-full border px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em];
+    }
+
+    .edulaw-badge-md {
+        @apply px-3.5 py-1.5 text-[11px] tracking-[0.14em];
+    }
+
+    .edulaw-badge-lg {
+        @apply px-4 py-2 text-xs tracking-[0.18em];
+    }
+
+    .edulaw-badge-amber {
+        @apply border-brand-amber/35 bg-brand-amber-soft text-brand-navy;
+    }
+
+    .edulaw-badge-amber-solid {
+        @apply border-brand-amber bg-brand-amber text-brand-black shadow-sm shadow-brand-amber/25;
+    }
+
+    .edulaw-badge-teal {
+        @apply border-brand-teal/30 bg-brand-teal-soft text-brand-navy;
+    }
+
+    .edulaw-badge-coral {
+        @apply border-brand-coral/30 bg-brand-coral-soft text-brand-ink;
+    }
+
+    .edulaw-badge-sky {
+        @apply border-brand-sky/30 bg-brand-sky-soft text-brand-navy;
+    }
+
+    .edulaw-badge-navy {
+        @apply border-brand-navy/15 bg-brand-mist text-brand-navy;
+    }
+
+    .edulaw-badge-muted {
+        @apply border-brand-silver/45 bg-brand-paper text-brand-blue;
+    }
+
+    .edulaw-badge-neutral {
+        @apply border-slate-200 bg-white text-brand-blue shadow-sm shadow-brand-ink/5;
+    }
+
+    .edulaw-badge-dark {
+        @apply border-white/16 bg-white/12 text-white shadow-sm backdrop-blur;
+    }
+
+    .edulaw-badge-on-image {
+        @apply border-white/20 bg-white/90 text-brand-ink shadow-sm backdrop-blur;
+    }
+
     .pill-amber {
         @apply bg-brand-amber-soft text-brand-black;
     }

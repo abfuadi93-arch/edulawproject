@@ -14,12 +14,12 @@
 
     $statusClass = function ($status) {
         return match ($status) {
-            'Berjalan' => 'bg-emerald-100 text-emerald-700 border-emerald-200',
-            'Segera Dibuka' => 'bg-sky-100 text-sky-700 border-sky-200',
-            'Terjadwal' => 'bg-amber-100 text-amber-700 border-amber-200',
-            'Selesai' => 'bg-slate-100 text-slate-600 border-slate-200',
-            'Arsip' => 'bg-slate-100 text-slate-600 border-slate-200',
-            default => 'bg-slate-100 text-slate-600 border-slate-200',
+            'Berjalan' => 'edulaw-badge-teal',
+            'Segera Dibuka' => 'edulaw-badge-sky',
+            'Terjadwal' => 'edulaw-badge-amber',
+            'Selesai' => 'edulaw-badge-muted',
+            'Arsip' => 'edulaw-badge-muted',
+            default => 'edulaw-badge-muted',
         };
     };
 
@@ -139,10 +139,10 @@
     >
         <div class="rounded-3xl border border-white/14 bg-white/10 p-4 shadow-2xl shadow-brand-navy/20 backdrop-blur-md sm:p-5">
             <div class="flex flex-wrap gap-2">
-                <span class="rounded-full border border-white/18 bg-white/12 px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white shadow-sm backdrop-blur">
+                <span class="edulaw-badge edulaw-badge-lg edulaw-badge-dark">
                     {{ $statusLabel }}
                 </span>
-                <span class="rounded-full border border-white/18 bg-white/12 px-3.5 py-2 text-[10px] font-black uppercase tracking-[0.16em] text-white shadow-sm backdrop-blur">
+                <span class="edulaw-badge edulaw-badge-lg edulaw-badge-dark">
                     {{ $eventDateLabel }}
                 </span>
             </div>
@@ -449,7 +449,7 @@
                         href="{{ route('programs.show', $related->slug) }}"
                         class="group rounded-3xl border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-200/70"
                     >
-                        <span class="rounded-full border px-3 py-1 text-xs font-black {{ $statusClass($related->display_status) }}">
+                        <span class="edulaw-badge edulaw-badge-md {{ $statusClass($related->display_status) }}">
                             {{ $related->display_status }}
                         </span>
 
