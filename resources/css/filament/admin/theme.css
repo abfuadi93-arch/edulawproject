@@ -10,8 +10,10 @@
     --edulaw-admin-soft: #f6f8fb;
     --edulaw-admin-panel: #ffffff;
     --edulaw-admin-panel-subtle: #fbfcfe;
-    --edulaw-admin-border: #e1e7ef;
-    --edulaw-admin-border-strong: #d4deea;
+    --edulaw-admin-border: #cbd8ea;
+    --edulaw-admin-border-strong: #9fb2ce;
+    --edulaw-admin-border-navy: rgba(16, 42, 86, 0.22);
+    --edulaw-admin-navy: #102a56;
     --edulaw-admin-blue: #2563eb;
     --edulaw-admin-blue-soft: #eef4ff;
     --edulaw-admin-red: #ef4444;
@@ -87,7 +89,7 @@
     align-items: center;
     justify-content: flex-start;
     min-height: 2.5rem;
-    max-width: 12rem;
+    max-width: 10.75rem;
     padding: 0;
     border: 0;
     border-radius: 0;
@@ -95,12 +97,12 @@
     box-shadow: none;
 }
 
-.edulaw-admin-brand-logo-text {
-    color: var(--edulaw-admin-heading);
-    font-size: 1.05rem;
-    line-height: 1;
-    font-weight: 900;
-    letter-spacing: 0;
+.edulaw-admin-brand-logo-image {
+    display: block;
+    width: auto;
+    max-width: 10.75rem;
+    height: 2.35rem;
+    object-fit: contain;
 }
 
 .fi-sidebar-nav {
@@ -175,7 +177,7 @@
 .fi-ta-ctn,
 .edulaw-admin-card {
     overflow: hidden;
-    border: 1px solid var(--edulaw-admin-border);
+    border: 1px solid var(--edulaw-admin-border-navy);
     border-radius: 0.65rem;
     background: var(--edulaw-admin-panel);
     box-shadow: var(--edulaw-admin-shadow);
@@ -311,7 +313,7 @@
 .fi-select-input,
 .fi-textarea,
 .fi-fo-rich-editor {
-    border-color: var(--edulaw-admin-border);
+    border-color: var(--edulaw-admin-border-navy);
     border-radius: 0.65rem;
     background: #ffffff;
     box-shadow: 0 1px 2px rgba(15, 23, 42, 0.03);
@@ -320,8 +322,8 @@
 .fi-input-wrp:focus-within,
 .fi-textarea:focus,
 .fi-fo-rich-editor:focus-within {
-    border-color: #9bbcff;
-    box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    border-color: var(--edulaw-admin-navy);
+    box-shadow: 0 0 0 3px rgba(16, 42, 86, 0.12);
 }
 
 .fi-input,
@@ -449,14 +451,19 @@
 }
 
 .fi-ta-header-cell {
-    background: #f8fafc;
+    border-color: rgba(16, 42, 86, 0.14);
+    background: #f3f7fc;
     color: var(--edulaw-admin-heading);
     font-size: 0.76rem;
     font-weight: 850;
 }
 
+.fi-ta-cell {
+    border-color: rgba(16, 42, 86, 0.1);
+}
+
 .fi-ta-row {
-    border-color: var(--edulaw-admin-border);
+    border-color: rgba(16, 42, 86, 0.12);
 }
 
 .fi-ta-row:hover {

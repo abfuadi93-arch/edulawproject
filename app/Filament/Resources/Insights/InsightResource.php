@@ -75,7 +75,8 @@ class InsightResource extends Resource
                                                     ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
                                                     ->live(onBlur: true)
                                                     ->afterStateUpdated(static::syncSlugFrom())
-                                                    ->helperText('Judul singkat dan kuat untuk halaman Insight.'),
+                                                    ->helperText('Judul singkat dan kuat untuk halaman Insight.')
+                                                    ->columnSpanFull(),
 
                                                 TextInput::make('slug')
                                                     ->label('Slug')
@@ -83,7 +84,8 @@ class InsightResource extends Resource
                                                     ->unique(ignoreRecord: true)
                                                     ->maxLength(255)
                                                     ->placeholder('pembakaran-buku-tidak-selalu-menggunakan-api')
-                                                    ->helperText('Otomatis dibuat dari judul, dapat disesuaikan.'),
+                                                    ->helperText('Otomatis dibuat dari judul, dapat disesuaikan.')
+                                                    ->columnSpanFull(),
 
                                                 Select::make('insight_category_id')
                                                     ->label('Kategori')
