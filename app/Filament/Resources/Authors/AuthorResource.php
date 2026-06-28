@@ -58,6 +58,7 @@ class AuthorResource extends Resource
                 ])
                     ->schema([
                         Section::make('Informasi Profil')
+                            ->icon('heroicon-o-user-circle')
                             ->description('Kelola identitas publik, penulis, narasumber, moderator, founder, co-founder, dan tim Edulaw.')
                             ->schema([
                                 TextInput::make('name')
@@ -142,6 +143,7 @@ class AuthorResource extends Resource
                         Group::make()
                             ->schema([
                                 Section::make('Foto Profil')
+                                    ->icon('heroicon-o-photo')
                                     ->description('Unggah foto profil untuk ditampilkan di website.')
                                     ->schema([
                                         FileUpload::make('photo')
@@ -159,6 +161,7 @@ class AuthorResource extends Resource
                                     ]),
 
                                 Section::make('Akun Admin dan Kontak (Opsional)')
+                                    ->icon('heroicon-o-identification')
                                     ->description('Profil boleh tidak punya akun admin. Akun admin wajib memiliki profil yang terhubung.')
                                     ->schema([
                                         Select::make('user_id')
@@ -178,6 +181,7 @@ class AuthorResource extends Resource
                                     ->columns(1),
 
                                 Section::make('Tautan Sosial')
+                                    ->icon('heroicon-o-link')
                                     ->description('Kelola tautan sosial profil secara ringkas.')
                                     ->schema([
                                         Repeater::make('social_links')

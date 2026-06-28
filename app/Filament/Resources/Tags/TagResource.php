@@ -39,8 +39,10 @@ class TagResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->extraAttributes(['class' => 'edulaw-admin-reference-form'])
             ->components([
                 Section::make('Informasi')
+                    ->icon('heroicon-o-tag')
                     ->description('Tag digunakan lintas Insight dan Publikasi.')
                     ->schema([
                         TextInput::make('name')

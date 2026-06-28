@@ -51,177 +51,188 @@ class MultimediaResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Utama')
-                    ->description('Kelola informasi ringkas konten yang tampil di halaman Multimedia.')
+                Grid::make([
+                    'default' => 1,
+                    'xl' => 12,
+                ])
                     ->schema([
-                        Grid::make([
-                            'default' => 1,
-                            'lg' => 2,
-                        ])
+                        Group::make()
                             ->schema([
-                                Group::make()
+                                Section::make('1. Informasi Multimedia')
+                                    ->icon('heroicon-o-play-circle')
+                                    ->description('Kelola informasi ringkas konten yang tampil di halaman Multimedia.')
                                     ->schema([
-                                        TextInput::make('title')
-                                            ->label('Judul')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->live(onBlur: true)
-                                            ->afterStateUpdated(static::syncSlugFrom()),
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('title')
+                                                    ->label('Judul')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->live(onBlur: true)
+                                                    ->afterStateUpdated(static::syncSlugFrom()),
 
-                                        TextInput::make('slug')
-                                            ->label('Slug')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(255)
-                                            ->helperText('Slug digunakan sebagai alamat multimedia di website.'),
+                                                TextInput::make('slug')
+                                                    ->label('Slug')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->maxLength(255)
+                                                    ->helperText('Slug digunakan sebagai alamat multimedia di website.'),
 
-                                        Select::make('type')
-                                            ->label('Tipe Konten')
-                                            ->options(Multimedia::TYPE_OPTIONS)
-                                            ->default('video')
-                                            ->live()
-                                            ->afterStateUpdated(function (Set $set, ?string $state): void {
-                                                $type = Multimedia::normalizeType($state) ?: 'video';
+                                                Select::make('type')
+                                                    ->label('Tipe Konten')
+                                                    ->options(Multimedia::TYPE_OPTIONS)
+                                                    ->default('video')
+                                                    ->live()
+                                                    ->afterStateUpdated(function (Set $set, ?string $state): void {
+                                                        $type = Multimedia::normalizeType($state) ?: 'video';
 
-                                                $set('type', $type);
+                                                        $set('type', $type);
 
-                                                if (static::isPlayableType($type)) {
-                                                    $set('photo_count', null);
+                                                        if (static::isPlayableType($type)) {
+                                                            $set('photo_count', null);
 
-                                                    return;
-                                                }
+                                                            return;
+                                                        }
 
-                                                $set('duration', null);
-                                                $set('platform', 'website');
+                                                        $set('duration', null);
+                                                        $set('platform', 'website');
 
-                                                if (static::isPosterType($type)) {
-                                                    $set('photo_count', null);
-                                                }
-                                            })
-                                            ->searchable()
-                                            ->required(),
-                                    ]),
+                                                        if (static::isPosterType($type)) {
+                                                            $set('photo_count', null);
+                                                        }
+                                                    })
+                                                    ->searchable()
+                                                    ->required()
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->columnSpanFull(),
 
-                                Group::make()
-                                    ->schema([
                                         Textarea::make('description')
                                             ->label('Ringkasan')
-                                            ->rows(7)
+                                            ->rows(6)
                                             ->maxLength(300)
                                             ->required()
                                             ->live()
                                             ->placeholder('Tulis deskripsi singkat konten multimedia...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.'),
-                                    ]),
-                            ]),
-                    ])
-                    ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
-
-                Grid::make([
-                    'default' => 1,
-                    'lg' => 2,
-                ])
-                    ->schema([
-                        Section::make('Klasifikasi Halaman Publik')
-                            ->description('Tentukan serial, topik, dan posisi konten di halaman Multimedia.')
-                            ->schema([
-                                Select::make('serial')
-                                    ->label('Serial Multimedia')
-                                    ->options(Multimedia::SERIAL_OPTIONS)
-                                    ->searchable()
-                                    ->placeholder('Pilih serial multimedia'),
-
-                                Select::make('topic')
-                                    ->label('Topik Multimedia')
-                                    ->options(Multimedia::TOPIC_OPTIONS)
-                                    ->searchable()
-                                    ->placeholder('Pilih topik multimedia'),
-
-                                Select::make('display_section')
-                                    ->label('Section Tampilan')
-                                    ->options(Multimedia::DISPLAY_SECTION_OPTIONS)
-                                    ->default('latest')
-                                    ->required()
-                                    ->helperText('Pilih area utama tempat konten ini ditonjolkan di halaman publik.'),
-                            ]),
-
-                        Section::make('Publikasi')
-                            ->description('Atur status, tanggal publikasi, dan penanda konten unggulan.')
-                            ->schema([
-                                Select::make('status')
-                                    ->label('Status')
-                                    ->options([
-                                        'draft' => 'Draft',
-                                        'published' => 'Terbit',
-                                        'archived' => 'Arsip',
+                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                            ->columnSpanFull(),
                                     ])
-                                    ->default('draft')
-                                    ->required(),
+                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                                DatePicker::make('published_at')
-                                    ->label('Tanggal Publikasi'),
+                                Section::make('2. Media dan Tautan')
+                                    ->icon('heroicon-o-photo')
+                                    ->description('Field media akan menyesuaikan tipe konten yang dipilih.')
+                                    ->schema([
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                Select::make('platform')
+                                                    ->label('Platform')
+                                                    ->options(Multimedia::PLATFORM_OPTIONS)
+                                                    ->default('website')
+                                                    ->searchable()
+                                                    ->required(fn (Get $get): bool => static::isPlayableType($get('type')))
+                                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
 
-                                Toggle::make('featured')
-                                    ->label('Tampilkan sebagai unggulan')
-                                    ->default(false),
-                            ]),
+                                                TextInput::make('media_url')
+                                                    ->label(fn (Get $get): string => static::isPlayableType($get('type')) ? 'Link Media' : 'Link Opsional')
+                                                    ->url()
+                                                    ->maxLength(255)
+                                                    ->placeholder('https://...')
+                                                    ->helperText(fn (Get $get): string => static::isPlayableType($get('type'))
+                                                        ? 'Tautan video, podcast, shorts, atau webinar.'
+                                                        : 'Opsional. Gunakan jika konten punya tautan eksternal.'),
+
+                                                TextInput::make('duration')
+                                                    ->label('Durasi')
+                                                    ->placeholder('Contoh: 12:35')
+                                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
+
+                                                TextInput::make('photo_count')
+                                                    ->label('Jumlah Foto')
+                                                    ->numeric()
+                                                    ->minValue(0)
+                                                    ->placeholder('Contoh: 24')
+                                                    ->visible(fn (Get $get): bool => static::isGalleryType($get('type'))),
+                                            ]),
+
+                                        FileUpload::make('thumbnail')
+                                            ->label(fn (Get $get): string => static::isPosterType($get('type')) ? 'Upload Poster / Thumbnail' : 'Thumbnail')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('multimedia')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->imagePreviewHeight('180')
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(4096)
+                                            ->helperText('Rekomendasi format JPG, PNG, atau WebP. Maksimal 4 MB.')
+                                            ->columnSpanFull(),
+                                    ]),
+                            ])
+                            ->columnSpan(['xl' => 8])
+                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
+
+                        Group::make()
+                            ->schema([
+                                Section::make('Publikasi')
+                                    ->icon('heroicon-o-paper-airplane')
+                                    ->description('Atur status, tanggal publikasi, dan penanda konten unggulan.')
+                                    ->schema([
+                                        Select::make('status')
+                                            ->label('Status')
+                                            ->options([
+                                                'draft' => 'Draft',
+                                                'published' => 'Terbit',
+                                                'archived' => 'Arsip',
+                                            ])
+                                            ->default('draft')
+                                            ->required(),
+
+                                        DatePicker::make('published_at')
+                                            ->label('Tanggal Publikasi'),
+
+                                        Toggle::make('featured')
+                                            ->label('Tampilkan sebagai unggulan')
+                                            ->default(false),
+                                    ])
+                                    ->columns(1),
+
+                                Section::make('Klasifikasi Halaman Publik')
+                                    ->icon('heroicon-o-rectangle-stack')
+                                    ->description('Tentukan serial, topik, dan posisi konten di halaman Multimedia.')
+                                    ->schema([
+                                        Select::make('serial')
+                                            ->label('Serial Multimedia')
+                                            ->options(Multimedia::SERIAL_OPTIONS)
+                                            ->searchable()
+                                            ->placeholder('Pilih serial multimedia'),
+
+                                        Select::make('topic')
+                                            ->label('Topik Multimedia')
+                                            ->options(Multimedia::TOPIC_OPTIONS)
+                                            ->searchable()
+                                            ->placeholder('Pilih topik multimedia'),
+
+                                        Select::make('display_section')
+                                            ->label('Section Tampilan')
+                                            ->options(Multimedia::DISPLAY_SECTION_OPTIONS)
+                                            ->default('latest')
+                                            ->required()
+                                            ->helperText('Pilih area utama tempat konten ini ditonjolkan di halaman publik.'),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columnSpan(['xl' => 4])
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
                     ])
                     ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
-
-                Section::make('Media dan Tautan')
-                    ->description('Field media akan menyesuaikan tipe konten yang dipilih.')
-                    ->schema([
-                        Grid::make([
-                            'default' => 1,
-                            'lg' => 2,
-                        ])
-                            ->schema([
-                                Select::make('platform')
-                                    ->label('Platform')
-                                    ->options(Multimedia::PLATFORM_OPTIONS)
-                                    ->default('website')
-                                    ->searchable()
-                                    ->required(fn (Get $get): bool => static::isPlayableType($get('type')))
-                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
-
-                                TextInput::make('media_url')
-                                    ->label(fn (Get $get): string => static::isPlayableType($get('type')) ? 'Link Media' : 'Link Opsional')
-                                    ->url()
-                                    ->maxLength(255)
-                                    ->placeholder('https://...')
-                                    ->helperText(fn (Get $get): string => static::isPlayableType($get('type'))
-                                        ? 'Tautan video, podcast, shorts, atau webinar.'
-                                        : 'Opsional. Gunakan jika konten punya tautan eksternal.'),
-
-                                TextInput::make('duration')
-                                    ->label('Durasi')
-                                    ->placeholder('Contoh: 12:35')
-                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
-
-                                TextInput::make('photo_count')
-                                    ->label('Jumlah Foto')
-                                    ->numeric()
-                                    ->minValue(0)
-                                    ->placeholder('Contoh: 24')
-                                    ->visible(fn (Get $get): bool => static::isGalleryType($get('type'))),
-                            ]),
-
-                        FileUpload::make('thumbnail')
-                            ->label(fn (Get $get): string => static::isPosterType($get('type')) ? 'Upload Poster / Thumbnail' : 'Thumbnail')
-                            ->image()
-                            ->disk('public')
-                            ->directory('multimedia')
-                            ->visibility('public')
-                            ->imageEditor()
-                            ->imagePreviewHeight('180')
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(4096)
-                            ->helperText('Rekomendasi format JPG, PNG, atau WebP. Maksimal 4 MB.')
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
+                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
     }
 

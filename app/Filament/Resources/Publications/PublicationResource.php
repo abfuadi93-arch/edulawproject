@@ -53,102 +53,161 @@ class PublicationResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Utama')
-                    ->description('Isi identitas utama publikasi Edulaw.')
+                Grid::make([
+                    'default' => 1,
+                    'xl' => 12,
+                ])
                     ->schema([
-                        TextInput::make('title')
-                            ->label('1. Judul')
-                            ->required()
-                            ->maxLength(255)
-                            ->placeholder('Judul publikasi Edulaw')
-                            ->live(onBlur: true)
-                            ->afterStateUpdated(static::syncSlugFrom())
-                            ->columnSpanFull(),
-
-                        TextInput::make('slug')
-                            ->label('2. Slug')
-                            ->required()
-                            ->unique(ignoreRecord: true)
-                            ->maxLength(255)
-                            ->helperText('Slug digunakan sebagai alamat publikasi di website.')
-                            ->columnSpanFull(),
-
-                        Grid::make([
-                            'default' => 1,
-                            'lg' => 2,
-                        ])
+                        Group::make()
                             ->schema([
-                                Group::make()
+                                Section::make('1. Informasi Publikasi')
+                                    ->icon('heroicon-o-document-text')
+                                    ->description('Isi identitas utama publikasi Edulaw.')
                                     ->schema([
-                                        Select::make('publication_type_id')
-                                            ->label('3. Tipe Publikasi')
-                                            ->relationship('type', 'name')
-                                            ->searchable()
-                                            ->preload()
+                                        TextInput::make('title')
+                                            ->label('Judul')
                                             ->required()
-                                            ->placeholder('Pilih tipe publikasi'),
+                                            ->maxLength(255)
+                                            ->placeholder('Judul publikasi Edulaw')
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(static::syncSlugFrom())
+                                            ->columnSpanFull(),
 
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->helperText('Slug digunakan sebagai alamat publikasi di website.')
+                                            ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                Select::make('publication_type_id')
+                                                    ->label('Tipe Publikasi')
+                                                    ->relationship('type', 'name')
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->required()
+                                                    ->placeholder('Pilih tipe publikasi'),
+
+                                                Select::make('tags')
+                                                    ->label('Tag')
+                                                    ->relationship('tags', 'name')
+                                                    ->multiple()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->placeholder('Select an option'),
+
+                                                TextInput::make('source_name')
+                                                    ->label('Nama Sumber')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Edulaw Project'),
+
+                                                TextInput::make('external_url')
+                                                    ->label('URL Eksternal')
+                                                    ->url()
+                                                    ->maxLength(255)
+                                                    ->placeholder('https://...'),
+                                            ])
+                                            ->columnSpanFull(),
+
+                                        Textarea::make('excerpt')
+                                            ->label('Ringkasan')
+                                            ->rows(5)
+                                            ->maxLength(300)
+                                            ->live()
+                                            ->placeholder('Tulis ringkasan publikasi secara singkat dan jelas...')
+                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
+
+                                Section::make('2. Deskripsi Publikasi')
+                                    ->icon('heroicon-o-pencil-square')
+                                    ->description('Tambahkan uraian lengkap publikasi.')
+                                    ->schema([
+                                        RichEditor::make('description')
+                                            ->label('Deskripsi')
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('SEO & Pratinjau')
+                                    ->icon('heroicon-o-magnifying-glass')
+                                    ->description('Optimasi mesin pencari untuk publikasi ini.')
+                                    ->schema([
+                                        TextInput::make('seo_title')
+                                            ->label('Judul SEO')
+                                            ->maxLength(60),
+
+                                        Textarea::make('seo_description')
+                                            ->label('Deskripsi SEO')
+                                            ->rows(3)
+                                            ->maxLength(180)
+                                            ->helperText('Maksimal 180 karakter termasuk spasi.'),
+
+                                        FileUpload::make('og_image')
+                                            ->label('Gambar OG')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('seo/og-images')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->maxSize(4096)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->downloadable()
+                                            ->openable(),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible(),
+                            ])
+                            ->columnSpan(['xl' => 8])
+                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
+
+                        Group::make()
+                            ->schema([
+                                Section::make('Status Publikasi')
+                                    ->icon('heroicon-o-paper-airplane')
+                                    ->description('Atur status dan waktu tayang publikasi.')
+                                    ->schema([
+                                        DatePicker::make('published_at')
+                                            ->label('Tanggal Terbit'),
+
+                                        Select::make('status')
+                                            ->label('Status')
+                                            ->options([
+                                                'draft' => 'Draft',
+                                                'published' => 'Published',
+                                                'archived' => 'Archived',
+                                            ])
+                                            ->default('draft')
+                                            ->required(),
+
+                                        Toggle::make('featured')
+                                            ->label('Tampilkan sebagai unggulan')
+                                            ->default(false),
+                                    ])
+                                    ->columns(1),
+
+                                Section::make('Profil Terkait')
+                                    ->icon('heroicon-o-user-circle')
+                                    ->description('Pilih penulis atau kontributor publikasi.')
+                                    ->schema([
                                         Select::make('authors')
-                                            ->label('4. Profil Terkait')
+                                            ->label('Profil Terkait')
                                             ->relationship('authors', 'name')
                                             ->multiple()
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Pilih profil'),
+                                    ])
+                                    ->columns(1),
 
-                                        TextInput::make('source_name')
-                                            ->label('5. Nama Sumber')
-                                            ->maxLength(255)
-                                            ->placeholder('Edulaw Project'),
-
-                                        TextInput::make('external_url')
-                                            ->label('6. URL Eksternal')
-                                            ->url()
-                                            ->maxLength(255)
-                                            ->placeholder('https://...'),
-                                    ]),
-
-                                Group::make()
-                                    ->schema([
-                                        Select::make('tags')
-                                            ->label('7. Tag')
-                                            ->relationship('tags', 'name')
-                                            ->multiple()
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select an option'),
-
-                                        Textarea::make('excerpt')
-                                            ->label('8. Ringkasan')
-                                            ->rows(8)
-                                            ->maxLength(300)
-                                            ->live()
-                                            ->placeholder('Tulis ringkasan publikasi secara singkat dan jelas...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.'),
-                                    ]),
-                            ])
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
-
-                Section::make('Deskripsi Publikasi')
-                    ->description('Tambahkan uraian lengkap publikasi.')
-                    ->schema([
-                        RichEditor::make('description')
-                            ->label('Deskripsi')
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
-
-                Grid::make([
-                    'default' => 1,
-                    'lg' => 2,
-                ])
-                    ->schema([
-                        Group::make()
-                            ->schema([
                                 Section::make('Dokumen dan Cover')
+                                    ->icon('heroicon-o-photo')
                                     ->description('Unggah cover dan file publikasi.')
                                     ->schema([
                                         FileUpload::make('cover_image')
@@ -182,64 +241,12 @@ class PublicationResource extends Resource
                                             ->suffix('halaman'),
                                     ])
                                     ->columns(1),
-                            ]),
-
-                        Group::make()
-                            ->schema([
-                                Section::make('Publikasi')
-                                    ->description('Atur status dan waktu tayang publikasi.')
-                                    ->schema([
-                                        DatePicker::make('published_at')
-                                            ->label('Tanggal Terbit'),
-
-                                        Select::make('status')
-                                            ->label('Status')
-                                            ->options([
-                                                'draft' => 'Draft',
-                                                'published' => 'Published',
-                                                'archived' => 'Archived',
-                                            ])
-                                            ->default('draft')
-                                            ->required(),
-
-                                        Toggle::make('featured')
-                                            ->label('Tampilkan sebagai unggulan')
-                                            ->default(false),
-                                    ])
-                                    ->columns(1),
-
-                                Section::make('SEO (Opsional)')
-                                    ->description('Optimasi mesin pencari untuk publikasi ini.')
-                                    ->schema([
-                                        TextInput::make('seo_title')
-                                            ->label('Judul SEO')
-                                            ->maxLength(60),
-
-                                        Textarea::make('seo_description')
-                                            ->label('Deskripsi SEO')
-                                            ->rows(3)
-                                            ->maxLength(180)
-                                            ->helperText('Maksimal 180 karakter termasuk spasi.'),
-
-                                        FileUpload::make('og_image')
-                                            ->label('Gambar OG')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('seo/og-images')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->maxSize(4096)
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->downloadable()
-                                            ->openable(),
-                                    ])
-                                    ->columns(1)
-                                    ->collapsible()
-                                    ->collapsed(),
-                            ]),
+                            ])
+                            ->columnSpan(['xl' => 4])
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
                     ])
                     ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
+                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
     }
 

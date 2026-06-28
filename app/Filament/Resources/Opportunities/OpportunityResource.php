@@ -49,69 +49,121 @@ class OpportunityResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Utama')
-                    ->description('Kelola informasi ringkas peluang yang tampil di halaman Opportunities.')
+                Grid::make([
+                    'default' => 1,
+                    'xl' => 12,
+                ])
                     ->schema([
-                        Grid::make([
-                            'default' => 1,
-                            'lg' => 2,
-                        ])
+                        Group::make()
                             ->schema([
-                                Group::make()
+                                Section::make('1. Informasi Opportunity')
+                                    ->icon('heroicon-o-sparkles')
+                                    ->description('Kelola informasi ringkas peluang yang tampil di halaman Opportunities.')
                                     ->schema([
-                                        TextInput::make('title')
-                                            ->label('Judul')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->live(onBlur: true)
-                                            ->afterStateUpdated(static::syncSlugFrom()),
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('title')
+                                                    ->label('Judul')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->live(onBlur: true)
+                                                    ->afterStateUpdated(static::syncSlugFrom()),
 
-                                        TextInput::make('slug')
-                                            ->label('Slug')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(255)
-                                            ->helperText('Slug digunakan sebagai alamat peluang di website.'),
+                                                TextInput::make('slug')
+                                                    ->label('Slug')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->maxLength(255)
+                                                    ->helperText('Slug digunakan sebagai alamat peluang di website.'),
 
-                                        Select::make('type')
-                                            ->label('Jenis Peluang')
-                                            ->options([
-                                                'scholarship' => 'Beasiswa',
-                                                'internship' => 'Magang',
-                                                'volunteer' => 'Volunteer',
-                                                'fellowship' => 'Fellowship',
-                                                'call_for_paper' => 'Call for Papers',
-                                                'competition' => 'Kompetisi',
-                                                'open_collaboration' => 'Kolaborasi Terbuka',
+                                                Select::make('type')
+                                                    ->label('Jenis Peluang')
+                                                    ->options([
+                                                        'scholarship' => 'Beasiswa',
+                                                        'internship' => 'Magang',
+                                                        'volunteer' => 'Volunteer',
+                                                        'fellowship' => 'Fellowship',
+                                                        'call_for_paper' => 'Call for Papers',
+                                                        'competition' => 'Kompetisi',
+                                                        'open_collaboration' => 'Kolaborasi Terbuka',
+                                                    ])
+                                                    ->default('open_collaboration')
+                                                    ->searchable()
+                                                    ->required(),
+
+                                                TextInput::make('format')
+                                                    ->label('Format')
+                                                    ->placeholder('Online / Offline / Hybrid'),
+
+                                                TextInput::make('location')
+                                                    ->label('Lokasi')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Online / Jakarta / Hybrid')
+                                                    ->columnSpanFull(),
                                             ])
-                                            ->default('open_collaboration')
-                                            ->searchable()
-                                            ->required(),
+                                            ->columnSpanFull(),
 
-                                        TextInput::make('format')
-                                            ->label('Format')
-                                            ->placeholder('Online / Offline / Hybrid'),
-
-                                        TextInput::make('location')
-                                            ->label('Lokasi')
-                                            ->maxLength(255)
-                                            ->placeholder('Online / Jakarta / Hybrid'),
-                                    ]),
-
-                                Group::make()
-                                    ->schema([
                                         Textarea::make('excerpt')
                                             ->label('Ringkasan')
-                                            ->rows(7)
+                                            ->rows(6)
                                             ->maxLength(300)
                                             ->required()
                                             ->live()
                                             ->placeholder('Tulis ringkasan peluang secara singkat dan jelas...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.'),
+                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                                        DatePicker::make('deadline')
-                                            ->label('Deadline'),
+                                Section::make('Pendaftaran')
+                                    ->icon('heroicon-o-link')
+                                    ->description('Tambahkan tautan pendaftaran atau informasi aplikasi.')
+                                    ->schema([
+                                        TextInput::make('application_link')
+                                            ->label('Link Pendaftaran')
+                                            ->url()
+                                            ->maxLength(255)
+                                            ->placeholder('https://...'),
+                                    ]),
 
+                                Section::make('SEO & Pratinjau')
+                                    ->icon('heroicon-o-magnifying-glass')
+                                    ->description('Optimasi mesin pencari untuk opportunity ini.')
+                                    ->schema([
+                                        TextInput::make('seo_title')
+                                            ->label('Meta Title')
+                                            ->maxLength(60),
+
+                                        Textarea::make('seo_description')
+                                            ->label('Meta Description')
+                                            ->rows(3)
+                                            ->maxLength(180),
+
+                                        FileUpload::make('og_image')
+                                            ->label('Gambar OG')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('seo/og-images')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->maxSize(4096)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible(),
+                            ])
+                            ->columnSpan(['xl' => 8])
+                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
+
+                        Group::make()
+                            ->schema([
+                                Section::make('Status Publikasi')
+                                    ->icon('heroicon-o-paper-airplane')
+                                    ->description('Atur status, tenggat, dan penanda peluang.')
+                                    ->schema([
                                         Select::make('status')
                                             ->label('Status')
                                             ->options([
@@ -122,75 +174,38 @@ class OpportunityResource extends Resource
                                             ->default('open')
                                             ->required(),
 
+                                        DatePicker::make('deadline')
+                                            ->label('Deadline'),
+
                                         Toggle::make('featured')
                                             ->label('Tampilkan sebagai unggulan')
                                             ->default(false),
-                                    ]),
-                            ]),
+                                    ])
+                                    ->columns(1),
+
+                                Section::make('Media')
+                                    ->icon('heroicon-o-photo')
+                                    ->description('Unggah poster untuk kartu Opportunities.')
+                                    ->schema([
+                                        FileUpload::make('poster')
+                                            ->label('Poster')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('opportunities')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->imagePreviewHeight('180')
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(4096)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columnSpan(['xl' => 4])
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
                     ])
                     ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
-
-                Grid::make([
-                    'default' => 1,
-                    'lg' => 2,
-                ])
-                    ->schema([
-                        Section::make('Pendaftaran')
-                            ->description('Tambahkan tautan pendaftaran atau informasi aplikasi.')
-                            ->schema([
-                                TextInput::make('application_link')
-                                    ->label('Link Pendaftaran')
-                                    ->url()
-                                    ->maxLength(255)
-                                    ->placeholder('https://...'),
-                            ]),
-
-                        Section::make('Media')
-                            ->description('Unggah poster untuk kartu Opportunities.')
-                            ->schema([
-                                FileUpload::make('poster')
-                                    ->label('Poster')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('opportunities')
-                                    ->visibility('public')
-                                    ->imageEditor()
-                                    ->imagePreviewHeight('180')
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(4096)
-                                    ->columnSpanFull(),
-                            ]),
-                    ])
-                    ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
-
-                Section::make('SEO (Opsional)')
-                    ->description('Optimasi mesin pencari untuk opportunity ini.')
-                    ->schema([
-                        TextInput::make('seo_title')
-                            ->label('Meta Title')
-                            ->maxLength(60),
-
-                        Textarea::make('seo_description')
-                            ->label('Meta Description')
-                            ->rows(3)
-                            ->maxLength(180),
-
-                        FileUpload::make('og_image')
-                            ->label('Gambar OG')
-                            ->image()
-                            ->disk('public')
-                            ->directory('seo/og-images')
-                            ->visibility('public')
-                            ->imageEditor()
-                            ->maxSize(4096)
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
-                    ])
-                    ->columns(1)
-                    ->collapsible()
-                    ->collapsed()
-                    ->columnSpanFull(),
+                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
     }
 

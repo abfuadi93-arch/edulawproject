@@ -43,8 +43,10 @@ class PublicationTypeResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->extraAttributes(['class' => 'edulaw-admin-reference-form'])
             ->components([
                 Section::make('Informasi')
+                    ->icon('heroicon-o-document-duplicate')
                     ->description('Tipe untuk policy brief, kajian hukum, naskah akademik, working paper, dan buku digital.')
                     ->schema([
                         TextInput::make('name')
@@ -76,7 +78,10 @@ class PublicationTypeResource extends Resource
                             ->label('Aktif')
                             ->default(true),
                     ])
-                    ->columns(1),
+                    ->columns([
+                        'default' => 1,
+                        'lg' => 2,
+                    ]),
             ]);
     }
 

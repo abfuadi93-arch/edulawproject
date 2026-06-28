@@ -13,6 +13,8 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Resources\Resource;
+use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
@@ -39,75 +41,96 @@ class ContactMessageResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Identitas Pengirim')
-                    ->description('Data ini berasal dari formulir kontak publik.')
+                Grid::make([
+                    'default' => 1,
+                    'xl' => 12,
+                ])
                     ->schema([
-                        TextInput::make('name')
-                            ->label('Nama')
-                            ->disabled()
-                            ->dehydrated(false),
+                        Group::make()
+                            ->schema([
+                                Section::make('Identitas Pengirim')
+                                    ->icon('heroicon-o-user-circle')
+                                    ->description('Data ini berasal dari formulir kontak publik.')
+                                    ->schema([
+                                        TextInput::make('name')
+                                            ->label('Nama')
+                                            ->disabled()
+                                            ->dehydrated(false),
 
-                        TextInput::make('email')
-                            ->label('Email')
-                            ->email()
-                            ->disabled()
-                            ->dehydrated(false),
+                                        TextInput::make('email')
+                                            ->label('Email')
+                                            ->email()
+                                            ->disabled()
+                                            ->dehydrated(false),
 
-                        TextInput::make('phone')
-                            ->label('Nomor Telepon')
-                            ->disabled()
-                            ->dehydrated(false),
-                    ])
-                    ->columns(2),
+                                        TextInput::make('phone')
+                                            ->label('Nomor Telepon')
+                                            ->disabled()
+                                            ->dehydrated(false),
+                                    ])
+                                    ->columns(2),
 
-                Section::make('Isi Pesan')
-                    ->description('Isi pesan dari formulir kontak publik.')
-                    ->schema([
-                        TextInput::make('subject')
-                            ->label('Subjek')
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->columnSpanFull(),
+                                Section::make('Isi Pesan')
+                                    ->icon('heroicon-o-envelope')
+                                    ->description('Isi pesan dari formulir kontak publik.')
+                                    ->schema([
+                                        TextInput::make('subject')
+                                            ->label('Subjek')
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpanFull(),
 
-                        Textarea::make('message')
-                            ->label('Pesan')
-                            ->rows(8)
-                            ->disabled()
-                            ->dehydrated(false)
-                            ->columnSpanFull(),
-                    ])
-                    ->columns(1),
-
-                Section::make('Tindak Lanjut Admin')
-                    ->description('Bagian ini digunakan untuk mencatat tindak lanjut pesan kontak.')
-                    ->schema([
-                        Select::make('status')
-                            ->label('Status')
-                            ->options([
-                                'new' => 'Baru',
-                                'read' => 'Dibaca',
-                                'replied' => 'Dibalas',
-                                'archived' => 'Diarsipkan',
+                                        Textarea::make('message')
+                                            ->label('Pesan')
+                                            ->rows(8)
+                                            ->disabled()
+                                            ->dehydrated(false)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(1),
                             ])
-                            ->default('new')
-                            ->required(),
+                            ->columnSpan(['xl' => 8])
+                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
 
-                        Select::make('handled_by')
-                            ->label('Ditangani Oleh')
-                            ->relationship('handler', 'name')
-                            ->searchable()
-                            ->preload(),
+                        Group::make()
+                            ->schema([
+                                Section::make('Tindak Lanjut Admin')
+                                    ->icon('heroicon-o-clipboard-document-check')
+                                    ->description('Bagian ini digunakan untuk mencatat tindak lanjut pesan kontak.')
+                                    ->schema([
+                                        Select::make('status')
+                                            ->label('Status')
+                                            ->options([
+                                                'new' => 'Baru',
+                                                'read' => 'Dibaca',
+                                                'replied' => 'Dibalas',
+                                                'archived' => 'Diarsipkan',
+                                            ])
+                                            ->default('new')
+                                            ->required(),
 
-                        DateTimePicker::make('handled_at')
-                            ->label('Waktu Ditangani')
-                            ->seconds(false),
+                                        Select::make('handled_by')
+                                            ->label('Ditangani Oleh')
+                                            ->relationship('handler', 'name')
+                                            ->searchable()
+                                            ->preload(),
 
-                        Textarea::make('internal_notes')
-                            ->label('Catatan Internal')
-                            ->rows(5)
-                            ->columnSpanFull(),
+                                        DateTimePicker::make('handled_at')
+                                            ->label('Waktu Ditangani')
+                                            ->seconds(false),
+
+                                        Textarea::make('internal_notes')
+                                            ->label('Catatan Internal')
+                                            ->rows(7)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columnSpan(['xl' => 4])
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
                     ])
-                    ->columns(2),
+                    ->columnSpanFull()
+                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
     }
 

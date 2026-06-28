@@ -43,8 +43,10 @@ class InsightCategoryResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema
+            ->extraAttributes(['class' => 'edulaw-admin-reference-form'])
             ->components([
                 Section::make('Informasi')
+                    ->icon('heroicon-o-rectangle-stack')
                     ->description('Kategori untuk artikel, opini hukum, regulatory update, dan edukasi hukum.')
                     ->schema([
                         TextInput::make('name')
@@ -76,7 +78,10 @@ class InsightCategoryResource extends Resource
                             ->label('Aktif')
                             ->default(true),
                     ])
-                    ->columns(1),
+                    ->columns([
+                        'default' => 1,
+                        'lg' => 2,
+                    ]),
             ]);
     }
 

@@ -52,43 +52,152 @@ class InsightResource extends Resource
     {
         return $schema
             ->components([
-                Section::make('Informasi Utama')
-                    ->description('Isi identitas utama artikel Insight.')
+                Grid::make([
+                    'default' => 1,
+                    'xl' => 12,
+                ])
                     ->schema([
-                        Grid::make([
-                            'default' => 1,
-                            'lg' => 2,
-                        ])
+                        Group::make()
                             ->schema([
-                                Group::make()
+                                Section::make('1. Informasi Artikel')
+                                    ->icon('heroicon-o-document-text')
+                                    ->description('Data utama yang membentuk identitas artikel di halaman Edulaw Insight.')
                                     ->schema([
-                                        TextInput::make('title')
-                                            ->label('1. Judul')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
-                                            ->live(onBlur: true)
-                                            ->afterStateUpdated(static::syncSlugFrom()),
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('title')
+                                                    ->label('Judul Insight')
+                                                    ->required()
+                                                    ->maxLength(255)
+                                                    ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
+                                                    ->live(onBlur: true)
+                                                    ->afterStateUpdated(static::syncSlugFrom())
+                                                    ->helperText('Judul singkat dan kuat untuk halaman Insight.'),
 
-                                        TextInput::make('slug')
-                                            ->label('2. Slug')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(255)
-                                            ->placeholder('pembakaran-buku-tidak-selalu-menggunakan-api')
-                                            ->helperText('Slug digunakan sebagai alamat artikel di website.'),
+                                                TextInput::make('slug')
+                                                    ->label('Slug')
+                                                    ->required()
+                                                    ->unique(ignoreRecord: true)
+                                                    ->maxLength(255)
+                                                    ->placeholder('pembakaran-buku-tidak-selalu-menggunakan-api')
+                                                    ->helperText('Otomatis dibuat dari judul, dapat disesuaikan.'),
 
-                                        Select::make('insight_category_id')
-                                            ->label('3. Kategori')
-                                            ->relationship('category', 'name')
-                                            ->searchable()
-                                            ->preload()
-                                            ->required()
-                                            ->placeholder('Pilih kategori Insight')
-                                            ->helperText('Pilih kategori Insight yang sesuai.'),
+                                                Select::make('insight_category_id')
+                                                    ->label('Kategori')
+                                                    ->relationship('category', 'name')
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->required()
+                                                    ->placeholder('Pilih kategori Insight')
+                                                    ->helperText('Pilih jenis konten, misalnya Insight, Opini, Analisis, atau Review Putusan.'),
 
+                                                Select::make('tags')
+                                                    ->label('Topik')
+                                                    ->relationship('tags', 'name')
+                                                    ->multiple()
+                                                    ->searchable()
+                                                    ->preload()
+                                                    ->placeholder('Select an option')
+                                                    ->helperText('Pilih tema utama dari artikel.'),
+                                            ]),
+
+                                        Textarea::make('excerpt')
+                                            ->label('Ringkasan')
+                                            ->rows(4)
+                                            ->maxLength(300)
+                                            ->live()
+                                            ->placeholder('Tulis ringkasan artikel secara singkat dan jelas...')
+                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
+
+                                Section::make('2. Isi Artikel')
+                                    ->icon('heroicon-o-pencil-square')
+                                    ->description('Tulis artikel utama. Gunakan heading, kutipan, daftar, tautan, dan gambar seperlunya.')
+                                    ->schema([
+                                        RichEditor::make('content')
+                                            ->label('Body')
+                                            ->required()
+                                            ->helperText('Gunakan paragraf pendek, subjudul yang rapi, dan sisipkan gambar hanya jika membantu pembaca.')
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('SEO & Pratinjau')
+                                    ->icon('heroicon-o-magnifying-glass')
+                                    ->description('Metadata untuk hasil pencarian dan preview saat artikel dibagikan.')
+                                    ->schema([
+                                        TextInput::make('seo_title')
+                                            ->label('SEO Title')
+                                            ->maxLength(60)
+                                            ->placeholder('Jika kosong, judul artikel akan digunakan.')
+                                            ->helperText('Ideal 50-60 karakter.'),
+
+                                        Textarea::make('seo_description')
+                                            ->label('Meta Description')
+                                            ->rows(3)
+                                            ->maxLength(180)
+                                            ->placeholder('Deskripsi singkat untuk mesin pencari...')
+                                            ->helperText('Maksimal 180 karakter termasuk spasi.'),
+
+                                        FileUpload::make('og_image')
+                                            ->label('Gambar OG')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('seo/og-images')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(4096),
+                                    ])
+                                    ->collapsible(),
+                            ])
+                            ->columnSpan(['xl' => 8])
+                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
+
+                        Group::make()
+                            ->schema([
+                                Section::make('Status Publikasi')
+                                    ->icon('heroicon-o-paper-airplane')
+                                    ->description('Status dan waktu tayang artikel.')
+                                    ->schema([
+                                        Select::make('status')
+                                            ->label('Status Editorial')
+                                            ->options(fn (): array => static::statusOptionsForCurrentUser())
+                                            ->default('draft')
+                                            ->disabled(fn (string $operation): bool => $operation === 'create' && ! static::canManageEditorialWorkflow())
+                                            ->required(),
+
+                                        DateTimePicker::make('published_at')
+                                            ->label('Tanggal Publikasi')
+                                            ->seconds(false)
+                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
+
+                                        Toggle::make('featured')
+                                            ->label('Artikel Unggulan')
+                                            ->helperText('Aktifkan untuk menampilkan artikel ini di beranda.')
+                                            ->default(false)
+                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
+
+                                        TextInput::make('reading_time')
+                                            ->label('Reading Time')
+                                            ->numeric()
+                                            ->suffix('menit')
+                                            ->default(3)
+                                            ->placeholder('Contoh: 8')
+                                            ->helperText('Estimasi waktu baca artikel dalam menit.'),
+                                    ])
+                                    ->columns(1),
+
+                                Section::make('Penulis')
+                                    ->icon('heroicon-o-user-circle')
+                                    ->description('Identitas penulis utama dan kontributor artikel.')
+                                    ->schema([
                                         Select::make('authors')
-                                            ->label('4. Profil Terkait')
+                                            ->label('Profil Terkait')
                                             ->relationship('authors', 'name')
                                             ->multiple()
                                             ->searchable()
@@ -96,127 +205,32 @@ class InsightResource extends Resource
                                             ->required()
                                             ->placeholder('Pilih profil')
                                             ->helperText('Pilih satu atau lebih profil yang berperan sebagai penulis atau kontributor artikel.'),
-                                    ]),
+                                    ])
+                                    ->columns(1),
 
-                                Group::make()
+                                Section::make('Media Artikel')
+                                    ->icon('heroicon-o-photo')
+                                    ->description('Gambar utama untuk listing dan detail artikel.')
                                     ->schema([
-                                        Select::make('tags')
-                                            ->label('5. Tag')
-                                            ->relationship('tags', 'name')
-                                            ->multiple()
-                                            ->searchable()
-                                            ->preload()
-                                            ->placeholder('Select an option')
-                                            ->helperText('Pilih satu atau lebih tag yang relevan dengan artikel.'),
-
-                                        Textarea::make('excerpt')
-                                            ->label('6. Ringkasan')
-                                            ->rows(9)
-                                            ->maxLength(300)
-                                            ->live()
-                                            ->placeholder('Tulis ringkasan artikel secara singkat dan jelas...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.'),
-                                    ]),
-                            ]),
+                                        FileUpload::make('cover_image')
+                                            ->label('Gambar Utama')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('insights')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(4096)
+                                            ->helperText('Rekomendasi rasio 16:9, ukuran maksimal 4MB.')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(1),
+                            ])
+                            ->columnSpan(['xl' => 4])
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
                     ])
                     ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
-
-                Section::make('Isi Artikel')
-                    ->description('Tulis isi lengkap artikel Insight.')
-                    ->schema([
-                        RichEditor::make('content')
-                            ->label('Isi Artikel')
-                            ->required()
-                            ->helperText('Tulis isi lengkap artikel Insight.')
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
-
-                Section::make('Media Artikel')
-                    ->description('Unggah gambar sampul artikel.')
-                    ->schema([
-                        FileUpload::make('cover_image')
-                            ->label('Gambar Sampul')
-                            ->image()
-                            ->disk('public')
-                            ->directory('insights')
-                            ->visibility('public')
-                            ->imageEditor()
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->maxSize(4096)
-                            ->helperText('Gambar akan ditampilkan sebagai sampul artikel.')
-                            ->columnSpanFull(),
-                    ])
-                    ->columnSpanFull(),
-
-                Grid::make([
-                    'default' => 1,
-                    'lg' => 2,
-                ])
-                    ->schema([
-                        Section::make('Publikasi dan Editorial')
-                            ->description('Atur status, waktu tayang, dan penanda artikel pilihan.')
-                            ->schema([
-                                Select::make('status')
-                                    ->label('Status')
-                                    ->options(fn (): array => static::statusOptionsForCurrentUser())
-                                    ->default('draft')
-                                    ->disabled(fn (string $operation): bool => $operation === 'create' && ! static::canManageEditorialWorkflow())
-                                    ->required(),
-
-                                DateTimePicker::make('published_at')
-                                    ->label('Tanggal Terbit')
-                                    ->seconds(false)
-                                    ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
-
-                                TextInput::make('reading_time')
-                                    ->label('Reading Time')
-                                    ->numeric()
-                                    ->suffix('menit')
-                                    ->default(3)
-                                    ->placeholder('Contoh: 8')
-                                    ->helperText('Estimasi waktu baca artikel dalam menit.'),
-
-                                Toggle::make('featured')
-                                    ->label('Tampilkan sebagai unggulan')
-                                    ->helperText('Aktifkan untuk menampilkan artikel ini di beranda.')
-                                    ->default(false)
-                                    ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
-                            ])
-                            ->columns(1),
-
-                        Section::make('SEO (Opsional)')
-                            ->description('Metadata untuk kebutuhan mesin pencari dan preview media sosial.')
-                            ->schema([
-                                TextInput::make('seo_title')
-                                    ->label('Judul SEO')
-                                    ->maxLength(60)
-                                    ->placeholder('Tulis judul SEO'),
-
-                                Textarea::make('seo_description')
-                                    ->label('Deskripsi SEO')
-                                    ->rows(3)
-                                    ->maxLength(180)
-                                    ->placeholder('Tulis deskripsi SEO...')
-                                    ->helperText('Maksimal 180 karakter termasuk spasi.'),
-
-                                FileUpload::make('og_image')
-                                    ->label('Gambar OG')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('seo/og-images')
-                                    ->visibility('public')
-                                    ->imageEditor()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(4096),
-                            ])
-                            ->columns(1)
-                            ->collapsible()
-                            ->collapsed(),
-                    ])
-                    ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-section-pair']),
+                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
     }
 

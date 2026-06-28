@@ -2,7 +2,6 @@
 
 namespace App\Providers\Filament;
 
-use App\Support\EdulawSite;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -30,17 +29,15 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->login()
-            ->brandName('Edulaw Dashboard')
+            ->brandName('Edulaw Console')
             ->brandLogo(function (): HtmlString {
-                $footerLogo = EdulawSite::assetUrl(EdulawSite::value('site.footer_logo'), 'images/logo/edulaw-logo.png');
-
                 return new HtmlString('
                     <span class="edulaw-admin-brand-logo-wrap">
-                        <img src="'.e($footerLogo).'" alt="Edulaw Project" class="edulaw-admin-brand-logo">
+                        <span class="edulaw-admin-brand-logo-text">Edulaw Console</span>
                     </span>
                 ');
             })
-            ->brandLogoHeight('3rem')
+            ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/logo/icon-logo.png'))
             ->colors([
                 'primary' => Color::hex('#2563eb'),
