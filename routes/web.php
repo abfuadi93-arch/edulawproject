@@ -31,6 +31,7 @@ Route::redirect('/publikasi', '/riset-publikasi', 301);
 Route::redirect('/publikasi/{slug}', '/riset-publikasi/{slug}', 301);
 
 Route::get('/program', [ProgramController::class, 'index'])->name('programs.index');
+Route::get('/program/archive', [ProgramController::class, 'archive'])->name('programs.archive');
 Route::get('/program/{slug}', [ProgramController::class, 'show'])->name('programs.show');
 
 Route::get('/opportunities', [OpportunityController::class, 'index'])->name('opportunities.index');
