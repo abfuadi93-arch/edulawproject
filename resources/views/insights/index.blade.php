@@ -38,12 +38,17 @@
         border-radius: 999px;
     }
 
+    .insight-clamp-1,
     .insight-clamp-2,
     .insight-clamp-3,
     .insight-clamp-4 {
         display: -webkit-box;
         overflow: hidden;
         -webkit-box-orient: vertical;
+    }
+
+    .insight-clamp-1 {
+        -webkit-line-clamp: 1;
     }
 
     .insight-clamp-2 {
@@ -75,6 +80,48 @@
         border-radius: 999px;
         background: rgba(31, 60, 105, .26);
     }
+
+    .insight-cta-large::after {
+        content: "";
+        position: absolute;
+        right: clamp(1.5rem, 7vw, 7rem);
+        top: 50%;
+        width: 13rem;
+        height: 13rem;
+        border: 1px solid rgba(245, 185, 67, .22);
+        border-radius: 999px;
+        transform: translateY(-50%);
+        opacity: .55;
+        pointer-events: none;
+    }
+
+    .insight-cta-large .section-shell {
+        padding-top: 4.75rem;
+        padding-bottom: 4.75rem;
+    }
+
+    .insight-cta-large img {
+        opacity: .48;
+    }
+
+    .insight-cta-large .section-shell > div:last-child {
+        margin-right: clamp(0rem, 4vw, 3rem);
+    }
+
+    @media (max-width: 767px) {
+        .insight-cta-large::after {
+            display: none;
+        }
+
+        .insight-cta-large .section-shell {
+            padding-top: 3.5rem;
+            padding-bottom: 3.5rem;
+        }
+
+        .insight-cta-large .section-shell > div:last-child {
+            margin-right: 0;
+        }
+    }
 </style>
 @endpush
 
@@ -87,6 +134,7 @@
     $latestLead = $latestInsights->first();
     $latestSide = $latestInsights->skip(1)->take(3)->values();
     $insightChannels = collect($insightChannels ?? []);
+    $categoryChips = $insightChannels;
     $editorialPicks = collect($editorialPicks ?? []);
     $popularInsights = collect($popularInsights ?? []);
     $insightCategories = collect($insightCategories ?? []);
@@ -210,30 +258,32 @@
         description="Analisis hukum, pembaruan regulasi, dan isu kebijakan publik yang disajikan secara ringkas, relevan, dan mudah dipahami."
         background-image="https://images.unsplash.com/photo-1589578527966-fdac0f44566c?auto=format&fit=crop&w=1800&q=85"
         background-alt="Analisis hukum dan insight Edulaw Project"
-        grid-class="gap-6 px-4 py-9 sm:w-full sm:px-6 lg:min-h-[250px] lg:grid-cols-[1.02fr_0.98fr] lg:items-center lg:px-8 lg:py-12"
-        content-class="lg:ml-auto lg:max-w-xl"
+        grid-class="gap-3 px-4 py-10 sm:w-full sm:px-6 lg:min-h-[340px] lg:grid-cols-1 lg:items-center lg:px-8 lg:py-14"
+        title-class="text-5xl sm:text-[3.4rem] lg:text-[3.75rem]"
+        description-class="max-w-[520px] text-base leading-7 text-white/85 lg:ml-0"
+        :accent-line="true"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Insight'],
         ]"
     />
 
-    <section class="bg-white py-12 lg:py-16">
+    <section class="bg-white py-20 lg:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-7 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
                         Terbaru
                     </p>
 
-                    <h2 class="mt-2 text-3xl font-black leading-tight text-brand-ink">
+                    <h2 class="mt-2 max-w-3xl text-[2.35rem] font-black leading-tight text-brand-ink sm:text-[2.5rem]">
                         Tulisan hukum terbaru dari kanal Insight Edulaw.
                     </h2>
                 </div>
 
-                <a href="{{ $latestArchiveUrl }}" class="group inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-ink">
+                <a href="{{ $latestArchiveUrl }}" class="group inline-flex min-h-11 items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-ink">
                     Lihat semua terbaru
-                    <span class="transition group-hover:translate-x-1">→</span>
+                    <span class="transition duration-[250ms] group-hover:translate-x-1">→</span>
                 </a>
             </div>
 
@@ -243,10 +293,10 @@
                     $leadPalette = $fallbackPalette($latestLead, 0);
                 @endphp
 
-                <div class="grid gap-6 lg:grid-cols-[minmax(0,1.08fr)_minmax(340px,0.92fr)]">
-                    <article class="group overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-900/5 transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
+                <div class="grid gap-6 lg:grid-cols-[minmax(0,0.65fr)_minmax(340px,0.35fr)]">
+                    <article class="group overflow-hidden rounded-[20px] border border-[#EAEAEA] bg-white p-3 shadow-[0_10px_30px_rgba(15,23,42,0.05)] transition duration-[250ms] hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(15,23,42,0.10)]">
                         <a href="{{ route('insights.show', $latestLead->slug) }}" class="flex h-full flex-col">
-                            <div class="relative min-h-[22rem] overflow-hidden bg-slate-100 sm:min-h-[26rem] lg:min-h-[30rem]">
+                            <div class="relative aspect-video overflow-hidden rounded-2xl bg-slate-100">
                                 <div
                                     class="insight-visual-fallback"
                                     style="background: linear-gradient(135deg, {{ $leadPalette['from'] }} 0%, {{ $leadPalette['via'] }} 52%, {{ $leadPalette['to'] }} 100%);"
@@ -273,25 +323,19 @@
                                     >
                                 @endif
 
-                                <div class="absolute inset-0 bg-linear-to-t from-brand-navy/72 via-brand-navy/18 to-transparent"></div>
+                                <div class="absolute inset-0 bg-linear-to-t from-brand-navy/76 via-brand-navy/16 to-transparent"></div>
 
-                                <span class="absolute left-5 top-5 edulaw-badge edulaw-badge-amber-solid">
+                                <span class="absolute left-5 top-5 rounded-full bg-brand-amber px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-brand-black shadow-sm">
                                     {{ $categoryName($latestLead) }}
                                 </span>
                             </div>
 
-                            <div class="flex flex-1 flex-col p-6 sm:p-8">
-                                <div class="flex flex-wrap items-center gap-2 text-xs font-black uppercase tracking-[0.16em] text-slate-500">
-                                    <span>{{ $publishedDate($latestLead) }}</span>
-                                    <span class="text-slate-300">/</span>
-                                    <span>{{ $readingTime($latestLead) }}</span>
-                                </div>
-
-                                <h3 class="mt-4 text-3xl font-black leading-tight text-brand-ink transition group-hover:text-brand-navy sm:text-4xl">
+                            <div class="flex flex-1 flex-col px-3 pb-4 pt-6 sm:px-4">
+                                <h3 class="insight-clamp-3 text-[2rem] font-black leading-[1.08] text-brand-ink transition group-hover:text-brand-navy sm:text-[2.25rem]">
                                     {{ $latestLead->title }}
                                 </h3>
 
-                                <p class="mt-4 max-w-3xl text-base leading-8 text-slate-600">
+                                <p class="insight-clamp-2 mt-4 max-w-3xl text-base leading-7 text-slate-600">
                                     {{ $excerpt($latestLead, 230) }}
                                 </p>
 
@@ -307,12 +351,12 @@
                                             </p>
 
                                             <p class="text-xs font-semibold text-slate-500">
-                                                Kanal editorial Edulaw
+                                                {{ $publishedDate($latestLead) }} · {{ $readingTime($latestLead) }}
                                             </p>
                                         </div>
                                     </div>
 
-                                    <span class="inline-flex items-center gap-2 text-sm font-black text-brand-navy">
+                                    <span class="inline-flex min-h-11 items-center gap-2 rounded-full border border-brand-navy/15 px-4 text-sm font-black text-brand-navy transition duration-[250ms] group-hover:border-brand-navy group-hover:bg-brand-navy group-hover:text-white">
                                         Baca selengkapnya <span class="transition group-hover:translate-x-1">→</span>
                                     </span>
                                 </div>
@@ -320,15 +364,45 @@
                         </a>
                     </article>
 
-                    <div class="grid gap-4 lg:grid-rows-3">
+                    <aside class="space-y-4">
+                        <form method="GET" action="{{ route('insights.index') }}#insight-archive" class="relative">
+                            <input type="hidden" name="archive" value="latest">
+
+                            <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m21 21-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+
+                            <input
+                                type="search"
+                                name="q"
+                                value="{{ $search }}"
+                                placeholder="Cari artikel, topik, regulasi..."
+                                class="h-12 w-full rounded-full border border-[#EAEAEA] bg-white pl-12 pr-24 text-sm font-semibold text-brand-ink shadow-[0_10px_30px_rgba(15,23,42,0.04)] outline-none transition placeholder:text-slate-500 focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
+                            >
+
+                            @if (filled($search))
+                                <a href="{{ route('insights.index') }}" aria-label="Bersihkan pencarian" class="absolute right-[3.25rem] top-1/2 grid h-8 w-8 -translate-y-1/2 place-items-center rounded-full text-slate-400 transition hover:bg-slate-100 hover:text-brand-navy">
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="m6 6 12 12M18 6 6 18" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                    </svg>
+                                </a>
+                            @endif
+
+                            <button type="submit" aria-label="Cari insight" class="absolute right-2 top-1/2 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-brand-navy text-white transition hover:bg-brand-ink">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <path d="m21 21-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                </svg>
+                            </button>
+                        </form>
+
                         @forelse ($latestSide as $sideIndex => $item)
                             @php
                                 $sideImage = $insightImage($item);
                                 $sidePalette = $fallbackPalette($item, $sideIndex + 1);
                             @endphp
 
-                            <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm shadow-slate-900/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-silver hover:shadow-lg hover:shadow-slate-900/10">
-                                <a href="{{ route('insights.show', $item->slug) }}" class="grid min-h-[11.25rem] grid-cols-[132px_minmax(0,1fr)] sm:grid-cols-[190px_minmax(0,1fr)] lg:h-full">
+                            <article class="group overflow-hidden rounded-[20px] border border-[#EAEAEA] bg-white shadow-[0_10px_30px_rgba(15,23,42,0.04)] transition duration-[250ms] hover:-translate-y-0.5 hover:border-brand-navy hover:shadow-[0_18px_45px_rgba(15,23,42,0.10)]">
+                                <a href="{{ route('insights.show', $item->slug) }}" class="grid min-h-[138px] grid-cols-[120px_minmax(0,1fr)]">
                                     <div class="relative overflow-hidden bg-slate-100">
                                         <div
                                             class="insight-visual-fallback !p-4"
@@ -353,16 +427,16 @@
                                         <div class="absolute inset-0 bg-brand-navy/12"></div>
                                     </div>
 
-                                    <div class="flex min-w-0 flex-col p-4 sm:p-5">
+                                    <div class="flex min-w-0 flex-col p-[1.125rem]">
                                         <p class="text-[10px] font-black uppercase tracking-[0.15em] text-brand-navy">
                                             {{ $categoryName($item) }}
                                         </p>
 
-                                        <h3 class="insight-clamp-2 mt-2 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy sm:text-lg">
+                                        <h3 class="insight-clamp-2 mt-2 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
                                             {{ $item->title }}
                                         </h3>
 
-                                        <div class="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-4 text-xs font-semibold text-slate-500">
+                                        <div class="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-3 text-xs font-semibold text-slate-500">
                                             <span>{{ $publishedDate($item) }}</span>
                                             <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                                             <span>{{ $readingTime($item) }}</span>
@@ -377,7 +451,7 @@
                                 </p>
                             </div>
                         @endforelse
-                    </div>
+                    </aside>
                 </div>
             @else
                 <div class="rounded-3xl border border-dashed border-slate-300 bg-slate-50 p-10 text-center">
@@ -397,129 +471,18 @@
         </div>
     </section>
 
-    <section class="bg-brand-paper py-12 lg:py-16">
+    <x-insight.category-section :channels="$insightChannels" />
+
+    <section class="bg-[#F8FAFC] py-20 lg:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="mb-7">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
-                    Kanal
-                </p>
-
-                <h2 class="mt-2 text-3xl font-black leading-tight text-brand-ink">
-                    Jelajahi Kanal Insight
-                </h2>
-            </div>
-
-            <div class="grid gap-5 lg:grid-cols-2">
-                @foreach ($insightChannels as $channelIndex => $channel)
-                    @php
-                        $channelArticles = collect($channel['articles'] ?? []);
-                        $channelLead = $channelArticles->first();
-                        $channelImage = $insightImage($channelLead);
-                        $channelPalette = $fallbackPalette($channelLead ?: $channel['label'], $channelIndex);
-                    @endphp
-
-                    <article class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-900/5">
-                        <div class="grid sm:grid-cols-[180px_minmax(0,1fr)]">
-                            <a href="{{ $channel['url'] }}" class="relative min-h-[13rem] overflow-hidden bg-slate-100 sm:min-h-full">
-                                <div
-                                    class="insight-visual-fallback"
-                                    style="background: linear-gradient(135deg, {{ $channelPalette['from'] }} 0%, {{ $channelPalette['via'] }} 52%, {{ $channelPalette['to'] }} 100%);"
-                                >
-                                    <span class="insight-fallback-mark" style="background: {{ $channelPalette['accent'] }};"></span>
-                                    <strong class="max-w-44 text-xl font-black leading-tight text-white">
-                                        {{ $channel['label'] }}
-                                    </strong>
-                                </div>
-
-                                @if ($channelImage)
-                                    <img
-                                        src="{{ $channelImage }}"
-                                        alt="{{ $channel['label'] }}"
-                                        loading="lazy"
-                                        class="absolute inset-0 h-full w-full object-cover"
-                                        onerror="this.remove()"
-                                    >
-                                    <div class="absolute inset-0 bg-linear-to-t from-brand-navy/55 via-brand-navy/10 to-transparent"></div>
-                                @endif
-                            </a>
-
-                            <div class="p-5 sm:p-6">
-                                <div class="flex items-start gap-3">
-                                    <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-amber-soft text-brand-navy">
-                                        @switch($channel['icon'])
-                                            @case('book')
-                                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                    <path d="M6 4h9a3 3 0 0 1 3 3v13H8a3 3 0 0 0-3-3V5a1 1 0 0 1 1-1Zm2 0v13" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                                @break
-
-                                            @case('column')
-                                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                    <path d="M5 20h14M7 9v8m5-8v8m5-8v8M4 7l8-4 8 4H4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                                @break
-
-                                            @case('document')
-                                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                    <path d="M7 3h7l4 4v14H7V3Zm7 0v5h4M9.5 12h5M9.5 16h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                                @break
-
-                                            @default
-                                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                    <path d="m12 3 1.7 5.2H19l-4.3 3.1 1.6 5.2L12 13.3l-4.3 3.2 1.6-5.2L5 8.2h5.3L12 3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                                </svg>
-                                        @endswitch
-                                    </div>
-
-                                    <div class="min-w-0">
-                                        <h3 class="text-xl font-black leading-tight text-brand-ink">
-                                            {{ $channel['label'] }}
-                                        </h3>
-                                    </div>
-                                </div>
-
-                                <div class="mt-5 space-y-3">
-                                    @forelse ($channelArticles as $article)
-                                        <a href="{{ route('insights.show', $article->slug) }}" class="group block border-b border-slate-100 pb-3 last:border-b-0 last:pb-0">
-                                            <h4 class="insight-clamp-2 text-sm font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
-                                                {{ $article->title }}
-                                            </h4>
-
-                                            <p class="mt-1 text-xs font-semibold text-slate-500">
-                                                {{ $publishedDate($article) }} · {{ $readingTime($article) }}
-                                            </p>
-                                        </a>
-                                    @empty
-                                        <div class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4">
-                                            <p class="text-sm leading-6 text-slate-500">
-                                                Belum ada artikel published untuk kanal ini.
-                                            </p>
-                                        </div>
-                                    @endforelse
-                                </div>
-
-                                <a href="{{ $channel['url'] }}#insight-archive" class="mt-5 inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-ink">
-                                    Lihat semua {{ $channel['label'] }} <span>→</span>
-                                </a>
-                            </div>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    <section class="bg-[#edf3f8] py-14 lg:py-20">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="rounded-[2rem] border border-white/80 bg-white/70 p-5 shadow-sm shadow-slate-900/5 sm:p-6 lg:p-8">
-                <div class="mb-7 flex flex-col gap-4 border-b border-slate-200/80 pb-6 sm:flex-row sm:items-end sm:justify-between">
+            <div class="rounded-[28px] border border-[#ECECEC] bg-white p-5 shadow-[0_10px_30px_rgba(0,0,0,0.05)] sm:p-6 lg:p-8">
+                <div class="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
                             KURASI
                         </p>
 
-                        <h2 class="mt-2 text-3xl font-black leading-tight text-brand-ink">
+                        <h2 class="mt-2 text-[2.35rem] font-black leading-tight text-brand-ink sm:text-[2.5rem]">
                             Editorial Pick
                         </h2>
 
@@ -535,8 +498,11 @@
                 </div>
 
                 @if ($editorialPicks->isNotEmpty())
-                    <div class="grid items-stretch gap-5 md:grid-cols-2 lg:grid-cols-4">
-                        <aside class="flex h-full min-h-0 flex-col overflow-hidden rounded-3xl bg-linear-to-br from-[#061A3D] via-brand-navy to-[#29496f] p-6 text-white shadow-xl shadow-brand-navy/15 md:col-span-2 lg:col-span-1 lg:min-h-[34rem]">
+                    <div class="grid items-stretch gap-6 lg:grid-cols-[1.05fr_1.95fr]">
+                        <aside class="relative isolate flex h-full min-h-[30rem] flex-col overflow-hidden rounded-[20px] bg-linear-to-br from-[#061A3D] via-brand-navy to-[#29496f] p-7 text-white shadow-xl shadow-brand-navy/15">
+                            <div class="absolute -right-20 -top-20 -z-10 h-56 w-56 rounded-full border border-white/10"></div>
+                            <div class="absolute bottom-8 right-8 -z-10 h-28 w-28 rounded-full border border-brand-amber/20"></div>
+
                             <div>
                                 <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-amber">
                                     Kurasi Edulaw
@@ -555,7 +521,7 @@
 
                             <div class="mt-7 space-y-3">
                                 @foreach (['Konteks isu', 'Argumentasi hukum', 'Dampak kebijakan'] as $point)
-                                    <div class="flex items-center gap-3 rounded-2xl border border-white/10 bg-white/8 px-3.5 py-3">
+                                    <div class="flex items-center gap-3 rounded-full border border-white/10 bg-white/[0.08] px-3.5 py-3">
                                         <span class="flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-amber text-brand-black">
                                             <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                                 <path d="m5 12 4 4L19 6" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -569,92 +535,94 @@
                                 @endforeach
                             </div>
 
-                            <a href="{{ $editorialArchiveUrl }}" class="group mt-auto inline-flex items-center gap-2 pt-8 text-sm font-black text-brand-amber transition hover:text-white">
+                            <a href="{{ $editorialArchiveUrl }}" class="group mt-auto inline-flex min-h-11 w-fit items-center gap-2 rounded-full border border-brand-amber/35 px-4 text-sm font-black text-brand-amber transition hover:bg-brand-amber hover:text-brand-black">
                                 Lihat kurasi lainnya
                                 <span class="transition group-hover:translate-x-1">→</span>
                             </a>
                         </aside>
 
-                        @foreach ($editorialPicks as $pickIndex => $pick)
-                            @php
-                                $pickImage = $insightImage($pick);
-                                $pickPalette = $fallbackPalette($pick, $pickIndex + 6);
-                            @endphp
+                        <div class="grid gap-5 md:grid-cols-3">
+                            @foreach ($editorialPicks as $pickIndex => $pick)
+                                @php
+                                    $pickImage = $insightImage($pick);
+                                    $pickPalette = $fallbackPalette($pick, $pickIndex + 6);
+                                @endphp
 
-                            <article class="group flex h-full overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm shadow-slate-900/5 ring-1 ring-transparent transition duration-300 hover:-translate-y-1 hover:border-brand-amber/60 hover:shadow-xl hover:shadow-slate-900/10 hover:ring-brand-amber/20">
-                                <a href="{{ route('insights.show', $pick->slug) }}" class="flex min-h-full w-full flex-col">
-                                    <div class="relative h-44 overflow-hidden bg-slate-100 sm:h-48">
-                                        <div
-                                            class="insight-visual-fallback"
-                                            style="background: linear-gradient(135deg, {{ $pickPalette['from'] }} 0%, {{ $pickPalette['via'] }} 52%, {{ $pickPalette['to'] }} 100%);"
-                                        >
-                                            <span class="insight-fallback-mark" style="background: {{ $pickPalette['accent'] }};"></span>
-                                            <strong class="max-w-48 text-lg font-black leading-tight text-white">
-                                                {{ $categoryName($pick) }}
-                                            </strong>
-                                        </div>
-
-                                        @if ($pickImage)
-                                            <img
-                                                src="{{ $pickImage }}"
-                                                alt="{{ $pick->title }}"
-                                                loading="lazy"
-                                                class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                                onerror="this.remove()"
+                                <article class="group flex h-full overflow-hidden rounded-[20px] border border-[#ECECEC] bg-white shadow-[0_10px_30px_rgba(0,0,0,0.05)] ring-1 ring-transparent transition duration-[250ms] hover:-translate-y-1 hover:border-brand-amber/70 hover:shadow-[0_22px_56px_rgba(15,23,42,0.12)] hover:ring-brand-amber/20">
+                                    <a href="{{ route('insights.show', $pick->slug) }}" class="flex min-h-full w-full flex-col">
+                                        <div class="relative aspect-video overflow-hidden bg-slate-100">
+                                            <div
+                                                class="insight-visual-fallback"
+                                                style="background: linear-gradient(135deg, {{ $pickPalette['from'] }} 0%, {{ $pickPalette['via'] }} 52%, {{ $pickPalette['to'] }} 100%);"
                                             >
-                                        @endif
+                                                <span class="insight-fallback-mark" style="background: {{ $pickPalette['accent'] }};"></span>
+                                                <strong class="max-w-48 text-lg font-black leading-tight text-white">
+                                                    {{ $categoryName($pick) }}
+                                                </strong>
+                                            </div>
 
-                                        <div class="absolute inset-0 bg-linear-to-t from-brand-navy/58 via-transparent to-transparent"></div>
+                                            @if ($pickImage)
+                                                <img
+                                                    src="{{ $pickImage }}"
+                                                    alt="{{ $pick->title }}"
+                                                    loading="lazy"
+                                                    class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                                                    onerror="this.remove()"
+                                                >
+                                            @endif
 
-                                        <span class="absolute left-4 top-4 edulaw-badge edulaw-badge-amber-solid">
-                                            Pilihan Editor
-                                        </span>
-                                    </div>
+                                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/58 via-transparent to-transparent"></div>
 
-                                    <div class="flex flex-1 flex-col p-5">
-                                        <div class="flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.12em]">
-                                            <span class="edulaw-badge edulaw-badge-amber">
-                                                {{ $categoryName($pick) }}
-                                            </span>
-
-                                            <span class="text-slate-400">
-                                                {{ $publishedDate($pick) }}
+                                            <span class="absolute left-4 top-4 rounded-full bg-brand-amber px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.14em] text-brand-black shadow-sm">
+                                                Pilihan Editor
                                             </span>
                                         </div>
 
-                                        <h3 class="insight-clamp-3 mt-3 text-lg font-black leading-tight text-brand-ink transition group-hover:text-brand-navy">
-                                            {{ $pick->title }}
-                                        </h3>
+                                        <div class="flex flex-1 flex-col p-5">
+                                            <div class="flex flex-wrap items-center gap-2 text-[11px] font-black uppercase tracking-[0.12em]">
+                                                <span class="rounded-full bg-brand-amber-soft px-2.5 py-1 text-brand-navy">
+                                                    {{ $categoryName($pick) }}
+                                                </span>
 
-                                        <p class="insight-clamp-2 mt-3 text-sm leading-6 text-slate-600">
-                                            {{ $excerpt($pick, 118) }}
-                                        </p>
-
-                                        <div class="mt-auto pt-5">
-                                            <div class="flex items-center gap-3">
-                                                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-mist text-xs font-black text-brand-navy">
-                                                    {{ $authorInitial($pick) }}
-                                                </div>
-
-                                                <div class="min-w-0">
-                                                    <p class="truncate text-xs font-black text-brand-ink">
-                                                        {{ $authorName($pick) }}
-                                                    </p>
-
-                                                    <p class="text-[11px] font-semibold text-slate-500">
-                                                        {{ $readingTime($pick) }}
-                                                    </p>
-                                                </div>
+                                                <span class="text-slate-400">
+                                                    {{ $publishedDate($pick) }}
+                                                </span>
                                             </div>
 
-                                            <div class="mt-5 inline-flex items-center gap-2 text-sm font-black text-brand-navy">
-                                                Baca pilihan <span class="transition group-hover:translate-x-1">→</span>
+                                            <h3 class="insight-clamp-3 mt-3 text-lg font-black leading-tight text-brand-ink transition group-hover:text-brand-navy">
+                                                {{ $pick->title }}
+                                            </h3>
+
+                                            <p class="insight-clamp-2 mt-3 text-sm leading-6 text-slate-600">
+                                                {{ $excerpt($pick, 118) }}
+                                            </p>
+
+                                            <div class="mt-auto pt-5">
+                                                <div class="flex items-center gap-3">
+                                                    <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-brand-mist text-xs font-black text-brand-navy">
+                                                        {{ $authorInitial($pick) }}
+                                                    </div>
+
+                                                    <div class="min-w-0">
+                                                        <p class="truncate text-xs font-black text-brand-ink">
+                                                            {{ $authorName($pick) }}
+                                                        </p>
+
+                                                        <p class="text-[11px] font-semibold text-slate-500">
+                                                            {{ $readingTime($pick) }}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div class="mt-5 inline-flex min-h-10 items-center gap-2 rounded-xl border border-brand-navy/15 px-3 text-sm font-black text-brand-navy opacity-90 transition group-hover:border-brand-navy group-hover:bg-brand-navy group-hover:text-white">
+                                                    Baca pilihan <span class="transition group-hover:translate-x-1">→</span>
+                                                </div>
                                             </div>
                                         </div>
-                                    </div>
-                                </a>
-                            </article>
-                        @endforeach
+                                    </a>
+                                </article>
+                            @endforeach
+                        </div>
                     </div>
                 @else
                     <div class="rounded-3xl border border-dashed border-slate-300 bg-white p-10 text-center">
@@ -667,18 +635,18 @@
         </div>
     </section>
 
-    <section class="border-t border-slate-200 bg-slate-50 py-16 lg:py-20">
+    <section class="border-t border-slate-200 bg-slate-50 py-20 lg:py-24">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="grid gap-6 lg:grid-cols-3">
-                <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
+                <article class="rounded-[20px] border border-[#ECECEC] bg-white p-7 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
                     <h2 class="text-xl font-black leading-tight text-brand-ink">
                         Paling Banyak Dibaca
                     </h2>
 
-                    <div class="mt-5 space-y-4">
-                        @forelse ($popularInsights->take(3) as $popularIndex => $popular)
-                            <a href="{{ route('insights.show', $popular->slug) }}" class="group grid grid-cols-[2rem_minmax(0,1fr)] gap-3 border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
-                                <div class="font-display text-2xl font-black leading-none text-brand-navy">
+                    <div class="mt-5 space-y-2">
+                        @forelse ($popularInsights->take(4) as $popularIndex => $popular)
+                            <a href="{{ route('insights.show', $popular->slug) }}" class="group grid grid-cols-[3rem_minmax(0,1fr)] gap-3 rounded-2xl p-3 transition duration-[250ms] hover:bg-[#F8FAFC] {{ $popularIndex === 0 ? 'border border-brand-amber/30 bg-brand-amber-soft/45' : '' }}">
+                                <div class="font-display text-4xl font-black leading-none text-brand-amber">
                                     {{ $popularIndex + 1 }}
                                 </div>
 
@@ -700,24 +668,28 @@
                     </div>
                 </article>
 
-                <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
+                <article class="rounded-[20px] border border-[#ECECEC] bg-white p-7 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
                     <h2 class="text-xl font-black leading-tight text-brand-ink">
-                        Kategori Insight
+                        Semua Kategori
                     </h2>
 
                     <div class="mt-5 flex flex-wrap gap-2">
-                        @forelse ($insightCategories as $category)
-                            <a
-                                href="{{ route('insights.index', ['category' => $category->slug]) }}#insight-archive"
-                                class="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-2 text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
-                            >
-                                <span>{{ $category->name }}</span>
+                        @forelse ($categoryChips as $chip)
+                            @php
+                                $category = $chip['category'] ?? null;
+                                $chipUrl = $chip['url'] ?? route('insights.index', ['q' => $chip['label'] ?? 'Insight']);
+                                $chipCount = (int) ($chip['article_count'] ?? 0);
+                            @endphp
 
-                                @if (isset($category->published_insights_count))
-                                    <span class="rounded-full bg-brand-mist px-2 py-0.5 text-[10px] text-brand-ink group-hover:bg-white/20">
-                                        {{ $category->published_insights_count }}
-                                    </span>
-                                @endif
+                            <a
+                                href="{{ $chipUrl }}#insight-archive"
+                                class="group inline-flex min-h-10 items-center gap-2 rounded-full border border-slate-200 bg-white px-3.5 py-2 text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
+                            >
+                                <span>{{ $chip['label'] ?? $category?->name ?? 'Insight' }}</span>
+
+                                <span class="rounded-full bg-brand-mist px-2 py-0.5 text-[10px] text-brand-ink transition group-hover:bg-white/20 group-hover:text-white">
+                                    {{ $chipCount }}
+                                </span>
                             </a>
                         @empty
                             <p class="rounded-2xl border border-dashed border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-500">
@@ -727,20 +699,20 @@
                     </div>
                 </article>
 
-                <article class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm shadow-slate-900/5">
+                <article class="rounded-[20px] border border-[#ECECEC] bg-white p-7 shadow-[0_10px_30px_rgba(0,0,0,0.05)]">
                     <h2 class="text-xl font-black leading-tight text-brand-ink">
                         Trending Issue
                     </h2>
 
-                    <div class="mt-5 space-y-4">
+                    <div class="mt-5 space-y-2">
                         @foreach ($trendingIssues as $issue)
-                            <a href="{{ route('insights.index', ['q' => $issue['title']]) }}#insight-archive" class="group flex items-center justify-between gap-4 border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
+                            <a href="{{ route('insights.index', ['q' => $issue['title']]) }}#insight-archive" class="group flex min-h-16 items-center justify-between gap-4 rounded-2xl p-3 transition hover:bg-[#F8FAFC]">
                                 <div class="min-w-0">
                                     <h3 class="text-sm font-black text-brand-ink transition group-hover:text-brand-navy">
                                         {{ $issue['title'] }}
                                     </h3>
 
-                                    <p class="mt-1 text-xs leading-5 text-slate-500">
+                                    <p class="insight-clamp-1 mt-1 text-xs leading-5 text-slate-500">
                                         {{ $issue['description'] }}
                                     </p>
                                 </div>
@@ -951,9 +923,13 @@
     @endif
 
     <x-shared.cta-section
+        class="insight-cta-large"
         eyebrow="Kolaborasi Insight"
         title="Punya isu hukum yang perlu dijelaskan ke publik?"
-        body="Edulaw Project terbuka untuk mengembangkan artikel, serial edukasi, diskusi, dan materi literasi hukum berbasis isu aktual."
+        body="Kembangkan isu hukum menjadi artikel, serial edukasi, diskusi, atau materi literasi publik yang mudah dipahami."
+        background-image="https://images.unsplash.com/photo-1556761175-5973dc0f32e7?auto=format&fit=crop&w=1800&q=85"
+        background-alt="Kolaborasi editorial dan diskusi hukum Edulaw Project"
+        title-class="lg:text-[2.85rem]"
         :primary-url="route('collaboration.index')"
         primary-label="Ajukan Kolaborasi"
         :secondary-url="route('contact.index')"

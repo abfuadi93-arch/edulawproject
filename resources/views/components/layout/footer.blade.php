@@ -14,8 +14,8 @@
 @endphp
 
 <footer class="border-t border-slate-200 bg-white text-brand-ink">
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-9">
-        <div class="grid gap-8 lg:grid-cols-[1.15fr_2.85fr]">
+    <div class="mx-auto max-w-7xl px-4 py-10 sm:px-6 lg:px-8 lg:py-12">
+        <div class="grid gap-10 lg:grid-cols-[1.15fr_2.85fr]">
             {{-- Brand --}}
             <div>
                 <a href="{{ url('/') }}" class="inline-flex items-center">
@@ -26,25 +26,25 @@
                     >
                 </a>
 
-                <p class="mt-4 max-w-sm text-sm leading-6 text-slate-600">
+                <p class="mt-5 max-w-sm text-sm leading-7 text-slate-600">
                     {{ $siteDescription }}
                 </p>
 
-                <p class="mt-4 inline-flex rounded-full border border-brand-silver bg-brand-paper px-3.5 py-1.5 text-xs font-bold text-brand-ink">
+                <p class="mt-5 inline-flex rounded-full border border-brand-silver bg-brand-paper px-3.5 py-1.5 text-xs font-bold text-brand-ink">
                     {{ $tagline }}
                 </p>
 
             </div>
 
             <div>
-                <div class="grid gap-7 sm:grid-cols-3">
+                <div class="grid gap-8 sm:grid-cols-3">
                     {{-- Kanal Utama --}}
                     <div>
                         <h3 class="text-sm font-extrabold text-brand-ink">
                             Kanal Utama
                         </h3>
 
-                        <ul class="mt-4 space-y-2.5 text-sm">
+                        <ul class="mt-5 space-y-3 text-sm">
                             <li><a href="{{ url('/insight') }}" class="text-slate-600 transition hover:text-brand-ink">Insight</a></li>
                             <li><a href="{{ url('/publikasi') }}" class="text-slate-600 transition hover:text-brand-ink">Riset &amp; Publikasi</a></li>
                             <li><a href="{{ url('/program') }}" class="text-slate-600 transition hover:text-brand-ink">Program</a></li>
@@ -59,7 +59,7 @@
                             Kolaborasi
                         </h3>
 
-                        <ul class="mt-4 space-y-2.5 text-sm">
+                        <ul class="mt-5 space-y-3 text-sm">
                             <li><a href="{{ url('/kolaborasi') }}" class="text-slate-600 transition hover:text-brand-ink">Ajukan Kolaborasi</a></li>
                             <li><a href="{{ url('/tentang') }}" class="text-slate-600 transition hover:text-brand-ink">Tentang Edulaw</a></li>
                             <li><a href="{{ url('/kontak') }}" class="text-slate-600 transition hover:text-brand-ink">Kontak</a></li>
@@ -72,7 +72,7 @@
                             Follow Us
                         </h3>
 
-                        <ul class="mt-4 space-y-2.5 text-sm font-semibold text-slate-600">
+                        <ul class="mt-5 space-y-3.5 text-sm font-semibold text-slate-600">
                             <li>
                                 <a
                                     href="{{ $instagramUrl }}"
@@ -129,8 +129,8 @@
                 </div>
 
                 {{-- Terhubung --}}
-                <div class="mt-6">
-                    <div class="grid gap-3 sm:grid-cols-3">
+                <div class="mt-8 border-t border-slate-100 pt-6">
+                    <div class="grid gap-4 sm:grid-cols-3">
                         <div class="flex min-w-0 items-start gap-2.5 text-sm">
                             <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-paper text-brand-navy">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -181,7 +181,7 @@
         </div>
 
         {{-- Bottom --}}
-        <div class="mt-5 flex flex-col gap-3 border-t border-slate-200 pt-4 text-sm text-slate-500 md:flex-row md:items-center md:justify-between">
+        <div class="mt-8 flex flex-col gap-3 border-t border-slate-200 pt-5 text-sm font-medium text-slate-500 md:flex-row md:items-center md:justify-between">
             <p>
                 © {{ now()->year }} {{ $siteName }}. All rights reserved.
             </p>

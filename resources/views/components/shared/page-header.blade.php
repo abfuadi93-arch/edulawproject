@@ -9,6 +9,8 @@
     'gridClass' => null,
     'titleClass' => null,
     'contentClass' => null,
+    'descriptionClass' => null,
+    'accentLine' => false,
 ])
 
 @php
@@ -28,16 +30,16 @@
             alt="{{ $backgroundAlt ?: $title }}"
             class="absolute inset-0 z-0 h-full w-full object-cover object-center"
         >
-        <div class="absolute inset-0 z-0 bg-linear-to-r from-[#06132a]/86 via-brand-navy/68 via-48% to-brand-navy/28"></div>
-        <div class="absolute inset-0 z-0 bg-linear-to-t from-[#06132a]/58 via-[#06132a]/12 to-[#06132a]/24"></div>
-        <div class="absolute inset-y-0 left-0 z-0 hidden w-[50%] bg-[#06132a]/18 lg:block"></div>
+        <div class="absolute inset-0 z-0 bg-linear-to-r from-[#06132a]/92 via-brand-navy/70 via-48% to-brand-navy/24"></div>
+        <div class="absolute inset-0 z-0 bg-linear-to-t from-[#06132a]/52 via-[#06132a]/10 to-[#06132a]/28"></div>
+        <div class="absolute inset-y-0 left-0 z-0 hidden w-[54%] bg-[#06132a]/24 lg:block"></div>
         <div class="absolute bottom-0 left-0 right-0 z-0 h-px bg-white/12"></div>
     @endif
 
     <div class="relative z-10 mx-auto grid w-screen max-w-7xl {{ $gridClass ?: $defaultGridClass }}">
         <div class="min-w-0">
             @if (! empty($breadcrumbs))
-                <nav class="flex flex-wrap items-center gap-2 text-sm font-bold {{ $hasBackground ? 'text-white/68' : 'text-slate-500' }}">
+                <nav class="flex flex-wrap items-center gap-2 {{ $compact ? 'text-xs' : 'text-sm' }} font-bold {{ $hasBackground ? 'text-white/68' : 'text-slate-500' }}">
                     @foreach ($breadcrumbs as $breadcrumb)
                         @php
                             $breadcrumbLabel = is_array($breadcrumb) ? ($breadcrumb['label'] ?? null) : null;
@@ -64,7 +66,7 @@
             @endif
 
             @if ($eyebrow)
-                <p class="{{ $compact ? 'mt-4' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $hasBackground ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
+                <p class="{{ $compact ? 'mt-3' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $hasBackground ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
                     {{ $eyebrow }}
                 </p>
             @endif
@@ -77,9 +79,13 @@
         @if ($description || ! $slot->isEmpty())
             <div class="min-w-0 lg:ml-auto lg:w-full">
                 @if ($description)
-                    <p class="max-w-[calc(100vw-2rem)] {{ $compact ? 'text-sm leading-7' : 'text-base leading-8' }} {{ $hasBackground ? 'text-white/84' : 'text-slate-600' }} sm:max-w-2xl lg:ml-auto">
+                    <p class="{{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-sm leading-7' : 'text-base leading-8').' '.($hasBackground ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto' }}">
                         {{ $description }}
                     </p>
+
+                    @if ($accentLine)
+                        <span class="mt-5 block h-1 w-14 rounded-full bg-brand-amber"></span>
+                    @endif
                 @endif
 
                 @if (! $slot->isEmpty())

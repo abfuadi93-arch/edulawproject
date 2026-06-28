@@ -179,7 +179,7 @@ class InsightController extends Controller
 
         return $query
             ->latest('id')
-            ->take(3)
+            ->take(4)
             ->get();
     }
 
@@ -187,44 +187,82 @@ class InsightController extends Controller
     {
         $definitions = collect([
             [
-                'label' => 'Edulaw Insight',
-                'icon' => 'spark',
-                'aliases' => ['insight', 'legal insight', 'opini hukum', 'riset hukum'],
+                'label' => 'Law & Governance',
+                'icon' => 'column',
+                'description' => 'Kajian hukum tata negara, kebijakan publik, dan perkembangan regulasi.',
+                'aliases' => ['law governance', 'law and governance', 'constitution governance', 'constitution and governance', 'kebijakan publik'],
             ],
             [
                 'label' => 'Legal 101',
                 'icon' => 'book',
+                'description' => 'Dasar-dasar hukum yang penting untuk dipahami semua orang.',
                 'aliases' => ['legal 101', 'law 101'],
-            ],
-            [
-                'label' => 'Law & Governance',
-                'icon' => 'column',
-                'aliases' => ['law governance', 'law and governance', 'constitution governance', 'constitution and governance', 'kebijakan publik'],
             ],
             [
                 'label' => 'Regulatory Update',
                 'icon' => 'document',
+                'description' => 'Update regulasi terbaru dan dampaknya terhadap masyarakat.',
                 'aliases' => ['regulatory update', 'regulation update', 'regulasi', 'pembaruan regulasi'],
+            ],
+            [
+                'label' => 'Edulaw Insight',
+                'icon' => 'spark',
+                'description' => 'Analisis hukum terkini dari riset dan pengalaman tim Edulaw Project.',
+                'aliases' => ['insight', 'legal insight', 'opini hukum', 'riset hukum'],
+            ],
+            [
+                'label' => 'Policy & Society',
+                'icon' => 'people',
+                'description' => 'Irisan kebijakan publik, masyarakat, hak warga, dan tata kelola sosial.',
+                'aliases' => ['policy society', 'policy and society', 'kebijakan masyarakat', 'sosial'],
+            ],
+            [
+                'label' => 'Teknologi Hukum',
+                'icon' => 'tech',
+                'description' => 'Perkembangan teknologi, data, AI, dan transformasi digital dalam hukum.',
+                'aliases' => ['teknologi hukum', 'law technology', 'legal tech', 'technology law'],
+            ],
+            [
+                'label' => 'Ekonomi & Bisnis',
+                'icon' => 'briefcase',
+                'description' => 'Analisis hukum bisnis, ekonomi, pasar, dan regulasi dunia usaha.',
+                'aliases' => ['ekonomi bisnis', 'ekonomi and bisnis', 'business law', 'ekonomi'],
+            ],
+            [
+                'label' => 'International Law',
+                'icon' => 'globe',
+                'description' => 'Catatan hukum internasional, diplomasi, hak asasi, dan isu lintas negara.',
+                'aliases' => ['international law', 'hukum internasional', 'internasional'],
             ],
         ]);
 
-        return $definitions->map(function (array $definition) use ($categories): array {
+        $resolvedCategories = $definitions
+            ->map(fn (array $definition): ?InsightCategory => $this->resolveInsightCategory($categories, $definition['aliases']))
+            ->filter();
+
+        $articlesByCategory = $resolvedCategories->isNotEmpty()
+            ? Insight::query()
+                ->with(['categoryRelation', 'authors'])
+                ->published()
+                ->whereIn('insight_category_id', $resolvedCategories->pluck('id')->all())
+                ->orderByDesc('published_at')
+                ->latest('id')
+                ->get()
+                ->groupBy('insight_category_id')
+                ->map(fn (Collection $items): Collection => $items->take(3)->values())
+            : collect();
+
+        return $definitions->map(function (array $definition) use ($categories, $articlesByCategory): array {
             $category = $this->resolveInsightCategory($categories, $definition['aliases']);
 
             $articles = $category
-                ? Insight::query()
-                    ->with(['categoryRelation', 'authors'])
-                    ->published()
-                    ->where('insight_category_id', $category->id)
-                    ->orderByDesc('published_at')
-                    ->latest('id')
-                    ->take(3)
-                    ->get()
+                ? $articlesByCategory->get($category->id, collect())
                 : collect();
 
             return [
                 ...$definition,
                 'category' => $category,
+                'article_count' => (int) ($category?->published_insights_count ?? 0),
                 'articles' => $articles,
                 'url' => $category
                     ? route('insights.index', ['category' => $category->slug])
