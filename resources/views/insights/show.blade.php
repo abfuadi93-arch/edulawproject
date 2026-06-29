@@ -107,11 +107,7 @@
                 </span>
             </nav>
 
-            <p class="edulaw-badge edulaw-badge-lg edulaw-badge-amber-solid">
-                {{ $categoryName }}
-            </p>
-
-            <h1 class="mt-4 max-w-6xl break-words text-balance text-3xl font-black leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl lg:leading-[1.04]">
+            <h1 class="max-w-6xl break-words text-balance text-3xl font-black leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl lg:leading-[1.04]">
                 {{ $insight->title }}
             </h1>
 

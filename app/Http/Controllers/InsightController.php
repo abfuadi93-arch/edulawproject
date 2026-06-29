@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Insight;
 use App\Models\InsightCategory;
+use App\Models\Tag;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
@@ -46,7 +47,7 @@ class InsightController extends Controller
             ->published()
             ->orderByDesc('published_at')
             ->latest('id')
-            ->take(4)
+            ->take(12)
             ->get();
 
         return view('insights.index', [
@@ -54,6 +55,7 @@ class InsightController extends Controller
             'insightChannels' => $this->insightChannels($insightCategories),
             'editorialPicks' => $this->editorialPicks($latestInsights->pluck('id')->all()),
             'popularInsights' => $this->popularInsights(),
+            'popularTags' => $this->popularTags(),
             'insights' => $query
                 ->orderByDesc('published_at')
                 ->latest('id')
@@ -113,6 +115,7 @@ class InsightController extends Controller
 
     private function editorialPicks(array $excludedIds = []): Collection
     {
+        $target = 5;
         $excludedIds = collect($excludedIds)->filter()->unique()->values();
 
         $featured = Insight::query()
@@ -122,10 +125,10 @@ class InsightController extends Controller
             ->whereNotIn('id', $excludedIds->all())
             ->orderByDesc('published_at')
             ->latest('id')
-            ->take(3)
+            ->take($target)
             ->get();
 
-        if ($featured->count() >= 3) {
+        if ($featured->count() >= $target) {
             return $featured;
         }
 
@@ -135,15 +138,15 @@ class InsightController extends Controller
             ->whereNotIn('id', $excludedIds->merge($featured->pluck('id'))->unique()->all())
             ->orderByDesc('published_at')
             ->latest('id')
-            ->take(3 - $featured->count())
+            ->take($target - $featured->count())
             ->get();
 
         $picks = $featured
             ->concat($fallback)
-            ->take(3)
+            ->take($target)
             ->values();
 
-        if ($picks->count() >= 3) {
+        if ($picks->count() >= $target) {
             return $picks;
         }
 
@@ -153,12 +156,12 @@ class InsightController extends Controller
             ->whereNotIn('id', $picks->pluck('id')->all())
             ->orderByDesc('published_at')
             ->latest('id')
-            ->take(3 - $picks->count())
+            ->take($target - $picks->count())
             ->get();
 
         return $picks
             ->concat($secondaryFallback)
-            ->take(3)
+            ->take($target)
             ->values();
     }
 
@@ -179,7 +182,20 @@ class InsightController extends Controller
 
         return $query
             ->latest('id')
-            ->take(4)
+            ->take(5)
+            ->get();
+    }
+
+    private function popularTags(): Collection
+    {
+        return Tag::query()
+            ->whereHas('insights', fn ($query) => $query->published())
+            ->withCount([
+                'insights as published_insights_count' => fn ($query) => $query->published(),
+            ])
+            ->orderByDesc('published_insights_count')
+            ->orderBy('name')
+            ->take(12)
             ->get();
     }
 

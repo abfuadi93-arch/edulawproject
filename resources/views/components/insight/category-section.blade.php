@@ -3,33 +3,37 @@
 ])
 
 @php
-    $channels = collect($channels);
+    $preferredChannels = collect([
+        'Law & Governance',
+        'Legal 101',
+        'Edulaw Insight',
+        'Regulatory Update',
+    ]);
+
+    $channels = collect($channels)
+        ->filter(fn (array $channel): bool => $preferredChannels->contains($channel['label'] ?? ''))
+        ->sortBy(fn (array $channel): int => $preferredChannels->search($channel['label'] ?? '') ?: 0)
+        ->values();
 @endphp
 
-<section class="bg-white py-20 lg:py-24">
-    <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        <div class="mb-8 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+<section class="bg-white py-16">
+    <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+        <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-            <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
-                Jelajahi Kanal Insight
-            </p>
-
-                <h2 class="mt-2 text-[2.25rem] font-black leading-tight text-brand-ink sm:text-[2.5rem]">
-                    Pilih kanal dan baca perkembangan terbarunya.
+                <h2 class="text-3xl font-black leading-tight text-brand-ink">
+                    Jelajahi Kanal Insight
                 </h2>
+            </div>
 
-                <p class="mt-2 max-w-2xl text-sm font-semibold leading-6 text-slate-500">
-                Jelajahi artikel terbaru dari setiap kanal sesuai minat Anda.
-            </p>
-        </div>
-
-            <a href="{{ route('insights.index', ['archive' => 'latest']) }}#insight-archive" class="inline-flex min-h-11 items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-ink">
-                Semua kanal
-                <span>→</span>
+            <a href="{{ route('insights.index', ['archive' => 'latest']) }}#insight-archive" class="group inline-flex min-h-10 items-center gap-2 text-sm font-bold text-brand-navy underline-offset-4 transition hover:underline">
+                Lihat semua
+                <svg class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                    <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
             </a>
         </div>
 
-        <div class="insight-control-scroll -mx-4 flex snap-x gap-5 overflow-x-auto px-4 pb-4 sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 xl:grid-cols-4">
+        <div class="grid gap-6 md:grid-cols-2">
             @foreach ($channels as $channel)
                 <x-insight.category-card :channel="$channel" />
             @endforeach

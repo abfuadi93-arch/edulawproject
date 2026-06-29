@@ -9,33 +9,28 @@
         $date = $article->published_at
             ? \Illuminate\Support\Carbon::parse($article->published_at)->translatedFormat('d M Y')
             : 'Belum dijadwalkan';
-        $readingTime = ! empty($article->reading_time)
-            ? $article->reading_time.' menit baca'
-            : max(1, (int) ceil(str_word_count(strip_tags(($article->content ?? '').' '.($article->excerpt ?? ''))) / 200)).' menit baca';
     @endphp
 
-    <a href="{{ $url }}" class="group/article grid min-h-[4.5rem] grid-cols-[3.25rem_minmax(0,1fr)] gap-3 rounded-xl p-2 transition duration-200 hover:bg-[#EAF2FF]">
-        <div class="relative h-[3.25rem] w-[3.25rem] overflow-hidden rounded-[10px] bg-linear-to-br from-brand-navy via-[#224C7D] to-brand-teal">
+    <a href="{{ $url }}" class="group/article grid grid-cols-[4.25rem_minmax(0,1fr)] gap-3 border-t border-slate-100 py-3 first:border-t-0 first:pt-0">
+        <div class="relative aspect-4/3 overflow-hidden rounded-xl bg-linear-to-br from-[#061A3D] via-[#1E3763] to-[#476D8A]">
             @if ($image)
                 <img
                     src="{{ $image }}"
                     alt="{{ $article->title }}"
                     loading="lazy"
-                    class="absolute inset-0 z-10 h-full w-full object-cover transition duration-200 group-hover/article:scale-105"
-                    onerror="this.classList.add('hidden')"
+                    class="absolute inset-0 h-full w-full object-cover transition duration-[250ms] ease-out group-hover/article:scale-[1.05]"
+                    onerror="this.remove()"
                 >
             @endif
         </div>
 
         <div class="min-w-0">
-            <h4 class="insight-clamp-2 text-[13px] font-black leading-snug text-brand-ink transition group-hover/article:text-brand-navy">
+            <h4 class="insight-clamp-2 text-sm font-semibold leading-snug text-brand-ink underline-offset-4 transition group-hover/article:text-brand-navy group-hover/article:underline">
                 {{ $article->title }}
             </h4>
 
-            <p class="mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-[11px] font-semibold text-slate-500">
-                <span>{{ $date }}</span>
-                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                <span>{{ $readingTime }}</span>
+            <p class="mt-1 text-xs font-medium text-slate-500">
+                {{ $date }}
             </p>
         </div>
     </a>
