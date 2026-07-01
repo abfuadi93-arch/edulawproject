@@ -16,17 +16,17 @@ class Multimedia extends Model
     protected $table = 'multimedia';
 
     public const TYPE_OPTIONS = [
-        'video' => 'Video',
-        'podcast' => 'Podcast',
-        'documentation' => 'Dokumentasi',
+        'video' => 'YouTube Video',
         'shorts' => 'Shorts',
-        'webinar' => 'Webinar',
-        'gallery' => 'Galeri',
+        'reels' => 'Reels',
+        'gallery' => 'Google Photos Album',
+        'documentation' => 'Dokumentasi Foto',
+        'podcast' => 'Podcast',
         'poster' => 'Poster',
+        'webinar' => 'Webinar',
     ];
 
     public const TYPE_ALIASES = [
-        'reels' => 'shorts',
         'short' => 'shorts',
     ];
 
@@ -35,7 +35,7 @@ class Multimedia extends Model
         'instagram' => 'Instagram',
         'tiktok' => 'TikTok',
         'spotify' => 'Spotify',
-        'website' => 'Website',
+        'website' => 'Website / Google Photos',
         'gallery' => 'Galeri',
         'other' => 'Lainnya',
     ];
@@ -68,6 +68,7 @@ class Multimedia extends Model
         'video',
         'podcast',
         'shorts',
+        'reels',
         'webinar',
     ];
 
@@ -98,7 +99,7 @@ class Multimedia extends Model
     ];
 
     protected $casts = [
-        'published_at' => 'date',
+        'published_at' => 'datetime',
         'featured' => 'boolean',
         'photo_count' => 'integer',
     ];
@@ -120,15 +121,22 @@ class Multimedia extends Model
             return [];
         }
 
-        return collect([$normalizedType])
+        $variants = collect([$normalizedType])
             ->merge(
                 collect(self::TYPE_ALIASES)
                     ->filter(fn (string $alias): bool => $alias === $normalizedType)
                     ->keys()
-            )
-            ->unique()
-            ->values()
-            ->all();
+            );
+
+        if ($normalizedType === 'shorts') {
+            $variants->push('reels');
+        }
+
+        if ($normalizedType === 'reels') {
+            $variants->push('shorts');
+        }
+
+        return $variants->unique()->values()->all();
     }
 
     public function setTypeAttribute(?string $value): void
@@ -138,7 +146,75 @@ class Multimedia extends Model
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->whereIn('status', ['published', 'terbit']);
+        return $query
+            ->whereIn('status', ['published', 'terbit'])
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('published_at')
+                    ->orWhere('published_at', '<=', now());
+            });
+    }
+
+    public function scopeFeatured(Builder $query): Builder
+    {
+        return $query->where('featured', true);
+    }
+
+    public function scopeYoutubeVideos(Builder $query): Builder
+    {
+        return $query
+            ->where(function (Builder $query): void {
+                $query
+                    ->where('platform', 'youtube')
+                    ->orWhereIn('type', self::typeVariants('video'))
+                    ->orWhere('media_url', 'like', '%youtube.com%')
+                    ->orWhere('media_url', 'like', '%youtu.be%')
+                    ->orWhere('embed_url', 'like', '%youtube.com%')
+                    ->orWhere('embed_url', 'like', '%youtu.be%');
+            })
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('type')
+                    ->orWhereNotIn('type', self::typeVariants('shorts'));
+            })
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('media_url')
+                    ->orWhere('media_url', 'not like', '%/shorts/%');
+            })
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('embed_url')
+                    ->orWhere('embed_url', 'not like', '%/shorts/%');
+            });
+    }
+
+    public function scopeShortsReels(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query): void {
+            $query
+                ->whereIn('type', self::typeVariants('shorts'))
+                ->orWhereIn('platform', ['instagram', 'tiktok'])
+                ->orWhere('media_url', 'like', '%/shorts/%')
+                ->orWhere('embed_url', 'like', '%/shorts/%')
+                ->orWhere('media_url', 'like', '%instagram.com/reel%')
+                ->orWhere('embed_url', 'like', '%instagram.com/reel%')
+                ->orWhere('media_url', 'like', '%tiktok.com%')
+                ->orWhere('embed_url', 'like', '%tiktok.com%');
+        });
+    }
+
+    public function scopePhotoAlbums(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query): void {
+            $query
+                ->whereIn('type', array_merge(self::typeVariants('gallery'), self::typeVariants('documentation')))
+                ->orWhere('platform', 'google_photos')
+                ->orWhere('media_url', 'like', '%photos.app.goo.gl%')
+                ->orWhere('media_url', 'like', '%photos.google.com%')
+                ->orWhere('embed_url', 'like', '%photos.app.goo.gl%')
+                ->orWhere('embed_url', 'like', '%photos.google.com%');
+        });
     }
 
     public function creator(): BelongsTo

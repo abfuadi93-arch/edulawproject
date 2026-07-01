@@ -98,7 +98,7 @@ class SearchController extends Controller
                 ]);
 
             $multimedia = Multimedia::query()
-                ->where('status', 'published')
+                ->published()
                 ->where(function ($q) use ($query) {
                     $q->where('title', 'like', "%{$query}%")
                         ->orWhere('description', 'like', "%{$query}%");

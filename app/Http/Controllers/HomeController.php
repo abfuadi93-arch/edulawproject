@@ -40,14 +40,14 @@ class HomeController extends Controller
             ->get();
 
         $featuredMultimedia = Multimedia::query()
-            ->where('status', 'published')
-            ->where('featured', true)
+            ->published()
+            ->featured()
             ->orderByDesc('published_at')
             ->latest()
             ->first();
 
         $latestMultimedia = Multimedia::query()
-            ->where('status', 'published')
+            ->published()
             ->orderByDesc('published_at')
             ->latest()
             ->limit(3)

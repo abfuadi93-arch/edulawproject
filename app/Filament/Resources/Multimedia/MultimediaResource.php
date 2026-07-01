@@ -9,7 +9,7 @@ use App\Filament\Resources\Multimedia\Pages\ListMultimedia;
 use App\Models\Multimedia;
 use BackedEnum;
 use Filament\Actions;
-use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -27,6 +27,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class MultimediaResource extends Resource
@@ -58,9 +59,14 @@ class MultimediaResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('1. Informasi Multimedia')
+                                Section::make('Panduan Pengisian')
+                                    ->icon('heroicon-o-information-circle')
+                                    ->description('Gunakan form ini untuk mengelola tiga kanal Multimedia Edulaw: YouTube Video, Shorts/Reels, dan Google Photos Album. Pilih jenis konten yang sesuai, isi URL utama, lalu unggah thumbnail agar tampilan halaman publik tetap rapi.')
+                                    ->schema([]),
+
+                                Section::make('1. Identitas Konten')
                                     ->icon('heroicon-o-play-circle')
-                                    ->description('Kelola informasi ringkas konten yang tampil di halaman Multimedia.')
+                                    ->description('Kelola judul, slug, dan ringkasan konten yang tampil di halaman Multimedia.')
                                     ->schema([
                                         Grid::make([
                                             'default' => 1,
@@ -68,10 +74,11 @@ class MultimediaResource extends Resource
                                         ])
                                             ->schema([
                                                 TextInput::make('title')
-                                                    ->label('Judul')
+                                                    ->label('Judul Konten')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->live(onBlur: true)
+                                                    ->placeholder('Diskusi Literasi Konstitusi #1')
                                                     ->afterStateUpdated(static::syncSlugFrom()),
 
                                                 TextInput::make('slug')
@@ -79,11 +86,34 @@ class MultimediaResource extends Resource
                                                     ->required()
                                                     ->unique(ignoreRecord: true)
                                                     ->maxLength(255)
-                                                    ->helperText('Slug digunakan sebagai alamat multimedia di website.'),
+                                                    ->helperText('Slug otomatis dari judul, tetapi tetap bisa diedit.'),
+                                            ])
+                                            ->columnSpanFull(),
 
+                                        Textarea::make('description')
+                                            ->label('Deskripsi Singkat')
+                                            ->rows(5)
+                                            ->maxLength(300)
+                                            ->required()
+                                            ->live()
+                                            ->placeholder('Tulis ringkasan singkat konten multimedia...')
+                                            ->helperText('Tulis ringkasan 1-3 kalimat. Untuk card public, deskripsi akan dipotong otomatis.')
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
+
+                                Section::make('2. Kanal Multimedia')
+                                    ->icon('heroicon-o-rectangle-stack')
+                                    ->description('Pilih salah satu kanal utama halaman Multimedia publik.')
+                                    ->schema([
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
                                                 Select::make('type')
-                                                    ->label('Tipe Konten')
-                                                    ->options(Multimedia::TYPE_OPTIONS)
+                                                    ->label('Jenis Konten')
+                                                    ->options(static::adminTypeOptions())
                                                     ->default('video')
                                                     ->live()
                                                     ->afterStateUpdated(function (Set $set, ?string $state): void {
@@ -91,87 +121,78 @@ class MultimediaResource extends Resource
 
                                                         $set('type', $type);
 
-                                                        if (static::isPlayableType($type)) {
-                                                            $set('photo_count', null);
+                                                        match ($type) {
+                                                            'video' => $set('platform', 'youtube'),
+                                                            'shorts' => $set('platform', 'youtube'),
+                                                            'reels' => $set('platform', 'instagram'),
+                                                            'gallery', 'documentation' => $set('platform', 'website'),
+                                                            default => null,
+                                                        };
 
-                                                            return;
-                                                        }
-
-                                                        $set('duration', null);
-                                                        $set('platform', 'website');
-
-                                                        if (static::isPosterType($type)) {
-                                                            $set('photo_count', null);
+                                                        if (static::isGalleryType($type)) {
+                                                            $set('duration', null);
+                                                            $set('embed_url', null);
                                                         }
                                                     })
                                                     ->searchable()
+                                                    ->required(),
+
+                                                Select::make('platform')
+                                                    ->label('Platform')
+                                                    ->options(static::adminPlatformOptions())
+                                                    ->default('youtube')
+                                                    ->searchable()
                                                     ->required()
-                                                    ->columnSpanFull(),
-                                            ])
-                                            ->columnSpanFull(),
+                                                    ->helperText('Untuk album Google Photos, pilih platform Website / Google Photos atau Lainnya.'),
+                                            ]),
+                                    ]),
 
-                                        Textarea::make('description')
-                                            ->label('Ringkasan')
-                                            ->rows(6)
-                                            ->maxLength(300)
-                                            ->required()
-                                            ->live()
-                                            ->placeholder('Tulis deskripsi singkat konten multimedia...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
-
-                                Section::make('2. Media dan Tautan')
+                                Section::make('3. Link dan Media')
                                     ->icon('heroicon-o-photo')
-                                    ->description('Field media akan menyesuaikan tipe konten yang dipilih.')
+                                    ->description('Isi URL utama dan unggah thumbnail agar card publik tidak kosong.')
                                     ->schema([
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                Select::make('platform')
-                                                    ->label('Platform')
-                                                    ->options(Multimedia::PLATFORM_OPTIONS)
-                                                    ->default('website')
-                                                    ->searchable()
-                                                    ->required(fn (Get $get): bool => static::isPlayableType($get('type')))
-                                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
 
                                                 TextInput::make('media_url')
-                                                    ->label(fn (Get $get): string => static::isPlayableType($get('type')) ? 'Link Media' : 'Link Opsional')
+                                                    ->label('URL Konten / Album')
+                                                    ->required()
                                                     ->url()
                                                     ->maxLength(255)
-                                                    ->placeholder('https://...')
-                                                    ->helperText(fn (Get $get): string => static::isPlayableType($get('type'))
-                                                        ? 'Tautan video, podcast, shorts, atau webinar.'
-                                                        : 'Opsional. Gunakan jika konten punya tautan eksternal.'),
+                                                    ->placeholder('https://www.youtube.com/watch?v=...')
+                                                    ->helperText('Isi URL YouTube, YouTube Shorts, Instagram Reels, TikTok, atau Google Photos Album.'),
+
+                                                TextInput::make('embed_url')
+                                                    ->label('Embed URL')
+                                                    ->url()
+                                                    ->maxLength(255)
+                                                    ->placeholder('https://www.youtube.com/embed/...')
+                                                    ->helperText(fn (Get $get): string => static::isGalleryType($get('type'))
+                                                        ? 'Opsional. Untuk album foto biasanya dikosongkan.'
+                                                        : 'Opsional. Untuk YouTube, isi URL embed jika tersedia. Jika kosong, website akan memakai URL konten utama.')
+                                                    ->visible(fn (Get $get): bool => ! static::isGalleryType($get('type'))),
 
                                                 TextInput::make('duration')
                                                     ->label('Durasi')
-                                                    ->placeholder('Contoh: 12:35')
+                                                    ->placeholder('Contoh: 12:35 atau 1:02:15')
+                                                    ->helperText('Opsional untuk video dan shorts. Kosongkan untuk album foto.')
                                                     ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
-
-                                                TextInput::make('photo_count')
-                                                    ->label('Jumlah Foto')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->placeholder('Contoh: 24')
-                                                    ->visible(fn (Get $get): bool => static::isGalleryType($get('type'))),
                                             ]),
 
                                         FileUpload::make('thumbnail')
-                                            ->label(fn (Get $get): string => static::isPosterType($get('type')) ? 'Upload Poster / Thumbnail' : 'Thumbnail')
+                                            ->label('Thumbnail / Cover')
                                             ->image()
                                             ->disk('public')
-                                            ->directory('multimedia')
+                                            ->directory('multimedia/thumbnails')
                                             ->visibility('public')
                                             ->imageEditor()
                                             ->imagePreviewHeight('180')
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->helperText('Rekomendasi format JPG, PNG, atau WebP. Maksimal 4 MB.')
+                                            ->maxSize(2048)
+                                            ->helperText('Gunakan rasio 16:9 untuk YouTube Video dan Google Photos Album. Gunakan rasio vertikal 4:5 atau 9:16 untuk Shorts/Reels. Maksimal 2 MB.')
                                             ->columnSpanFull(),
                                     ]),
                             ])
@@ -188,43 +209,21 @@ class MultimediaResource extends Resource
                                             ->label('Status')
                                             ->options([
                                                 'draft' => 'Draft',
-                                                'published' => 'Terbit',
-                                                'archived' => 'Arsip',
+                                                'published' => 'Published',
+                                                'archived' => 'Archived',
                                             ])
                                             ->default('draft')
                                             ->required(),
 
-                                        DatePicker::make('published_at')
-                                            ->label('Tanggal Publikasi'),
+                                        DateTimePicker::make('published_at')
+                                            ->label('Tanggal Publikasi')
+                                            ->seconds(false)
+                                            ->default(now()),
 
                                         Toggle::make('featured')
-                                            ->label('Tampilkan sebagai unggulan')
+                                            ->label('Jadikan Konten Pilihan')
+                                            ->helperText('Konten featured akan diprioritaskan sebagai video pilihan di halaman Multimedia.')
                                             ->default(false),
-                                    ])
-                                    ->columns(1),
-
-                                Section::make('Klasifikasi Halaman Publik')
-                                    ->icon('heroicon-o-rectangle-stack')
-                                    ->description('Tentukan serial, topik, dan posisi konten di halaman Multimedia.')
-                                    ->schema([
-                                        Select::make('serial')
-                                            ->label('Serial Multimedia')
-                                            ->options(Multimedia::SERIAL_OPTIONS)
-                                            ->searchable()
-                                            ->placeholder('Pilih serial multimedia'),
-
-                                        Select::make('topic')
-                                            ->label('Topik Multimedia')
-                                            ->options(Multimedia::TOPIC_OPTIONS)
-                                            ->searchable()
-                                            ->placeholder('Pilih topik multimedia'),
-
-                                        Select::make('display_section')
-                                            ->label('Section Tampilan')
-                                            ->options(Multimedia::DISPLAY_SECTION_OPTIONS)
-                                            ->default('latest')
-                                            ->required()
-                                            ->helperText('Pilih area utama tempat konten ini ditonjolkan di halaman publik.'),
                                     ])
                                     ->columns(1),
                             ])
@@ -241,14 +240,48 @@ class MultimediaResource extends Resource
         return in_array(Multimedia::normalizeType($type) ?: 'video', Multimedia::PLAYABLE_TYPES, true);
     }
 
+    private static function adminTypeOptions(): array
+    {
+        return [
+            'video' => 'YouTube Video',
+            'shorts' => 'YouTube Shorts',
+            'reels' => 'Reels / Video Pendek',
+            'gallery' => 'Google Photos Album',
+            'documentation' => 'Dokumentasi Foto/Kegiatan',
+        ];
+    }
+
+    private static function tableTypeOptions(): array
+    {
+        return static::adminTypeOptions() + [
+            'podcast' => 'Podcast',
+            'poster' => 'Poster',
+            'webinar' => 'Webinar',
+        ];
+    }
+
+    private static function adminPlatformOptions(): array
+    {
+        return [
+            'youtube' => 'YouTube',
+            'instagram' => 'Instagram',
+            'tiktok' => 'TikTok',
+            'website' => 'Website / Google Photos',
+            'other' => 'Lainnya',
+        ];
+    }
+
+    private static function tablePlatformOptions(): array
+    {
+        return static::adminPlatformOptions() + [
+            'spotify' => 'Spotify',
+            'gallery' => 'Galeri',
+        ];
+    }
+
     private static function isGalleryType(?string $type): bool
     {
         return in_array(Multimedia::normalizeType($type) ?: 'video', Multimedia::GALLERY_TYPES, true);
-    }
-
-    private static function isPosterType(?string $type): bool
-    {
-        return (Multimedia::normalizeType($type) ?: 'video') === 'poster';
     }
 
     public static function table(Table $table): Table
@@ -266,7 +299,7 @@ class MultimediaResource extends Resource
 
                 TextColumn::make('title')
                     ->label('Judul')
-                    ->searchable()
+                    ->searchable(['title', 'description', 'media_url'])
                     ->sortable()
                     ->limit(44)
                     ->wrap()
@@ -280,16 +313,17 @@ class MultimediaResource extends Resource
                     ->badge()
                     ->color(fn (?string $state): string => match (Multimedia::normalizeType($state)) {
                         'video' => 'primary',
-                        'podcast' => 'success',
-                        'poster' => 'warning',
+                        'shorts' => 'danger',
+                        'reels' => 'warning',
                         'gallery' => 'info',
                         'documentation' => 'gray',
-                        'shorts' => 'danger',
+                        'podcast' => 'success',
+                        'poster' => 'warning',
                         'webinar' => 'primary',
                         default => 'gray',
                     })
                     ->wrap()
-                    ->formatStateUsing(fn (?string $state): string => Multimedia::TYPE_OPTIONS[Multimedia::normalizeType($state)] ?? ($state ? Str::headline($state) : '-')),
+                    ->formatStateUsing(fn (?string $state): string => static::tableTypeOptions()[Multimedia::normalizeType($state)] ?? ($state ? Str::headline($state) : '-')),
 
                 TextColumn::make('platform')
                     ->label('Platform')
@@ -307,34 +341,10 @@ class MultimediaResource extends Resource
                     ->grow(false)
                     ->formatStateUsing(fn (?string $state): string => Multimedia::PLATFORM_OPTIONS[$state] ?? ($state ? Str::headline($state) : '-')),
 
-                TextColumn::make('serial')
-                    ->label('Serial')
-                    ->formatStateUsing(fn (?string $state): string => Multimedia::SERIAL_OPTIONS[$state] ?? ($state ? Str::headline($state) : '-'))
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('topic')
-                    ->label('Topik')
-                    ->formatStateUsing(fn (?string $state): string => Multimedia::TOPIC_OPTIONS[$state] ?? ($state ? Str::headline($state) : '-'))
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('display_section')
-                    ->label('Section')
-                    ->formatStateUsing(fn (?string $state): string => Multimedia::DISPLAY_SECTION_OPTIONS[$state] ?? ($state ? Str::headline($state) : '-'))
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('duration')
-                    ->label('Durasi')
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('photo_count')
-                    ->label('Jumlah Foto')
-                    ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('published_at')
                     ->label('Tanggal Publikasi')
-                    ->date('d M Y')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->dateTime('d M Y, H:i')
+                    ->sortable(),
 
                 TextColumn::make('status')
                     ->label('Status')
@@ -347,22 +357,26 @@ class MultimediaResource extends Resource
                     ->grow(false)
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'draft' => 'Draft',
-                        'published', 'terbit' => 'Terbit',
-                        'archived' => 'Arsip',
+                        'published', 'terbit' => 'Published',
+                        'archived' => 'Archived',
                         default => $state ? Str::headline($state) : '-',
                     }),
 
                 IconColumn::make('featured')
                     ->label('Featured')
                     ->boolean()
-                    ->sortable()
+                    ->sortable(),
+
+                TextColumn::make('media_url')
+                    ->label('URL')
+                    ->searchable()
+                    ->limit(36)
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')
                     ->dateTime('d M Y, H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
@@ -370,35 +384,67 @@ class MultimediaResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
-            ->defaultSort('published_at', 'desc')
+            ->defaultSort(fn (Builder $query): Builder => $query
+                ->orderByDesc('published_at')
+                ->orderByDesc('created_at'))
             ->searchPlaceholder('Cari multimedia...')
             ->paginationPageOptions([10, 25, 50])
             ->filters([
                 SelectFilter::make('type')
-                    ->label('Tipe')
-                    ->options(Multimedia::TYPE_OPTIONS),
+                    ->label('Jenis Konten')
+                    ->options(static::tableTypeOptions()),
 
                 SelectFilter::make('platform')
                     ->label('Platform')
-                    ->options(Multimedia::PLATFORM_OPTIONS),
+                    ->options(static::tablePlatformOptions()),
 
                 SelectFilter::make('status')
                     ->label('Status')
                     ->options([
                         'draft' => 'Draft',
-                        'published' => 'Terbit',
-                        'archived' => 'Arsip',
+                        'published' => 'Published',
+                        'archived' => 'Archived',
                     ]),
 
-                SelectFilter::make('display_section')
-                    ->label('Section Tampilan')
-                    ->options(Multimedia::DISPLAY_SECTION_OPTIONS),
+                SelectFilter::make('featured')
+                    ->label('Featured')
+                    ->options([
+                        '1' => 'Featured',
+                        '0' => 'Bukan Featured',
+                    ]),
             ])
             ->recordActions([
                 Actions\EditAction::make(),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('publish')
+                        ->label('Publish')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->action(function ($records): void {
+                            $records->each(function (Multimedia $record): void {
+                                $record->update([
+                                    'status' => 'published',
+                                    'published_at' => $record->published_at ?? now(),
+                                ]);
+                            });
+                        }),
+
+                    Actions\BulkAction::make('archive')
+                        ->label('Archive')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('gray')
+                        ->requiresConfirmation()
+                        ->action(function ($records): void {
+                            $records->each(function (Multimedia $record): void {
+                                $record->update([
+                                    'status' => 'archived',
+                                ]);
+                            });
+                        }),
+
                     Actions\DeleteBulkAction::make(),
                 ]),
             ]);
