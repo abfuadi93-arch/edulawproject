@@ -24,7 +24,8 @@ class EditProgram extends EditRecordAndReturn
                 ->visible(fn (): bool => filled($this->record?->slug)),
 
             DeleteAction::make()
-                ->label('Hapus Program'),
+                ->label('Hapus Program')
+                ->visible(fn (): bool => (bool) auth()->user()?->hasRole('super_admin')),
         ];
     }
 

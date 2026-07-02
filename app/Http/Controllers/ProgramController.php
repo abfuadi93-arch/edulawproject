@@ -193,6 +193,7 @@ class ProgramController extends Controller
         $program = Program::with('categoryRelation')->visible()->where('slug', $slug)->firstOrFail();
 
         $relatedPrograms = Program::with('categoryRelation')
+            ->visible()
             ->active()
             ->whereKeyNot($program->id)
             ->when($program->program_category_id, fn ($query) => $query->where('program_category_id', $program->program_category_id))

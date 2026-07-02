@@ -6,31 +6,55 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
+use Throwable;
 
 class Program extends Model
 {
     use HasFactory;
 
+    protected static array $schemaColumnCache = [];
+
     protected $fillable = [
         'program_category_id',
+        'type',
         'name',
+        'short_title',
+        'subtitle',
+        'duration',
         'slug',
         'short_description',
+        'description',
         'learning_points',
+        'orientation',
+        'method',
+        'output',
+        'notes',
         'image',
+        'hero_image',
         'format',
         'level',
         'audience',
         'event_date',
         'end_date',
         'speakers',
+        'moderator_name',
+        'moderator_affiliation',
         'registration_link',
+        'youtube_url',
+        'material_link',
+        'primary_button_text',
+        'primary_button_url',
+        'secondary_button_text',
+        'secondary_button_url',
         'location',
         'price_type',
         'certificate_available',
         'status',
+        'publication_status',
         'featured',
+        'show_on_homepage',
         'sort_order',
         'seo_title',
         'seo_description',
@@ -46,6 +70,7 @@ class Program extends Model
         'end_date' => 'datetime',
         'certificate_available' => 'boolean',
         'featured' => 'boolean',
+        'show_on_homepage' => 'boolean',
         'sort_order' => 'integer',
     ];
 
@@ -88,7 +113,17 @@ class Program extends Model
 
     public function scopeVisible(Builder $query): Builder
     {
-        return $query->whereIn('status', ['upcoming', 'ongoing', 'archived']);
+        $query->whereIn('status', ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived']);
+
+        if (static::hasTableColumn('publication_status')) {
+            $query->where(function (Builder $publicationQuery): void {
+                $publicationQuery
+                    ->where('publication_status', 'published')
+                    ->orWhereNull('publication_status');
+            });
+        }
+
+        return $query;
     }
 
     public function scopeActive(Builder $query): Builder
@@ -98,12 +133,12 @@ class Program extends Model
 
     public function scopeArchived(Builder $query): Builder
     {
-        return $query->where('status', 'archived');
+        return $query->whereIn('status', ['completed', 'portfolio', 'archived']);
     }
 
     public function scopePublished(Builder $query): Builder
     {
-        return $query->active();
+        return $query->visible()->active();
     }
 
     public function scopeFeatured(Builder $query): Builder
@@ -127,7 +162,9 @@ class Program extends Model
 
     public function getDisplayTitleAttribute(): string
     {
-        return $this->attributes['name'] ?? 'Program Edulaw';
+        return $this->attributes['short_title']
+            ?? $this->attributes['name']
+            ?? 'Program Edulaw';
     }
 
     public function getDisplayCategoryAttribute(): string
@@ -140,6 +177,8 @@ class Program extends Model
         return match ($this->attributes['status'] ?? null) {
             'upcoming' => 'Segera Dibuka',
             'ongoing' => 'Berjalan',
+            'completed' => 'Selesai',
+            'portfolio' => 'Portofolio',
             'archived' => 'Arsip',
             default => ucfirst((string) ($this->attributes['status'] ?? 'Program')),
         };
@@ -154,7 +193,20 @@ class Program extends Model
 
     public function getDisplayDescriptionAttribute(): ?string
     {
-        return $this->attributes['short_description'] ?? null;
+        if (! empty($this->attributes['short_description'])) {
+            return $this->attributes['short_description'];
+        }
+
+        return ! empty($this->attributes['description'])
+            ? Str::limit(strip_tags($this->attributes['description']), 180)
+            : null;
+    }
+
+    public function getDisplayLevelAttribute(): ?string
+    {
+        return ! empty($this->attributes['level'])
+            ? Str::headline($this->attributes['level'])
+            : null;
     }
 
     /*
@@ -175,7 +227,8 @@ class Program extends Model
 
     public function getDescriptionAttribute(): ?string
     {
-        return $this->display_description;
+        return $this->attributes['description']
+            ?? $this->display_description;
     }
 
     public function getTargetAudiencesAttribute(): array
@@ -219,16 +272,41 @@ class Program extends Model
 
     public function getIsPublishedAttribute(): bool
     {
-        return in_array($this->attributes['status'] ?? null, ['upcoming', 'ongoing'], true);
+        $publicationStatus = $this->attributes['publication_status'] ?? 'published';
+
+        return $publicationStatus === 'published'
+            && in_array($this->attributes['status'] ?? null, ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived'], true);
     }
 
     public function getIsArchivedAttribute(): bool
     {
-        return ($this->attributes['status'] ?? null) === 'archived';
+        return in_array($this->attributes['status'] ?? null, ['completed', 'portfolio', 'archived'], true);
     }
 
     public function getImageUrlAttribute(): ?string
     {
         return edulaw_file_url($this->attributes['image'] ?? null);
+    }
+
+    public function getHeroImageUrlAttribute(): ?string
+    {
+        return edulaw_file_url($this->attributes['hero_image'] ?? null)
+            ?: $this->image_url;
+    }
+
+    protected static function hasTableColumn(string $column): bool
+    {
+        $instance = new static;
+        $key = $instance->getTable().'.'.$column;
+
+        if (array_key_exists($key, static::$schemaColumnCache)) {
+            return static::$schemaColumnCache[$key];
+        }
+
+        try {
+            return static::$schemaColumnCache[$key] = Schema::hasColumn($instance->getTable(), $column);
+        } catch (Throwable) {
+            return static::$schemaColumnCache[$key] = false;
+        }
     }
 }

@@ -59,11 +59,6 @@ class MultimediaResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('Panduan Pengisian')
-                                    ->icon('heroicon-o-information-circle')
-                                    ->description('Gunakan form ini untuk mengelola tiga kanal Multimedia Edulaw: YouTube Video, Shorts/Reels, dan Google Photos Album. Pilih jenis konten yang sesuai, isi URL utama, lalu unggah thumbnail agar tampilan halaman publik tetap rapi.')
-                                    ->schema([]),
-
                                 Section::make('1. Identitas Konten')
                                     ->icon('heroicon-o-play-circle')
                                     ->description('Kelola judul, slug, dan ringkasan konten yang tampil di halaman Multimedia.')
@@ -102,9 +97,9 @@ class MultimediaResource extends Resource
                                     ])
                                     ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                                Section::make('2. Kanal Multimedia')
-                                    ->icon('heroicon-o-rectangle-stack')
-                                    ->description('Pilih salah satu kanal utama halaman Multimedia publik.')
+                                Section::make('2. Kanal dan Link')
+                                    ->icon('heroicon-o-link')
+                                    ->description('Pilih kanal konten, lalu isi URL utama dan metadata teknisnya.')
                                     ->schema([
                                         Grid::make([
                                             'default' => 1,
@@ -132,7 +127,15 @@ class MultimediaResource extends Resource
                                                         if (static::isGalleryType($type)) {
                                                             $set('duration', null);
                                                             $set('embed_url', null);
+                                                            $set('display_section', 'topic_multimedia');
+
+                                                            return;
                                                         }
+
+                                                        $set('photo_count', null);
+                                                        $set('display_section', in_array($type, ['shorts', 'reels'], true)
+                                                            ? 'short_video'
+                                                            : 'latest');
                                                     })
                                                     ->searchable()
                                                     ->required(),
@@ -144,18 +147,6 @@ class MultimediaResource extends Resource
                                                     ->searchable()
                                                     ->required()
                                                     ->helperText('Untuk album Google Photos, pilih platform Website / Google Photos atau Lainnya.'),
-                                            ]),
-                                    ]),
-
-                                Section::make('3. Link dan Media')
-                                    ->icon('heroicon-o-photo')
-                                    ->description('Isi URL utama dan unggah thumbnail agar card publik tidak kosong.')
-                                    ->schema([
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
 
                                                 TextInput::make('media_url')
                                                     ->label('URL Konten / Album')
@@ -165,6 +156,13 @@ class MultimediaResource extends Resource
                                                     ->placeholder('https://www.youtube.com/watch?v=...')
                                                     ->helperText('Isi URL YouTube, YouTube Shorts, Instagram Reels, TikTok, atau Google Photos Album.'),
 
+                                                TextInput::make('duration')
+                                                    ->label('Durasi')
+                                                    ->placeholder('Contoh: 12:35 atau 1:02:15')
+                                                    ->helperText('Opsional untuk video dan shorts. Kosongkan untuk album foto.')
+                                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type')))
+                                                    ->dehydrated(fn (Get $get): bool => static::isPlayableType($get('type'))),
+
                                                 TextInput::make('embed_url')
                                                     ->label('Embed URL')
                                                     ->url()
@@ -173,26 +171,50 @@ class MultimediaResource extends Resource
                                                     ->helperText(fn (Get $get): string => static::isGalleryType($get('type'))
                                                         ? 'Opsional. Untuk album foto biasanya dikosongkan.'
                                                         : 'Opsional. Untuk YouTube, isi URL embed jika tersedia. Jika kosong, website akan memakai URL konten utama.')
-                                                    ->visible(fn (Get $get): bool => ! static::isGalleryType($get('type'))),
+                                                    ->visible(fn (Get $get): bool => ! static::isGalleryType($get('type')))
+                                                    ->dehydrated(fn (Get $get): bool => ! static::isGalleryType($get('type'))),
 
-                                                TextInput::make('duration')
-                                                    ->label('Durasi')
-                                                    ->placeholder('Contoh: 12:35 atau 1:02:15')
-                                                    ->helperText('Opsional untuk video dan shorts. Kosongkan untuk album foto.')
-                                                    ->visible(fn (Get $get): bool => static::isPlayableType($get('type'))),
-                                            ]),
+                                                TextInput::make('photo_count')
+                                                    ->label('Jumlah Foto')
+                                                    ->numeric()
+                                                    ->minValue(0)
+                                                    ->suffix('foto')
+                                                    ->placeholder('24')
+                                                    ->helperText('Isi untuk Google Photos Album atau dokumentasi foto.')
+                                                    ->visible(fn (Get $get): bool => static::isGalleryType($get('type')))
+                                                    ->dehydrated(fn (Get $get): bool => static::isGalleryType($get('type'))),
+                                            ])
+                                            ->columnSpanFull(),
+                                    ]),
 
-                                        FileUpload::make('thumbnail')
-                                            ->label('Thumbnail / Cover')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('multimedia/thumbnails')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->imagePreviewHeight('180')
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(2048)
-                                            ->helperText('Gunakan rasio 16:9 untuk YouTube Video dan Google Photos Album. Gunakan rasio vertikal 4:5 atau 9:16 untuk Shorts/Reels. Maksimal 2 MB.')
+                                Section::make('3. Pengelompokan Publik')
+                                    ->icon('heroicon-o-rectangle-stack')
+                                    ->description('Atur seri, topik, dan area tampilan konten di halaman Multimedia.')
+                                    ->schema([
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 3,
+                                        ])
+                                            ->schema([
+                                                Select::make('display_section')
+                                                    ->label('Area Tampil')
+                                                    ->options(Multimedia::DISPLAY_SECTION_OPTIONS)
+                                                    ->default('latest')
+                                                    ->searchable()
+                                                    ->required(),
+
+                                                Select::make('serial')
+                                                    ->label('Serial')
+                                                    ->options(Multimedia::SERIAL_OPTIONS)
+                                                    ->searchable()
+                                                    ->placeholder('Pilih serial'),
+
+                                                Select::make('topic')
+                                                    ->label('Topik')
+                                                    ->options(Multimedia::TOPIC_OPTIONS)
+                                                    ->searchable()
+                                                    ->placeholder('Pilih topik'),
+                                            ])
                                             ->columnSpanFull(),
                                     ]),
                             ])
@@ -224,6 +246,27 @@ class MultimediaResource extends Resource
                                             ->label('Jadikan Konten Pilihan')
                                             ->helperText('Konten featured akan diprioritaskan sebagai video pilihan di halaman Multimedia.')
                                             ->default(false),
+                                    ])
+                                    ->columns(1),
+
+                                Section::make('Media')
+                                    ->icon('heroicon-o-photo')
+                                    ->description('Unggah thumbnail atau cover agar kartu publik tidak kosong.')
+                                    ->schema([
+                                        FileUpload::make('thumbnail')
+                                            ->label('Thumbnail / Cover')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('multimedia/thumbnails')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->imagePreviewHeight('180')
+                                            ->downloadable()
+                                            ->openable()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(2048)
+                                            ->helperText('Gunakan rasio 16:9 untuk video dan album. Gunakan rasio vertikal 4:5 atau 9:16 untuk Shorts/Reels. Maksimal 2 MB.')
+                                            ->columnSpanFull(),
                                     ])
                                     ->columns(1),
                             ])

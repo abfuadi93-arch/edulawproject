@@ -34,6 +34,7 @@ class HomeController extends Controller
             ->get();
 
         $latestPrograms = Program::with('categoryRelation')
+            ->visible()
             ->active()
             ->ordered()
             ->limit(3)

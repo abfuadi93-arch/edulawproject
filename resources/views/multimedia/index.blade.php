@@ -67,47 +67,31 @@
         title="Multimedia Literasi Hukum Edulaw"
         :compact="true"
         eyebrow="MULTIMEDIA EDULAW"
-        description="Jelajahi video YouTube, Shorts/Reels, dan album foto kegiatan Edulaw Project untuk memahami hukum, konstitusi, demokrasi, dan kebijakan publik secara lebih dekat."
+        description="Jelajahi video YouTube, Shorts/Reels, dan album foto kegiatan Edulaw Project."
         background-image="https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1800&q=85"
         background-alt="Konten audiovisual literasi hukum Edulaw"
-        grid-class="gap-6 px-5 py-9 sm:w-full sm:px-6 lg:min-h-[340px] lg:grid-cols-[minmax(0,1fr)_380px] lg:items-center lg:px-8 lg:py-10"
-        title-class="text-3xl sm:text-4xl lg:text-[3.15rem]"
-        description-class="max-w-2xl text-sm leading-7 text-white/84 lg:ml-auto"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-[minmax(0,1fr)_380px] lg:items-center lg:px-8 lg:py-8"
+        title-class="text-3xl sm:text-4xl lg:text-[2.45rem]"
+        description-class="max-w-2xl text-sm leading-6 text-white/84 lg:ml-auto"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Multimedia'],
         ]"
     >
-        <div class="grid gap-5">
-            <div class="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
-                <a
-                    href="#youtube-videos"
-                    class="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-amber px-5 py-2.5 text-sm font-black text-brand-ink shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:bg-[#D99A25]"
-                >
-                    Lihat Video YouTube
-                </a>
+        <div class="flex flex-col gap-3 sm:flex-row lg:flex-col xl:flex-row">
+            <a
+                href="#youtube-videos"
+                class="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-amber px-5 py-2.5 text-sm font-black text-brand-ink shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:bg-[#D99A25]"
+            >
+                Lihat Video YouTube
+            </a>
 
-                <a
-                    href="#photo-albums"
-                    class="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:border-brand-amber hover:bg-white/15"
-                >
-                    Jelajahi Dokumentasi
-                </a>
-            </div>
-
-            <div class="grid grid-cols-3 gap-2">
-                @foreach ($statPills as $stat)
-                    <a href="{{ $stat['href'] }}" class="rounded-2xl border border-white/15 bg-white/10 px-3 py-3 backdrop-blur transition hover:border-brand-amber hover:bg-white/15">
-                        <p class="text-[10px] font-black uppercase tracking-[0.12em] text-white/60">
-                            {{ $stat['label'] }}
-                        </p>
-
-                        <p class="mt-1 text-lg font-black text-white">
-                            {{ filled($stat['count']) ? number_format((int) $stat['count'], 0, ',', '.') : 'Tersedia' }}
-                        </p>
-                    </a>
-                @endforeach
-            </div>
+            <a
+                href="#photo-albums"
+                class="inline-flex min-h-11 items-center justify-center rounded-full border border-white/25 bg-white/10 px-5 py-2.5 text-sm font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:border-brand-amber hover:bg-white/15"
+            >
+                Jelajahi Dokumentasi
+            </a>
         </div>
     </x-shared.page-header>
 

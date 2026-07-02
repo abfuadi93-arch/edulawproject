@@ -4,8 +4,8 @@
     'icon' => 'calendar',
 ])
 
-<div {{ $attributes->merge(['class' => 'flex min-w-[150px] items-center gap-3 border-white/20 px-4 py-3 first:pl-0 lg:border-l lg:first:border-l-0']) }}>
-    <span class="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-white text-brand-navy shadow-lg shadow-black/10">
+<div {{ $attributes->merge(['class' => 'flex min-w-[140px] items-center gap-3 border-white/20 px-3 py-2.5 first:pl-0 lg:border-l lg:first:border-l-0']) }}>
+    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-brand-navy shadow-lg shadow-black/10">
         @switch($icon)
             @case('briefcase')
                 <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -27,7 +27,7 @@
     </span>
 
     <span>
-        <span class="block text-2xl font-black leading-none tracking-normal text-white sm:text-3xl">{{ $value }}</span>
+        <span class="block text-2xl font-black leading-none tracking-normal text-white">{{ $value }}</span>
         <span class="mt-1 block text-[10px] font-black uppercase tracking-[0.18em] text-white/72">{{ $label }}</span>
     </span>
 </div>

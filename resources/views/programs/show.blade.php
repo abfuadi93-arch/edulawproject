@@ -1,16 +1,18 @@
 @extends('layouts.app')
 
-@section('title', $program->title . ' - Program Edulaw')
+@section('title', $program->display_title . ' - Program Edulaw')
 
 @section('content')
 @php
-    $programTitle = $program->display_title ?: $program->title;
+    $programTitle = $program->display_title ?: $program->name;
     $statusLabel = $program->display_status ?: 'Terjadwal';
-    $durationLabel = '1 Pertemuan';
-    $formatLabel = $program->display_format ?: '-';
-    $levelLabel = $program->level ?: '-';
-    $eventDateLabel = $program->started_at ? $program->started_at->translatedFormat('d F Y') : '-';
+    $durationLabel = $program->duration ?: null;
+    $formatLabel = $program->display_format;
+    $levelLabel = $program->display_level ?: $program->level;
+    $eventDateLabel = $program->started_at ? $program->started_at->translatedFormat('d F Y') : null;
+    $endDateLabel = $program->end_date ? $program->end_date->translatedFormat('d F Y') : null;
     $languageLabel = $program->language ?: 'Indonesia';
+    $subtitle = $program->subtitle;
 
     $statusClass = function ($status) {
         return match ($status) {
@@ -18,6 +20,7 @@
             'Segera Dibuka' => 'edulaw-badge-sky',
             'Terjadwal' => 'edulaw-badge-amber',
             'Selesai' => 'edulaw-badge-muted',
+            'Portofolio' => 'edulaw-badge-amber',
             'Arsip' => 'edulaw-badge-muted',
             default => 'edulaw-badge-muted',
         };
@@ -26,7 +29,11 @@
     $resolveImageUrl = fn ($path): ?string => is_string($path) ? edulaw_file_url($path) : null;
 
     $programPoster = $program->image_url ?: edulaw_file_url($program->image ?? null);
-    $programImage = $programPoster;
+    $programImage = $program->hero_image_url ?: $programPoster;
+    $shortDescription = $program->short_description;
+    $detailDescription = $program->getRawOriginal('description');
+    $description = $detailDescription;
+    $descriptionIsHtml = \Illuminate\Support\Str::contains((string) $description, ['<p', '<br', '<ul', '<ol', '<div']);
 
     $learningItems = collect($program->learning_points ?? [])
         ->map(function ($item) {
@@ -40,27 +47,6 @@
         ->values()
         ->all();
 
-    if (empty($learningItems)) {
-        $learningItems = [
-            'Memahami isu hukum dan kebijakan publik secara kontekstual.',
-            'Membaca perkembangan hukum dengan pendekatan yang lebih kritis.',
-            'Menghubungkan teori hukum dengan persoalan sosial yang aktual.',
-            'Membangun literasi hukum yang aplikatif dan mudah diakses.',
-        ];
-    }
-
-    $description = $program->short_description ?: $program->description;
-
-    if (blank($description) && ! empty($learningItems)) {
-        $description = implode(' ', array_slice($learningItems, 0, 2));
-    }
-
-    if (blank($description)) {
-        $description = 'Program ini dirancang sebagai ruang pembelajaran dan diskusi hukum yang mempertemukan isu konstitusi, kebijakan publik, dan kebutuhan literasi masyarakat. Informasi lengkap program akan diperbarui secara berkala melalui kanal resmi Edulaw Project.';
-    }
-
-    $descriptionIsHtml = \Illuminate\Support\Str::contains((string) $description, ['<p', '<br', '<ul', '<ol', '<div']);
-
     $speakers = collect($program->speakers ?? [])
         ->map(function ($speaker) use ($resolveImageUrl) {
             if (is_string($speaker)) {
@@ -68,6 +54,7 @@
                     'name' => $speaker,
                     'title' => null,
                     'image' => null,
+                    'bio' => null,
                 ];
             }
 
@@ -85,39 +72,58 @@
                 'name' => $speaker['name'] ?? null,
                 'title' => $speaker['title'] ?? $speaker['role'] ?? $speaker['position'] ?? null,
                 'image' => $resolveImageUrl($image),
+                'bio' => $speaker['bio'] ?? null,
             ];
         })
         ->filter(fn ($speaker) => is_array($speaker) && filled($speaker['name']))
         ->values()
         ->all();
 
-    if (empty($speakers)) {
-        $speakers = [
-            ['name' => 'Tim Edulaw Project', 'title' => 'Fasilitator Program', 'image' => null],
-            ['name' => 'Narasumber Akademisi / Praktisi', 'title' => 'Pemantik Diskusi', 'image' => null],
-        ];
-    }
+    $moderator = filled($program->moderator_name)
+        ? [
+            'name' => $program->moderator_name,
+            'title' => $program->moderator_affiliation,
+        ]
+        : null;
 
-    $archiveItems = [
-        [
-            'title' => 'Materi kegiatan',
-            'desc' => 'Akan tersedia setelah kegiatan selesai dan materi final siap dibagikan.',
-        ],
-        [
-            'title' => 'Rekaman diskusi',
-            'desc' => 'Dokumentasi rekaman akan ditambahkan jika sesi dipublikasikan ulang.',
-        ],
-        [
-            'title' => 'Galeri kegiatan',
-            'desc' => 'Foto dan catatan kegiatan akan muncul setelah arsip program dikurasi.',
-        ],
-    ];
-
-    $summaryCards = [
+    $summaryCards = collect([
         ['label' => 'Durasi', 'value' => $durationLabel, 'icon' => 'clock'],
         ['label' => 'Format', 'value' => $formatLabel, 'icon' => 'layout'],
         ['label' => 'Level', 'value' => $levelLabel, 'icon' => 'level'],
-    ];
+    ])->filter(fn ($card) => filled($card['value']))->values()->all();
+
+    $contentBlocks = collect([
+        ['label' => 'Orientasi', 'body' => $program->orientation],
+        ['label' => 'Metode', 'body' => $program->method],
+        ['label' => 'Output', 'body' => $program->output],
+    ])->filter(fn ($block) => filled($block['body']))->values()->all();
+
+    $resourceLinks = collect([
+        ['label' => 'Pendaftaran', 'url' => $program->registration_link],
+        ['label' => 'Dokumentasi YouTube', 'url' => $program->youtube_url],
+        ['label' => 'Materi', 'url' => $program->material_link],
+    ])->filter(fn ($link) => filled($link['url']))->values()->all();
+
+    $detailRows = collect([
+        ['label' => 'Kategori', 'value' => $program->display_category],
+        ['label' => 'Jenis', 'value' => $program->type],
+        ['label' => 'Durasi', 'value' => $durationLabel],
+        ['label' => 'Format', 'value' => $formatLabel],
+        ['label' => 'Level', 'value' => $levelLabel],
+        ['label' => 'Status', 'value' => $statusLabel],
+        ['label' => 'Tanggal Mulai', 'value' => $eventDateLabel],
+        ['label' => 'Tanggal Selesai', 'value' => $endDateLabel],
+        ['label' => 'Lokasi', 'value' => $program->location],
+        ['label' => 'Target Peserta', 'value' => $program->audience],
+        ['label' => 'Biaya', 'value' => $program->price_type],
+        ['label' => 'Sertifikat', 'value' => $program->certificate_available ? 'Tersedia' : null],
+        ['label' => 'Bahasa', 'value' => $languageLabel],
+    ])->filter(fn ($row) => filled($row['value']))->values()->all();
+
+    $primaryButtonLabel = $program->primary_button_text ?: ($program->registration_url ? 'Daftar Program' : 'Lihat Program Lain');
+    $primaryButtonUrl = $program->primary_button_url ?: ($program->registration_url ?: route('programs.index'));
+    $secondaryButtonLabel = $program->secondary_button_text ?: 'Diskusikan Kolaborasi';
+    $secondaryButtonUrl = $program->secondary_button_url ?: (\Illuminate\Support\Facades\Route::has('collaboration.index') ? route('collaboration.index') : url('/kolaborasi'));
 
     $heroBackground = $programImage ?: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85';
 
@@ -142,11 +148,26 @@
                 <span class="edulaw-badge edulaw-badge-lg edulaw-badge-dark">
                     {{ $statusLabel }}
                 </span>
-                <span class="edulaw-badge edulaw-badge-lg edulaw-badge-dark">
-                    {{ $eventDateLabel }}
-                </span>
+                @if ($eventDateLabel)
+                    <span class="edulaw-badge edulaw-badge-lg edulaw-badge-dark">
+                        {{ $eventDateLabel }}
+                    </span>
+                @endif
             </div>
 
+            @if ($subtitle || $shortDescription)
+                <div class="mt-4 rounded-2xl border border-white/10 bg-[#06132a]/20 px-4 py-3 text-sm font-semibold leading-7 text-white/78">
+                    @if ($subtitle)
+                        <p class="font-black text-white">{{ $subtitle }}</p>
+                    @endif
+
+                    @if ($shortDescription)
+                        <p @class(['mt-1' => filled($subtitle)])>{{ $shortDescription }}</p>
+                    @endif
+                </div>
+            @endif
+
+            @if (! empty($summaryCards))
             <div class="mt-4 grid gap-3">
                 @foreach ($summaryCards as $card)
                     <div class="flex items-center gap-4 rounded-2xl border border-white/12 bg-white/9 p-4 shadow-sm">
@@ -180,6 +201,7 @@
                     </div>
                 @endforeach
             </div>
+            @endif
 
             <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-1 rounded-2xl border border-white/10 bg-[#06132a]/20 px-4 py-3 text-sm font-semibold text-white/72">
                 <span>Bahasa {{ $languageLabel }}</span>
@@ -191,6 +213,7 @@
 
     <div class="mx-auto grid max-w-7xl gap-8 px-6 py-10 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8 lg:py-14">
         <div class="order-2 space-y-6 lg:order-1">
+            @if ($description)
             <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                 <div class="flex gap-4">
                     <span class="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl bg-brand-teal/10 text-brand-teal">
@@ -219,7 +242,9 @@
                     @endif
                 </div>
             </section>
+            @endif
 
+            @if (! empty($learningItems))
             <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                 <p class="text-xs font-black uppercase tracking-[0.32em] text-brand-teal">
                     Yang Dipelajari
@@ -243,7 +268,9 @@
                     @endforeach
                 </div>
             </section>
+            @endif
 
+            @if (! empty($speakers) || $moderator)
             <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                 <p class="text-xs font-black uppercase tracking-[0.32em] text-brand-teal">
                     Narasumber
@@ -253,66 +280,124 @@
                     Fasilitator dan pemantik diskusi
                 </h2>
 
-                <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                    @foreach ($speakers as $speaker)
-                        <article class="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                            <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-brand-navy text-lg font-black text-white">
-                                @if ($speaker['image'])
-                                    <img
-                                        src="{{ $speaker['image'] }}"
-                                        alt="{{ $speaker['name'] }}"
-                                        class="h-full w-full object-cover"
-                                        loading="lazy"
-                                    >
-                                @else
-                                    <div class="flex h-full w-full items-center justify-center">
-                                        {{ \Illuminate\Support\Str::of($speaker['name'])->explode(' ')->filter()->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))->take(2)->implode('') }}
-                                    </div>
-                                @endif
-                            </div>
+                @if (! empty($speakers))
+                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+                        @foreach ($speakers as $speaker)
+                            <article class="flex gap-4 rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-brand-navy text-lg font-black text-white">
+                                    @if ($speaker['image'])
+                                        <img
+                                            src="{{ $speaker['image'] }}"
+                                            alt="{{ $speaker['name'] }}"
+                                            class="h-full w-full object-cover"
+                                            loading="lazy"
+                                        >
+                                    @else
+                                        <div class="flex h-full w-full items-center justify-center">
+                                            {{ \Illuminate\Support\Str::of($speaker['name'])->explode(' ')->filter()->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))->take(2)->implode('') }}
+                                        </div>
+                                    @endif
+                                </div>
 
-                            <div class="min-w-0 pt-1">
-                                <p class="text-base font-black leading-snug text-brand-navy">
-                                    {{ $speaker['name'] }}
-                                </p>
-                                <p class="mt-1 text-sm leading-6 text-slate-500">
-                                    {{ $speaker['title'] ?: 'Narasumber' }}
-                                </p>
-                            </div>
-                        </article>
-                    @endforeach
-                </div>
-            </section>
+                                <div class="min-w-0 pt-1">
+                                    <p class="text-base font-black leading-snug text-brand-navy">
+                                        {{ $speaker['name'] }}
+                                    </p>
+                                    <p class="mt-1 text-sm leading-6 text-slate-500">
+                                        {{ $speaker['title'] ?: 'Narasumber' }}
+                                    </p>
 
-            <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                <p class="text-xs font-black uppercase tracking-[0.32em] text-brand-teal">
-                    Dokumentasi / Arsip
-                </p>
-
-                <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
-                    Arsip kegiatan program
-                </h2>
-
-                <div class="mt-6 rounded-2xl border border-dashed border-slate-300 bg-slate-50 p-5">
-                    <p class="text-sm font-semibold leading-7 text-slate-600">
-                        Dokumentasi resmi akan ditampilkan setelah kegiatan selesai dan arsip program sudah dikurasi.
-                    </p>
-
-                    <div class="mt-5 grid gap-3 sm:grid-cols-3">
-                        @foreach ($archiveItems as $archive)
-                            <div class="rounded-xl bg-white p-4 ring-1 ring-slate-200">
-                                <h3 class="text-sm font-black text-brand-navy">
-                                    {{ $archive['title'] }}
-                                </h3>
-
-                                <p class="mt-2 text-xs leading-5 text-slate-500">
-                                    {{ $archive['desc'] }}
-                                </p>
-                            </div>
+                                    @if (! empty($speaker['bio']))
+                                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                                            {{ $speaker['bio'] }}
+                                        </p>
+                                    @endif
+                                </div>
+                            </article>
                         @endforeach
                     </div>
-                </div>
+                @endif
+
+                @if ($moderator)
+                    <div class="mt-5 rounded-2xl border border-brand-teal/15 bg-brand-teal/5 p-5">
+                        <p class="text-[10px] font-black uppercase tracking-[0.24em] text-brand-teal">
+                            Moderator
+                        </p>
+                        <p class="mt-2 text-base font-black text-brand-navy">
+                            {{ $moderator['name'] }}
+                        </p>
+                        @if ($moderator['title'])
+                            <p class="mt-1 text-sm leading-6 text-slate-600">
+                                {{ $moderator['title'] }}
+                            </p>
+                        @endif
+                    </div>
+                @endif
             </section>
+            @endif
+
+            @if (! empty($contentBlocks))
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                    <p class="text-xs font-black uppercase tracking-[0.32em] text-brand-teal">
+                        Rancangan Program
+                    </p>
+
+                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                        Orientasi, metode, dan output
+                    </h2>
+
+                    <div class="mt-6 grid gap-4 md:grid-cols-3">
+                        @foreach ($contentBlocks as $block)
+                            <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                <h3 class="text-sm font-black text-brand-navy">
+                                    {{ $block['label'] }}
+                                </h3>
+
+                                <p class="mt-3 text-sm leading-7 text-slate-600">
+                                    {{ $block['body'] }}
+                                </p>
+                            </article>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
+            @if ($program->notes)
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                    <p class="text-xs font-black uppercase tracking-[0.32em] text-brand-teal">
+                        Catatan
+                    </p>
+
+                    <div class="prose prose-slate mt-4 max-w-none text-slate-600 prose-p:leading-8">
+                        <p>{{ $program->notes }}</p>
+                    </div>
+                </section>
+            @endif
+
+            @if (! empty($resourceLinks))
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                    <p class="text-xs font-black uppercase tracking-[0.32em] text-brand-teal">
+                        Link dan Dokumentasi
+                    </p>
+
+                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                        Akses tautan program
+                    </h2>
+
+                    <div class="mt-6 grid gap-3 sm:grid-cols-3">
+                        @foreach ($resourceLinks as $link)
+                            <a
+                                href="{{ $link['url'] }}"
+                                target="_blank"
+                                rel="noopener"
+                                class="rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm font-black text-brand-navy transition hover:border-brand-teal hover:text-brand-teal"
+                            >
+                                {{ $link['label'] }}
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
         </div>
 
         <aside class="contents lg:order-2 lg:block lg:sticky lg:top-28 lg:self-start lg:space-y-6">
@@ -374,59 +459,31 @@
                 </div>
 
                 <div class="divide-y divide-slate-200 text-sm">
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Kategori</span>
-                        <span class="text-right font-black text-brand-navy">{{ $program->display_category }}</span>
-                    </div>
-
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Durasi</span>
-                        <span class="text-right font-black text-brand-navy">{{ $durationLabel }}</span>
-                    </div>
-
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Format</span>
-                        <span class="text-right font-black text-brand-navy">{{ $formatLabel }}</span>
-                    </div>
-
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Level</span>
-                        <span class="text-right font-black text-brand-navy">{{ $levelLabel }}</span>
-                    </div>
-
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Status</span>
-                        <span class="text-right font-black text-brand-navy">{{ $statusLabel }}</span>
-                    </div>
-
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Tanggal Kegiatan</span>
-                        <span class="text-right font-black text-brand-navy">{{ $eventDateLabel }}</span>
-                    </div>
-
-                    <div class="flex justify-between gap-4 py-3.5">
-                        <span class="font-bold text-slate-500">Bahasa</span>
-                        <span class="text-right font-black text-brand-navy">{{ $languageLabel }}</span>
-                    </div>
+                    @foreach ($detailRows as $row)
+                        <div class="flex justify-between gap-4 py-3.5">
+                            <span class="font-bold text-slate-500">{{ $row['label'] }}</span>
+                            <span class="text-right font-black text-brand-navy">{{ $row['value'] }}</span>
+                        </div>
+                    @endforeach
                 </div>
 
-                @if ($program->registration_url)
+                <div class="mt-6 grid gap-3">
                     <a
-                        href="{{ $program->registration_url }}"
-                        target="_blank"
-                        rel="noopener"
-                        class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-brand-ink"
+                        href="{{ $primaryButtonUrl }}"
+                        @if (\Illuminate\Support\Str::startsWith($primaryButtonUrl, ['http://', 'https://'])) target="_blank" rel="noopener" @endif
+                        class="inline-flex w-full items-center justify-center rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-brand-ink"
                     >
-                        Daftar / Lihat Agenda
+                        {{ $primaryButtonLabel }}
                     </a>
-                @else
+
                     <a
-                        href="{{ route('programs.index') }}"
-                        class="mt-6 inline-flex w-full items-center justify-center rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:-translate-y-0.5 hover:bg-brand-ink"
+                        href="{{ $secondaryButtonUrl }}"
+                        @if (\Illuminate\Support\Str::startsWith($secondaryButtonUrl, ['http://', 'https://'])) target="_blank" rel="noopener" @endif
+                        class="inline-flex w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
                     >
-                        Daftar / Lihat Agenda
+                        {{ $secondaryButtonLabel }}
                     </a>
-                @endif
+                </div>
             </section>
         </aside>
     </div>
@@ -470,9 +527,10 @@
         eyebrow="Kolaborasi Program"
         title="Ingin menghadirkan program serupa bersama Edulaw?"
         body="Kami terbuka untuk kelas, diskusi, pelatihan, dan forum pengembangan kapasitas hukum yang disesuaikan dengan kebutuhan komunitas atau institusi Anda."
-        primary-label="Ajukan Kolaborasi"
-        :secondary-url="route('programs.index')"
-        secondary-label="Lihat Program Lainnya"
+        :primary-url="$primaryButtonUrl"
+        :primary-label="$primaryButtonLabel"
+        :secondary-url="$secondaryButtonUrl"
+        :secondary-label="$secondaryButtonLabel"
     />
 </main>
 @endsection

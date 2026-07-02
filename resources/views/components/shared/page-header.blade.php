@@ -16,10 +16,10 @@
 @php
     $hasBackground = filled($backgroundImage);
     $defaultGridClass = $compact
-        ? 'gap-5 px-4 py-7 sm:w-full sm:px-6 lg:min-h-[220px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-10'
+        ? 'gap-5 px-4 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-8'
         : 'gap-8 px-4 py-11 sm:w-full sm:px-6 lg:min-h-[300px] lg:grid-cols-[1.05fr_0.95fr] lg:items-center lg:px-8 lg:py-16';
     $defaultTitleClass = $compact
-        ? 'text-3xl sm:text-4xl lg:text-[2.65rem]'
+        ? 'text-3xl sm:text-4xl lg:text-[2.45rem]'
         : 'text-4xl sm:text-5xl lg:text-[3.25rem]';
 @endphp
 
@@ -66,7 +66,7 @@
             @endif
 
             @if ($eyebrow)
-                <p class="{{ $compact ? 'mt-3' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $hasBackground ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
+                <p class="{{ $compact ? 'mt-2' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $hasBackground ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
                     {{ $eyebrow }}
                 </p>
             @endif
@@ -79,7 +79,7 @@
         @if ($description || ! $slot->isEmpty())
             <div class="min-w-0 lg:ml-auto lg:w-full">
                 @if ($description)
-                    <p class="{{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-sm leading-7' : 'text-base leading-8').' '.($hasBackground ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto' }}">
+                    <p class="{{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-sm leading-6' : 'text-base leading-8').' '.($hasBackground ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto' }}">
                         {{ $description }}
                     </p>
 
@@ -89,7 +89,7 @@
                 @endif
 
                 @if (! $slot->isEmpty())
-                    <div class="{{ $description ? ($compact ? 'mt-5' : 'mt-7') : '' }} {{ $contentClass ?: 'lg:ml-auto lg:max-w-2xl' }}">
+                    <div class="{{ $description ? ($compact ? 'mt-4' : 'mt-7') : '' }} {{ $contentClass ?: 'lg:ml-auto lg:max-w-2xl' }}">
                         {{ $slot }}
                     </div>
                 @endif

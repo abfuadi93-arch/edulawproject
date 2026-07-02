@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Auth\Pages\Register;
 use App\Support\EdulawSite;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -31,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->passwordReset()
+            ->registration(Register::class)
             ->brandName('Edulaw Project')
             ->brandLogo(function (): HtmlString {
                 $logoUrl = EdulawSite::assetUrl(
