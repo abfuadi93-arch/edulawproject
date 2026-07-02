@@ -20,7 +20,7 @@ class InsightController extends Controller
         $featuredOnly = $request->boolean('featured');
 
         $query = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->when($category, fn ($query) => $query->whereHas('categoryRelation', fn ($categoryQuery) => $categoryQuery->where('slug', $category)))
             ->when($featuredOnly, fn ($query) => $query->featured())
@@ -43,7 +43,7 @@ class InsightController extends Controller
             ->get();
 
         $latestInsights = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->orderByDesc('published_at')
             ->latest('id')
@@ -72,13 +72,13 @@ class InsightController extends Controller
     public function show(string $slug): View
     {
         $insight = Insight::query()
-            ->with(['categoryRelation', 'authors', 'tags', 'creator', 'reviewer'])
+            ->with(['categoryRelation', 'authors.user', 'tags', 'creator', 'reviewer'])
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();
 
         $relatedInsights = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->whereKeyNot($insight->id)
             ->when($insight->insight_category_id, fn ($query) => $query->where('insight_category_id', $insight->insight_category_id))
@@ -94,7 +94,7 @@ class InsightController extends Controller
                 ->all();
 
             $fallbackInsights = Insight::query()
-                ->with(['categoryRelation', 'authors'])
+                ->with(['categoryRelation', 'authors.user'])
                 ->published()
                 ->whereNotIn('id', $excludedIds)
                 ->latest('published_at')
@@ -119,7 +119,7 @@ class InsightController extends Controller
         $excludedIds = collect($excludedIds)->filter()->unique()->values();
 
         $featured = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->featured()
             ->whereNotIn('id', $excludedIds->all())
@@ -133,7 +133,7 @@ class InsightController extends Controller
         }
 
         $fallback = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->whereNotIn('id', $excludedIds->merge($featured->pluck('id'))->unique()->all())
             ->orderByDesc('published_at')
@@ -151,7 +151,7 @@ class InsightController extends Controller
         }
 
         $secondaryFallback = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->whereNotIn('id', $picks->pluck('id')->all())
             ->orderByDesc('published_at')
@@ -168,7 +168,7 @@ class InsightController extends Controller
     private function popularInsights(): Collection
     {
         $query = Insight::query()
-            ->with(['categoryRelation', 'authors'])
+            ->with(['categoryRelation', 'authors.user'])
             ->published();
 
         $countColumn = collect(['views_count', 'view_count', 'read_count', 'reads_count'])
@@ -258,7 +258,7 @@ class InsightController extends Controller
 
         $articlesByCategory = $resolvedCategories->isNotEmpty()
             ? Insight::query()
-                ->with(['categoryRelation', 'authors'])
+                ->with(['categoryRelation', 'authors.user'])
                 ->published()
                 ->whereIn('insight_category_id', $resolvedCategories->pluck('id')->all())
                 ->orderByDesc('published_at')

@@ -28,6 +28,21 @@
         'Constitution & Governance',
         'Legal Insight',
     ];
+
+    $primaryAuthor = function ($insight) {
+        return $insight && $insight->relationLoaded('authors')
+            ? $insight->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->first()
+            : null;
+    };
+
+    $authorInitials = function (string $name): string {
+        return \Illuminate\Support\Str::of($name)
+            ->explode(' ')
+            ->filter()
+            ->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))
+            ->take(2)
+            ->implode('') ?: 'E';
+    };
 @endphp
 
 <section class="bg-[#F3F6F8] py-7 lg:py-9">
@@ -108,12 +123,32 @@
                                 {{ $featured->excerpt }}
                             </p>
 
+                            @php
+                                $featuredAuthor = $primaryAuthor($featured);
+                                $featuredAuthorName = $featuredAuthor?->name ?: $featured->display_author;
+                            @endphp
+
                             <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold text-slate-500">
                                 <span>{{ optional($featured->published_at)->translatedFormat('d M Y') ?: '-' }}</span>
                                 <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                                 <span>{{ $featured->reading_time ? $featured->reading_time.' min read' : '-' }}</span>
                                 <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                <span>{{ $featured->display_author }}</span>
+                                <span class="inline-flex max-w-full items-center gap-2">
+                                    @if ($featuredAuthor?->photo_url)
+                                        <img
+                                            src="{{ $featuredAuthor->photo_url }}"
+                                            alt="Foto profil {{ $featuredAuthorName }}"
+                                            class="h-6 w-6 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
+                                            loading="lazy"
+                                        >
+                                    @else
+                                        <span class="grid h-6 w-6 shrink-0 place-items-center rounded-full bg-brand-navy text-[9px] font-black text-white">
+                                            {{ $authorInitials($featuredAuthorName) }}
+                                        </span>
+                                    @endif
+
+                                    <span class="min-w-0">{{ $featuredAuthorName }}</span>
+                                </span>
                             </div>
 
                             <div class="mt-auto flex items-center justify-between gap-4 border-t border-slate-100 pt-5">

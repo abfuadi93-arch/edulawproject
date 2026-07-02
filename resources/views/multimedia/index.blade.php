@@ -70,9 +70,9 @@
         description="Jelajahi video YouTube, Shorts/Reels, dan album foto kegiatan Edulaw Project."
         background-image="https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1800&q=85"
         background-alt="Konten audiovisual literasi hukum Edulaw"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-[minmax(0,1fr)_380px] lg:items-center lg:px-8 lg:py-8"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         title-class="text-3xl sm:text-4xl lg:text-[2.45rem]"
-        description-class="max-w-2xl text-sm leading-6 text-white/84 lg:ml-auto"
+        description-class="max-w-2xl text-sm leading-6 text-white/84 lg:ml-auto lg:text-right"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Multimedia'],

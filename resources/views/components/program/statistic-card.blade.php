@@ -4,7 +4,7 @@
     'icon' => 'calendar',
 ])
 
-<div {{ $attributes->merge(['class' => 'flex min-w-[140px] items-center gap-3 border-white/20 px-3 py-2.5 first:pl-0 lg:border-l lg:first:border-l-0']) }}>
+<div {{ $attributes->merge(['class' => 'flex w-full min-w-[168px] items-center justify-between gap-3 border-white/20 px-3 py-2.5 md:w-[168px] lg:border-l lg:first:border-l-0']) }}>
     <span class="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-white text-brand-navy shadow-lg shadow-black/10">
         @switch($icon)
             @case('briefcase')
@@ -26,7 +26,7 @@
         @endswitch
     </span>
 
-    <span>
+    <span class="ml-auto min-w-0 text-right">
         <span class="block text-2xl font-black leading-none tracking-normal text-white">{{ $value }}</span>
         <span class="mt-1 block text-[10px] font-black uppercase tracking-[0.18em] text-white/72">{{ $label }}</span>
     </span>

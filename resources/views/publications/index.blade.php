@@ -57,6 +57,21 @@
             ?? 'Edulaw Project';
     };
 
+    $publicationAuthorProfiles = function ($publication) {
+        return isset($publication->authors)
+            ? $publication->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->values()
+            : collect();
+    };
+
+    $authorInitials = function (string $name): string {
+        return Str::of($name)
+            ->explode(' ')
+            ->filter()
+            ->map(fn ($part) => Str::substr($part, 0, 1))
+            ->take(2)
+            ->implode('') ?: 'E';
+    };
+
     $publicationDate = function ($date) {
         if (! $date) {
             return 'Belum dipublikasikan';
@@ -657,6 +672,7 @@
                             $previewUrl = $pdfPreviewUrl($publication);
                             $currentDownloadUrl = $downloadUrl($publication);
                             $palette = $fallbackPalette($publication, $publicationIndex);
+                            $authorProfiles = $publicationAuthorProfiles($publication);
                         @endphp
 
                         <article class="publication-list-card">
@@ -680,7 +696,30 @@
                                 </h2>
 
                                 <div class="publication-meta">
-                                    {{ $publicationAuthors($publication) }}
+                                    <span class="inline-flex max-w-full items-center gap-2 align-middle">
+                                        @if ($authorProfiles->isNotEmpty())
+                                            <span class="inline-flex shrink-0 -space-x-1.5">
+                                                @foreach ($authorProfiles->take(3) as $author)
+                                                    @if ($author->photo_url)
+                                                        <img
+                                                            src="{{ $author->photo_url }}"
+                                                            alt="Foto profil {{ $author->name }}"
+                                                            class="h-6 w-6 rounded-full border border-white object-cover shadow-sm"
+                                                            loading="lazy"
+                                                        >
+                                                    @else
+                                                        <span class="grid h-6 w-6 place-items-center rounded-full border border-white bg-brand-navy text-[9px] font-black text-white shadow-sm">
+                                                            {{ $authorInitials($author->name) }}
+                                                        </span>
+                                                    @endif
+                                                @endforeach
+                                            </span>
+                                        @endif
+
+                                        <span class="min-w-0">
+                                            {{ $publicationAuthors($publication) }}
+                                        </span>
+                                    </span>
                                     ·
                                     {{ $publicationDate($publication->published_at ?? null) }}
                                     ·

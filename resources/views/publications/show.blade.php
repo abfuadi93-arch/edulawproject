@@ -30,9 +30,22 @@
         ?? $publication?->type
         ?? 'Publikasi';
 
-    $authors = isset($publication->authors) && $publication->authors->count()
-        ? $publication->authors->pluck('name')->filter()->join(', ')
+    $authorCollection = isset($publication->authors)
+        ? $publication->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->values()
+        : collect();
+
+    $authors = $authorCollection->isNotEmpty()
+        ? $authorCollection->pluck('name')->filter()->join(', ')
         : ($publication->author_name ?? $publication->source_name ?? 'Edulaw Project');
+
+    $authorInitials = function (string $name): string {
+        return Str::of($name)
+            ->explode(' ')
+            ->filter()
+            ->map(fn ($part) => Str::substr($part, 0, 1))
+            ->take(2)
+            ->implode('') ?: 'E';
+    };
 
     $publishedDate = 'Belum dipublikasikan';
     $publishedYear = null;
@@ -702,6 +715,24 @@
         </div>
 
         <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold text-white/76">
+            @if ($authorCollection->isNotEmpty())
+                <div class="flex -space-x-2">
+                    @foreach ($authorCollection->take(3) as $author)
+                        @if ($author->photo_url)
+                            <img
+                                src="{{ $author->photo_url }}"
+                                alt="Foto profil {{ $author->name }}"
+                                class="h-8 w-8 rounded-full border-2 border-white/80 object-cover shadow-sm"
+                                loading="lazy"
+                            >
+                        @else
+                            <span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white/80 bg-brand-navy text-[10px] font-black text-white shadow-sm">
+                                {{ $authorInitials($author->name) }}
+                            </span>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
             <span class="font-bold text-white">{{ $authors }}</span>
             <span class="h-1 w-1 rounded-full bg-white/45"></span>
             <span>{{ $publishedDate }}</span>
@@ -885,7 +916,30 @@
                         <div class="publication-meta-list">
                             <div class="publication-meta-item">
                                 <span>Penulis</span>
-                                <strong>{{ $authors }}</strong>
+                                @if ($authorCollection->isNotEmpty())
+                                    <div class="mt-3 grid gap-3">
+                                        @foreach ($authorCollection as $author)
+                                            <div class="flex items-center gap-3">
+                                                @if ($author->photo_url)
+                                                    <img
+                                                        src="{{ $author->photo_url }}"
+                                                        alt="Foto profil {{ $author->name }}"
+                                                        class="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
+                                                        loading="lazy"
+                                                    >
+                                                @else
+                                                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-navy text-xs font-black text-white">
+                                                        {{ $authorInitials($author->name) }}
+                                                    </span>
+                                                @endif
+
+                                                <strong class="!mt-0 min-w-0">{{ $author->name }}</strong>
+                                            </div>
+                                        @endforeach
+                                    </div>
+                                @else
+                                    <strong>{{ $authors }}</strong>
+                                @endif
                             </div>
 
                             <div class="publication-meta-item">

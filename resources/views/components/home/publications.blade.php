@@ -58,6 +58,15 @@
             'ring' => 'ring-[#C9B6EA]/70',
         ],
     ];
+
+    $authorInitials = function (string $name): string {
+        return \Illuminate\Support\Str::of($name)
+            ->explode(' ')
+            ->filter()
+            ->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))
+            ->take(2)
+            ->implode('') ?: 'E';
+    };
 @endphp
 
 <section class="bg-[#F4F7F9] py-8 lg:py-10">
@@ -116,6 +125,9 @@
                         ?? $publication->display_authors
                         ?? $publication->authors?->pluck('name')->filter()->join(', ')
                         ?? null;
+                    $primaryAuthor = $publication->relationLoaded('authors')
+                        ? $publication->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->first()
+                        : null;
                 @endphp
 
                 <article class="group h-full">
@@ -212,6 +224,26 @@
                                             @if (! empty($publication->page_count))
                                                 <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                                                 <span>{{ $publication->page_count }} hlm</span>
+                                            @endif
+
+                                            @if ($authorName)
+                                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                                <span class="inline-flex max-w-full items-center gap-1.5">
+                                                    @if ($primaryAuthor?->photo_url)
+                                                        <img
+                                                            src="{{ $primaryAuthor->photo_url }}"
+                                                            alt="Foto profil {{ $primaryAuthor->name }}"
+                                                            class="h-5 w-5 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
+                                                            loading="lazy"
+                                                        >
+                                                    @else
+                                                        <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-navy text-[8px] font-black text-white">
+                                                            {{ $authorInitials($primaryAuthor?->name ?: $authorName) }}
+                                                        </span>
+                                                    @endif
+
+                                                    <span class="line-clamp-1 min-w-0">{{ $authorName }}</span>
+                                                </span>
                                             @endif
                                         </div>
                                     </div>

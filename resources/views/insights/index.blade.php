@@ -527,9 +527,18 @@
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                 @forelse ($authors as $author)
                     <div class="flex items-center gap-3">
-                        <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-navy text-sm font-black text-white">
-                            {{ Str::upper(Str::substr($author->name, 0, 1)) }}
-                        </div>
+                        @if ($author->photo_url)
+                            <img
+                                src="{{ $author->photo_url }}"
+                                alt="Foto profil {{ $author->name }}"
+                                class="h-11 w-11 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
+                                loading="lazy"
+                            >
+                        @else
+                            <div class="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-brand-navy text-sm font-black text-white">
+                                {{ Str::upper(Str::substr($author->name, 0, 1)) }}
+                            </div>
+                        @endif
                         <div>
                             <p class="font-black leading-tight text-brand-ink">{{ $author->name }}</p>
                             <p class="text-xs font-bold text-brand-coral">Contributor</p>

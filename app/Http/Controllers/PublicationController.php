@@ -14,7 +14,7 @@ class PublicationController extends Controller
         $type = $request->query('type');
         $search = $request->query('q');
 
-        $query = Publication::with(['type', 'authors'])
+        $query = Publication::with(['type', 'authors.user'])
             ->where('status', 'published')
             ->when($type, fn ($q) => $q->whereHas('type', fn ($typeQuery) => $typeQuery->where('slug', $type)))
             ->when($search, function ($q) use ($search) {
@@ -28,7 +28,7 @@ class PublicationController extends Controller
             ->orderByDesc('published_at')
             ->latest();
 
-        $featuredPublication = Publication::with(['type', 'authors'])
+        $featuredPublication = Publication::with(['type', 'authors.user'])
             ->where('status', 'published')
             ->where('featured', true)
             ->orderByDesc('published_at')
@@ -45,12 +45,12 @@ class PublicationController extends Controller
 
     public function show(string $slug): View
     {
-        $publication = Publication::with(['type', 'authors', 'tags'])
+        $publication = Publication::with(['type', 'authors.user', 'tags'])
             ->where('status', 'published')
             ->where('slug', $slug)
             ->firstOrFail();
 
-        $relatedPublications = Publication::with(['type', 'authors'])
+        $relatedPublications = Publication::with(['type', 'authors.user'])
             ->where('status', 'published')
             ->whereKeyNot($publication->id)
             ->when($publication->publication_type_id, fn ($query) => $query->where('publication_type_id', $publication->publication_type_id))

@@ -43,7 +43,7 @@
         : $fallbackValues;
 @endphp
 
-<section class="relative isolate overflow-hidden bg-brand-navy text-white shadow-xl shadow-brand-navy/15">
+<section class="relative isolate overflow-hidden text-white shadow-xl shadow-brand-navy/15" style="background-color: #06132a;">
     {{-- Background image --}}
     <img
         src="{{ $heroImage }}"
@@ -52,13 +52,7 @@
     >
 
     {{-- Overlay --}}
-    <div class="absolute inset-0 z-0 bg-linear-to-r from-[#04142d]/95 via-[#061f43]/78 via-50% to-[#061f43]/24"></div>
-    <div class="absolute inset-0 z-0 bg-linear-to-t from-[#04142d]/76 via-[#04142d]/16 to-[#04142d]/18"></div>
-    <div class="absolute inset-y-0 left-0 z-0 hidden w-[50%] bg-[#04142d]/24 lg:block"></div>
-
-    {{-- Decorative soft glows --}}
-    <div class="pointer-events-none absolute left-0 top-28 z-0 h-80 w-80 rounded-full bg-brand-teal/18 blur-3xl"></div>
-    <div class="pointer-events-none absolute right-8 bottom-20 z-0 h-80 w-80 rounded-full bg-brand-amber/18 blur-3xl"></div>
+    <div class="absolute inset-0 z-0" style="background-color: rgba(6, 19, 42, 0.72);"></div>
 
      <div class="relative z-10 mx-auto flex min-h-152 max-w-7xl flex-col justify-end px-5 pb-8 pt-28 sm:px-6 lg:min-h-164 lg:px-8 lg:pb-8 lg:pt-32">
         <div class="max-w-188">

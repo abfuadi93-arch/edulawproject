@@ -65,6 +65,9 @@
     $authorName = $primaryAuthor?->name ?: $insight->creator?->name ?: $insight->reviewer?->name ?: 'Edulaw Project';
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorBio = $primaryAuthor?->bio;
+    $authorPhoto = $primaryAuthor?->photo_url
+        ?: edulaw_file_url($insight->creator?->avatar)
+        ?: edulaw_file_url($insight->reviewer?->avatar);
     $additionalAuthorsCount = max($insight->authors->count() - 1, 0);
     $authorInitials = \Illuminate\Support\Str::of($authorName)
         ->explode(' ')
@@ -193,9 +196,18 @@
                     </p>
 
                     <div class="mt-5 flex items-center gap-4">
-                        <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-navy text-sm font-black text-white">
-                            {{ $authorInitials }}
-                        </div>
+                        @if ($authorPhoto)
+                            <img
+                                src="{{ $authorPhoto }}"
+                                alt="Foto profil {{ $authorName }}"
+                                class="h-14 w-14 shrink-0 rounded-2xl object-cover ring-1 ring-slate-200"
+                                loading="lazy"
+                            >
+                        @else
+                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-navy text-sm font-black text-white">
+                                {{ $authorInitials }}
+                            </div>
+                        @endif
 
                         <div class="min-w-0">
                             <h3 class="font-black leading-snug text-brand-navy">

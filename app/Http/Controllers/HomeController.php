@@ -14,19 +14,19 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $featuredInsight = Insight::with(['categoryRelation', 'authors'])
+        $featuredInsight = Insight::with(['categoryRelation', 'authors.user'])
             ->published()
             ->featured()
             ->ordered()
             ->first();
 
-        $latestInsights = Insight::with(['categoryRelation', 'authors'])
+        $latestInsights = Insight::with(['categoryRelation', 'authors.user'])
             ->published()
             ->ordered()
             ->limit(3)
             ->get();
 
-        $latestPublications = Publication::with(['type', 'authors'])
+        $latestPublications = Publication::with(['type', 'authors.user'])
             ->where('status', 'published')
             ->orderByDesc('published_at')
             ->latest()

@@ -87,6 +87,7 @@ class User extends Authenticatable implements FilamentUser
                 'slug' => Author::uniqueSlugFor($this->name),
                 'email' => $this->email,
                 'bio' => $this->bio,
+                'photo' => $this->avatar,
                 'institution' => $this->institution,
                 'position' => $this->position,
                 'profile_type' => 'team',
@@ -99,7 +100,7 @@ class User extends Authenticatable implements FilamentUser
             'name' => $this->name,
             'email' => $this->email,
             'bio' => $this->bio,
-            'photo' => $profile->photo,
+            'photo' => $profile->photo ?: $this->avatar,
             'institution' => $this->institution,
             'position' => $this->position,
             'profile_type' => $profile->profile_type ?: 'team',
@@ -112,11 +113,17 @@ class User extends Authenticatable implements FilamentUser
     public function syncLinkedProfileBasics(): void
     {
         $profile = $this->ensureProfile();
+        $photo = $profile->photo;
+
+        if (blank($photo) || ($this->wasChanged('avatar') && $photo === $this->getOriginal('avatar'))) {
+            $photo = $this->avatar;
+        }
 
         $profile->forceFill([
             'name' => $this->name,
             'email' => $this->email,
             'bio' => $this->bio,
+            'photo' => $photo,
             'institution' => $this->institution,
             'position' => $this->position,
             'is_active' => $this->is_active !== false,
