@@ -7,6 +7,7 @@ use App\Http\Controllers\InsightController;
 use App\Http\Controllers\MultimediaController;
 use App\Http\Controllers\OpportunityController;
 use App\Http\Controllers\PageController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\SearchController;
@@ -15,6 +16,7 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', [HomeController::class, 'index'])->name('home');
 
 Route::get('/tentang', [PageController::class, 'about'])->name('about');
+Route::get('/profil/{author:slug}', [ProfileController::class, 'show'])->name('profiles.show');
 Route::get('/kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
 Route::post('/kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
 Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index');

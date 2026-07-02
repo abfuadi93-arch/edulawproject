@@ -31,7 +31,10 @@
         ?? 'Publikasi';
 
     $authorCollection = isset($publication->authors)
-        ? $publication->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->values()
+        ? $publication->authors
+            ->filter(fn ($author) => $author->is_active !== false)
+            ->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)
+            ->values()
         : collect();
 
     $authors = $authorCollection->isNotEmpty()
@@ -718,18 +721,20 @@
             @if ($authorCollection->isNotEmpty())
                 <div class="flex -space-x-2">
                     @foreach ($authorCollection->take(3) as $author)
-                        @if ($author->photo_url)
-                            <img
-                                src="{{ $author->photo_url }}"
-                                alt="Foto profil {{ $author->name }}"
-                                class="h-8 w-8 rounded-full border-2 border-white/80 object-cover shadow-sm"
-                                loading="lazy"
-                            >
-                        @else
-                            <span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white/80 bg-brand-navy text-[10px] font-black text-white shadow-sm">
-                                {{ $authorInitials($author->name) }}
-                            </span>
-                        @endif
+                        <a href="{{ route('profiles.show', $author->slug) }}" class="rounded-full transition hover:-translate-y-0.5" aria-label="Profil {{ $author->name }}">
+                            @if ($author->photo_url)
+                                <img
+                                    src="{{ $author->photo_url }}"
+                                    alt="Foto profil {{ $author->name }}"
+                                    class="h-8 w-8 rounded-full border-2 border-white/80 object-cover shadow-sm"
+                                    loading="lazy"
+                                >
+                            @else
+                                <span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white/80 bg-brand-navy text-[10px] font-black text-white shadow-sm">
+                                    {{ $authorInitials($author->name) }}
+                                </span>
+                            @endif
+                        </a>
                     @endforeach
                 </div>
             @endif
@@ -919,7 +924,7 @@
                                 @if ($authorCollection->isNotEmpty())
                                     <div class="mt-3 grid gap-3">
                                         @foreach ($authorCollection as $author)
-                                            <div class="flex items-center gap-3">
+                                            <a href="{{ route('profiles.show', $author->slug) }}" class="flex items-center gap-3 rounded-xl transition hover:text-brand-navy">
                                                 @if ($author->photo_url)
                                                     <img
                                                         src="{{ $author->photo_url }}"
@@ -934,7 +939,7 @@
                                                 @endif
 
                                                 <strong class="!mt-0 min-w-0">{{ $author->name }}</strong>
-                                            </div>
+                                            </a>
                                         @endforeach
                                     </div>
                                 @else

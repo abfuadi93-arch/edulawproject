@@ -59,7 +59,10 @@
 
     $publicationAuthorProfiles = function ($publication) {
         return isset($publication->authors)
-            ? $publication->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->values()
+            ? $publication->authors
+                ->filter(fn ($author) => $author->is_active !== false)
+                ->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)
+                ->values()
             : collect();
     };
 
@@ -673,6 +676,7 @@
                             $currentDownloadUrl = $downloadUrl($publication);
                             $palette = $fallbackPalette($publication, $publicationIndex);
                             $authorProfiles = $publicationAuthorProfiles($publication);
+                            $primaryAuthor = $authorProfiles->first();
                         @endphp
 
                         <article class="publication-list-card">
@@ -696,7 +700,10 @@
                                 </h2>
 
                                 <div class="publication-meta">
-                                    <span class="inline-flex max-w-full items-center gap-2 align-middle">
+                                    <a
+                                        href="{{ $primaryAuthor ? route('profiles.show', $primaryAuthor->slug) : $detailUrl($publication) }}"
+                                        class="inline-flex max-w-full items-center gap-2 align-middle transition hover:text-brand-navy"
+                                    >
                                         @if ($authorProfiles->isNotEmpty())
                                             <span class="inline-flex shrink-0 -space-x-1.5">
                                                 @foreach ($authorProfiles->take(3) as $author)
@@ -719,7 +726,7 @@
                                         <span class="min-w-0">
                                             {{ $publicationAuthors($publication) }}
                                         </span>
-                                    </span>
+                                    </a>
                                     ·
                                     {{ $publicationDate($publication->published_at ?? null) }}
                                     ·

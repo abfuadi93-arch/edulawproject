@@ -220,7 +220,7 @@
 
     $authors = $allInsights
         ->flatMap(fn ($item) => $item && $item->relationLoaded('authors') ? $item->authors : collect())
-        ->filter()
+        ->filter(fn ($author) => $author && $author->is_active !== false)
         ->unique('id')
         ->take(5)
         ->values();
@@ -526,7 +526,7 @@
 
             <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-5">
                 @forelse ($authors as $author)
-                    <div class="flex items-center gap-3">
+                    <a href="{{ route('profiles.show', $author->slug) }}" class="flex items-center gap-3 rounded-xl transition hover:-translate-y-0.5 hover:text-brand-navy">
                         @if ($author->photo_url)
                             <img
                                 src="{{ $author->photo_url }}"
@@ -543,7 +543,7 @@
                             <p class="font-black leading-tight text-brand-ink">{{ $author->name }}</p>
                             <p class="text-xs font-bold text-brand-coral">Contributor</p>
                         </div>
-                    </div>
+                    </a>
                 @empty
                     @foreach ($authorFallbacks as $author)
                         <div class="flex items-center gap-3">

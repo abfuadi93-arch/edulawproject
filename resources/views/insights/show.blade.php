@@ -61,13 +61,17 @@
     $categoryName = $insight->display_category;
     $publishedDate = optional($insight->published_at)->translatedFormat('d F Y') ?? 'Belum dijadwalkan';
     $description = $insight->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($insight->content ?? ''), 180);
-    $primaryAuthor = $insight->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->first();
+    $primaryAuthor = $insight->authors
+        ->filter(fn ($author) => $author->is_active !== false)
+        ->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)
+        ->first();
     $authorName = $primaryAuthor?->name ?: $insight->creator?->name ?: $insight->reviewer?->name ?: 'Edulaw Project';
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorBio = $primaryAuthor?->bio;
     $authorPhoto = $primaryAuthor?->photo_url
         ?: edulaw_file_url($insight->creator?->avatar)
         ?: edulaw_file_url($insight->reviewer?->avatar);
+    $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
     $additionalAuthorsCount = max($insight->authors->count() - 1, 0);
     $authorInitials = \Illuminate\Support\Str::of($authorName)
         ->explode(' ')
@@ -211,7 +215,13 @@
 
                         <div class="min-w-0">
                             <h3 class="font-black leading-snug text-brand-navy">
-                                {{ $authorName }}
+                                @if ($authorProfileUrl)
+                                    <a href="{{ $authorProfileUrl }}" class="underline-offset-4 hover:underline">
+                                        {{ $authorName }}
+                                    </a>
+                                @else
+                                    {{ $authorName }}
+                                @endif
                             </h3>
                             <p class="mt-1 text-xs leading-5 text-slate-500">
                                 {{ $authorInstitution }}
