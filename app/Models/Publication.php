@@ -4,6 +4,7 @@ namespace App\Models;
 
 use App\Services\PdfCoverGenerator;
 use App\Support\EdulawSite;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -74,6 +75,15 @@ class Publication extends Model
     {
         return $this->belongsToMany(Tag::class, 'publication_tag')
             ->withTimestamps();
+    }
+
+    public function scopePublished(Builder $query): Builder
+    {
+        return $query
+            ->where('status', 'published')
+            ->where(function (Builder $query) {
+                $query->whereNull('published_at')->orWhere('published_at', '<=', now());
+            });
     }
 
     public function creator(): BelongsTo

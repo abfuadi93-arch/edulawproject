@@ -13,26 +13,47 @@ class ProfileController extends Controller
 
         $author->loadMissing('user');
 
+        $totalInsights = $author->insights()
+            ->published()
+            ->count();
+
         $insights = $author->insights()
             ->with(['categoryRelation'])
             ->published()
             ->orderByDesc('published_at')
             ->latest('insights.id')
-            ->paginate(6, ['*'], 'tulisan_page')
-            ->withQueryString();
+            ->take(4)
+            ->get();
+
+        $totalPublications = $author->publications()
+            ->published()
+            ->count();
 
         $publications = $author->publications()
             ->with(['type'])
-            ->where('status', 'published')
+            ->published()
             ->orderByDesc('published_at')
             ->latest('publications.id')
-            ->paginate(6, ['*'], 'publikasi_page')
-            ->withQueryString();
+            ->take(3)
+            ->get();
+
+        $focusTopics = $author->insights()
+            ->with(['categoryRelation'])
+            ->published()
+            ->get()
+            ->pluck('categoryRelation.name')
+            ->filter()
+            ->unique()
+            ->take(6)
+            ->values();
 
         return view('profiles.show', [
             'author' => $author,
             'insights' => $insights,
+            'totalInsights' => $totalInsights,
             'publications' => $publications,
+            'totalPublications' => $totalPublications,
+            'focusTopics' => $focusTopics,
         ]);
     }
 }

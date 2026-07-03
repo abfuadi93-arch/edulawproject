@@ -16,6 +16,7 @@ class InsightController extends Controller
     public function index(Request $request): View
     {
         $category = $request->query('category');
+        $author = $request->query('author');
         $search = trim((string) $request->query('q', ''));
         $featuredOnly = $request->boolean('featured');
 
@@ -23,6 +24,7 @@ class InsightController extends Controller
             ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->when($category, fn ($query) => $query->whereHas('categoryRelation', fn ($categoryQuery) => $categoryQuery->where('slug', $category)))
+            ->when($author, fn ($query) => $query->whereHas('authors', fn ($authorQuery) => $authorQuery->where('slug', $author)))
             ->when($featuredOnly, fn ($query) => $query->featured())
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
@@ -63,9 +65,10 @@ class InsightController extends Controller
                 ->withQueryString(),
             'insightCategories' => $insightCategories,
             'selectedCategory' => $category,
+            'selectedAuthor' => $author,
             'search' => $search,
             'featuredOnly' => $featuredOnly,
-            'showFilteredArchive' => $search !== '' || filled($category) || $featuredOnly || $request->filled('archive') || (int) $request->query('page', 1) > 1,
+            'showFilteredArchive' => $search !== '' || filled($category) || filled($author) || $featuredOnly || $request->filled('archive') || (int) $request->query('page', 1) > 1,
         ]);
     }
 
