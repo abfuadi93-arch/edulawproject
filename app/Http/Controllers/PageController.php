@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Support\EdulawSite;
+use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class PageController extends Controller
@@ -21,7 +23,21 @@ class PageController extends Controller
             'aboutTimelineIntro' => EdulawSite::block('about.timeline_intro'),
             'aboutTimeline' => EdulawSite::blocks('about.timeline'),
             'aboutTimelineMeta' => EdulawSite::blocks('about.timeline_meta'),
+            'aboutProfiles' => Author::query()
+                ->with('user')
+                ->where('is_active', true)
+                ->get()
+                ->keyBy(fn (Author $author): string => $this->profileLookupKey($author->name)),
             'sharedCta' => EdulawSite::block('shared.cta'),
         ]);
+    }
+
+    private function profileLookupKey(string $name): string
+    {
+        return Str::of($name)
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/i', ' ')
+            ->squish()
+            ->toString();
     }
 }

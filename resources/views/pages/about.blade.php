@@ -4,6 +4,8 @@
 
 @section('content')
 @php
+    use Illuminate\Support\Str;
+
     $stats = [
         ['value' => '21+', 'label' => 'Program', 'icon' => 'calendar'],
         ['value' => '300+', 'label' => 'Publikasi', 'icon' => 'book'],
@@ -108,9 +110,17 @@
     $leaderBlocks = collect($aboutLeaders ?? []);
     $managerBlocks = collect($aboutManagers ?? []);
     $teamBlocks = collect($aboutTeamMembers ?? []);
+    $profileMap = collect($aboutProfiles ?? []);
     $focusBlocks = collect($aboutFocusAreas ?? []);
     $timelineBlocks = collect($aboutTimeline ?? []);
     $timelineMetaBlocks = collect($aboutTimelineMeta ?? []);
+    $profileLookupKey = fn (?string $name): string => Str::of((string) $name)
+        ->lower()
+        ->replaceMatches('/[^a-z0-9]+/i', ' ')
+        ->squish()
+        ->toString();
+    $profileFor = fn (array $person) => $profileMap->get($profileLookupKey($person['name'] ?? null));
+    $personImage = fn (array $person, $profile = null): ?string => $profile?->photo_url ?: ($person['image'] ?? null);
 
     if ($statsBlocks->isNotEmpty()) {
         $stats = $statsBlocks->map(fn ($block) => [
@@ -285,21 +295,35 @@
 
                     <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
                         @foreach ($leaders as $leader)
-                            <div class="text-center">
+                            @php
+                                $profile = $profileFor($leader);
+                                $image = $personImage($leader, $profile);
+                                $leaderCardClass = 'group block rounded-2xl text-center transition hover:-translate-y-0.5';
+                            @endphp
+
+                            @if ($profile)
+                                <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $leaderCardClass }}" aria-label="Lihat profil {{ $leader['name'] }}">
+                            @else
+                                <div class="{{ $leaderCardClass }}">
+                            @endif
                                 <div class="mx-auto h-24 w-full overflow-hidden rounded-2xl bg-slate-100">
                                     <img
-                                        src="{{ $leader['image'] }}"
+                                        src="{{ $image }}"
                                         alt="{{ $leader['name'] }}"
-                                        class="h-full w-full object-cover object-top"
+                                        class="h-full w-full object-cover object-top transition group-hover:scale-[1.03]"
                                     >
                                 </div>
-                                <h4 class="mt-2 text-xs font-black leading-tight text-slate-950">
+                                <h4 class="mt-2 text-xs font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
                                     {{ $leader['name'] }}
                                 </h4>
                                 <p class="text-[11px] font-bold text-slate-500">
                                     {{ $leader['role'] }}
                                 </p>
-                            </div>
+                            @if ($profile)
+                                </a>
+                            @else
+                                </div>
+                            @endif
                         @endforeach
                     </div>
                 </div>
@@ -330,15 +354,25 @@
 
             <div class="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($managers as $manager)
-                    <article class="flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm">
+                    @php
+                        $profile = $profileFor($manager);
+                        $image = $personImage($manager, $profile);
+                        $managerCardClass = 'group flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
+                    @endphp
+
+                    @if ($profile)
+                        <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $managerCardClass }}" aria-label="Lihat profil {{ $manager['name'] }}">
+                    @else
+                        <article class="{{ $managerCardClass }}">
+                    @endif
                         <img
-                            src="{{ $manager['image'] }}"
+                            src="{{ $image }}"
                             alt="{{ $manager['name'] }}"
                             class="h-24 w-20 shrink-0 rounded-xl object-cover object-top"
                         >
 
                         <div>
-                            <h4 class="text-sm font-black text-slate-950">
+                            <h4 class="text-sm font-black text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
                                 {{ $manager['name'] }}
                             </h4>
                             <p class="mt-1 text-xs font-bold text-slate-600">
@@ -348,7 +382,11 @@
                                 {{ $manager['description'] }}
                             </p>
                         </div>
-                    </article>
+                    @if ($profile)
+                        </a>
+                    @else
+                        </article>
+                    @endif
                 @endforeach
             </div>
 
@@ -358,14 +396,24 @@
 
             <div class="mt-3 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
                 @foreach ($teamMembers as $member)
-                    <article class="rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm">
+                    @php
+                        $profile = $profileFor($member);
+                        $image = $personImage($member, $profile);
+                        $memberCardClass = 'group block rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
+                    @endphp
+
+                    @if ($profile)
+                        <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $memberCardClass }}" aria-label="Lihat profil {{ $member['name'] }}">
+                    @else
+                        <article class="{{ $memberCardClass }}">
+                    @endif
                         <img
-                            src="{{ $member['image'] }}"
+                            src="{{ $image }}"
                             alt="{{ $member['name'] }}"
-                            class="mx-auto h-20 w-20 rounded-xl object-cover object-top"
+                            class="mx-auto h-20 w-20 rounded-xl object-cover object-top transition group-hover:scale-[1.03]"
                         >
 
-                        <h4 class="mt-3 text-sm font-black leading-tight text-slate-950">
+                        <h4 class="mt-3 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
                             {{ $member['name'] }}
                         </h4>
 
@@ -376,7 +424,11 @@
                         <p class="mt-2 text-xs leading-5 text-slate-600">
                             {{ $member['description'] }}
                         </p>
-                    </article>
+                    @if ($profile)
+                        </a>
+                    @else
+                        </article>
+                    @endif
                 @endforeach
             </div>
         </div>

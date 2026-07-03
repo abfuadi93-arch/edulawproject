@@ -9,6 +9,74 @@
 @section('twitter_description', \Illuminate\Support\Str::limit(strip_tags($author->bio ?: $author->affiliation_label), 180))
 @section('twitter_image', $author->photo_url ?: asset('images/hero/hero-edulaw.jpg'))
 
+@push('styles')
+<style>
+    .profile-page {
+        --profile-navy: #06132a;
+        --profile-white: #ffffff;
+        --profile-paper: #f6f8fb;
+        --profile-amber: #d99a25;
+        background: var(--profile-paper);
+        color: var(--profile-navy);
+    }
+
+    .profile-card {
+        border: 1px solid rgba(6, 19, 42, .12);
+        background: var(--profile-white);
+        box-shadow: 0 1px 2px rgba(6, 19, 42, .05);
+    }
+
+    .profile-item-card {
+        border: 1px solid rgba(6, 19, 42, .12);
+        background: var(--profile-white);
+        transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    }
+
+    .profile-item-card:hover {
+        border-color: rgba(6, 19, 42, .32);
+        box-shadow: 0 18px 42px rgba(6, 19, 42, .08);
+        transform: translateY(-2px);
+    }
+
+    .profile-label {
+        color: var(--profile-navy);
+    }
+
+    .profile-accent {
+        color: var(--profile-amber);
+    }
+
+    .profile-muted {
+        color: rgba(6, 19, 42, .64);
+    }
+
+    .profile-soft {
+        color: rgba(6, 19, 42, .44);
+    }
+
+    .profile-rule {
+        border-color: rgba(6, 19, 42, .10);
+    }
+
+    .profile-chip {
+        border: 1px solid rgba(6, 19, 42, .14);
+        color: var(--profile-navy);
+    }
+
+    .profile-chip:hover {
+        border-color: var(--profile-navy);
+        background: var(--profile-navy);
+        color: var(--profile-white);
+    }
+
+    .profile-empty {
+        border: 1px dashed rgba(6, 19, 42, .22);
+        background: rgba(255, 255, 255, .62);
+        color: rgba(6, 19, 42, .64);
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     use Illuminate\Support\Carbon;
@@ -57,7 +125,7 @@
     );
 @endphp
 
-<main class="bg-[#f6f8fb] text-brand-ink">
+<main class="profile-page">
     <x-shared.page-header
         :title="$author->name"
         :compact="true"
@@ -101,42 +169,42 @@
     <section class="py-10 lg:py-14">
         <div class="mx-auto grid max-w-7xl gap-7 px-4 sm:px-6 lg:grid-cols-[320px_minmax(0,1fr)] lg:px-8">
             <aside class="self-start lg:sticky lg:top-28">
-                <div class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <p class="text-[10px] font-black uppercase tracking-[0.2em] text-brand-navy/70">
+                <div class="profile-card rounded-2xl p-6">
+                    <p class="profile-label text-[10px] font-black uppercase tracking-[0.2em]">
                         Biografi
                     </p>
 
                     @if ($bioParagraphs->isNotEmpty())
-                        <div class="mt-4 space-y-4 text-sm leading-7 text-slate-600">
+                        <div class="profile-muted mt-4 space-y-4 text-sm leading-7">
                             @foreach ($bioParagraphs as $paragraph)
                                 <p>{{ $paragraph }}</p>
                             @endforeach
                         </div>
                     @else
-                        <p class="mt-4 text-sm leading-7 text-slate-600">
+                        <p class="profile-muted mt-4 text-sm leading-7">
                             Biografi profil ini belum tersedia.
                         </p>
                     @endif
 
-                    <div class="mt-6 grid gap-3 border-t border-slate-100 pt-5">
+                    <div class="profile-rule mt-6 grid gap-3 border-t pt-5">
                         @if ($author->position)
                             <div>
-                                <span class="block text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Posisi</span>
-                                <strong class="mt-1 block text-sm text-brand-ink">{{ $author->position }}</strong>
+                                <span class="profile-soft block text-[10px] font-black uppercase tracking-[0.16em]">Posisi</span>
+                                <strong class="mt-1 block text-sm">{{ $author->position }}</strong>
                             </div>
                         @endif
 
                         @if ($author->institution)
                             <div>
-                                <span class="block text-[10px] font-black uppercase tracking-[0.16em] text-slate-400">Institusi</span>
-                                <strong class="mt-1 block text-sm text-brand-ink">{{ $author->institution }}</strong>
+                                <span class="profile-soft block text-[10px] font-black uppercase tracking-[0.16em]">Institusi</span>
+                                <strong class="mt-1 block text-sm">{{ $author->institution }}</strong>
                             </div>
                         @endif
                     </div>
 
                     @if ($socialLinks->isNotEmpty())
-                        <div class="mt-6 border-t border-slate-100 pt-5">
-                            <p class="text-[10px] font-black uppercase tracking-[0.2em] text-brand-navy/70">
+                        <div class="profile-rule mt-6 border-t pt-5">
+                            <p class="profile-label text-[10px] font-black uppercase tracking-[0.2em]">
                                 Tautan
                             </p>
 
@@ -146,7 +214,7 @@
                                         href="{{ $link['url'] }}"
                                         target="_blank"
                                         rel="noopener noreferrer"
-                                        class="rounded-full border border-slate-200 px-3 py-1.5 text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
+                                        class="profile-chip rounded-full px-3 py-1.5 text-xs font-black transition"
                                     >
                                         {{ $link['platform'] }}
                                     </a>
@@ -158,103 +226,103 @@
             </aside>
 
             <div class="grid gap-8">
-                <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <section class="profile-card rounded-2xl p-5 sm:p-6">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                            <p class="profile-label text-xs font-black uppercase tracking-[0.18em]">
                                 Daftar Tulisan
                             </p>
-                            <h2 class="mt-2 text-2xl font-black tracking-tight text-brand-ink">
+                            <h2 class="mt-2 text-2xl font-black tracking-tight">
                                 Insight oleh {{ $author->name }}
                             </h2>
                         </div>
 
-                        <span class="text-sm font-bold text-slate-500">
+                        <span class="profile-muted text-sm font-bold">
                             {{ $insights->total() }} artikel
                         </span>
                     </div>
 
                     <div class="mt-6 grid gap-4 md:grid-cols-2">
                         @forelse ($insights as $insight)
-                            <article class="group rounded-xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5">
-                                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-brand-teal">
+                            <article class="profile-item-card group rounded-xl p-4">
+                                <p class="profile-accent text-[10px] font-black uppercase tracking-[0.16em]">
                                     {{ $insight->display_category }}
                                 </p>
-                                <h3 class="mt-2 line-clamp-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">
+                                <h3 class="mt-2 line-clamp-2 text-lg font-black leading-snug">
                                     <a href="{{ route('insights.show', $insight->slug) }}">
                                         {{ $insight->title }}
                                     </a>
                                 </h3>
-                                <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                                <p class="profile-muted mt-3 line-clamp-3 text-sm leading-6">
                                     {{ $excerpt($insight->excerpt ?: $insight->content) }}
                                 </p>
-                                <div class="mt-4 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
+                                <div class="profile-muted mt-4 flex flex-wrap items-center gap-2 text-xs font-bold">
                                     <span>{{ $publishedDate($insight->published_at) }}</span>
-                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                    <span class="h-1 w-1 rounded-full" style="background: rgba(6, 19, 42, .24);"></span>
                                     <span>{{ $insight->reading_time ? $insight->reading_time.' menit baca' : 'Insight' }}</span>
                                 </div>
                             </article>
                         @empty
-                            <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm leading-6 text-slate-500 md:col-span-2">
+                            <div class="profile-empty rounded-xl p-6 text-sm leading-6 md:col-span-2">
                                 Belum ada tulisan Insight yang dipublikasikan untuk profil ini.
                             </div>
                         @endforelse
                     </div>
 
                     @if ($insights->hasPages())
-                        <div class="mt-6 border-t border-slate-100 pt-5">
+                        <div class="profile-rule mt-6 border-t pt-5">
                             {{ $insights->links() }}
                         </div>
                     @endif
                 </section>
 
-                <section class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
+                <section class="profile-card rounded-2xl p-5 sm:p-6">
                     <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                            <p class="profile-label text-xs font-black uppercase tracking-[0.18em]">
                                 Daftar Publikasi
                             </p>
-                            <h2 class="mt-2 text-2xl font-black tracking-tight text-brand-ink">
+                            <h2 class="mt-2 text-2xl font-black tracking-tight">
                                 Riset dan publikasi terkait
                             </h2>
                         </div>
 
-                        <span class="text-sm font-bold text-slate-500">
+                        <span class="profile-muted text-sm font-bold">
                             {{ $publications->total() }} publikasi
                         </span>
                     </div>
 
                     <div class="mt-6 grid gap-4 md:grid-cols-2">
                         @forelse ($publications as $publication)
-                            <article class="group rounded-xl border border-slate-200 bg-white p-4 transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5">
-                                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-brand-amber">
+                            <article class="profile-item-card group rounded-xl p-4">
+                                <p class="profile-accent text-[10px] font-black uppercase tracking-[0.16em]">
                                     {{ $publication->type?->name ?: 'Publikasi' }}
                                 </p>
-                                <h3 class="mt-2 line-clamp-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">
+                                <h3 class="mt-2 line-clamp-2 text-lg font-black leading-snug">
                                     <a href="{{ route('publications.show', $publication->slug) }}">
                                         {{ $publication->title }}
                                     </a>
                                 </h3>
-                                <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
+                                <p class="profile-muted mt-3 line-clamp-3 text-sm leading-6">
                                     {{ $excerpt($publication->excerpt ?: $publication->description) }}
                                 </p>
-                                <div class="mt-4 flex flex-wrap items-center gap-2 text-xs font-bold text-slate-500">
+                                <div class="profile-muted mt-4 flex flex-wrap items-center gap-2 text-xs font-bold">
                                     <span>{{ $publishedDate($publication->published_at) }}</span>
                                     @if ($publication->page_count)
-                                        <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                        <span class="h-1 w-1 rounded-full" style="background: rgba(6, 19, 42, .24);"></span>
                                         <span>{{ $publication->page_count }} halaman</span>
                                     @endif
                                 </div>
                             </article>
                         @empty
-                            <div class="rounded-xl border border-dashed border-slate-300 bg-slate-50 p-6 text-sm leading-6 text-slate-500 md:col-span-2">
+                            <div class="profile-empty rounded-xl p-6 text-sm leading-6 md:col-span-2">
                                 Belum ada publikasi yang dipublikasikan untuk profil ini.
                             </div>
                         @endforelse
                     </div>
 
                     @if ($publications->hasPages())
-                        <div class="mt-6 border-t border-slate-100 pt-5">
+                        <div class="profile-rule mt-6 border-t pt-5">
                             {{ $publications->links() }}
                         </div>
                     @endif

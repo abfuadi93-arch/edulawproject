@@ -78,3 +78,27 @@ test('inactive public profile page is not visible', function () {
     $this->get(route('profiles.show', $author->slug))
         ->assertNotFound();
 });
+
+test('about page team cards link to active public profiles', function () {
+    $activeProfile = Author::query()->create([
+        'name' => 'Abdul Basid Fuadi',
+        'slug' => 'abdul-basid-fuadi',
+        'photo' => 'authors/abdul-basid-fuadi.webp',
+        'position' => 'Founder',
+        'profile_type' => 'founder',
+        'is_active' => true,
+    ]);
+
+    $inactiveProfile = Author::query()->create([
+        'name' => 'Azmi Fathu Rohman',
+        'slug' => 'azmi-fathu-rohman',
+        'profile_type' => 'co_founder',
+        'is_active' => false,
+    ]);
+
+    $this->get(route('about'))
+        ->assertOk()
+        ->assertSee(route('profiles.show', $activeProfile->slug), false)
+        ->assertSee('authors/abdul-basid-fuadi.webp')
+        ->assertDontSee(route('profiles.show', $inactiveProfile->slug), false);
+});
