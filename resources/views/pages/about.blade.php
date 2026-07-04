@@ -15,70 +15,9 @@
         ['value' => '1.200+', 'label' => 'Konten Edukasi', 'icon' => 'play'],
     ];
 
-    $leaders = [
-        [
-            'name' => 'Abdul Basid Fuadi',
-            'role' => 'Founder',
-            'image' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85',
-        ],
-        [
-            'name' => 'Azmi Fathu Rohman',
-            'role' => 'Co-Founder',
-            'image' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=85',
-        ],
-        [
-            'name' => 'Faraz Almira Areila',
-            'role' => 'Co-Founder',
-            'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=85',
-        ],
-        [
-            'name' => 'Umi Zakia Azzahro',
-            'role' => 'Co-Founder',
-            'image' => 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=85',
-        ],
-    ];
-
-    $managers = [
-        [
-            'name' => 'Nabila Rahma',
-            'role' => 'Manager Program',
-            'description' => 'Mengelola perencanaan, pelaksanaan, dan evaluasi program edukasi hukum.',
-            'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=85',
-        ],
-        [
-            'name' => 'Ricky Pratama',
-            'role' => 'Manager Riset & Publikasi',
-            'description' => 'Memimpin proses riset, kajian kebijakan, dan publikasi berbasis data.',
-            'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=85',
-        ],
-        [
-            'name' => 'Dewi Safitri',
-            'role' => 'Manager Editorial',
-            'description' => 'Mengelola konten editorial, analisis hukum, dan pengembangan penulis.',
-            'image' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=85',
-        ],
-        [
-            'name' => 'Fauzan Aditya',
-            'role' => 'Manager Multimedia',
-            'description' => 'Mengelola produksi audiovisual, media sosial, dokumentasi, dan distribusi konten.',
-            'image' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=85',
-        ],
-    ];
-
-    $teamMembers = [
-        ['name' => 'Raihan Malik', 'role' => 'Officer Program', 'description' => 'Mendukung operasional program dan koordinasi peserta kegiatan.', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Salsabila H.', 'role' => 'Officer Riset', 'description' => 'Mendukung pengumpulan data, analisis awal, dan penyusunan kajian.', 'image' => 'https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Hafizh Acmi', 'role' => 'Officer Publikasi', 'description' => 'Mengelola proses penyuntingan naskah dan layout publikasi.', 'image' => 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Putri Aulia', 'role' => 'Officer Editorial', 'description' => 'Mendukung produksi konten artikel dan analisis hukum.', 'image' => 'https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Daniel Hermawan', 'role' => 'Officer Multimedia', 'description' => 'Mendukung produksi video, desain grafis, dan sosial media harian.', 'image' => 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Nadira Putri', 'role' => 'Writer', 'description' => 'Menulis artikel edukatif, editorial hukum, dan feature tematik.', 'image' => 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Firmansyah', 'role' => 'Writer', 'description' => 'Menulis konten riset, kebijakan publik, dan literasi hukum.', 'image' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Zahra Putri', 'role' => 'Writer', 'description' => 'Menulis konten populer, infografis, dan serial edukasi hukum.', 'image' => 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Ricky Maulana', 'role' => 'Designer', 'description' => 'Merancang visual konten, infografis, dan layout publikasi digital.', 'image' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Alya Humaira', 'role' => 'Designer', 'description' => 'Mendukung desain grafis, branding, dan kebutuhan visual.', 'image' => 'https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Ikhsan Pradipta', 'role' => 'Content Support', 'description' => 'Mendukung riset konten, fact-checking, dan manajemen data.', 'image' => 'https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Vina Oktaviani', 'role' => 'Content Support', 'description' => 'Membantu pengelolaan konten dan koordinasi dengan kontributor.', 'image' => 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=500&q=85'],
-    ];
+    $leaders = [];
+    $managers = [];
+    $teamMembers = [];
 
     $focusAreas = [
         ['title' => 'Literasi Hukum', 'description' => 'Materi belajar yang ringkas, kontekstual, dan mudah digunakan.', 'icon' => 'book'],
@@ -112,10 +51,8 @@
     );
 
     $statsBlocks = collect($aboutStats ?? []);
-    $leaderBlocks = collect($aboutLeaders ?? []);
-    $managerBlocks = collect($aboutManagers ?? []);
-    $teamBlocks = collect($aboutTeamMembers ?? []);
     $profileMap = collect($aboutProfiles ?? []);
+    $profileGroups = collect($aboutProfilesByRole ?? []);
     $focusBlocks = collect($aboutFocusAreas ?? []);
     $timelineBlocks = collect($aboutTimeline ?? []);
     $timelineMetaBlocks = collect($aboutTimelineMeta ?? []);
@@ -124,8 +61,20 @@
         ->replaceMatches('/[^a-z0-9]+/i', ' ')
         ->squish()
         ->toString();
-    $profileFor = fn (array $person) => $profileMap->get($profileLookupKey($person['name'] ?? null));
-    $personImage = fn (array $person, $profile = null): ?string => $profile?->photo_url ?: ($person['image'] ?? null);
+    $profileFor = fn (array $person) => $person['profile'] ?? $profileMap->get($profileLookupKey($person['name'] ?? null));
+    $personImage = fn (array $person, $profile = null): ?string => $profile?->photo_url ?: (($person['image'] ?? null) ?: asset('images/logo/icon-bg.png'));
+    $profilePerson = function ($profile, ?string $fallbackRole = null, bool $withDefaultDescription = true) use ($editorialCopy): array {
+        $bio = trim(strip_tags((string) $profile->bio));
+        $description = $bio !== '' ? Str::limit((string) $editorialCopy($bio), 130) : null;
+
+        return [
+            'name' => $profile->name,
+            'role' => $editorialCopy($profile->position ?: $profile->profile_type_label ?: $fallbackRole),
+            'description' => $description ?: ($withDefaultDescription ? 'Bagian dari tim Edulaw Project.' : null),
+            'image' => $profile->photo_url,
+            'profile' => $profile,
+        ];
+    };
 
     if ($statsBlocks->isNotEmpty()) {
         $stats = $statsBlocks->map(fn ($block) => [
@@ -135,31 +84,20 @@
         ])->all();
     }
 
-    if ($leaderBlocks->isNotEmpty()) {
-        $leaders = $leaderBlocks->map(fn ($block) => [
-            'name' => $block->title,
-            'role' => $block->subtitle,
-            'image' => $block->image_url,
-        ])->all();
-    }
-
-    if ($managerBlocks->isNotEmpty()) {
-        $managers = $managerBlocks->map(fn ($block) => [
-            'name' => $block->title,
-            'role' => $editorialCopy($block->subtitle),
-            'description' => $editorialCopy($block->body),
-            'image' => $block->image_url,
-        ])->all();
-    }
-
-    if ($teamBlocks->isNotEmpty()) {
-        $teamMembers = $teamBlocks->map(fn ($block) => [
-            'name' => $block->title,
-            'role' => $editorialCopy($block->subtitle),
-            'description' => $editorialCopy($block->body),
-            'image' => $block->image_url,
-        ])->all();
-    }
+    $roleProfiles = fn (string $role) => collect($profileGroups->get($role, []));
+    $leaders = $roleProfiles('founder')
+        ->concat($roleProfiles('co_founder'))
+        ->map(fn ($profile): array => $profilePerson($profile, 'Founder'))
+        ->values()
+        ->all();
+    $managers = $roleProfiles('manager')
+        ->map(fn ($profile): array => $profilePerson($profile, 'Manager'))
+        ->values()
+        ->all();
+    $teamMembers = $roleProfiles('team')
+        ->map(fn ($profile): array => $profilePerson($profile, 'Officer, Writer, & Designer'))
+        ->values()
+        ->all();
 
     if ($focusBlocks->isNotEmpty()) {
         $focusAreas = $focusBlocks->map(fn ($block) => [
@@ -293,50 +231,53 @@
                     @endforeach
                 </div>
 
-                <div class="mt-5">
-                    <h3 class="text-center text-base font-black text-slate-950">
-                        Penggerak Edulaw Project
-                    </h3>
+                @if (count($leaders) > 0)
+                    <div class="mt-5">
+                        <h3 class="text-center text-base font-black text-slate-950">
+                            Penggerak Edulaw Project
+                        </h3>
 
-                    <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
-                        @foreach ($leaders as $leader)
-                            @php
-                                $profile = $profileFor($leader);
-                                $image = $personImage($leader, $profile);
-                                $leaderCardClass = 'group block rounded-2xl text-center transition hover:-translate-y-0.5';
-                            @endphp
+                        <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+                            @foreach ($leaders as $leader)
+                                @php
+                                    $profile = $profileFor($leader);
+                                    $image = $personImage($leader, $profile);
+                                    $leaderCardClass = 'group block rounded-2xl text-center transition hover:-translate-y-0.5';
+                                @endphp
 
-                            @if ($profile)
-                                <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $leaderCardClass }}" aria-label="Lihat profil {{ $leader['name'] }}">
-                            @else
-                                <div class="{{ $leaderCardClass }}">
-                            @endif
-                                <div class="mx-auto h-24 w-full overflow-hidden rounded-2xl bg-slate-100">
-                                    <img
-                                        src="{{ $image }}"
-                                        alt="{{ $leader['name'] }}"
-                                        class="h-full w-full object-cover object-top transition group-hover:scale-[1.03]"
-                                    >
-                                </div>
-                                <h4 class="mt-2 text-xs font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                    {{ $leader['name'] }}
-                                </h4>
-                                <p class="text-[11px] font-bold text-slate-500">
-                                    {{ $leader['role'] }}
-                                </p>
-                            @if ($profile)
-                                </a>
-                            @else
-                                </div>
-                            @endif
-                        @endforeach
+                                @if ($profile)
+                                    <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $leaderCardClass }}" aria-label="Lihat profil {{ $leader['name'] }}">
+                                @else
+                                    <div class="{{ $leaderCardClass }}">
+                                @endif
+                                    <div class="mx-auto h-24 w-full overflow-hidden rounded-2xl bg-slate-100">
+                                        <img
+                                            src="{{ $image }}"
+                                            alt="{{ $leader['name'] }}"
+                                            class="h-full w-full object-cover object-top transition group-hover:scale-[1.03]"
+                                        >
+                                    </div>
+                                    <h4 class="mt-2 text-xs font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                                        {{ $leader['name'] }}
+                                    </h4>
+                                    <p class="text-[11px] font-bold text-slate-500">
+                                        {{ $leader['role'] }}
+                                    </p>
+                                @if ($profile)
+                                    </a>
+                                @else
+                                    </div>
+                                @endif
+                            @endforeach
+                        </div>
                     </div>
-                </div>
+                @endif
             </div>
         </div>
     </section>
 
     {{-- Team --}}
+    @if (count($managers) > 0 || count($teamMembers) > 0)
     <section id="tim" class="border-b border-slate-200 bg-white py-8">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:gap-8">
@@ -353,91 +294,99 @@
                 </p>
             </div>
 
-            <h3 class="mt-6 text-lg font-black text-slate-950">
-                Manager
-            </h3>
+            @if (count($managers) > 0)
+                <h3 class="mt-6 text-lg font-black text-slate-950">
+                    Manager
+                </h3>
 
-            <div class="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                @foreach ($managers as $manager)
-                    @php
-                        $profile = $profileFor($manager);
-                        $image = $personImage($manager, $profile);
-                        $managerCardClass = 'group flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
-                    @endphp
+                <div class="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+                    @foreach ($managers as $manager)
+                        @php
+                            $profile = $profileFor($manager);
+                            $image = $personImage($manager, $profile);
+                            $managerCardClass = 'group flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
+                        @endphp
 
-                    @if ($profile)
-                        <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $managerCardClass }}" aria-label="Lihat profil {{ $manager['name'] }}">
-                    @else
-                        <article class="{{ $managerCardClass }}">
-                    @endif
-                        <img
-                            src="{{ $image }}"
-                            alt="{{ $manager['name'] }}"
-                            class="h-24 w-20 shrink-0 rounded-xl object-cover object-top"
-                        >
+                        @if ($profile)
+                            <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $managerCardClass }}" aria-label="Lihat profil {{ $manager['name'] }}">
+                        @else
+                            <article class="{{ $managerCardClass }}">
+                        @endif
+                            <img
+                                src="{{ $image }}"
+                                alt="{{ $manager['name'] }}"
+                                class="h-24 w-20 shrink-0 rounded-xl object-cover object-top"
+                            >
 
-                        <div>
-                            <h4 class="text-sm font-black text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                {{ $manager['name'] }}
+                            <div>
+                                <h4 class="text-sm font-black text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                                    {{ $manager['name'] }}
+                                </h4>
+                                <p class="mt-1 text-xs font-bold text-slate-600">
+                                    {{ $manager['role'] }}
+                                </p>
+                                <p class="mt-2 text-xs leading-5 text-slate-600">
+                                    {{ $manager['description'] }}
+                                </p>
+                            </div>
+                        @if ($profile)
+                            </a>
+                        @else
+                            </article>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
+
+            @if (count($teamMembers) > 0)
+                <h3 @class([
+                    'mt-6 text-lg font-black text-slate-950',
+                    'border-t border-slate-200 pt-5' => count($managers) > 0,
+                ])>
+                    Officer, Writer, &amp; Designer
+                </h3>
+
+                <div class="mt-3 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
+                    @foreach ($teamMembers as $member)
+                        @php
+                            $profile = $profileFor($member);
+                            $image = $personImage($member, $profile);
+                            $memberCardClass = 'group block rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
+                        @endphp
+
+                        @if ($profile)
+                            <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $memberCardClass }}" aria-label="Lihat profil {{ $member['name'] }}">
+                        @else
+                            <article class="{{ $memberCardClass }}">
+                        @endif
+                            <img
+                                src="{{ $image }}"
+                                alt="{{ $member['name'] }}"
+                                class="mx-auto h-20 w-20 rounded-xl object-cover object-top transition group-hover:scale-[1.03]"
+                            >
+
+                            <h4 class="mt-3 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                                {{ $member['name'] }}
                             </h4>
+
                             <p class="mt-1 text-xs font-bold text-slate-600">
-                                {{ $manager['role'] }}
+                                {{ $member['role'] }}
                             </p>
+
                             <p class="mt-2 text-xs leading-5 text-slate-600">
-                                {{ $manager['description'] }}
+                                {{ $member['description'] }}
                             </p>
-                        </div>
-                    @if ($profile)
-                        </a>
-                    @else
-                        </article>
-                    @endif
-                @endforeach
-            </div>
-
-            <h3 class="mt-6 border-t border-slate-200 pt-5 text-lg font-black text-slate-950">
-                Officer, Writer, &amp; Designer
-            </h3>
-
-            <div class="mt-3 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6">
-                @foreach ($teamMembers as $member)
-                    @php
-                        $profile = $profileFor($member);
-                        $image = $personImage($member, $profile);
-                        $memberCardClass = 'group block rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
-                    @endphp
-
-                    @if ($profile)
-                        <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $memberCardClass }}" aria-label="Lihat profil {{ $member['name'] }}">
-                    @else
-                        <article class="{{ $memberCardClass }}">
-                    @endif
-                        <img
-                            src="{{ $image }}"
-                            alt="{{ $member['name'] }}"
-                            class="mx-auto h-20 w-20 rounded-xl object-cover object-top transition group-hover:scale-[1.03]"
-                        >
-
-                        <h4 class="mt-3 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                            {{ $member['name'] }}
-                        </h4>
-
-                        <p class="mt-1 text-xs font-bold text-slate-600">
-                            {{ $member['role'] }}
-                        </p>
-
-                        <p class="mt-2 text-xs leading-5 text-slate-600">
-                            {{ $member['description'] }}
-                        </p>
-                    @if ($profile)
-                        </a>
-                    @else
-                        </article>
-                    @endif
-                @endforeach
-            </div>
+                        @if ($profile)
+                            </a>
+                        @else
+                            </article>
+                        @endif
+                    @endforeach
+                </div>
+            @endif
         </div>
     </section>
+    @endif
 
     {{-- Why --}}
     <section class="border-b border-slate-200 bg-white py-8">

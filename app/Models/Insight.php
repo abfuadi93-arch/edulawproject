@@ -88,9 +88,8 @@ class Insight extends Model
     {
         return $query
             ->where('status', 'published')
-            ->where(function (Builder $query) {
-                $query->whereNull('published_at')->orWhere('published_at', '<=', now());
-            });
+            ->whereNotNull('published_at')
+            ->where('published_at', '<=', now());
     }
 
     public function scopeFeatured(Builder $query): Builder

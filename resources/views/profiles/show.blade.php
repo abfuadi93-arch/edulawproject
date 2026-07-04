@@ -29,12 +29,9 @@
     $photoUrl = $author->photo_url;
     $publicPosition = $cleanPublicValue($author->position, 'Contributor');
     $publicInstitution = $cleanPublicValue($author->institution, 'Edulaw Project');
-    $publicRole = match ($author->profile_type) {
-        'founder', 'co_founder', 'team' => 'Tim Edulaw',
-        'speaker' => 'Narasumber',
-        'moderator' => 'Moderator',
-        'internal_author', 'external_author', 'contributor' => 'Penulis Editorial',
-        default => 'Kontributor Editorial',
+    $publicRole = match ($author->profile_role_key) {
+        'founder', 'co_founder', 'manager', 'team' => 'Tim Edulaw',
+        default => 'Tim Edulaw',
     };
     $heroBadge = $publicRole === 'Tim Edulaw' ? 'TIM EDULAW' : 'PROFIL PENULIS';
     $bioFallback = $publicRole === 'Tim Edulaw'

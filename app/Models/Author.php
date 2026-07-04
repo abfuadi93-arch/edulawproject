@@ -14,14 +14,18 @@ class Author extends Model
     use HasFactory;
 
     public const PROFILE_TYPES = [
-        'internal_author' => 'Penulis Internal',
-        'external_author' => 'Penulis Eksternal',
-        'speaker' => 'Narasumber',
-        'moderator' => 'Moderator',
         'founder' => 'Founder',
         'co_founder' => 'Co-Founder',
-        'team' => 'Tim Edulaw',
-        'contributor' => 'Kontributor',
+        'manager' => 'Manager',
+        'team' => 'Officer, Writer, & Designer',
+    ];
+
+    public const LEGACY_PROFILE_TYPE_MAP = [
+        'internal_author' => 'team',
+        'external_author' => 'team',
+        'speaker' => 'team',
+        'moderator' => 'team',
+        'contributor' => 'team',
     ];
 
     protected $fillable = [
@@ -71,7 +75,33 @@ class Author extends Model
 
     public function getProfileTypeLabelAttribute(): ?string
     {
-        return self::PROFILE_TYPES[$this->profile_type] ?? null;
+        $profileType = self::canonicalProfileType($this->profile_type);
+
+        return $profileType ? self::PROFILE_TYPES[$profileType] : null;
+    }
+
+    public function getProfileRoleKeyAttribute(): ?string
+    {
+        return self::canonicalProfileType($this->profile_type);
+    }
+
+    public static function canonicalProfileType(?string $profileType): ?string
+    {
+        $profileType = Str::of((string) $profileType)
+            ->lower()
+            ->squish()
+            ->replace(['-', ' '], '_')
+            ->toString();
+
+        if ($profileType === '') {
+            return null;
+        }
+
+        if (array_key_exists($profileType, self::PROFILE_TYPES)) {
+            return $profileType;
+        }
+
+        return self::LEGACY_PROFILE_TYPE_MAP[$profileType] ?? null;
     }
 
     public function getPhotoUrlAttribute(): ?string

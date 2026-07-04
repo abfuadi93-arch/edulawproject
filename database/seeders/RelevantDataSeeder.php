@@ -57,7 +57,7 @@ class RelevantDataSeeder extends Seeder
                 'photo' => $row['photo'] ?? null,
                 'institution' => $row['affiliation'] ?? 'Edulaw Project',
                 'position' => $row['title'] ?? $row['role'] ?? null,
-                'profile_type' => Str::contains(Str::lower((string) ($row['title'] ?? $row['role'] ?? '')), 'founder') ? 'founder' : 'team',
+                'profile_type' => $this->profileTypeForPosition($row['title'] ?? $row['role'] ?? null),
                 'social_links' => $row['linkedin_url'] ? ['linkedin' => $row['linkedin_url']] : null,
             ]);
         }
@@ -73,7 +73,7 @@ class RelevantDataSeeder extends Seeder
                 'photo' => $row['author_photo'] ?? null,
                 'institution' => $row['author_affiliation'] ?: 'Edulaw Project',
                 'position' => isset($row['role']) ? Str::headline($row['role']) : null,
-                'profile_type' => 'internal_author',
+                'profile_type' => $this->profileTypeForPosition($row['role'] ?? null),
             ]);
         }
 
@@ -86,7 +86,7 @@ class RelevantDataSeeder extends Seeder
                 'photo' => $row['image'] ?? null,
                 'institution' => 'Edulaw Project',
                 'position' => isset($row['role']) ? Str::headline($row['role']) : null,
-                'profile_type' => 'contributor',
+                'profile_type' => $this->profileTypeForPosition($row['role'] ?? null),
             ]);
         }
     }
@@ -661,7 +661,7 @@ class RelevantDataSeeder extends Seeder
             'photo' => $attributes['photo'] ?? null,
             'institution' => $attributes['institution'] ?? 'Edulaw Project',
             'position' => $attributes['position'] ?? null,
-            'profile_type' => $attributes['profile_type'] ?? null,
+            'profile_type' => $attributes['profile_type'] ?? $this->profileTypeForPosition($attributes['position'] ?? null),
             'social_links' => $attributes['social_links'] ?? null,
             'is_active' => true,
         ], fn ($value) => $value !== null && $value !== '');
@@ -1082,7 +1082,27 @@ class RelevantDataSeeder extends Seeder
             'photo' => $row['image'] ?? null,
             'institution' => 'Edulaw Project',
             'position' => isset($row['role']) ? Str::headline($row['role']) : null,
+            'profile_type' => $this->profileTypeForPosition($row['role'] ?? null),
         ]);
+    }
+
+    private function profileTypeForPosition(?string $position): string
+    {
+        $position = Str::of((string) $position)->lower()->squish()->toString();
+
+        if (Str::contains($position, ['co-founder', 'co founder', 'cofounder'])) {
+            return 'co_founder';
+        }
+
+        if (Str::contains($position, 'founder')) {
+            return 'founder';
+        }
+
+        if (Str::contains($position, 'manager')) {
+            return 'manager';
+        }
+
+        return 'team';
     }
 
     private function learningPointsFromHtml(?string $html): array

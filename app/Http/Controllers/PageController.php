@@ -11,23 +11,26 @@ class PageController extends Controller
 {
     public function about(): View
     {
+        $profiles = Author::query()
+            ->with('user')
+            ->where('is_active', true)
+            ->orderBy('name')
+            ->get();
+
         return view('pages.about', [
             'aboutHero' => EdulawSite::block('about.hero'),
             'aboutStats' => EdulawSite::blocks('about.stats'),
-            'aboutLeaders' => EdulawSite::blocks('about.leaders'),
-            'aboutManagers' => EdulawSite::blocks('about.managers'),
-            'aboutTeamMembers' => EdulawSite::blocks('about.team'),
             'aboutWhy' => EdulawSite::block('about.why'),
             'aboutFocusIntro' => EdulawSite::block('about.focus_intro'),
             'aboutFocusAreas' => EdulawSite::blocks('about.focus'),
             'aboutTimelineIntro' => EdulawSite::block('about.timeline_intro'),
             'aboutTimeline' => EdulawSite::blocks('about.timeline'),
             'aboutTimelineMeta' => EdulawSite::blocks('about.timeline_meta'),
-            'aboutProfiles' => Author::query()
-                ->with('user')
-                ->where('is_active', true)
-                ->get()
+            'aboutProfiles' => $profiles
                 ->keyBy(fn (Author $author): string => $this->profileLookupKey($author->name)),
+            'aboutProfilesByRole' => $profiles
+                ->groupBy(fn (Author $author): string => $author->profile_role_key ?: 'team')
+                ->map(fn ($profiles) => $profiles->values()),
             'sharedCta' => EdulawSite::block('shared.cta'),
         ]);
     }

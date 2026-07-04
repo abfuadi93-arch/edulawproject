@@ -25,6 +25,7 @@ use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -59,7 +60,7 @@ class AuthorResource extends Resource
                     ->schema([
                         Section::make('Informasi Profil')
                             ->icon('heroicon-o-user-circle')
-                            ->description('Kelola identitas publik, penulis, narasumber, moderator, founder, co-founder, dan tim Edulaw.')
+                            ->description('Kelola identitas publik dan peran profil yang ditampilkan di laman tentang.')
                             ->schema([
                                 TextInput::make('name')
                                     ->label('Nama')
@@ -87,7 +88,7 @@ class AuthorResource extends Resource
                                                 TextInput::make('position')
                                                     ->label('Jabatan')
                                                     ->maxLength(255)
-                                                    ->placeholder('Founder / Narasumber / Tim Edulaw'),
+                                                    ->placeholder('Founder / Manager Editorial / Writer'),
 
                                                 TextInput::make('institution')
                                                     ->label('Afiliasi')
@@ -95,10 +96,12 @@ class AuthorResource extends Resource
                                                     ->placeholder('Edulaw Project / Institusi asal'),
 
                                                 Select::make('profile_type')
-                                                    ->label('Jenis Profil')
+                                                    ->label('Peran Profil')
                                                     ->options(Author::PROFILE_TYPES)
                                                     ->searchable()
-                                                    ->placeholder('Pilih jenis profil'),
+                                                    ->default('team')
+                                                    ->required()
+                                                    ->placeholder('Pilih peran profil'),
                                             ]),
 
                                         Group::make()
@@ -278,6 +281,10 @@ class AuthorResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
+                SelectFilter::make('profile_type')
+                    ->label('Peran Profil')
+                    ->options(Author::PROFILE_TYPES),
+
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
             ])

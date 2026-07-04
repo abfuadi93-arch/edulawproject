@@ -6,6 +6,7 @@ use App\Models\Insight;
 use App\Models\InsightCategory;
 use App\Models\Tag;
 use Illuminate\Http\Request;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
@@ -13,6 +14,11 @@ use Illuminate\View\View;
 
 class InsightController extends Controller
 {
+    private const LEGACY_SLUG_REDIRECTS = [
+        'worklife-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental'
+            => 'work-life-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental',
+    ];
+
     public function index(Request $request): View
     {
         $category = $request->query('category');
@@ -72,8 +78,12 @@ class InsightController extends Controller
         ]);
     }
 
-    public function show(string $slug): View
+    public function show(string $slug): View|RedirectResponse
     {
+        if (array_key_exists($slug, self::LEGACY_SLUG_REDIRECTS)) {
+            return redirect()->route('insights.show', ['slug' => self::LEGACY_SLUG_REDIRECTS[$slug]], 301);
+        }
+
         $insight = Insight::query()
             ->with(['categoryRelation', 'authors.user', 'tags', 'creator', 'reviewer'])
             ->published()
@@ -199,10 +209,8 @@ class InsightController extends Controller
                     ->join('insights', 'insights.id', '=', 'insight_tag.insight_id')
                     ->whereColumn('insight_tag.tag_id', 'tags.id')
                     ->where('insights.status', 'published')
-                    ->where(function ($query) {
-                        $query->whereNull('insights.published_at')
-                            ->orWhere('insights.published_at', '<=', now());
-                    })
+                    ->whereNotNull('insights.published_at')
+                    ->where('insights.published_at', '<=', now())
                     ->selectRaw('count(*)');
             }, 'published_insights_count')
             ->whereExists(function ($query) {
@@ -211,10 +219,8 @@ class InsightController extends Controller
                     ->join('insights', 'insights.id', '=', 'insight_tag.insight_id')
                     ->whereColumn('insight_tag.tag_id', 'tags.id')
                     ->where('insights.status', 'published')
-                    ->where(function ($query) {
-                        $query->whereNull('insights.published_at')
-                            ->orWhere('insights.published_at', '<=', now());
-                    });
+                    ->whereNotNull('insights.published_at')
+                    ->where('insights.published_at', '<=', now());
             })
             ->orderByDesc('published_insights_count')
             ->orderBy('name')

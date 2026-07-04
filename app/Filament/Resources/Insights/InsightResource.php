@@ -27,6 +27,8 @@ use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Gate;
 
 class InsightResource extends Resource
 {
@@ -74,7 +76,7 @@ class InsightResource extends Resource
                                                     ->maxLength(255)
                                                     ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
                                                     ->live(onBlur: true)
-                                                    ->afterStateUpdated(static::syncSlugFrom())
+                                                    ->afterStateUpdated(static::syncSlugFrom(preservePublishedSlug: true))
                                                     ->helperText('Judul singkat dan kuat untuk halaman Editorial.')
                                                     ->columnSpanFull(),
 
@@ -239,16 +241,16 @@ class InsightResource extends Resource
     public static function getEloquentQuery(): Builder
     {
         $query = parent::getEloquentQuery();
-        $user = auth()->user();
+        $user = Auth::user();
 
         if (! $user) {
             return $query->whereRaw('1 = 0');
         }
 
         if (
-            $user->can('update all insights')
-            || $user->can('review insights')
-            || $user->can('publish insights')
+            Gate::forUser($user)->allows('update all insights')
+            || Gate::forUser($user)->allows('review insights')
+            || Gate::forUser($user)->allows('publish insights')
         ) {
             return $query;
         }
@@ -258,12 +260,16 @@ class InsightResource extends Resource
 
     public static function canManageEditorialWorkflow(): bool
     {
-        $user = auth()->user();
+        $user = Auth::user();
 
-        return (bool) ($user?->can('update all insights')
-            || $user?->can('review insights')
-            || $user?->can('publish insights')
-            || $user?->can('archive insights'));
+        if (! $user) {
+            return false;
+        }
+
+        return Gate::forUser($user)->allows('update all insights')
+            || Gate::forUser($user)->allows('review insights')
+            || Gate::forUser($user)->allows('publish insights')
+            || Gate::forUser($user)->allows('archive insights');
     }
 
     public static function statusOptionsForCurrentUser(): array

@@ -63,14 +63,6 @@ class SiteContentSeeder extends Seeder
             ['area' => 'about.stats', 'title' => 'Kolaborasi', 'subtitle' => '23', 'icon' => 'handshake', 'sort_order' => 4],
             ['area' => 'about.stats', 'title' => 'Diskusi Publik', 'subtitle' => '10+', 'icon' => 'chat', 'sort_order' => 5],
             ['area' => 'about.stats', 'title' => 'Konten Edukasi', 'subtitle' => '1.200+', 'icon' => 'play', 'sort_order' => 6],
-            ['area' => 'about.leaders', 'title' => 'Abdul Basid Fuadi', 'subtitle' => 'Founder', 'image' => 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&q=85', 'sort_order' => 1],
-            ['area' => 'about.leaders', 'title' => 'Azmi Fathu Rohman', 'subtitle' => 'Co-Founder', 'image' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=85', 'sort_order' => 2],
-            ['area' => 'about.leaders', 'title' => 'Faraz Almira Areila', 'subtitle' => 'Co-Founder', 'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=85', 'sort_order' => 3],
-            ['area' => 'about.leaders', 'title' => 'Umi Zakia Azzahro', 'subtitle' => 'Co-Founder', 'image' => 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=85', 'sort_order' => 4],
-            ['area' => 'about.managers', 'title' => 'Nabila Rahma', 'subtitle' => 'Manager Program', 'body' => 'Mengelola perencanaan, pelaksanaan, dan evaluasi program edukasi hukum.', 'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=500&q=85', 'sort_order' => 1],
-            ['area' => 'about.managers', 'title' => 'Ricky Pratama', 'subtitle' => 'Manager Riset & Publikasi', 'body' => 'Memimpin proses riset, kajian kebijakan, dan publikasi berbasis data.', 'image' => 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&q=85', 'sort_order' => 2],
-            ['area' => 'about.managers', 'title' => 'Dewi Safitri', 'subtitle' => 'Manager Editorial', 'body' => 'Mengelola konten editorial, analisis hukum, dan pengembangan penulis.', 'image' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=85', 'sort_order' => 3],
-            ['area' => 'about.managers', 'title' => 'Fauzan Aditya', 'subtitle' => 'Manager Multimedia', 'body' => 'Mengelola produksi audiovisual, media sosial, dokumentasi, dan distribusi konten.', 'image' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=85', 'sort_order' => 4],
             ['area' => 'about.focus_intro', 'eyebrow' => 'Fokus Kerja', 'title' => 'Dari Literasi Hukum Menuju Pengetahuan Publik', 'sort_order' => 1],
             ['area' => 'about.focus', 'title' => 'Literasi Hukum', 'body' => 'Materi belajar yang ringkas, kontekstual, dan mudah digunakan.', 'icon' => 'book', 'sort_order' => 1],
             ['area' => 'about.focus', 'title' => 'Riset Kebijakan', 'body' => 'Kajian berbasis regulasi, putusan, data, dan kebutuhan publik.', 'icon' => 'chart', 'sort_order' => 2],
@@ -87,32 +79,6 @@ class SiteContentSeeder extends Seeder
             ['area' => 'about.timeline_meta', 'title' => 'Karakter', 'subtitle' => 'Independen, edukatif, dan kolaboratif.', 'icon' => 'users', 'sort_order' => 2],
             ['area' => 'about.timeline_meta', 'title' => 'Fokus', 'subtitle' => 'Literasi hukum dan kebijakan publik', 'icon' => 'focus', 'sort_order' => 3],
         ];
-
-        $teamMembers = [
-            ['Raihan Malik', 'Officer Program', 'Mendukung operasional program dan koordinasi peserta kegiatan.', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=85'],
-            ['Salsabila H.', 'Officer Riset', 'Mendukung pengumpulan data, analisis awal, dan penyusunan kajian.', 'https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=500&q=85'],
-            ['Hafizh Acmi', 'Officer Publikasi', 'Mengelola proses penyuntingan naskah dan layout publikasi.', 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=500&q=85'],
-            ['Putri Aulia', 'Officer Editorial', 'Mendukung produksi konten artikel dan analisis hukum.', 'https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?auto=format&fit=crop&w=500&q=85'],
-            ['Daniel Hermawan', 'Officer Multimedia', 'Mendukung produksi video, desain grafis, dan sosial media harian.', 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=500&q=85'],
-            ['Nadira Putri', 'Writer', 'Menulis artikel edukatif, editorial hukum, dan feature tematik.', 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=500&q=85'],
-            ['Firmansyah', 'Writer', 'Menulis konten riset, kebijakan publik, dan literasi hukum.', 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=85'],
-            ['Zahra Putri', 'Writer', 'Menulis konten populer, infografis, dan serial edukasi hukum.', 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=85'],
-            ['Ricky Maulana', 'Designer', 'Merancang visual konten, infografis, dan layout publikasi digital.', 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=85'],
-            ['Alya Humaira', 'Designer', 'Mendukung desain grafis, branding, dan kebutuhan visual.', 'https://images.unsplash.com/photo-1499952127939-9bbf5af6c51c?auto=format&fit=crop&w=500&q=85'],
-            ['Ikhsan Pradipta', 'Content Support', 'Mendukung riset konten, fact-checking, dan manajemen data.', 'https://images.unsplash.com/photo-1531891437562-4301cf35b7e4?auto=format&fit=crop&w=500&q=85'],
-            ['Vina Oktaviani', 'Content Support', 'Membantu pengelolaan konten dan koordinasi dengan kontributor.', 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?auto=format&fit=crop&w=500&q=85'],
-        ];
-
-        foreach ($teamMembers as $index => [$name, $role, $description, $image]) {
-            $blocks[] = [
-                'area' => 'about.team',
-                'title' => $name,
-                'subtitle' => $role,
-                'body' => $description,
-                'image' => $image,
-                'sort_order' => $index + 1,
-            ];
-        }
 
         foreach ($blocks as $block) {
             ContentBlock::firstOrCreate(

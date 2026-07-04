@@ -1,6 +1,7 @@
 <?php
 
 use App\Models\Author;
+use App\Models\ContentBlock;
 use App\Models\Insight;
 use App\Models\InsightCategory;
 use App\Models\Publication;
@@ -192,9 +193,39 @@ test('about page team cards link to active public profiles', function () {
         'is_active' => false,
     ]);
 
+    $managerProfile = Author::query()->create([
+        'name' => 'Manager Baru',
+        'slug' => 'manager-baru',
+        'position' => 'Manager Editorial',
+        'profile_type' => 'manager',
+        'is_active' => true,
+    ]);
+
+    $teamProfile = Author::query()->create([
+        'name' => 'Writer Baru',
+        'slug' => 'writer-baru',
+        'position' => 'Writer',
+        'profile_type' => 'team',
+        'is_active' => true,
+    ]);
+
+    ContentBlock::query()->create([
+        'area' => 'about.managers',
+        'title' => 'Nabila Rahma',
+        'subtitle' => 'Manager Program',
+        'body' => 'Mengelola perencanaan, pelaksanaan, dan evaluasi program edukasi hukum.',
+        'is_active' => true,
+    ]);
+
     $this->get(route('about'))
         ->assertOk()
         ->assertSee(route('profiles.show', $activeProfile->slug), false)
+        ->assertSee(route('profiles.show', $managerProfile->slug), false)
+        ->assertSee(route('profiles.show', $teamProfile->slug), false)
+        ->assertSee('Manager Editorial')
+        ->assertSee('Writer')
         ->assertSee('authors/abdul-basid-fuadi.webp')
+        ->assertDontSee('Nabila Rahma')
+        ->assertDontSee('Manager Program')
         ->assertDontSee(route('profiles.show', $inactiveProfile->slug), false);
 });
