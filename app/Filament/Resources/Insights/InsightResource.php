@@ -36,11 +36,11 @@ class InsightResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
 
-    protected static ?string $navigationLabel = 'Edulaw Insight';
+    protected static ?string $navigationLabel = 'Edulaw Editorial';
 
-    protected static ?string $modelLabel = 'Insight';
+    protected static ?string $modelLabel = 'Editorial';
 
-    protected static ?string $pluralModelLabel = 'Insight';
+    protected static ?string $pluralModelLabel = 'Editorial';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-newspaper';
 
@@ -61,7 +61,7 @@ class InsightResource extends Resource
                             ->schema([
                                 Section::make('1. Informasi Artikel')
                                     ->icon('heroicon-o-document-text')
-                                    ->description('Data utama yang membentuk identitas artikel di halaman Edulaw Insight.')
+                                    ->description('Data utama yang membentuk identitas artikel di halaman Edulaw Editorial.')
                                     ->schema([
                                         Grid::make([
                                             'default' => 1,
@@ -69,13 +69,13 @@ class InsightResource extends Resource
                                         ])
                                             ->schema([
                                                 TextInput::make('title')
-                                                    ->label('Judul Insight')
+                                                    ->label('Judul Editorial')
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
                                                     ->live(onBlur: true)
                                                     ->afterStateUpdated(static::syncSlugFrom())
-                                                    ->helperText('Judul singkat dan kuat untuk halaman Insight.')
+                                                    ->helperText('Judul singkat dan kuat untuk halaman Editorial.')
                                                     ->columnSpanFull(),
 
                                                 TextInput::make('slug')
@@ -93,8 +93,8 @@ class InsightResource extends Resource
                                                     ->searchable()
                                                     ->preload()
                                                     ->required()
-                                                    ->placeholder('Pilih kategori Insight')
-                                                    ->helperText('Pilih jenis konten, misalnya Insight, Opini, Analisis, atau Review Putusan.'),
+                                                    ->placeholder('Pilih kategori Editorial')
+                                                    ->helperText('Pilih jenis konten, misalnya Editorial, Opini, Analisis, atau Review Putusan.'),
 
                                                 Select::make('tags')
                                                     ->label('Topik')
@@ -355,8 +355,8 @@ class InsightResource extends Resource
             ->defaultSort('updated_at', 'desc')
             ->searchPlaceholder('Cari artikel...')
             ->paginationPageOptions([10, 25, 50])
-            ->emptyStateHeading('Belum ada insight')
-            ->emptyStateDescription('Artikel insight yang dibuat dari panel admin akan tampil di sini.')
+            ->emptyStateHeading('Belum ada editorial')
+            ->emptyStateDescription('Artikel editorial yang dibuat dari panel admin akan tampil di sini.')
             ->filters([
                 SelectFilter::make('insight_category_id')
                     ->label('Kategori')

@@ -30,11 +30,11 @@ class InsightCategoryResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
 
-    protected static ?string $navigationLabel = 'Kategori Insight';
+    protected static ?string $navigationLabel = 'Kategori Editorial';
 
-    protected static ?string $modelLabel = 'Kategori Insight';
+    protected static ?string $modelLabel = 'Kategori Editorial';
 
-    protected static ?string $pluralModelLabel = 'Kategori Insight';
+    protected static ?string $pluralModelLabel = 'Kategori Editorial';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-rectangle-stack';
 
@@ -53,7 +53,7 @@ class InsightCategoryResource extends Resource
                             ->label('Nama')
                             ->required()
                             ->maxLength(255)
-                            ->placeholder('Nama kategori Insight')
+                            ->placeholder('Nama kategori Editorial')
                             ->live(onBlur: true)
                             ->afterStateUpdated(static::syncSlugFrom()),
 

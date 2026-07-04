@@ -45,7 +45,7 @@ class AdminStatsOverview extends StatsOverviewWidget
             + CollaborationSubmission::where('status', 'new')->count();
 
         if ($user?->can('view insights')) {
-            $stats[] = Stat::make('Insight Terbit', Insight::where('status', 'published')->count())
+            $stats[] = Stat::make('Editorial Terbit', Insight::where('status', 'published')->count())
                 ->description('Artikel terpublikasi')
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->chart([7, 9, 10, 12, 13, 15, 16])

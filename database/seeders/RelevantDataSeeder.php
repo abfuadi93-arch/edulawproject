@@ -725,14 +725,14 @@ class RelevantDataSeeder extends Seeder
         $name = match ((int) $legacyId) {
             2 => 'Opini Hukum',
             3 => 'Riset Hukum',
-            default => 'Legal Insight',
+            default => 'Legal Editorial',
         };
 
         return InsightCategory::updateOrCreate(
             ['slug' => Str::slug($name)],
             [
                 'name' => $name,
-                'description' => 'Kategori insight Edulaw yang dipetakan dari data lama.',
+                'description' => 'Kategori editorial Edulaw yang dipetakan dari data lama.',
                 'is_active' => true,
                 'sort_order' => match ($name) {
                     'Opini Hukum' => 8,

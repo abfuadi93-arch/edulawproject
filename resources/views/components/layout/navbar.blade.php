@@ -25,7 +25,7 @@
             'active' => request()->is('program*'),
         ],
         [
-            'label' => 'Insight',
+            'label' => 'Editorial',
             'url' => '/insight',
             'active' => request()->is('insight*'),
         ],

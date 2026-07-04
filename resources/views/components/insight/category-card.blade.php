@@ -4,8 +4,8 @@
 
 @php
     $articles = collect($channel['articles'] ?? []);
-    $label = $channel['label'] ?? 'Insight';
-    $description = $channel['description'] ?? 'Kumpulan artikel dan analisis dari kanal Insight Edulaw.';
+    $label = $channel['label'] ?? 'Editorial';
+    $description = $channel['description'] ?? 'Kumpulan artikel dan analisis dari kanal Editorial Edulaw.';
     $articleCount = (int) ($channel['article_count'] ?? $articles->count());
     $url = $channel['url'] ?? route('insights.index');
     $icon = $channel['icon'] ?? 'spark';

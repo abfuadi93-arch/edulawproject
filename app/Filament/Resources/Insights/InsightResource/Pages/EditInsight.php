@@ -48,7 +48,7 @@ class EditInsight extends EditRecordAndReturn
 
             if (! in_array($nextStatus, ['draft', 'submitted'], true)) {
                 throw ValidationException::withMessages([
-                    'status' => 'Writer hanya dapat menyimpan draft atau submit insight.',
+                    'status' => 'Writer hanya dapat menyimpan draft atau submit editorial.',
                 ]);
             }
 

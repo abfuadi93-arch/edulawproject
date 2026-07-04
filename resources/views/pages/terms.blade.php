@@ -25,7 +25,7 @@
         [
             'title' => '1. Pendahuluan',
             'content' => [
-                'Syarat dan Ketentuan ini mengatur penggunaan website Edulaw Project, termasuk akses terhadap konten edukasi, insight, riset dan publikasi, program, multimedia, opportunities, formulir kontak, serta formulir kolaborasi.',
+                'Syarat dan Ketentuan ini mengatur penggunaan website Edulaw Project, termasuk akses terhadap konten edukasi, editorial, riset dan publikasi, program, multimedia, opportunities, formulir kontak, serta formulir kolaborasi.',
                 'Dengan mengakses dan menggunakan website Edulaw Project, pengguna dianggap telah membaca, memahami, dan menyetujui Syarat dan Ketentuan ini.',
             ],
         ],

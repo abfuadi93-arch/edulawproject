@@ -54,7 +54,7 @@
                         class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
                     >
                         <p class="text-sm font-extrabold text-slate-950">
-                            Insight
+                            Editorial
                         </p>
                         <p class="mt-1 text-xs leading-5 text-slate-500">
                             Baca analisis hukum dan pembaruan regulasi.

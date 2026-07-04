@@ -192,10 +192,30 @@ class InsightController extends Controller
     private function popularTags(): Collection
     {
         return Tag::query()
-            ->whereHas('insights', fn ($query) => $query->published())
-            ->withCount([
-                'insights as published_insights_count' => fn ($query) => $query->published(),
-            ])
+            ->select('tags.*')
+            ->selectSub(function ($query) {
+                $query
+                    ->from('insight_tag')
+                    ->join('insights', 'insights.id', '=', 'insight_tag.insight_id')
+                    ->whereColumn('insight_tag.tag_id', 'tags.id')
+                    ->where('insights.status', 'published')
+                    ->where(function ($query) {
+                        $query->whereNull('insights.published_at')
+                            ->orWhere('insights.published_at', '<=', now());
+                    })
+                    ->selectRaw('count(*)');
+            }, 'published_insights_count')
+            ->whereExists(function ($query) {
+                $query
+                    ->from('insight_tag')
+                    ->join('insights', 'insights.id', '=', 'insight_tag.insight_id')
+                    ->whereColumn('insight_tag.tag_id', 'tags.id')
+                    ->where('insights.status', 'published')
+                    ->where(function ($query) {
+                        $query->whereNull('insights.published_at')
+                            ->orWhere('insights.published_at', '<=', now());
+                    });
+            })
             ->orderByDesc('published_insights_count')
             ->orderBy('name')
             ->take(12)
@@ -224,10 +244,10 @@ class InsightController extends Controller
                 'aliases' => ['regulatory update', 'regulation update', 'regulasi', 'pembaruan regulasi'],
             ],
             [
-                'label' => 'Edulaw Insight',
+                'label' => 'Edulaw Editorial',
                 'icon' => 'spark',
                 'description' => 'Analisis hukum terkini dari riset dan pengalaman tim Edulaw Project.',
-                'aliases' => ['insight', 'legal insight', 'opini hukum', 'riset hukum'],
+                'aliases' => ['insight', 'editorial', 'legal insight', 'legal editorial', 'opini hukum', 'riset hukum'],
             ],
             [
                 'label' => 'Policy & Society',

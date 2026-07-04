@@ -1,6 +1,6 @@
 @extends('layouts.app')
 
-@section('title', 'Insight - Edulaw Project')
+@section('title', 'Editorial - Edulaw Project')
 
 @push('styles')
 <style>
@@ -87,7 +87,7 @@
 
     $insightImage = fn ($insight): ?string => $insight?->cover_image_url;
 
-    $categoryName = function ($insight, string $fallback = 'Insight'): string {
+    $categoryName = function ($insight, string $fallback = 'Editorial'): string {
         return $insight?->display_category
             ?? $insight?->categoryRelation?->name
             ?? $insight?->category?->name
@@ -127,7 +127,7 @@
     };
 
     $excerpt = fn ($insight, int $limit = 150): string => Str::limit(
-        $insight?->excerpt ?: strip_tags($insight?->content ?? 'Insight Edulaw Project tentang isu hukum dan kebijakan publik.'),
+        $insight?->excerpt ?: strip_tags($insight?->content ?? 'Editorial Edulaw Project tentang isu hukum dan kebijakan publik.'),
         $limit
     );
 
@@ -187,7 +187,7 @@
     }
 
     $toolbarChannelLabels = collect([
-        'Edulaw Insight',
+        'Edulaw Editorial',
         'Legal 101',
         'Law & Governance',
         'Regulatory Update',
@@ -208,7 +208,7 @@
     $renderImage = function ($item, int $index, string $class = 'absolute inset-0 h-full w-full object-cover') use ($insightImage, $fallbackPalette): HtmlString {
         $image = $insightImage($item);
         $palette = $fallbackPalette($item ?: 'insight', $index);
-        $title = e($item?->title ?? 'Insight Edulaw Project');
+        $title = e($item?->title ?? 'Editorial Edulaw Project');
         $html = '<div class="insight-fallback" style="background: linear-gradient(135deg, '.e($palette['from']).' 0%, '.e($palette['via']).' 52%, '.e($palette['to']).' 100%);"></div>';
 
         if ($image) {
@@ -226,7 +226,7 @@
         ->values();
 
     $authorFallbacks = collect([
-        ['name' => 'Edulaw Editorial', 'role' => 'Insight'],
+        ['name' => 'Edulaw Editorial', 'role' => 'Editorial'],
         ['name' => 'Legal Research Team', 'role' => 'Riset Hukum'],
         ['name' => 'Policy Desk', 'role' => 'Kebijakan Publik'],
         ['name' => 'Program Team', 'role' => 'Literasi Hukum'],
@@ -236,15 +236,15 @@
 
 <main class="bg-[#E7E7E7] text-brand-ink">
     <x-shared.page-header
-        title="Welcome to Edulaw Insight"
+        title="Welcome to Edulaw Editorial"
         :compact="true"
-        eyebrow="Kanal Insight"
+        eyebrow="Kanal Editorial"
         description="Narasi hukum yang menyalakan pemahaman, memperkuat kebijakan, dan membuka ruang diskusi publik."
         background-image="https://images.unsplash.com/photo-1589578527966-fdac0f44566c?auto=format&fit=crop&w=1800&q=85"
-        background-alt="Analisis hukum dan diskusi kebijakan publik Edulaw Insight"
+        background-alt="Analisis hukum dan diskusi kebijakan publik Edulaw Editorial"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
-            ['label' => 'Insight'],
+            ['label' => 'Editorial'],
         ]"
     >
         <div class="flex flex-col gap-3 sm:flex-row">
@@ -252,7 +252,7 @@
                 href="#insight-latest"
                 class="inline-flex min-h-12 items-center justify-center rounded-full bg-brand-amber px-6 py-3 text-sm font-black text-brand-ink shadow-lg shadow-black/20 transition hover:-translate-y-0.5 hover:bg-[#D99A25]"
             >
-                Baca Insight Terbaru
+                Baca Editorial Terbaru
             </a>
 
             <a
@@ -275,7 +275,7 @@
             <article class="py-2 lg:max-w-xl lg:pl-3">
                 <div class="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-500">
                     <span class="grid h-6 w-6 place-items-center rounded-full bg-brand-navy text-[11px] text-white">E</span>
-                    <span>{{ $lead ? $categoryName($lead) : 'Edulaw Insight' }}</span>
+                    <span>{{ $lead ? $categoryName($lead) : 'Edulaw Editorial' }}</span>
                     <span>•</span>
                     <span>{{ $lead ? $publishedDate($lead) : 'Hari ini' }}</span>
                 </div>
@@ -303,7 +303,7 @@
                     <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="m21 21-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
                     </svg>
-                    <input name="q" value="{{ $search }}" type="search" placeholder="Cari insight..." class="h-10 w-full rounded-full border border-slate-200 bg-white pl-10 pr-4 text-sm font-semibold outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10">
+                    <input name="q" value="{{ $search }}" type="search" placeholder="Cari editorial..." class="h-10 w-full rounded-full border border-slate-200 bg-white pl-10 pr-4 text-sm font-semibold outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10">
                 </form>
 
                 <div class="insight-scroll flex gap-2 overflow-x-auto pb-1 lg:justify-end lg:pb-0">
@@ -314,15 +314,18 @@
                     @foreach ($toolbarChannels as $channel)
                         @php
                             $channelCategory = $channel['category'] ?? null;
+                            $toolbarChannelLabel = $channelCategory?->slug === 'edulaw-insight'
+                                ? 'Edulaw Insight'
+                                : ($channel['label'] ?? 'Editorial');
                             $channelUrl = $channelCategory
                                 ? route('insights.index', ['category' => $channelCategory->slug]).'#insight-archive'
-                                : route('insights.index', ['q' => $channel['label'] ?? 'Insight', 'archive' => 'latest']).'#insight-archive';
+                                : route('insights.index', ['q' => $toolbarChannelLabel, 'archive' => 'latest']).'#insight-archive';
                             $channelActive = $channelCategory
                                 ? $selectedCategory === $channelCategory->slug
-                                : blank($selectedCategory) && Str::lower($search) === Str::lower($channel['label'] ?? '');
+                                : blank($selectedCategory) && Str::lower($search) === Str::lower($toolbarChannelLabel);
                         @endphp
                         <a href="{{ $channelUrl }}" class="shrink-0 whitespace-nowrap rounded-full px-4 py-2 text-xs font-black transition {{ $channelActive ? 'bg-brand-navy text-white' : 'text-brand-navy hover:bg-slate-100' }}">
-                            {{ $channel['label'] ?? 'Insight' }}
+                            {{ $toolbarChannelLabel }}
                         </a>
                     @endforeach
                 </div>
@@ -565,10 +568,10 @@
                 <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                     <div>
                         <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
-                            Arsip Insight
+                            Arsip Editorial
                         </p>
                         <h2 class="mt-2 text-3xl font-black leading-tight text-brand-ink">
-                            {{ $featuredOnly ? 'Semua Editorial Pick' : 'Hasil Jelajah Insight' }}
+                            {{ $featuredOnly ? 'Semua Editorial Pick' : 'Hasil Jelajah Editorial' }}
                         </h2>
                     </div>
 
@@ -601,7 +604,7 @@
                         <div class="md:col-span-2">
                             <div class="border-b border-slate-200 py-10 text-center">
                                 <h3 class="text-2xl font-black text-brand-ink">
-                                    Insight belum ditemukan.
+                                    Editorial belum ditemukan.
                                 </h3>
                             </div>
                         </div>
@@ -636,7 +639,7 @@
 
     <x-shared.cta-section
         class="mt-6"
-        eyebrow="Kolaborasi Insight"
+        eyebrow="Kolaborasi Editorial"
         title="Punya isu hukum yang perlu dijelaskan ke publik?"
         body="Kembangkan isu hukum menjadi artikel, serial edukasi, diskusi, atau materi literasi publik yang mudah dipahami bersama Edulaw Project."
         background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1600&q=85"

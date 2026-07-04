@@ -22,11 +22,11 @@
     ];
 
     $categories = [
-        'Semua',
-        'Law 101',
-        'Regulatory Update',
-        'Constitution & Governance',
-        'Legal Insight',
+        ['label' => 'Semua', 'url' => route('insights.index')],
+        ['label' => 'Law 101', 'url' => route('insights.index', ['category' => 'law-101'])],
+        ['label' => 'Regulatory Update', 'url' => route('insights.index', ['category' => 'regulatory-update'])],
+        ['label' => 'Constitution & Governance', 'url' => route('insights.index', ['category' => 'constitution-governance'])],
+        ['label' => 'Legal Editorial', 'url' => route('insights.index', ['category' => 'legal-insight'])],
     ];
 
     $primaryAuthor = function ($insight) {
@@ -52,14 +52,14 @@
             <div class="flex items-center justify-between gap-4">
                 <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-coral shadow-sm ring-1 ring-slate-200">
                     <span class="h-2 w-2 rounded-full bg-brand-coral"></span>
-                    Insight Edulaw
+                    Editorial Edulaw
                 </p>
 
                 <a
                     href="{{ route('insights.index') }}"
                     class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
                 >
-                    Lihat Semua Insight
+                    Lihat Semua Editorial
                     <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -69,7 +69,7 @@
             <div class="mt-1.5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
                 <div class="min-w-0">
                     <h2 class="text-2xl font-extrabold tracking-tight text-brand-ink sm:text-3xl lg:text-[2rem]">
-                        Insight Terbaru
+                        Editorial Terbaru
                     </h2>
 
                     <p class="mt-2 max-w-none text-sm leading-6 text-slate-600 lg:whitespace-nowrap">
@@ -80,10 +80,10 @@
                 <div class="flex flex-wrap items-center gap-2 lg:justify-end">
                     @foreach ($categories as $category)
                         <a
-                            href="{{ route('insights.index', ['category' => Str::slug($category)]) }}"
+                            href="{{ $category['url'] }}"
                             class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-extrabold text-slate-600 shadow-sm transition hover:border-brand-black hover:bg-brand-black hover:text-white"
                         >
-                            {{ $category }}
+                            {{ $category['label'] }}
                         </a>
                     @endforeach
                 </div>
@@ -92,7 +92,7 @@
 
         @if ($featured)
             <div class="mt-5 grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
-                {{-- Featured Insight --}}
+                {{-- Featured Editorial --}}
                 <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
                     <a href="{{ route('insights.show', $featured->slug) }}" class="block h-full">
                         <div class="relative h-67.5 overflow-hidden bg-slate-100 sm:h-80 lg:h-87.5">
@@ -153,7 +153,7 @@
 
                             <div class="mt-auto flex items-center justify-between gap-4 border-t border-slate-100 pt-5">
                                 <span class="text-sm font-black text-brand-ink">
-                                    Baca Insight
+                                    Baca Editorial
                                 </span>
 
                                 <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-black text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
@@ -215,7 +215,7 @@
                         <div class="flex min-h-37.5 items-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
                             <div>
                                 <p class="text-sm font-black text-brand-ink">
-                                    Insight lainnya sedang disiapkan.
+                                    Editorial lainnya sedang disiapkan.
                                 </p>
                                 <p class="mt-1 text-sm leading-5 text-slate-500">
                                     Konten terbaru akan tampil otomatis setelah dipublikasikan.
@@ -236,11 +236,11 @@
                     </div>
 
                     <h3 class="mt-4 text-lg font-black text-brand-ink">
-                        Belum ada insight dipublikasikan.
+                        Belum ada editorial dipublikasikan.
                     </h3>
 
                     <p class="mt-1 text-sm text-slate-500">
-                        Insight yang sudah berstatus published akan tampil di sini.
+                        Editorial yang sudah berstatus published akan tampil di sini.
                     </p>
                 </div>
             </div>

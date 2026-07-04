@@ -33,12 +33,12 @@
         'founder', 'co_founder', 'team' => 'Tim Edulaw',
         'speaker' => 'Narasumber',
         'moderator' => 'Moderator',
-        'internal_author', 'external_author', 'contributor' => 'Penulis Insight',
+        'internal_author', 'external_author', 'contributor' => 'Penulis Editorial',
         default => 'Kontributor Editorial',
     };
     $heroBadge = $publicRole === 'Tim Edulaw' ? 'TIM EDULAW' : 'PROFIL PENULIS';
     $bioFallback = $publicRole === 'Tim Edulaw'
-        ? "{$author->name} merupakan bagian dari Edulaw Project yang berkontribusi dalam produksi insight, pembaruan regulasi, dan tulisan literasi hukum."
+        ? "{$author->name} merupakan bagian dari Edulaw Project yang berkontribusi dalam produksi editorial, pembaruan regulasi, dan tulisan literasi hukum."
         : 'Profil penulis akan diperbarui secara berkala seiring dengan publikasi dan kontribusi penulis di Edulaw Project.';
     $bio = trim(strip_tags((string) $author->bio));
     $bioSummary = Str::limit($bio !== '' ? $bio : $bioFallback, 210);
@@ -843,7 +843,7 @@
                                 <div class="profile-card-foot">
                                     <span>{{ $publishedDate($featuredInsight->published_at) }}</span>
                                     <span aria-hidden="true">&middot;</span>
-                                    <span>{{ $featuredInsight->reading_time ? $featuredInsight->reading_time.' menit baca' : 'Insight' }}</span>
+                                    <span>{{ $featuredInsight->reading_time ? $featuredInsight->reading_time.' menit baca' : 'Editorial' }}</span>
                                 </div>
                             </div>
                         </a>
@@ -866,7 +866,7 @@
                                                 <span aria-hidden="true">&middot;</span>
                                                 <span>{{ $publishedDate($insight->published_at) }}</span>
                                                 <span aria-hidden="true">&middot;</span>
-                                                <span>{{ $insight->reading_time ? $insight->reading_time.' menit baca' : 'Insight' }}</span>
+                                                <span>{{ $insight->reading_time ? $insight->reading_time.' menit baca' : 'Editorial' }}</span>
                                             </div>
                                         </div>
                                     </a>
@@ -882,7 +882,7 @@
                                 </svg>
                             </span>
                             <strong>Belum ada tulisan</strong>
-                            <p>Insight yang ditulis oleh {{ $author->name }} akan tampil di sini.</p>
+                            <p>Editorial yang ditulis oleh {{ $author->name }} akan tampil di sini.</p>
                         </div>
                     @endif
                 </section>

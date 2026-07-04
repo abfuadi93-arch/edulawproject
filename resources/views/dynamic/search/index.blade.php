@@ -17,7 +17,7 @@
         <div class="mx-auto max-w-5xl px-4 sm:px-6 lg:px-8">
             <form method="GET" action="{{ route('search.index') }}" class="rounded-2xl bg-white p-4 shadow-sm ring-1 ring-slate-200">
                 <div class="grid gap-3 sm:grid-cols-[1fr_auto]">
-                    <input type="search" name="q" value="{{ $query }}" placeholder="Cari insight, publikasi, program, opportunity, multimedia..." class="rounded-xl border border-slate-200 px-4 py-2 text-sm">
+                    <input type="search" name="q" value="{{ $query }}" placeholder="Cari editorial, publikasi, program, opportunity, multimedia..." class="rounded-xl border border-slate-200 px-4 py-2 text-sm">
                     <button type="submit" class="rounded-xl bg-brand-black px-5 py-2 text-sm font-bold text-white">Cari</button>
                 </div>
             </form>

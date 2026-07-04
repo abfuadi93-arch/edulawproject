@@ -71,7 +71,7 @@ class RecentActivityWidget extends Widget
         return $query->take(3)
             ->get()
             ->map(fn (Insight $insight): array => [
-                'label' => 'Insight diperbarui',
+                'label' => 'Editorial diperbarui',
                 'title' => $insight->title,
                 'date' => $insight->updated_at,
                 'time' => $insight->updated_at?->diffForHumans(),

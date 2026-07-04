@@ -29,12 +29,12 @@ class SearchController extends Controller
                 ->limit(8)
                 ->get()
                 ->map(fn (Insight $item) => [
-                    'type' => 'Insight',
+                    'type' => 'Editorial',
                     'title' => $item->title,
                     'excerpt' => $item->excerpt,
                     'date' => optional($item->published_at)->translatedFormat('d M Y'),
                     'url' => route('insights.show', $item->slug),
-                    'meta' => $item->reading_time ? $item->reading_time.' min read' : 'Insight',
+                    'meta' => $item->reading_time ? $item->reading_time.' min read' : 'Editorial',
                     'sort_date' => optional($item->published_at)?->timestamp ?? 0,
                 ]);
 

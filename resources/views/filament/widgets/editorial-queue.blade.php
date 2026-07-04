@@ -4,7 +4,7 @@
             <div>
                 <p class="text-sm font-black text-slate-950">Editorial Queue</p>
                 <p class="mt-1 text-xs leading-5 edulaw-admin-muted">
-                    Insight yang masih perlu ditulis, ditinjau, atau disiapkan untuk terbit.
+                    Editorial yang masih perlu ditulis, ditinjau, atau disiapkan untuk terbit.
                 </p>
             </div>
             <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-black text-amber-700">
@@ -50,7 +50,7 @@
                             Queue editorial kosong
                         </p>
                         <p class="mt-1 max-w-sm text-xs leading-5 edulaw-admin-muted">
-                            Semua insight sudah tertangani. Tidak ada naskah yang menunggu review.
+                            Semua editorial sudah tertangani. Tidak ada naskah yang menunggu review.
                         </p>
                     </div>
                 </div>

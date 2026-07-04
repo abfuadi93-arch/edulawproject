@@ -6,7 +6,7 @@
     $preferredChannels = collect([
         'Law & Governance',
         'Legal 101',
-        'Edulaw Insight',
+        'Edulaw Editorial',
         'Regulatory Update',
     ]);
 
@@ -21,7 +21,7 @@
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-3xl font-black leading-tight text-brand-ink">
-                    Jelajahi Kanal Insight
+                    Jelajahi Kanal Editorial
                 </h2>
             </div>
 

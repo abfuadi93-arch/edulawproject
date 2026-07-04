@@ -17,7 +17,7 @@
 
     $contentTypes = [
         'Semua',
-        'Insight',
+        'Editorial',
         'Riset & Publikasi',
         'Program',
         'Multimedia',
@@ -26,7 +26,7 @@
 
     $results = [
         [
-            'type' => 'Insight',
+            'type' => 'Editorial',
             'title' => 'Pembaruan Regulasi Perlindungan Data Pribadi: Apa yang Perlu Diketahui?',
             'excerpt' => 'Menelaah perkembangan terbaru regulasi perlindungan data pribadi di Indonesia dan implikasinya bagi masyarakat, komunitas, dan pengelola data.',
             'date' => '23 Mei 2026',
@@ -76,7 +76,7 @@
     <x-shared.page-header
         title="Temukan Konten Edulaw"
         eyebrow="Pencarian"
-        description="Cari insight, riset dan publikasi, program, multimedia, opportunities, atau topik hukum yang tersedia di Edulaw Project."
+        description="Cari editorial, riset dan publikasi, program, multimedia, opportunities, atau topik hukum yang tersedia di Edulaw Project."
         background-image="https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1800&q=85"
         background-alt="Pencarian konten hukum Edulaw Project"
         :breadcrumbs="[
@@ -301,7 +301,7 @@
                             href="{{ url('/insight') }}"
                             class="rounded-2xl border border-white/10 bg-white/5 px-4 py-3 text-sm font-bold text-white transition hover:bg-white/10"
                         >
-                            Insight
+                            Editorial
                         </a>
 
                         <a

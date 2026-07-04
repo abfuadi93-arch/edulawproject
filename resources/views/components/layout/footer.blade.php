@@ -45,7 +45,7 @@
                         </h3>
 
                         <ul class="mt-4 space-y-2.5 text-sm">
-                            <li><a href="{{ url('/insight') }}" class="text-slate-600 transition hover:text-brand-ink">Insight</a></li>
+                            <li><a href="{{ url('/insight') }}" class="text-slate-600 transition hover:text-brand-ink">Editorial</a></li>
                             <li><a href="{{ url('/publikasi') }}" class="text-slate-600 transition hover:text-brand-ink">Riset &amp; Publikasi</a></li>
                             <li><a href="{{ url('/program') }}" class="text-slate-600 transition hover:text-brand-ink">Program</a></li>
                             <li><a href="{{ url('/peluang') }}" class="text-slate-600 transition hover:text-brand-ink">Opportunities</a></li>

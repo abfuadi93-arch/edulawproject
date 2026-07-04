@@ -59,7 +59,7 @@ class EdulawContentAlerts extends Widget
                     'description' => 'Periksa metadata, file PDF, dan status publikasi sebelum ditayangkan.',
                 ] : null,
                 Insight::whereIn('status', ['draft', 'submitted', 'reviewed'])->exists() ? [
-                    'label' => 'Ada insight dalam alur editorial',
+                    'label' => 'Ada editorial dalam alur editorial',
                     'severity' => 'medium',
                     'description' => 'Tinjau naskah yang belum terbit agar jadwal editorial tetap rapi.',
                 ] : null,

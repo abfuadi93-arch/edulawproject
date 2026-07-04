@@ -43,7 +43,7 @@ class TagResource extends Resource
             ->components([
                 Section::make('Informasi')
                     ->icon('heroicon-o-tag')
-                    ->description('Tag digunakan lintas Insight dan Publikasi.')
+                    ->description('Tag digunakan lintas Editorial dan Publikasi.')
                     ->schema([
                         TextInput::make('name')
                             ->label('Nama')

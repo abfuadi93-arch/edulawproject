@@ -53,7 +53,7 @@
         ],
         [
             'name' => 'Dewi Safitri',
-            'role' => 'Manager Insight Editorial',
+            'role' => 'Manager Editorial',
             'description' => 'Mengelola konten editorial, analisis hukum, dan pengembangan penulis.',
             'image' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&q=85',
         ],
@@ -69,9 +69,9 @@
         ['name' => 'Raihan Malik', 'role' => 'Officer Program', 'description' => 'Mendukung operasional program dan koordinasi peserta kegiatan.', 'image' => 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&q=85'],
         ['name' => 'Salsabila H.', 'role' => 'Officer Riset', 'description' => 'Mendukung pengumpulan data, analisis awal, dan penyusunan kajian.', 'image' => 'https://images.unsplash.com/photo-1548142813-c348350df52b?auto=format&fit=crop&w=500&q=85'],
         ['name' => 'Hafizh Acmi', 'role' => 'Officer Publikasi', 'description' => 'Mengelola proses penyuntingan naskah dan layout publikasi.', 'image' => 'https://images.unsplash.com/photo-1507591064344-4c6ce005b128?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Putri Aulia', 'role' => 'Officer Insight', 'description' => 'Mendukung produksi konten artikel dan analisis hukum.', 'image' => 'https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?auto=format&fit=crop&w=500&q=85'],
+        ['name' => 'Putri Aulia', 'role' => 'Officer Editorial', 'description' => 'Mendukung produksi konten artikel dan analisis hukum.', 'image' => 'https://images.unsplash.com/photo-1534751516642-a1af1ef26a56?auto=format&fit=crop&w=500&q=85'],
         ['name' => 'Daniel Hermawan', 'role' => 'Officer Multimedia', 'description' => 'Mendukung produksi video, desain grafis, dan sosial media harian.', 'image' => 'https://images.unsplash.com/photo-1519345182560-3f2917c472ef?auto=format&fit=crop&w=500&q=85'],
-        ['name' => 'Nadira Putri', 'role' => 'Writer', 'description' => 'Menulis artikel edukatif, insight hukum, dan feature tematik.', 'image' => 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=500&q=85'],
+        ['name' => 'Nadira Putri', 'role' => 'Writer', 'description' => 'Menulis artikel edukatif, editorial hukum, dan feature tematik.', 'image' => 'https://images.unsplash.com/photo-1544725176-7c40e5a71c5e?auto=format&fit=crop&w=500&q=85'],
         ['name' => 'Firmansyah', 'role' => 'Writer', 'description' => 'Menulis konten riset, kebijakan publik, dan literasi hukum.', 'image' => 'https://images.unsplash.com/photo-1506794778202-cad84cf45f1d?auto=format&fit=crop&w=500&q=85'],
         ['name' => 'Zahra Putri', 'role' => 'Writer', 'description' => 'Menulis konten populer, infografis, dan serial edukasi hukum.', 'image' => 'https://images.unsplash.com/photo-1531123897727-8f129e1688ce?auto=format&fit=crop&w=500&q=85'],
         ['name' => 'Ricky Maulana', 'role' => 'Designer', 'description' => 'Merancang visual konten, infografis, dan layout publikasi digital.', 'image' => 'https://images.unsplash.com/photo-1519085360753-af0119f7cbe7?auto=format&fit=crop&w=500&q=85'],
@@ -83,7 +83,7 @@
     $focusAreas = [
         ['title' => 'Literasi Hukum', 'description' => 'Materi belajar yang ringkas, kontekstual, dan mudah digunakan.', 'icon' => 'book'],
         ['title' => 'Riset Kebijakan', 'description' => 'Kajian berbasis regulasi, putusan, data, dan kebutuhan publik.', 'icon' => 'chart'],
-        ['title' => 'Insight Editorial', 'description' => 'Esai dan analisis hukum dengan gaya akademik yang tetap terbaca.', 'icon' => 'pen'],
+        ['title' => 'Editorial', 'description' => 'Esai dan analisis hukum dengan gaya akademik yang tetap terbaca.', 'icon' => 'pen'],
         ['title' => 'Kolaborasi Publik', 'description' => 'Ruang kerja bersama untuk diskusi, advokasi, dan penguatan komunitas.', 'icon' => 'users'],
     ];
 
@@ -91,7 +91,7 @@
         ['year' => '2021', 'title' => 'Gagasan Awal', 'description' => 'Forum virtual dan ruang diskusi kecil mulai dijalankan sebagai ruang membaca dan berdiskusi.'],
         ['year' => '2022', 'title' => 'Pengembangan Komunitas', 'description' => 'Penguatan forum dan pengembangan pembelajaran hukum kolaboratif mulai tertata.'],
         ['year' => '2023', 'title' => 'Edulaw Project Didirikan', 'description' => 'Pada 23 Juni 2023, Edulaw Project resmi hadir sebagai platform edukasi hukum independen.'],
-        ['year' => '2024', 'title' => 'Ekspansi Program', 'description' => 'Diskusi Literasi Konstitusi, editorial insight, dan kolaborasi publik mulai berkembang.'],
+        ['year' => '2024', 'title' => 'Ekspansi Program', 'description' => 'Diskusi Literasi Konstitusi, editorial, dan kolaborasi publik mulai berkembang.'],
         ['year' => '2025', 'title' => 'Transformasi Digital', 'description' => 'Pengembangan website dan ekosistem publikasi digital dilakukan untuk memperluas akses pengetahuan hukum.'],
     ];
 
@@ -105,6 +105,11 @@
         ->map(fn ($paragraph) => trim($paragraph))
         ->filter()
         ->values();
+    $editorialCopy = fn (?string $value): ?string => $value === null ? null : str_replace(
+        ['Insight Editorial', 'Manager Insight Editorial', 'Officer Insight', 'Legal Insight', 'Edulaw Insight', 'Insight', 'insight'],
+        ['Editorial', 'Manager Editorial', 'Officer Editorial', 'Legal Editorial', 'Edulaw Editorial', 'Editorial', 'editorial'],
+        $value
+    );
 
     $statsBlocks = collect($aboutStats ?? []);
     $leaderBlocks = collect($aboutLeaders ?? []);
@@ -141,8 +146,8 @@
     if ($managerBlocks->isNotEmpty()) {
         $managers = $managerBlocks->map(fn ($block) => [
             'name' => $block->title,
-            'role' => $block->subtitle,
-            'description' => $block->body,
+            'role' => $editorialCopy($block->subtitle),
+            'description' => $editorialCopy($block->body),
             'image' => $block->image_url,
         ])->all();
     }
@@ -150,16 +155,16 @@
     if ($teamBlocks->isNotEmpty()) {
         $teamMembers = $teamBlocks->map(fn ($block) => [
             'name' => $block->title,
-            'role' => $block->subtitle,
-            'description' => $block->body,
+            'role' => $editorialCopy($block->subtitle),
+            'description' => $editorialCopy($block->body),
             'image' => $block->image_url,
         ])->all();
     }
 
     if ($focusBlocks->isNotEmpty()) {
         $focusAreas = $focusBlocks->map(fn ($block) => [
-            'title' => $block->title,
-            'description' => $block->body,
+            'title' => $editorialCopy($block->title),
+            'description' => $editorialCopy($block->body),
             'icon' => $block->icon ?: 'book',
         ])->all();
     }
@@ -168,7 +173,7 @@
         $timeline = $timelineBlocks->map(fn ($block) => [
             'year' => $block->eyebrow,
             'title' => $block->title,
-            'description' => $block->body,
+            'description' => $editorialCopy($block->body),
         ])->all();
     }
 

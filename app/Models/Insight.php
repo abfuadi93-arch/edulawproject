@@ -105,7 +105,10 @@ class Insight extends Model
 
     public function getDisplayCategoryAttribute(): string
     {
-        return $this->categoryRelation?->name ?: 'Insight';
+        $category = $this->relationLoaded('categoryRelation') ? $this->categoryRelation : $this->category;
+        $name = $category?->name ?: 'Editorial';
+
+        return InsightCategory::editorialLabel($name);
     }
 
     public function getDisplayAuthorAttribute(): string

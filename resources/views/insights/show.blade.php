@@ -106,7 +106,7 @@
                 </a>
                 <span class="text-white/36">/</span>
                 <a href="{{ route('insights.index') }}" class="transition hover:text-white">
-                    Insight
+                    Editorial
                 </a>
                 <span class="text-white/36">/</span>
                 <span class="text-white">
@@ -133,7 +133,7 @@
                 <div class="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                     <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-500">
                         <span class="edulaw-badge edulaw-badge-navy normal-case tracking-normal">
-                            Artikel Insight
+                            Artikel Editorial
                         </span>
                         <span>{{ $publishedDate }}</span>
                         <span class="hidden h-1 w-1 rounded-full bg-slate-300 sm:block"></span>
@@ -241,7 +241,7 @@
                         </p>
                     @else
                         <p class="mt-4 text-sm leading-relaxed text-slate-500">
-                            Insight ini disusun untuk memperkuat literasi hukum yang mudah dipahami, relevan, dan bertanggung jawab.
+                            Editorial ini disusun untuk memperkuat literasi hukum yang mudah dipahami, relevan, dan bertanggung jawab.
                         </p>
                     @endif
                 </div>
@@ -273,13 +273,13 @@
     </section>
 
     <x-shared.cta-collaboration
-        eyebrow="Kolaborasi Insight"
+        eyebrow="Kolaborasi Editorial"
         title="Punya topik hukum yang perlu dibahas lebih dalam?"
         body="Ajak Edulaw Project mengembangkan tulisan, diskusi, atau serial edukasi hukum yang relevan untuk pembaca Anda."
         :primary-url="route('collaboration.index')"
         primary-label="Ajukan Kolaborasi"
         :secondary-url="route('insights.index')"
-        secondary-label="Lihat Insight Lainnya"
+        secondary-label="Lihat Editorial Lainnya"
     />
 
     @if ($relatedInsights->isNotEmpty())
@@ -292,7 +292,7 @@
                         </p>
 
                         <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
-                            Insight Terkait
+                            Editorial Terkait
                         </h2>
                     </div>
 
@@ -300,7 +300,7 @@
                         href="{{ route('insights.index') }}"
                         class="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-brand-ink shadow-sm transition hover:border-brand-silver hover:bg-brand-paper"
                     >
-                        Lihat Semua Insight
+                        Lihat Semua Editorial
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>

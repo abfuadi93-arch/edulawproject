@@ -37,7 +37,7 @@ class EditorialQueueWidget extends Widget
             ->get()
             ->map(fn (Insight $insight): array => [
                 'title' => $insight->title,
-                'meta' => trim(($insight->display_author ?: 'Edulaw Project').' - '.($insight->category?->name ?: 'Belum dikategorikan'), ' -'),
+                'meta' => trim(($insight->display_author ?: 'Edulaw Project').' - '.($insight->display_category ?: 'Belum dikategorikan'), ' -'),
                 'status' => $insight->status,
                 'statusLabel' => match ($insight->status) {
                     'submitted' => 'Dalam Review',

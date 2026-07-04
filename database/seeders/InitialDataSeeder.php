@@ -69,7 +69,7 @@ class InitialDataSeeder extends Seeder
             ['name' => 'Law 101', 'description' => 'Konten pengantar hukum dengan bahasa sederhana.'],
             ['name' => 'Regulatory Update', 'description' => 'Pembaruan regulasi dan kebijakan hukum.'],
             ['name' => 'Constitution & Governance', 'description' => 'Kajian konstitusi, kelembagaan negara, dan tata kelola.'],
-            ['name' => 'Legal Insight', 'description' => 'Analisis hukum atas isu publik aktual.'],
+            ['name' => 'Legal Editorial', 'description' => 'Analisis hukum atas isu publik aktual.'],
             ['name' => 'Hukum dan Teknologi', 'description' => 'Isu hukum dalam perkembangan teknologi digital.'],
             ['name' => 'Kebijakan Publik', 'description' => 'Analisis kebijakan publik dari perspektif hukum.'],
             ['name' => 'Hak Asasi Manusia', 'description' => 'Kajian hak asasi manusia dan perlindungan warga negara.'],
