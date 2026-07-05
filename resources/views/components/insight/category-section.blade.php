@@ -4,10 +4,10 @@
 
 @php
     $preferredChannels = collect([
-        'Law & Governance',
-        'Legal 101',
-        'Edulaw Editorial',
         'Regulatory Update',
+        'Edulaw Insight',
+        'Legal 101',
+        'Law & Governance',
     ]);
 
     $channels = collect($channels)

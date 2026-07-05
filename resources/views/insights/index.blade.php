@@ -62,6 +62,36 @@
     .insight-content :where(h1, h2, h3, p) {
         overflow-wrap: anywhere;
     }
+
+    .editorial-full-bleed {
+        margin-left: calc(50% - 50vw);
+        margin-right: calc(50% - 50vw);
+        max-width: none;
+        width: auto;
+        background: #fbf7ef;
+    }
+
+    .insight-content .editorial-navbar-shell {
+        max-width: 80rem;
+    }
+
+    .insight-content .editorial-slider-shell {
+        max-width: 80rem;
+    }
+
+    .editorial-pick-slider {
+        scrollbar-width: none;
+    }
+
+    .editorial-pick-slider::-webkit-scrollbar {
+        display: none;
+    }
+
+    @media (min-width: 1280px) {
+        .editorial-pick-slider {
+            justify-content: center;
+        }
+    }
 </style>
 @endpush
 
@@ -161,46 +191,29 @@
     $mustReadLeft = $allInsights->skip(5)->first() ?: $lead;
     $mustReadMain = $allInsights->skip(6)->first() ?: $leadCompanion ?: $lead;
     $mustReadSide = $allInsights->skip(7)->take(2)->values();
-    $editorPickLead = $editorialPicks->first() ?: $allInsights->skip(2)->first() ?: $lead;
-    $editorPickGrid = $allInsights->skip(2)->take(4)->values();
+    $editorialRail = $editorialPicks->filter()->take(5)->values();
 
-    $channelByLabel = fn (string $label) => $insightChannels->firstWhere('label', $label) ?? [];
-    $lawItems = collect($channelByLabel('Law & Governance')['articles'] ?? [])->take(2);
-    $policyItems = collect($channelByLabel('Policy & Society')['articles'] ?? [])->take(2);
-    $legalItems = collect($channelByLabel('Legal 101')['articles'] ?? [])->take(2);
-    $regulatoryItems = collect($channelByLabel('Regulatory Update')['articles'] ?? [])->take(2);
+    $adminCategoryChannels = $insightChannels
+        ->filter(fn (array $channel): bool => filled($channel['category'] ?? null))
+        ->sortBy(fn (array $channel): int => (int) ($channel['category']?->sort_order ?? 99))
+        ->values();
 
-    if ($lawItems->isEmpty()) {
-        $lawItems = $allInsights->take(2);
-    }
+    $categoryBlocks = $adminCategoryChannels
+        ->take(4)
+        ->map(function (array $channel): array {
+            $category = $channel['category'] ?? null;
+            $title = $category?->name ?? ($channel['label'] ?? 'Editorial');
 
-    if ($policyItems->isEmpty()) {
-        $policyItems = $allInsights->skip(2)->take(2);
-    }
-
-    if ($legalItems->isEmpty()) {
-        $legalItems = $allInsights->skip(4)->take(2);
-    }
-
-    if ($regulatoryItems->isEmpty()) {
-        $regulatoryItems = $allInsights->skip(6)->take(2);
-    }
-
-    $toolbarChannelLabels = collect([
-        'Edulaw Editorial',
-        'Legal 101',
-        'Law & Governance',
-        'Regulatory Update',
-    ]);
-
-    $toolbarChannels = $insightChannels
-        ->filter(fn (array $channel): bool => $toolbarChannelLabels->contains($channel['label'] ?? ''))
-        ->sortBy(function (array $channel) use ($toolbarChannelLabels): int {
-            $position = $toolbarChannelLabels->search($channel['label'] ?? '');
-
-            return $position === false ? 99 : $position;
+            return [
+                'title' => $title,
+                'description' => $category?->description ?: ($channel['description'] ?? null),
+                'items' => collect($channel['articles'] ?? [])->take(4)->values(),
+                'url' => ($channel['url'] ?? route('insights.index', ['q' => $title, 'archive' => 'latest'])).'#insight-archive',
+            ];
         })
         ->values();
+
+    $toolbarChannels = $adminCategoryChannels;
 
     $latestArchiveUrl = route('insights.index', ['archive' => 'latest']).'#insight-archive';
     $editorialArchiveUrl = route('insights.index', ['featured' => 1]).'#insight-archive';
@@ -275,7 +288,7 @@
             <article class="py-2 lg:max-w-xl lg:pl-3">
                 <div class="flex flex-wrap items-center gap-2 text-sm font-bold text-slate-500">
                     <span class="grid h-6 w-6 place-items-center rounded-full bg-brand-navy text-[11px] text-white">E</span>
-                    <span>{{ $lead ? $categoryName($lead) : 'Edulaw Editorial' }}</span>
+                    <span>{{ $lead ? $categoryName($lead) : 'Edulaw Insight' }}</span>
                     <span>•</span>
                     <span>{{ $lead ? $publishedDate($lead) : 'Hari ini' }}</span>
                 </div>
@@ -296,8 +309,8 @@
             </article>
         </section>
 
-        <section class="sticky top-20 z-30 mt-12 border-y border-slate-200 bg-[#E7E7E7]/95 py-3 backdrop-blur">
-            <div class="grid gap-3 lg:grid-cols-[minmax(260px,360px)_minmax(0,1fr)] lg:items-center">
+        <section class="mt-12 bg-transparent py-3">
+            <div class="grid gap-3 lg:grid-cols-2 lg:items-center">
                 <form method="GET" action="{{ route('insights.index') }}#insight-archive" class="relative w-full">
                     <input type="hidden" name="archive" value="latest">
                     <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -436,86 +449,170 @@
             </div>
         </section>
 
-        <section class="mt-12">
-            <div class="mb-5 flex items-center justify-between">
-                <h2 class="text-2xl font-black text-brand-ink">Editor's Pick</h2>
-                <a href="{{ $editorialArchiveUrl }}" class="group inline-flex items-center gap-2 text-sm font-black text-brand-coral">
-                    See all
-                    <span class="transition group-hover:translate-x-1">→</span>
-                </a>
-            </div>
-
-            @if ($editorPickLead)
-                <article class="group">
-                    <a href="{{ route('insights.show', $editorPickLead->slug) }}" class="relative flex min-h-[360px] items-end overflow-hidden rounded-lg bg-slate-100 p-6 text-white">
-                        {!! $renderImage($editorPickLead, 60) !!}
-                        <div class="absolute inset-0 bg-linear-to-t from-[#06132a]/90 via-[#06132a]/30 to-transparent"></div>
-                        <div class="relative z-10 max-w-3xl">
-                            <p class="text-xs font-black uppercase tracking-[0.14em] text-white/72">
-                                {{ $categoryName($editorPickLead) }} • {{ $publishedDate($editorPickLead) }}
-                            </p>
-                            <h3 class="insight-clamp-2 mt-3 text-3xl font-black leading-tight text-white underline-offset-4 group-hover:underline">
-                                {{ $editorPickLead->title }}
-                            </h3>
-                            <p class="insight-clamp-2 mt-3 text-sm leading-6 text-white/78">
-                                {{ $excerpt($editorPickLead, 190) }}
-                            </p>
-                        </div>
-                    </a>
-                </article>
-            @endif
-
-            <div class="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($editorPickGrid as $index => $item)
-                    <article class="group">
-                        <a href="{{ route('insights.show', $item->slug) }}" class="relative block aspect-[4/3] overflow-hidden rounded-lg bg-slate-100">
-                            {!! $renderImage($item, $index + 61) !!}
-                        </a>
-                        <div class="mt-3 flex items-center gap-2 text-[11px] font-bold text-slate-500">
-                            <span class="h-2 w-2 rounded-full bg-brand-coral"></span>
-                            <span>{{ $categoryName($item) }}</span>
-                        </div>
-                        <h3 class="insight-clamp-3 mt-2 text-base font-black leading-tight text-brand-ink underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                            <a href="{{ route('insights.show', $item->slug) }}">{{ $item->title }}</a>
-                        </h3>
-                        <p class="mt-2 text-xs font-bold text-brand-coral">{{ $readingTime($item) }}</p>
-                    </article>
-                @endforeach
-            </div>
-        </section>
-
-        <section class="mt-12 grid gap-8 lg:grid-cols-2">
-            @foreach ([
-                ['title' => 'Law & Governance', 'items' => $lawItems],
-                ['title' => 'Policy & Society', 'items' => $policyItems],
-                ['title' => 'Legal 101', 'items' => $legalItems],
-                ['title' => 'Regulatory Update', 'items' => $regulatoryItems],
-            ] as $block)
-                <div>
-                    <div class="mb-4 flex items-center justify-between">
-                        <h2 class="text-2xl font-black text-brand-ink">{{ $block['title'] }}</h2>
-                        <a href="{{ route('insights.index', ['q' => $block['title'], 'archive' => 'latest']) }}#insight-archive" class="text-sm font-black text-brand-coral">→</a>
+        <section class="editorial-full-bleed mt-12 overflow-hidden py-10 sm:py-12">
+            <div class="editorial-navbar-shell mx-auto px-5 sm:px-6 lg:px-8">
+                <div class="mb-6 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
+                    <div class="max-w-2xl">
+                        <p class="text-xs font-black uppercase text-brand-coral">
+                            Pilihan Editor
+                        </p>
+                        <h2 class="mt-2 font-display text-3xl font-black leading-tight text-brand-ink sm:text-4xl">
+                            Editorial Pick
+                        </h2>
+                        <p class="mt-3 text-sm leading-6 text-slate-600 sm:text-base">
+                            Tulisan pilihan redaksi untuk memahami isu hukum secara lebih jernih.
+                        </p>
                     </div>
 
-                    <div class="grid gap-5 sm:grid-cols-2">
-                        @foreach (collect($block['items'])->take(2) as $index => $item)
-                            <article class="group">
-                                <a href="{{ route('insights.show', $item->slug) }}" class="relative block aspect-[4/3] overflow-hidden rounded-lg bg-slate-100">
-                                    {!! $renderImage($item, $index + 80) !!}
-                                </a>
-                                <div class="mt-3 flex items-center gap-2 text-[11px] font-bold text-slate-500">
-                                    <span class="h-2 w-2 rounded-full bg-brand-teal"></span>
-                                    <span>{{ $categoryName($item) }}</span>
-                                </div>
-                                <h3 class="insight-clamp-3 mt-2 text-base font-black leading-tight text-brand-ink underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                    <a href="{{ route('insights.show', $item->slug) }}">{{ $item->title }}</a>
-                                </h3>
-                                <p class="mt-2 text-xs font-bold text-brand-coral">{{ $readingTime($item) }}</p>
-                            </article>
-                        @endforeach
+                    <a href="{{ $editorialArchiveUrl }}" class="group inline-flex w-fit items-center gap-2 text-sm font-black text-brand-navy underline-offset-4 transition hover:text-brand-coral hover:underline">
+                        Lihat semua
+                        <span class="transition group-hover:translate-x-1">→</span>
+                    </a>
+                </div>
+            </div>
+
+            @if ($editorialRail->isNotEmpty())
+                <div class="editorial-slider-shell mx-auto mt-5 px-5 sm:px-6 lg:px-8">
+                    <div class="relative overflow-hidden">
+                        <button
+                            type="button"
+                            aria-label="Geser Editorial Pick ke kiri"
+                            data-editorial-pick-prev
+                            class="absolute left-0 top-1/2 z-10 grid h-9 w-9 -translate-x-2 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-brand-navy shadow-lg shadow-slate-900/10 transition hover:bg-brand-navy hover:text-white sm:-translate-x-4"
+                        >
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
+
+                        <div
+                            data-editorial-pick-slider
+                            class="editorial-pick-slider flex cursor-grab snap-x snap-mandatory gap-4 overflow-x-auto scroll-smooth pb-4 active:cursor-grabbing"
+                        >
+                            @foreach ($editorialRail as $index => $item)
+                                <article class="min-w-0 shrink-0 basis-[62%] snap-start sm:basis-[calc(37.5%_-_0.75rem)] lg:basis-[calc(25%_-_0.75rem)] xl:basis-[calc(18.75%_-_0.75rem)]">
+                                    <a
+                                        href="{{ route('insights.show', $item->slug) }}"
+                                        aria-label="Baca editorial: {{ $item->title }}"
+                                        class="group/editorial flex h-full flex-col overflow-hidden rounded-[20px] border border-brand-navy/10 bg-white shadow-[0_10px_24px_rgba(15,23,42,0.055)] transition duration-300 hover:-translate-y-0.5 hover:border-brand-amber/60 hover:shadow-[0_14px_34px_rgba(15,23,42,0.09)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber"
+                                    >
+                                        <div class="relative aspect-[16/9] overflow-hidden bg-slate-100">
+                                            {!! $renderImage($item, $index + 60, 'absolute inset-0 h-full w-full object-cover transition duration-700 group-hover/editorial:scale-105') !!}
+                                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/24 via-transparent to-transparent"></div>
+                                            <span class="absolute left-3 top-3 max-w-[calc(100%-1.5rem)] truncate rounded-full bg-brand-navy px-2.5 py-1 text-[9px] font-black uppercase text-white shadow-sm ring-1 ring-white/20">
+                                                {{ $categoryName($item) }}
+                                            </span>
+                                        </div>
+
+                                        <div class="flex flex-1 flex-col p-4">
+                                            <h3 class="insight-clamp-2 text-sm font-black leading-snug text-brand-ink transition group-hover/editorial:text-brand-navy sm:text-base">
+                                                {{ $item->title }}
+                                            </h3>
+
+                                            <p class="insight-clamp-2 mt-2 text-xs leading-5 text-slate-600">
+                                                {{ $excerpt($item, 100) }}
+                                            </p>
+
+                                            <div class="mt-auto pt-4">
+                                                <div class="flex flex-wrap items-center gap-x-2 gap-y-1 text-[10px] font-bold uppercase text-slate-500">
+                                                    <span>{{ $publishedDate($item) }}</span>
+                                                    <span class="h-1 w-1 rounded-full bg-brand-amber"></span>
+                                                    <span>{{ $readingTime($item) }}</span>
+                                                </div>
+
+                                                <div class="mt-2.5 flex items-center justify-between gap-3 border-t border-slate-100 pt-2.5">
+                                                    <span class="insight-clamp-1 min-w-0 text-[11px] font-semibold text-slate-500">
+                                                        {{ $authorName($item) }}
+                                                    </span>
+                                                    <span class="inline-flex shrink-0 items-center gap-1 text-[11px] font-black text-brand-navy">
+                                                        Baca
+                                                        <span class="transition group-hover/editorial:translate-x-1">→</span>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </article>
+                            @endforeach
+                        </div>
+
+                        <button
+                            type="button"
+                            aria-label="Geser Editorial Pick ke kanan"
+                            data-editorial-pick-next
+                            class="absolute right-0 top-1/2 z-10 grid h-9 w-9 translate-x-2 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-brand-navy shadow-lg shadow-slate-900/10 transition hover:bg-brand-navy hover:text-white sm:translate-x-4"
+                        >
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </button>
                     </div>
                 </div>
-            @endforeach
+            @else
+                <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+                    <div class="rounded-[24px] border border-dashed border-brand-navy/20 bg-white/75 p-6 text-sm font-semibold leading-6 text-slate-600">
+                        Pilihan editor akan tampil setelah editorial pilihan redaksi tersedia.
+                    </div>
+                </div>
+            @endif
+        </section>
+
+        <section class="mt-12">
+            <div class="grid gap-x-10 gap-y-9 lg:grid-cols-2">
+                @foreach ($categoryBlocks as $blockIndex => $block)
+                    <section class="min-w-0 border-t border-slate-200 pt-5" aria-labelledby="insight-category-{{ Str::slug($block['title']) }}">
+                        <div class="flex items-start justify-between gap-4">
+                            <div class="min-w-0">
+                                <h2 id="insight-category-{{ Str::slug($block['title']) }}" class="text-xl font-black leading-tight text-brand-ink sm:text-2xl">
+                                    {{ $block['title'] }}
+                                </h2>
+                                @if (! empty($block['description']))
+                                    <p class="insight-clamp-2 mt-1.5 text-sm leading-6 text-slate-500">
+                                        {{ $block['description'] }}
+                                    </p>
+                                @endif
+                            </div>
+
+                            <a href="{{ $block['url'] }}" class="group/link inline-flex shrink-0 items-center gap-1.5 pt-1 text-xs font-black uppercase text-brand-navy transition hover:text-brand-coral" aria-label="Lihat semua tulisan {{ $block['title'] }}">
+                                Lihat semua
+                                <span class="transition group-hover/link:translate-x-1">→</span>
+                            </a>
+                        </div>
+
+                        <div class="mt-3 divide-y divide-slate-200">
+                            @forelse (collect($block['items'])->take(4) as $itemIndex => $item)
+                                <article>
+                                    <a
+                                        href="{{ route('insights.show', $item->slug) }}"
+                                        aria-label="Baca {{ $item->title }}"
+                                        class="group/item flex gap-3 py-3.5 transition hover:bg-white/45 sm:gap-4"
+                                    >
+                                        <div class="relative h-[66px] w-[88px] shrink-0 overflow-hidden rounded-2xl bg-slate-100 sm:h-[72px] sm:w-[96px]">
+                                            {!! $renderImage($item, 90 + ($blockIndex * 10) + $itemIndex, 'absolute inset-0 h-full w-full object-cover transition duration-500 group-hover/item:scale-105') !!}
+                                        </div>
+
+                                        <div class="min-w-0 flex-1 self-center">
+                                            <h3 class="insight-clamp-2 text-sm font-bold leading-snug text-brand-ink transition group-hover/item:text-brand-navy sm:text-[15px]">
+                                                {{ $item->title }}
+                                            </h3>
+
+                                            <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-[11px] font-bold text-slate-500">
+                                                <span>{{ $publishedDate($item) }}</span>
+                                                <span class="h-1 w-1 rounded-full bg-brand-amber"></span>
+                                                <span>{{ $readingTime($item) }}</span>
+                                            </div>
+                                        </div>
+                                    </a>
+                                </article>
+                            @empty
+                                <div class="py-4 text-sm font-semibold leading-6 text-slate-500">
+                                    Tulisan kategori ini akan tampil setelah tersedia.
+                                </div>
+                            @endforelse
+                        </div>
+                    </section>
+                @endforeach
+            </div>
         </section>
 
         <section class="mt-12">
@@ -653,3 +750,116 @@
     </div>
 </main>
 @endsection
+
+@once
+    @push('scripts')
+        <script>
+            document.addEventListener('DOMContentLoaded', () => {
+                document.querySelectorAll('[data-editorial-pick-slider]').forEach((slider) => {
+                    const section = slider.closest('section');
+                    const previous = section?.querySelector('[data-editorial-pick-prev]');
+                    const next = section?.querySelector('[data-editorial-pick-next]');
+                    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+                    const scrollAmount = () => {
+                        const firstCard = slider.querySelector('article');
+
+                        return firstCard ? firstCard.getBoundingClientRect().width + 16 : Math.max(220, slider.clientWidth * 0.45);
+                    };
+                    const maxScroll = () => slider.scrollWidth - slider.clientWidth - 4;
+                    const advance = () => {
+                        if (maxScroll() <= 0) {
+                            return;
+                        }
+
+                        if (slider.scrollLeft >= maxScroll()) {
+                            slider.scrollTo({ left: 0, behavior: 'smooth' });
+                            return;
+                        }
+
+                        slider.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+                    };
+
+                    let autoplay = null;
+                    const stopAutoplay = () => {
+                        if (autoplay) {
+                            window.clearInterval(autoplay);
+                            autoplay = null;
+                        }
+                    };
+                    const startAutoplay = () => {
+                        stopAutoplay();
+
+                        if (! prefersReducedMotion && maxScroll() > 0) {
+                            autoplay = window.setInterval(advance, 12000);
+                        }
+                    };
+                    const restartAutoplay = () => {
+                        startAutoplay();
+                    };
+
+                    previous?.addEventListener('click', () => {
+                        slider.scrollBy({ left: -scrollAmount(), behavior: 'smooth' });
+                        restartAutoplay();
+                    });
+
+                    next?.addEventListener('click', () => {
+                        slider.scrollBy({ left: scrollAmount(), behavior: 'smooth' });
+                        restartAutoplay();
+                    });
+
+                    let isDragging = false;
+                    let startX = 0;
+                    let scrollLeft = 0;
+                    let hasMoved = false;
+
+                    slider.addEventListener('pointerdown', (event) => {
+                        if (event.pointerType === 'touch' || event.target.closest('a, button')) {
+                            return;
+                        }
+
+                        isDragging = true;
+                        hasMoved = false;
+                        startX = event.pageX;
+                        scrollLeft = slider.scrollLeft;
+                        stopAutoplay();
+                        slider.setPointerCapture(event.pointerId);
+                    });
+
+                    slider.addEventListener('pointermove', (event) => {
+                        if (! isDragging) {
+                            return;
+                        }
+
+                        const distance = event.pageX - startX;
+
+                        if (Math.abs(distance) > 6) {
+                            hasMoved = true;
+                            event.preventDefault();
+                            slider.scrollLeft = scrollLeft - distance;
+                        }
+                    });
+
+                    const stopDragging = () => {
+                        if (isDragging && hasMoved) {
+                            restartAutoplay();
+                        }
+
+                        isDragging = false;
+                        hasMoved = false;
+                    };
+
+                    slider.addEventListener('pointerup', stopDragging);
+                    slider.addEventListener('pointercancel', stopDragging);
+                    slider.addEventListener('mouseleave', stopDragging);
+                    slider.addEventListener('mouseenter', stopAutoplay);
+                    slider.addEventListener('mouseleave', startAutoplay);
+                    slider.addEventListener('focusin', stopAutoplay);
+                    slider.addEventListener('focusout', startAutoplay);
+                    window.addEventListener('resize', restartAutoplay);
+
+                    startAutoplay();
+                });
+            });
+        </script>
+    @endpush
+@endonce

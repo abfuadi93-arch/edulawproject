@@ -250,16 +250,10 @@ class InsightController extends Controller
                 'aliases' => ['regulatory update', 'regulation update', 'regulasi', 'pembaruan regulasi'],
             ],
             [
-                'label' => 'Edulaw Editorial',
+                'label' => 'Edulaw Insight',
                 'icon' => 'spark',
                 'description' => 'Analisis hukum terkini dari riset dan pengalaman tim Edulaw Project.',
-                'aliases' => ['insight', 'editorial', 'legal insight', 'legal editorial', 'opini hukum', 'riset hukum'],
-            ],
-            [
-                'label' => 'Policy & Society',
-                'icon' => 'people',
-                'description' => 'Irisan kebijakan publik, masyarakat, hak warga, dan tata kelola sosial.',
-                'aliases' => ['policy society', 'policy and society', 'kebijakan masyarakat', 'sosial'],
+                'aliases' => ['edulaw insight', 'insight', 'editorial', 'legal insight', 'legal editorial', 'opini hukum', 'riset hukum'],
             ],
             [
                 'label' => 'Teknologi Hukum',
@@ -294,7 +288,7 @@ class InsightController extends Controller
                 ->latest('id')
                 ->get()
                 ->groupBy('insight_category_id')
-                ->map(fn (Collection $items): Collection => $items->take(3)->values())
+                ->map(fn (Collection $items): Collection => $items->take(4)->values())
             : collect();
 
         return $definitions->map(function (array $definition) use ($categories, $articlesByCategory): array {

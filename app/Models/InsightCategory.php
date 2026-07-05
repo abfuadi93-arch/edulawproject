@@ -25,11 +25,14 @@ class InsightCategory extends Model
 
     public static function editorialLabel(?string $value): string
     {
-        return str_replace(
-            ['Insight Editorial', 'Legal Insight', 'Edulaw Insight', 'Insight', 'insight'],
-            ['Editorial', 'Legal Editorial', 'Edulaw Editorial', 'Editorial', 'editorial'],
-            $value ?: 'Editorial'
-        );
+        $value = $value ?: 'Editorial';
+
+        return [
+            'Insight Editorial' => 'Editorial',
+            'Legal Insight' => 'Legal Editorial',
+            'Insight' => 'Editorial',
+            'insight' => 'editorial',
+        ][$value] ?? $value;
     }
 
     public function getNameAttribute(?string $value): string
