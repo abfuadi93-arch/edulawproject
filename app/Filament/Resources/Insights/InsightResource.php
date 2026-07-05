@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Insights;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Insights\InsightResource\Pages;
 use App\Models\Insight;
 use BackedEnum;
@@ -29,11 +28,10 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Str;
 
 class InsightResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Insight::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -76,7 +74,21 @@ class InsightResource extends Resource
                                                     ->maxLength(255)
                                                     ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
                                                     ->live(onBlur: true)
-                                                    ->afterStateUpdated(static::syncSlugFrom(preservePublishedSlug: true))
+                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                        $currentSlug = (string) ($get('slug') ?? '');
+
+                                                        if (filled($currentSlug) && $get('status') === 'published') {
+                                                            return;
+                                                        }
+
+                                                        $oldSlug = Str::slug((string) $old);
+
+                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                            return;
+                                                        }
+
+                                                        $set('slug', Str::slug((string) $state));
+                                                    })
                                                     ->helperText('Judul singkat dan kuat untuk halaman Editorial.')
                                                     ->columnSpanFull(),
 

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
 use BackedEnum;
@@ -35,8 +34,6 @@ use Illuminate\Support\Str;
 
 class ProgramResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Program::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -79,7 +76,16 @@ class ProgramResource extends Resource
                                                     ->maxLength(255)
                                                     ->placeholder('Inspiring Lecture Hukum dan Kebijakan Publik')
                                                     ->live(onBlur: true)
-                                                    ->afterStateUpdated(static::syncSlugFrom())
+                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                        $currentSlug = (string) ($get('slug') ?? '');
+                                                        $oldSlug = Str::slug((string) $old);
+
+                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                            return;
+                                                        }
+
+                                                        $set('slug', Str::slug((string) $state));
+                                                    })
                                                     ->columnSpanFull(),
 
                                                 TextInput::make('slug')

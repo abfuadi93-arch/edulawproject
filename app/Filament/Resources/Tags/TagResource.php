@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Tags;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Tags\Pages\CreateTag;
 use App\Filament\Resources\Tags\Pages\EditTag;
 use App\Filament\Resources\Tags\Pages\ListTags;
@@ -17,11 +16,10 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class TagResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Tag::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
@@ -51,7 +49,16 @@ class TagResource extends Resource
                             ->maxLength(255)
                             ->placeholder('Nama tag')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(static::syncSlugFrom()),
+                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                $currentSlug = (string) ($get('slug') ?? '');
+                                $oldSlug = Str::slug((string) $old);
+
+                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug((string) $state));
+                            }),
 
                         TextInput::make('slug')
                             ->label('Slug')

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\PublicationTypes;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\PublicationTypes\Pages\CreatePublicationType;
 use App\Filament\Resources\PublicationTypes\Pages\EditPublicationType;
 use App\Filament\Resources\PublicationTypes\Pages\ListPublicationTypes;
@@ -21,11 +20,10 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class PublicationTypeResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = PublicationType::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
@@ -55,7 +53,16 @@ class PublicationTypeResource extends Resource
                             ->maxLength(255)
                             ->placeholder('Nama tipe publikasi')
                             ->live(onBlur: true)
-                            ->afterStateUpdated(static::syncSlugFrom()),
+                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                $currentSlug = (string) ($get('slug') ?? '');
+                                $oldSlug = Str::slug((string) $old);
+
+                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                    return;
+                                }
+
+                                $set('slug', Str::slug((string) $state));
+                            }),
 
                         TextInput::make('slug')
                             ->label('Slug')

@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Opportunities;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
 use App\Filament\Resources\Opportunities\Pages\EditOpportunity;
 use App\Filament\Resources\Opportunities\Pages\ListOpportunities;
@@ -29,8 +28,6 @@ use Illuminate\Support\Str;
 
 class OpportunityResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Opportunity::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -70,7 +67,16 @@ class OpportunityResource extends Resource
                                                     ->required()
                                                     ->maxLength(255)
                                                     ->live(onBlur: true)
-                                                    ->afterStateUpdated(static::syncSlugFrom()),
+                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                        $currentSlug = (string) ($get('slug') ?? '');
+                                                        $oldSlug = Str::slug((string) $old);
+
+                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                            return;
+                                                        }
+
+                                                        $set('slug', Str::slug((string) $state));
+                                                    }),
 
                                                 TextInput::make('slug')
                                                     ->label('Slug')

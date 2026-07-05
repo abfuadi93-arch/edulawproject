@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Publications;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Publications\Pages\CreatePublication;
 use App\Filament\Resources\Publications\Pages\EditPublication;
 use App\Filament\Resources\Publications\Pages\ListPublications;
@@ -28,11 +27,10 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\Str;
 
 class PublicationResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Publication::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -70,7 +68,16 @@ class PublicationResource extends Resource
                                             ->maxLength(255)
                                             ->placeholder('Judul publikasi Edulaw')
                                             ->live(onBlur: true)
-                                            ->afterStateUpdated(static::syncSlugFrom())
+                                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                $currentSlug = (string) ($get('slug') ?? '');
+                                                $oldSlug = Str::slug((string) $old);
+
+                                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                    return;
+                                                }
+
+                                                $set('slug', Str::slug((string) $state));
+                                            })
                                             ->columnSpanFull(),
 
                                         TextInput::make('slug')

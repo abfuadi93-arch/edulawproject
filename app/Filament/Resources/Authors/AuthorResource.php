@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Authors;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Authors\Pages\CreateAuthor;
 use App\Filament\Resources\Authors\Pages\EditAuthor;
 use App\Filament\Resources\Authors\Pages\ListAuthors;
@@ -29,11 +28,10 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class AuthorResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Author::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
@@ -67,7 +65,16 @@ class AuthorResource extends Resource
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
-                                    ->afterStateUpdated(static::syncSlugFrom())
+                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                        $currentSlug = (string) ($get('slug') ?? '');
+                                        $oldSlug = Str::slug((string) $old);
+
+                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                            return;
+                                        }
+
+                                        $set('slug', Str::slug((string) $state));
+                                    })
                                     ->columnSpanFull(),
 
                                 TextInput::make('slug')

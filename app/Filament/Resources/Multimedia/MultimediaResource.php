@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Multimedia;
 
-use App\Filament\Concerns\HasSlugFormBehavior;
 use App\Filament\Resources\Multimedia\Pages\CreateMultimedia;
 use App\Filament\Resources\Multimedia\Pages\EditMultimedia;
 use App\Filament\Resources\Multimedia\Pages\ListMultimedia;
@@ -32,8 +31,6 @@ use Illuminate\Support\Str;
 
 class MultimediaResource extends Resource
 {
-    use HasSlugFormBehavior;
-
     protected static ?string $model = Multimedia::class;
 
     protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
@@ -74,7 +71,16 @@ class MultimediaResource extends Resource
                                                     ->maxLength(255)
                                                     ->live(onBlur: true)
                                                     ->placeholder('Diskusi Literasi Konstitusi #1')
-                                                    ->afterStateUpdated(static::syncSlugFrom()),
+                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                        $currentSlug = (string) ($get('slug') ?? '');
+                                                        $oldSlug = Str::slug((string) $old);
+
+                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                            return;
+                                                        }
+
+                                                        $set('slug', Str::slug((string) $state));
+                                                    }),
 
                                                 TextInput::make('slug')
                                                     ->label('Slug')
