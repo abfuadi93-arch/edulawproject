@@ -140,35 +140,16 @@
                         <span>{{ $readingTime($insight) }}</span>
                     </div>
 
-                    <div class="flex w-full items-center justify-between gap-2 sm:w-auto sm:justify-start">
-                        <span class="mr-1 hidden text-xs font-black uppercase tracking-[0.18em] text-slate-400 sm:inline">
-                            Bagikan
-                        </span>
-
-                        <button
-                            type="button"
-                            onclick="navigator.clipboard.writeText(window.location.href)"
-                            class="inline-flex h-9 w-9 items-center justify-center rounded-full border border-slate-200 bg-white text-brand-navy transition hover:border-brand-navy hover:bg-slate-50"
-                            aria-label="Salin tautan artikel"
-                        >
-                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M10 13a5 5 0 0 0 7.07 0l2.12-2.12a5 5 0 0 0-7.07-7.07L11 4.93" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                <path d="M14 11a5 5 0 0 0-7.07 0L4.81 13.12a5 5 0 0 0 7.07 7.07L13 19.07" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </button>
-
-                        <a
-                            href="https://wa.me/?text={{ urlencode($insight->title . ' ' . request()->fullUrl()) }}"
-                            target="_blank"
-                            rel="noopener"
-                            class="inline-flex h-9 items-center justify-center rounded-full bg-brand-navy px-4 text-xs font-black text-white transition hover:bg-brand-navy/90"
-                        >
-                            WhatsApp
-                        </a>
-                    </div>
+                    <x-share-buttons
+                        :title="$insight->title"
+                        :url="request()->fullUrl()"
+                        :description="$description"
+                        label="Bagikan Insight"
+                        class="w-full justify-start sm:w-auto sm:justify-end"
+                    />
                 </div>
 
-                <div class="insight-article-body prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-headings:text-brand-navy prose-h2:mt-12 prose-h2:text-3xl prose-h3:text-2xl prose-p:text-[17px] prose-p:leading-[1.95] prose-p:text-slate-700 prose-a:font-semibold prose-a:text-brand-navy prose-strong:text-brand-navy prose-em:text-slate-700 prose-blockquote:border-l-4 prose-blockquote:border-brand-amber prose-blockquote:bg-slate-50 prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:not-italic">
+                <div class="edulaw-readable insight-article-body prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-headings:text-brand-navy prose-h2:mt-12 prose-h2:text-3xl prose-h3:text-2xl prose-p:text-[17px] prose-p:text-slate-700 prose-a:font-semibold prose-a:text-brand-navy prose-strong:text-brand-navy prose-em:text-slate-700 prose-blockquote:border-l-4 prose-blockquote:border-brand-amber prose-blockquote:bg-slate-50 prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:not-italic">
                     @if ($insight->content)
                         {!! $insight->content !!}
                     @else

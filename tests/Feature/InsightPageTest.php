@@ -29,7 +29,17 @@ test('published insight index and detail pages render', function () {
     $this->get(route('insights.show', $insight->slug))
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
-        ->assertSee('Artikel Editorial');
+        ->assertSee('Artikel Editorial')
+        ->assertSee('Bagikan Insight')
+        ->assertSee('WhatsApp')
+        ->assertSee('Telegram')
+        ->assertSee('X/Twitter')
+        ->assertSee('Facebook')
+        ->assertSee('LinkedIn')
+        ->assertSee('Email')
+        ->assertSee('Instagram')
+        ->assertSee('Salin Link')
+        ->assertSee('edulaw-readable insight-article-body', false);
 });
 
 test('legacy insight slug redirects permanently to canonical slug', function () {

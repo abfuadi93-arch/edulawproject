@@ -5,6 +5,8 @@
 @section('content')
 @php
     $opportunityImage = fn ($opportunity) => $opportunity?->poster_url ?: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=85';
+    $opportunityUrl = fn ($opportunity) => $opportunity?->application_link ?: route('opportunities.index');
+    $isExternalOpportunity = fn ($opportunity) => filled($opportunity?->application_link);
 @endphp
 
 <main class="bg-brand-paper">
@@ -39,7 +41,13 @@
                                 <span>•</span>
                                 <span>{{ $featuredOpportunity->format ?: '-' }}</span>
                             </div>
-                            <a href="{{ route('opportunities.show', $featuredOpportunity->slug) }}" class="mt-6 inline-flex rounded-xl bg-brand-black px-4 py-2 text-sm font-bold text-white">Lihat Detail</a>
+                            <a
+                                href="{{ $opportunityUrl($featuredOpportunity) }}"
+                                @if ($isExternalOpportunity($featuredOpportunity)) target="_blank" rel="noopener noreferrer" @endif
+                                class="mt-6 inline-flex rounded-xl bg-brand-black px-4 py-2 text-sm font-bold text-white"
+                            >
+                                Buka Peluang
+                            </a>
                         </div>
                     </div>
                 </article>
@@ -61,7 +69,11 @@
             <div class="space-y-4">
                 @forelse ($opportunities as $opportunity)
                     <article class="overflow-hidden rounded-3xl bg-white shadow-sm ring-1 ring-slate-200">
-                        <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="grid md:grid-cols-[220px_1fr]">
+                        <a
+                            href="{{ $opportunityUrl($opportunity) }}"
+                            @if ($isExternalOpportunity($opportunity)) target="_blank" rel="noopener noreferrer" @endif
+                            class="grid md:grid-cols-[220px_1fr]"
+                        >
                             <img
                                 src="{{ $opportunityImage($opportunity) }}"
                                 alt="{{ $opportunity->title }}"
@@ -77,7 +89,7 @@
                                 <h3 class="mt-3 text-xl font-extrabold text-brand-ink">{{ $opportunity->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $opportunity->excerpt }}</p>
                                 <div class="mt-3 text-xs text-slate-500">Batas akhir: {{ optional($opportunity->deadline)->translatedFormat('d M Y') }}</div>
-                                <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Lihat Selengkapnya →</span>
+                                <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Buka Peluang →</span>
                             </div>
                         </a>
                     </article>

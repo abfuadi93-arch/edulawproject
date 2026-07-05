@@ -797,13 +797,13 @@
                     <h2 class="profile-heading mt-2">Tentang {{ $author->name }}</h2>
 
                     @if ($bioParagraphs->isNotEmpty())
-                        <div class="profile-copy mt-5 space-y-4">
+                        <div class="edulaw-readable profile-copy mt-5">
                             @foreach ($bioParagraphs as $paragraph)
                                 <p>{{ $paragraph }}</p>
                             @endforeach
                         </div>
                     @else
-                        <p class="profile-copy mt-5">{{ $bioFallback }}</p>
+                        <p class="edulaw-readable profile-copy mt-5">{{ $bioFallback }}</p>
                     @endif
                 </section>
 

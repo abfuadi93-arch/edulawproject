@@ -421,9 +421,9 @@
                 </div>
             </div>
 
-            <div class="self-center text-base leading-8 text-slate-700">
+            <div class="edulaw-readable self-center text-base text-slate-700">
                 @forelse ($aboutWhyParagraphs as $paragraph)
-                    <p @class(['mt-4' => ! $loop->first])>{{ $paragraph }}</p>
+                    <p>{{ $paragraph }}</p>
                 @empty
                     <p>
                         Hukum sering hadir dalam bahasa yang teknis, tertutup, dan sulit dijangkau publik. Padahal,
@@ -431,7 +431,7 @@
                         kewajiban, serta arah kebijakan negara.
                     </p>
 
-                    <p class="mt-4">
+                    <p>
                         Edulaw Project hadir untuk menjembatani pengetahuan hukum, riset kebijakan, dan kebutuhan
                         masyarakat atas informasi yang jernih, reflektif, serta dapat digunakan dalam pembelajaran,
                         diskusi publik, dan advokasi berbasis pengetahuan.

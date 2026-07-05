@@ -16,6 +16,5 @@ View canonical aktif:
 - programs.index
 - programs.show
 - opportunities.index
-- opportunities.show
 - multimedia.index
 - search.index

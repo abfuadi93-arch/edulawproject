@@ -4,25 +4,18 @@
 
 @section('content')
 @php
-    use Illuminate\Support\Str;
     use Illuminate\Support\Carbon;
     use Illuminate\Support\Facades\Route;
+    use Illuminate\Support\Str;
 
-    $indexUrl = Route::has('publications.index')
-        ? route('publications.index')
-        : url('/riset-publikasi');
+    $indexUrl = Route::has('publications.index') ? route('publications.index') : url('/riset-publikasi');
+    $collaborationUrl = Route::has('collaboration.index') ? route('collaboration.index') : url('/kolaborasi');
 
-    $collaborationUrl = Route::has('collaboration.index')
-        ? route('collaboration.index')
-        : url('/kolaborasi');
-
-    $imageUrl = function (?string $path) {
-        return edulaw_file_url($path);
-    };
-
-    $fileUrl = function (?string $path) {
-        return edulaw_file_url($path);
-    };
+    $fileUrl = fn (?string $path): ?string => edulaw_file_url($path);
+    $coverImage = edulaw_file_url($publication->cover_image ?? null);
+    $pdfUrl = filled($publication->pdf_file) ? $fileUrl($publication->pdf_file) : null;
+    $externalUrl = filled($publication->external_url) ? $publication->external_url : null;
+    $pdfPreviewUrl = $pdfUrl ? $pdfUrl.'#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH' : null;
 
     $typeName = $publication?->type?->name
         ?? $publication?->publicationType?->name
@@ -37,1006 +30,306 @@
             ->values()
         : collect();
 
-    $authors = $authorCollection->isNotEmpty()
-        ? $authorCollection->pluck('name')->filter()->join(', ')
-        : ($publication->author_name ?? $publication->source_name ?? 'Edulaw Project');
+    $authorNames = $authorCollection->pluck('name')->filter()->join(', ');
+    $sourceName = trim((string) ($publication->source_name ?: 'Edulaw Project'));
+    $creatorLabel = $authorNames ? 'Penulis' : 'Penerbit';
+    $creatorValue = $authorNames ?: $sourceName;
 
-    $authorInitials = function (string $name): string {
-        return Str::of($name)
-            ->explode(' ')
-            ->filter()
-            ->map(fn ($part) => Str::substr($part, 0, 1))
-            ->take(2)
-            ->implode('') ?: 'E';
-    };
-
-    $publishedDate = 'Belum dipublikasikan';
     $publishedYear = null;
-
     if (! empty($publication->published_at)) {
         try {
-            $publishedDate = Carbon::parse($publication->published_at)->translatedFormat('F Y');
             $publishedYear = Carbon::parse($publication->published_at)->format('Y');
         } catch (\Throwable $e) {
-            $publishedDate = $publication->published_at;
+            $publishedYear = (string) $publication->published_at;
         }
     }
 
-    $summary = $publication->excerpt
-        ?: Str::limit(strip_tags($publication->description ?? ''), 420)
-        ?: 'Publikasi Edulaw Project untuk mendukung literasi hukum, riset kebijakan, dan penguatan pengetahuan publik.';
+    $documentFormat = $pdfUrl ? 'PDF digital' : 'Dokumen digital';
+    $pageOrFormatLabel = $publication->page_count ? 'Jumlah Halaman' : 'Format';
+    $pageOrFormatValue = $publication->page_count ? $publication->page_count.' halaman' : $documentFormat;
+    $languageLabel = 'Indonesia';
+    $statusLabel = match ($publication->status) {
+        'published' => 'Terbit',
+        'draft' => 'Draf',
+        'archived' => 'Arsip',
+        default => Str::headline((string) ($publication->status ?: 'Dokumen')),
+    };
 
-    $description = trim(strip_tags($publication->description ?? ''));
-
-    $downloadUrl = null;
-
-    if (! empty($publication->pdf_file)) {
-        $downloadUrl = $fileUrl($publication->pdf_file);
-    } elseif (! empty($publication->external_url)) {
-        $downloadUrl = $publication->external_url;
-    }
-
-    $pdfPreviewUrl = ! empty($publication->pdf_file)
-        ? $fileUrl($publication->pdf_file) . '#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH'
-        : null;
-
-    $coverImage = $imageUrl($publication->cover_image ?? null);
+    $summarySource = filled($publication->description)
+        ? $publication->description
+        : $publication->excerpt;
+    $summaryText = trim(strip_tags((string) $summarySource));
+    $genericSummaryNeedles = [
+        'publikasi edulaw project untuk mendukung literasi hukum',
+        'riset kebijakan, dan penguatan pengetahuan publik',
+    ];
+    $summaryIsGeneric = blank($summaryText)
+        || Str::of($summaryText)->lower()->contains($genericSummaryNeedles);
+    $summaryIsHtml = Str::contains((string) $summarySource, ['<p', '<br', '<ul', '<ol', '<div']);
+    $summaryParagraphs = collect(preg_split('/\R{2,}/', $summaryText) ?: [])
+        ->map(fn ($paragraph) => trim($paragraph))
+        ->filter()
+        ->values();
 
     $tags = collect($publication->tags ?? []);
+    $relatedCollection = collect($relatedPublications ?? $related ?? collect());
+    $citationAuthor = $creatorValue ?: 'Edulaw Project';
+    $citationYear = $publishedYear ?: now()->format('Y');
+    $citationText = $citationAuthor.'. ('.$citationYear.'). '.$publication->title.'. '.$sourceName.'.';
 
-    $relatedCollection = collect(
-        $relatedPublications
-        ?? $related
-        ?? collect()
-    );
+    $metadataRows = collect([
+        ['label' => $creatorLabel, 'value' => $creatorValue],
+        ['label' => 'Tahun', 'value' => $publishedYear ?: 'Belum bertanggal'],
+        ['label' => 'Tipe Publikasi', 'value' => $typeName],
+        ['label' => $pageOrFormatLabel, 'value' => $pageOrFormatValue],
+        ['label' => 'Bahasa', 'value' => $languageLabel],
+        ['label' => 'Status Dokumen', 'value' => $statusLabel],
+    ])->filter(fn ($row) => filled($row['value']))->values();
 
-    $pageCountLabel = $publication->page_count
-        ? $publication->page_count . ' halaman'
-        : 'Dokumen digital';
+    $relatedTypeName = fn ($item): string => $item?->type?->name
+        ?? $item?->publicationType?->name
+        ?? $item?->publication_type
+        ?? $item?->type
+        ?? 'Publikasi';
 
-    $sourceName = $publication->source_name ?: 'Edulaw Project';
-
-    $citationText = 'Edulaw Project. (' . ($publishedYear ?: now()->format('Y')) . '). ' . $publication->title . '. Edulaw Project.';
-
-    $palettes = [
-        ['from' => '#102A43', 'via' => '#1E5F74', 'to' => '#F4B942', 'accent' => '#F4B942'],
-        ['from' => '#240046', 'via' => '#7B2CBF', 'to' => '#F72585', 'accent' => '#F72585'],
-        ['from' => '#143601', 'via' => '#2D6A4F', 'to' => '#95D5B2', 'accent' => '#B7E4C7'],
-        ['from' => '#3D0C11', 'via' => '#A4161A', 'to' => '#FFB703', 'accent' => '#FFB703'],
-        ['from' => '#001219', 'via' => '#005F73', 'to' => '#94D2BD', 'accent' => '#94D2BD'],
-        ['from' => '#03045E', 'via' => '#0077B6', 'to' => '#90E0EF', 'accent' => '#90E0EF'],
-    ];
-
-    $seed = abs(crc32(($publication->slug ?? '') . '|' . ($publication->title ?? '') . '|' . ($publication->id ?? '')));
-    $palette = $palettes[$seed % count($palettes)];
-
-    $relatedPreviewUrl = function ($relatedPublication) use ($fileUrl) {
-        if (empty($relatedPublication->pdf_file)) {
-            return null;
+    $relatedYear = function ($item): string {
+        if (empty($item->published_at)) {
+            return 'Dokumen digital';
         }
 
-        return $fileUrl($relatedPublication->pdf_file) . '#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH';
-    };
-
-    $relatedCoverUrl = function ($relatedPublication) use ($imageUrl) {
-        return $imageUrl($relatedPublication->cover_image ?? null);
-    };
-
-    $relatedTypeName = function ($relatedPublication) {
-        return $relatedPublication?->type?->name
-            ?? $relatedPublication?->publicationType?->name
-            ?? $relatedPublication?->publication_type
-            ?? $relatedPublication?->type
-            ?? 'Publikasi';
-    };
-
-    $relatedExcerpt = function ($relatedPublication) {
-        $text = $relatedPublication->excerpt ?: strip_tags($relatedPublication->description ?? '');
-
-        return Str::limit($text ?: 'Publikasi Edulaw Project untuk mendukung literasi hukum dan kebijakan publik.', 145);
+        try {
+            return Carbon::parse($item->published_at)->format('Y');
+        } catch (\Throwable $e) {
+            return 'Dokumen digital';
+        }
     };
 @endphp
 
-<style>
-    .publication-show {
-        background: #f8fafc;
-        color: #0f172a;
-    }
-
-    .publication-container {
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: 0 24px;
-    }
-
-    .publication-hero {
-        position: relative;
-        isolation: isolate;
-        overflow: hidden;
-        background:
-            linear-gradient(135deg, rgba(6, 26, 61, .94), rgba(15, 40, 104, .90)),
-            url('https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1800&q=85') center / cover no-repeat;
-        color: #ffffff;
-        padding: 72px 0 78px;
-    }
-
-    .publication-hero::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -2;
-        background:
-            radial-gradient(circle at 86% 18%, rgba(244, 185, 66, .18), transparent 30%),
-            radial-gradient(circle at 14% 72%, rgba(45, 212, 191, .14), transparent 34%);
-        pointer-events: none;
-    }
-
-    .publication-hero::after {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        background:
-            linear-gradient(120deg, rgba(255,255,255,.08), transparent 34%, rgba(0,0,0,.20)),
-            rgba(3, 10, 28, .18);
-        pointer-events: none;
-    }
-
-    .publication-hero-inner {
-        position: relative;
-        z-index: 1;
-        width: 100%;
-    }
-
-    .publication-back-link {
-        display: inline-flex;
-        align-items: center;
-        gap: 8px;
-        color: rgba(255,255,255,.78);
-        font-size: 13px;
-        font-weight: 900;
-        text-decoration: none;
-        transition: .2s ease;
-    }
-
-    .publication-back-link:hover {
-        color: #ffffff;
-    }
-
-    .publication-badges {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 9px;
-        margin-top: 28px;
-    }
-
-    .publication-badge {
-        display: inline-flex;
-        align-items: center;
-        width: fit-content;
-        border: 1px solid rgba(255,255,255,.18);
-        border-radius: 999px;
-        background: rgba(255,255,255,.08);
-        padding: 7px 11px;
-        color: rgba(255,255,255,.84);
-        font-size: 10px;
-        font-weight: 950;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-        backdrop-filter: blur(10px);
-    }
-
-    .publication-badge-primary {
-        border-color: rgba(56, 164, 216, .38);
-        background: rgba(56, 164, 216, .18);
-        color: #e0f2fe;
-    }
-
-    .publication-badge-gold {
-        border-color: rgba(245, 185, 67, .42);
-        background: rgba(245, 185, 67, .16);
-        color: #fff3cf;
-    }
-
-    .publication-hero-title {
-        margin-top: 18px;
-        max-width: 100%;
-        color: #ffffff;
-        font-size: clamp(38px, 5vw, 64px);
-        line-height: 1.03;
-        font-weight: 950;
-        letter-spacing: -.055em;
-    }
-
-    .publication-hero-meta {
-        display: flex;
-        flex-wrap: wrap;
-        align-items: center;
-        gap: 9px;
-        margin-top: 22px;
-        max-width: 100%;
-        color: rgba(255,255,255,.76);
-        font-size: 13px;
-        font-weight: 800;
-    }
-
-    .publication-hero-actions {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 12px;
-        margin-top: 30px;
-        max-width: 100%;
-    }
-
-    .publication-button-primary,
-    .publication-button-secondary,
-    .publication-button-soft {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        gap: 9px;
-        border-radius: 999px;
-        padding: 13px 18px;
-        font-size: 13px;
-        font-weight: 950;
-        text-decoration: none;
-        transition: .2s ease;
-    }
-
-    .publication-button-primary {
-        border: 1px solid rgba(255,255,255,.16);
-        background: #ffffff;
-        color: #0F2868;
-    }
-
-    .publication-button-primary:hover {
-        transform: translateY(-1px);
-        background: #f8fafc;
-    }
-
-    .publication-button-secondary {
-        border: 1px solid rgba(255,255,255,.22);
-        background: rgba(255,255,255,.08);
-        color: #ffffff;
-        backdrop-filter: blur(10px);
-    }
-
-    .publication-button-secondary:hover {
-        background: rgba(255,255,255,.14);
-    }
-
-    .publication-button-soft {
-        border: 1px solid #e2e8f0;
-        background: #ffffff;
-        color: #0F2868;
-    }
-
-    .publication-button-soft:hover {
-        border-color: rgba(15, 40, 104, .32);
-        background: #f8fafc;
-    }
-
-    .publication-body {
-        padding: 42px 0 72px;
-    }
-
-    .publication-layout {
-        display: grid;
-        grid-template-columns: minmax(0, 1fr) 320px;
-        gap: 28px;
-        align-items: start;
-    }
-
-    .publication-main {
-        display: grid;
-        gap: 24px;
-    }
-
-    .publication-sidebar {
-        position: sticky;
-        top: 96px;
-        display: grid;
-        gap: 18px;
-    }
-
-    .publication-panel {
-        border: 1px solid #e2e8f0;
-        border-radius: 28px;
-        background: #ffffff;
-        padding: 24px;
-        box-shadow: 0 1px 2px rgba(15, 23, 42, .04);
-    }
-
-    .publication-panel-label {
-        color: #0F2868;
-        font-size: 11px;
-        font-weight: 950;
-        letter-spacing: .20em;
-        text-transform: uppercase;
-    }
-
-    .publication-panel h2 {
-        margin-top: 10px;
-        color: #0f172a;
-        font-size: 28px;
-        line-height: 1.15;
-        font-weight: 950;
-        letter-spacing: -.04em;
-    }
-
-    .publication-panel h3 {
-        margin-top: 10px;
-        color: #0f172a;
-        font-size: 20px;
-        line-height: 1.25;
-        font-weight: 950;
-        letter-spacing: -.03em;
-    }
-
-    .publication-panel p {
-        margin-top: 16px;
-        color: #334155;
-        font-size: 15px;
-        line-height: 1.85;
-    }
-
-    .publication-prose {
-        margin-top: 16px;
-        color: #334155;
-        font-size: 15px;
-        line-height: 1.85;
-    }
-
-    .publication-prose p {
-        margin: 0 0 16px;
-    }
-
-    .publication-preview-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-        gap: 18px;
-        margin-top: 8px;
-    }
-
-    .publication-preview-frame {
-        margin-top: 20px;
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        border-radius: 22px;
-        background: #f8fafc;
-    }
-
-    .publication-preview-frame iframe {
-        display: block;
-        width: 100%;
-        height: 660px;
-        border: 0;
-        background: #ffffff;
-    }
-
-    .publication-preview-frame img {
-        display: block;
-        width: 100%;
-        height: 520px;
-        object-fit: cover;
-        background: #ffffff;
-    }
-
-    .publication-preview-fallback {
-        position: relative;
-        isolation: isolate;
-        display: flex;
-        min-height: 520px;
-        flex-direction: column;
-        justify-content: space-between;
-        overflow: hidden;
-        padding: 32px;
-        color: #ffffff;
-    }
-
-    .publication-preview-fallback::before {
-        content: "";
-        position: absolute;
-        inset: 0;
-        z-index: -1;
-        background: linear-gradient(120deg, rgba(255,255,255,.14), transparent 38%, rgba(0,0,0,.30));
-    }
-
-    .publication-preview-fallback .line {
-        width: 72px;
-        height: 9px;
-        border-radius: 999px;
-        background: currentColor;
-        opacity: .9;
-    }
-
-    .publication-preview-fallback strong {
-        display: block;
-        margin-top: 28px;
-        max-width: 560px;
-        font-size: 32px;
-        line-height: 1.05;
-        font-weight: 950;
-        letter-spacing: -.04em;
-    }
-
-    .publication-meta-list {
-        display: grid;
-        gap: 16px;
-        margin-top: 18px;
-    }
-
-    .publication-meta-item span {
-        display: block;
-        color: #94a3b8;
-        font-size: 10px;
-        font-weight: 950;
-        letter-spacing: .14em;
-        text-transform: uppercase;
-    }
-
-    .publication-meta-item strong {
-        display: block;
-        margin-top: 5px;
-        color: #0f172a;
-        font-size: 13px;
-        line-height: 1.45;
-        font-weight: 900;
-    }
-
-    .publication-tags {
-        display: flex;
-        flex-wrap: wrap;
-        gap: 8px;
-        margin-top: 18px;
-    }
-
-    .publication-tags span,
-    .publication-tags a {
-        display: inline-flex;
-        border-radius: 999px;
-        background: #ecfdf9;
-        color: #0f766e;
-        padding: 7px 10px;
-        font-size: 11px;
-        font-weight: 900;
-        text-decoration: none;
-    }
-
-    .publication-action-list {
-        display: grid;
-        gap: 10px;
-        margin-top: 18px;
-    }
-
-    .publication-action-list a,
-    .publication-action-list button {
-        display: flex;
-        width: 100%;
-        align-items: center;
-        justify-content: space-between;
-        border: 1px solid #e2e8f0;
-        border-radius: 14px;
-        background: #ffffff;
-        padding: 12px 14px;
-        color: #0F2868;
-        font-size: 13px;
-        font-weight: 900;
-        text-decoration: none;
-        cursor: pointer;
-        transition: .2s ease;
-    }
-
-    .publication-action-list a:hover,
-    .publication-action-list button:hover {
-        border-color: rgba(15, 40, 104, .28);
-        background: #f8fafc;
-    }
-
-    .publication-citation-box {
-        margin-top: 16px;
-        border-radius: 18px;
-        background: #f8fafc;
-        padding: 16px;
-        color: #334155;
-        font-size: 13px;
-        line-height: 1.7;
-        font-weight: 700;
-    }
-
-    .publication-related-header {
-        display: flex;
-        align-items: end;
-        justify-content: space-between;
-        gap: 20px;
-        margin-bottom: 20px;
-    }
-
-    .publication-related-grid {
-        display: grid;
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 16px;
-    }
-
-    .publication-related-card {
-        overflow: hidden;
-        border: 1px solid #e2e8f0;
-        border-radius: 22px;
-        background: #ffffff;
-        transition: .25s ease;
-    }
-
-    .publication-related-card:hover {
-        transform: translateY(-2px);
-        box-shadow: 0 14px 34px rgba(15, 23, 42, .08);
-    }
-
-    .publication-related-preview {
-        height: 150px;
-        overflow: hidden;
-        background: #f8fafc;
-    }
-
-    .publication-related-preview iframe,
-    .publication-related-preview img {
-        display: block;
-        width: 100%;
-        height: 150px;
-        border: 0;
-        object-fit: cover;
-        background: #ffffff;
-        pointer-events: none;
-    }
-
-    .publication-related-content {
-        padding: 17px;
-    }
-
-    .publication-related-badge {
-        display: inline-flex;
-        width: fit-content;
-        border: 1px solid rgba(31, 60, 105, .15);
-        border-radius: 999px;
-        background: #e8ebef;
-        color: #1f3c69;
-        padding: 6px 10px;
-        font-size: 10px;
-        font-weight: 950;
-        letter-spacing: .10em;
-        text-transform: uppercase;
-    }
-
-    .publication-related-content h3 {
-        margin-top: 10px;
-        color: #0f172a;
-        font-size: 16px;
-        line-height: 1.32;
-        font-weight: 950;
-    }
-
-    .publication-related-content h3 a {
-        color: inherit;
-        text-decoration: none;
-    }
-
-    .publication-related-content p {
-        margin-top: 10px;
-        color: #64748b;
-        font-size: 13px;
-        line-height: 1.65;
-    }
-
-    @media (max-width: 1024px) {
-        .publication-layout {
-            grid-template-columns: 1fr;
-        }
-
-        .publication-sidebar {
-            position: static;
-        }
-
-        .publication-related-grid {
-            grid-template-columns: 1fr;
-        }
-    }
-
-    @media (max-width: 720px) {
-        .publication-container {
-            padding: 0 16px;
-        }
-
-        .publication-hero {
-            padding: 52px 0 58px;
-        }
-
-        .publication-badges {
-            margin-top: 22px;
-        }
-
-        .publication-hero-title {
-            font-size: clamp(34px, 10vw, 48px);
-            letter-spacing: -.045em;
-        }
-
-        .publication-hero-meta {
-            align-items: flex-start;
-            flex-direction: column;
-            gap: 6px;
-        }
-
-        .publication-hero-meta span:nth-child(2),
-        .publication-hero-meta span:nth-child(4) {
-            display: none;
-        }
-
-        .publication-preview-header {
-            align-items: flex-start;
-            flex-direction: column;
-        }
-
-        .publication-preview-frame iframe {
-            height: 480px;
-        }
-
-        .publication-panel {
-            border-radius: 22px;
-            padding: 20px;
-        }
-    }
-</style>
-
 <main class="publication-show">
-    <x-shared.page-header
-        :title="$publication->title"
-        :description="Str::limit($summary, 280)"
-        :eyebrow="$typeName"
-        :background-image="$coverImage ?: 'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1800&q=85'"
-        :background-alt="$publication->title"
-        :breadcrumbs="[
-            ['label' => 'Beranda', 'url' => '/'],
-            ['label' => 'Riset & Publikasi', 'url' => $indexUrl],
-            ['label' => $typeName],
-        ]"
-    >
-        <div class="flex flex-wrap gap-2">
-            @if (! empty($publication->featured))
-                <span class="publication-badge publication-badge-gold">
-                    Pilihan
+    <section class="relative isolate overflow-hidden bg-brand-navy text-white">
+        @if ($coverImage)
+            <img
+                src="{{ $coverImage }}"
+                alt="{{ $publication->title }}"
+                class="absolute inset-0 z-0 h-full w-full object-cover"
+            >
+        @else
+            <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_18%_24%,rgba(245,185,67,0.22),transparent_30%),radial-gradient(circle_at_82%_22%,rgba(37,183,160,0.18),transparent_28%),linear-gradient(135deg,#071427,#1f3c69_54%,#10243f)]"></div>
+        @endif
+
+        <div class="absolute inset-0 z-0 bg-linear-to-r from-[#06132a]/96 via-[#06132a]/78 to-[#06132a]/42"></div>
+        <div class="absolute inset-0 z-0 bg-linear-to-t from-[#06132a]/82 via-transparent to-[#06132a]/18"></div>
+
+        <div class="relative z-10 mx-auto max-w-7xl px-5 py-11 sm:px-6 lg:px-8 lg:py-16">
+            <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-white/72 sm:text-sm" aria-label="Breadcrumb">
+                <a href="{{ route('home') }}" class="transition hover:text-white">Beranda</a>
+                <span class="text-white/42">/</span>
+                <a href="{{ $indexUrl }}" class="transition hover:text-white">Publikasi &amp; Riset</a>
+                <span class="text-white/42">/</span>
+                <span class="text-white">Detail Publikasi</span>
+            </nav>
+
+            <div class="mt-7 max-w-5xl">
+                <span class="edulaw-badge edulaw-badge-md edulaw-badge-dark">
+                    {{ $typeName }}
                 </span>
-            @endif
 
-            @if ($publishedYear)
-                <span class="publication-badge">
-                    {{ $publishedYear }}
-                </span>
-            @endif
+                <h1 class="mt-5 max-w-5xl text-4xl font-black leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+                    {{ $publication->title }}
+                </h1>
 
-            <span class="publication-badge">
-                {{ $pageCountLabel }}
-            </span>
-        </div>
-
-        <div class="mt-5 flex flex-wrap items-center gap-x-3 gap-y-2 text-sm font-semibold text-white/76">
-            @if ($authorCollection->isNotEmpty())
-                <div class="flex -space-x-2">
-                    @foreach ($authorCollection->take(3) as $author)
-                        <a href="{{ route('profiles.show', $author->slug) }}" class="rounded-full transition hover:-translate-y-0.5" aria-label="Profil {{ $author->name }}">
-                            @if ($author->photo_url)
-                                <img
-                                    src="{{ $author->photo_url }}"
-                                    alt="Foto profil {{ $author->name }}"
-                                    class="h-8 w-8 rounded-full border-2 border-white/80 object-cover shadow-sm"
-                                    loading="lazy"
-                                >
-                            @else
-                                <span class="grid h-8 w-8 place-items-center rounded-full border-2 border-white/80 bg-brand-navy text-[10px] font-black text-white shadow-sm">
-                                    {{ $authorInitials($author->name) }}
-                                </span>
-                            @endif
-                        </a>
+                <dl class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                    @foreach ([
+                        ['label' => 'Tipe', 'value' => $typeName],
+                        ['label' => $creatorLabel, 'value' => $creatorValue],
+                        ['label' => 'Tahun', 'value' => $publishedYear ?: 'Belum bertanggal'],
+                        ['label' => 'Format', 'value' => $documentFormat],
+                    ] as $item)
+                        <div class="rounded-2xl border border-white/40 bg-white px-4 py-3 shadow-sm shadow-slate-950/10">
+                            <dt class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+                                {{ $item['label'] }}
+                            </dt>
+                            <dd class="mt-1 line-clamp-2 text-sm font-black leading-snug text-brand-navy">
+                                {{ $item['value'] }}
+                            </dd>
+                        </div>
                     @endforeach
-                </div>
-            @endif
-            <span class="font-bold text-white">{{ $authors }}</span>
-            <span class="h-1 w-1 rounded-full bg-white/45"></span>
-            <span>{{ $publishedDate }}</span>
-            <span class="h-1 w-1 rounded-full bg-white/45"></span>
-            <span>{{ $sourceName }}</span>
+                </dl>
+            </div>
         </div>
-
-        <div class="publication-hero-actions">
-            @if ($downloadUrl)
-                <a
-                    href="{{ $downloadUrl }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="publication-button-primary"
-                >
-                    Unduh Publikasi
-                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M12 3v12m0 0 4-4m-4 4-4-4M5 21h14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
-            @endif
-
-            <a href="#ringkasan" class="publication-button-secondary">
-                Baca Ringkasan
-            </a>
-        </div>
-    </x-shared.page-header>
+    </section>
 
     <section class="publication-body">
-        <div class="publication-container">
-            <div class="publication-layout">
-                <div class="publication-main">
+        <div class="bg-[#f8fafc] py-10 lg:py-14">
+            <div class="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8">
+                <div class="space-y-7">
+                    <article id="preview-pdf" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+                        <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                                    Preview PDF
+                                </p>
+                                <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy sm:text-3xl">
+                                    Baca dokumen langsung dari halaman ini.
+                                </h2>
+                            </div>
 
-
-                    <article id="preview-pdf" class="publication-panel">
-                        <div class="publication-panel-label">
-                            Preview PDF
-                        </div>
-
-                        <div class="publication-preview-header">
-                            <h2>Baca dokumen langsung dari halaman ini.</h2>
-
-                            @if ($downloadUrl)
+                            @if ($pdfUrl)
                                 <a
-                                    href="{{ $downloadUrl }}"
+                                    href="{{ $pdfUrl }}"
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    class="publication-button-soft"
+                                    class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]"
                                 >
                                     Unduh Publikasi
+                                </a>
+                            @elseif ($externalUrl)
+                                <a
+                                    href="{{ $externalUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-black"
+                                >
+                                    Buka Sumber Publikasi
                                 </a>
                             @endif
                         </div>
 
-                        <div class="publication-preview-frame">
+                        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
                             @if ($pdfPreviewUrl)
                                 <iframe
                                     src="{{ $pdfPreviewUrl }}"
                                     title="Preview dokumen {{ $publication->title }}"
                                     loading="lazy"
+                                    class="h-[520px] w-full bg-white lg:h-[720px]"
                                 ></iframe>
-                            @elseif ($coverImage)
-                                <img
-                                    src="{{ $coverImage }}"
-                                    alt="{{ $publication->title }}"
-                                >
                             @else
-                                <div
-                                    class="publication-preview-fallback"
-                                    style="background: linear-gradient(135deg, {{ $palette['from'] }} 0%, {{ $palette['via'] }} 50%, {{ $palette['to'] }} 100%);"
-                                >
-                                    <div>
-                                        <span class="line" style="color: {{ $palette['accent'] }}"></span>
-                                        <strong>{{ $publication->title }}</strong>
+                                <div class="flex min-h-[320px] items-center justify-center bg-linear-to-br from-brand-navy via-[#102f55] to-brand-teal/80 p-8 text-center text-white">
+                                    <div class="max-w-md">
+                                        <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-amber">
+                                            Dokumen PDF belum tersedia.
+                                        </p>
+                                        <p class="mt-4 text-base font-semibold leading-7 text-white/78">
+                                            Gunakan sumber publikasi jika tersedia, atau kembali ke katalog untuk membaca publikasi lain.
+                                        </p>
                                     </div>
-
-                                    <span class="publication-badge publication-badge-primary">
-                                        {{ $typeName }}
-                                    </span>
                                 </div>
                             @endif
                         </div>
                     </article>
 
-                    <article id="ringkasan" class="publication-panel">
-                        <div class="publication-panel-label">
-                            Ringkasan Publikasi
-                        </div>
+                    @if (! $summaryIsGeneric)
+                        <article id="ringkasan" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                                Ringkasan Publikasi
+                            </p>
 
-                        <h2>Ringkasan Publikasi</h2>
+                            <div class="edulaw-readable mt-5 max-w-3xl text-slate-700">
+                                @if ($summaryIsHtml)
+                                    {!! $summarySource !!}
+                                @else
+                                    @foreach ($summaryParagraphs as $paragraph)
+                                        <p>{{ $paragraph }}</p>
+                                    @endforeach
+                                @endif
+                            </div>
+                        </article>
+                    @endif
 
-                        <p>{{ $summary }}</p>
-                    </article>
-
-                    
-
-                    <section class="publication-panel">
-                        <div class="publication-related-header">
-                            <div>
-                                <div class="publication-panel-label">
-                                    Publikasi Terkait
+                    @if ($relatedCollection->isNotEmpty())
+                        <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                            <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                                <div>
+                                    <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                                        Publikasi Terkait
+                                    </p>
+                                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                                        Baca publikasi lainnya.
+                                    </h2>
                                 </div>
 
-                                <h2>Baca Publikasi Lainnya</h2>
+                                <a href="{{ $indexUrl }}" class="text-sm font-black text-brand-navy underline-offset-4 transition hover:text-brand-teal hover:underline">
+                                    Semua Publikasi
+                                </a>
                             </div>
 
-                            <a href="{{ $indexUrl }}" class="publication-button-soft">
-                                Semua Publikasi →
-                            </a>
-                        </div>
-
-                        @if ($relatedCollection->count())
-                            <div class="publication-related-grid">
+                            <div class="mt-6 grid gap-4 md:grid-cols-3">
                                 @foreach ($relatedCollection->take(3) as $relatedPublication)
-                                    @php
-                                        $relatedPdfPreview = $relatedPreviewUrl($relatedPublication);
-                                        $relatedCover = $relatedCoverUrl($relatedPublication);
-                                    @endphp
-
-                                    <article class="publication-related-card">
-                                        <div class="publication-related-preview">
-                                            @if ($relatedCover)
-                                                <img
-                                                    src="{{ $relatedCover }}"
-                                                    alt="{{ $relatedPublication->title }}"
-                                                >
-                                            @elseif ($relatedPdfPreview)
-                                                <iframe
-                                                    src="{{ $relatedPdfPreview }}"
-                                                    title="Preview {{ $relatedPublication->title }}"
-                                                    loading="lazy"
-                                                ></iframe>
-                                            @else
-                                                <div
-                                                    style="height:150px;background:linear-gradient(135deg, {{ $palette['from'] }}, {{ $palette['via'] }}, {{ $palette['to'] }});"
-                                                ></div>
-                                            @endif
-                                        </div>
-
-                                        <div class="publication-related-content">
-                                            <span class="publication-related-badge">
-                                                {{ $relatedTypeName($relatedPublication) }}
-                                            </span>
-
-                                            <h3>
-                                                <a href="{{ route('publications.show', $relatedPublication->slug) }}">
-                                                    {{ $relatedPublication->title }}
-                                                </a>
-                                            </h3>
-
-                                            <p>{{ $relatedExcerpt($relatedPublication) }}</p>
-
-                                            <div style="margin-top:12px;">
-                                                <a
-                                                    href="{{ route('publications.show', $relatedPublication->slug) }}"
-                                                    class="publication-button-soft"
-                                                    style="padding:9px 12px;font-size:12px;"
-                                                >
-                                                    Baca Ringkasan →
-                                                </a>
-                                            </div>
-                                        </div>
+                                    <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
+                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+                                            {{ $relatedTypeName($relatedPublication) }}
+                                        </p>
+                                        <h3 class="mt-3 line-clamp-2 text-base font-black leading-snug text-brand-navy">
+                                            {{ $relatedPublication->title }}
+                                        </h3>
+                                        <p class="mt-3 text-sm font-bold text-slate-500">
+                                            {{ $relatedYear($relatedPublication) }} · {{ $relatedPublication->pdf_file ? 'PDF digital' : 'Dokumen digital' }}
+                                        </p>
+                                        <a href="{{ route('publications.show', $relatedPublication->slug) }}" class="mt-4 inline-flex text-sm font-black text-brand-navy transition hover:text-brand-teal">
+                                            Lihat Detail →
+                                        </a>
                                     </article>
                                 @endforeach
                             </div>
-                        @else
-                            <p>
-                                Belum ada publikasi terkait yang tersedia. Silakan kembali ke halaman
-                                Riset & Publikasi untuk menjelajahi koleksi lainnya.
-                            </p>
-                        @endif
-                    </section>
+                        </section>
+                    @endif
                 </div>
 
-                <aside class="publication-sidebar">
-                    <section class="publication-panel">
-                        <div class="publication-panel-label">
-                            Metadata
-                        </div>
+                <aside class="space-y-6 self-start lg:sticky lg:top-24">
+                    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                            Detail Publikasi
+                        </p>
 
-                        <div class="publication-meta-list">
-                            <div class="publication-meta-item">
-                                <span>Penulis</span>
-                                @if ($authorCollection->isNotEmpty())
-                                    <div class="mt-3 grid gap-3">
-                                        @foreach ($authorCollection as $author)
-                                            <a href="{{ route('profiles.show', $author->slug) }}" class="flex items-center gap-3 rounded-xl transition hover:text-brand-navy">
-                                                @if ($author->photo_url)
-                                                    <img
-                                                        src="{{ $author->photo_url }}"
-                                                        alt="Foto profil {{ $author->name }}"
-                                                        class="h-10 w-10 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
-                                                        loading="lazy"
-                                                    >
-                                                @else
-                                                    <span class="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-brand-navy text-xs font-black text-white">
-                                                        {{ $authorInitials($author->name) }}
-                                                    </span>
-                                                @endif
+                        <dl class="mt-5 divide-y divide-slate-100 text-sm">
+                            @foreach ($metadataRows as $row)
+                                <div class="flex justify-between gap-5 py-3.5 first:pt-0">
+                                    <dt class="font-bold text-slate-500">{{ $row['label'] }}</dt>
+                                    <dd class="max-w-[58%] text-right font-black text-brand-navy">{{ $row['value'] }}</dd>
+                                </div>
+                            @endforeach
+                        </dl>
 
-                                                <strong class="!mt-0 min-w-0">{{ $author->name }}</strong>
-                                            </a>
-                                        @endforeach
-                                    </div>
-                                @else
-                                    <strong>{{ $authors }}</strong>
-                                @endif
-                            </div>
-
-                            <div class="publication-meta-item">
-                                <span>Tahun</span>
-                                <strong>{{ $publishedYear ?: '-' }}</strong>
-                            </div>
-
-                            <div class="publication-meta-item">
-                                <span>Kategori</span>
-                                <strong>{{ $typeName }}</strong>
-                            </div>
-
-                            <div class="publication-meta-item">
-                                <span>Jumlah Halaman</span>
-                                <strong>{{ $pageCountLabel }}</strong>
-                            </div>
-
-                            <div class="publication-meta-item">
-                                <span>Sumber</span>
-                                <strong>{{ $sourceName }}</strong>
-                            </div>
-                        </div>
-
-                        @if ($downloadUrl)
-                            <div style="margin-top:20px;">
-                                <a
-                                    href="{{ $downloadUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="publication-button-primary"
-                                    style="width:100%;"
-                                >
-                                    Unduh Publikasi
-                                </a>
+                        @if ($tags->isNotEmpty())
+                            <div class="mt-5 border-t border-slate-100 pt-5">
+                                <p class="text-[10px] font-black uppercase tracking-[0.20em] text-slate-400">
+                                    Kata Kunci
+                                </p>
+                                <div class="mt-3 flex flex-wrap gap-2">
+                                    @foreach ($tags as $tag)
+                                        <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-black text-brand-navy">
+                                            #{{ $tag->name }}
+                                        </span>
+                                    @endforeach
+                                </div>
                             </div>
                         @endif
                     </section>
 
-                    <section class="publication-panel">
-                        <div class="publication-panel-label">
-                            Kata Kunci
-                        </div>
+                    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                        <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                            Sitasi &amp; Aksi
+                        </p>
 
-                        <div class="publication-tags">
-                            @forelse ($tags as $tag)
-                                <span>#{{ $tag->name }}</span>
-                            @empty
-                                <span>#RisetHukum</span>
-                                <span>#LiterasiHukum</span>
-                                <span>#KebijakanPublik</span>
-                            @endforelse
-                        </div>
-                    </section>
-
-                    <section class="publication-panel" id="aksi-publikasi">
-                        <div class="publication-panel-label">
-                            Aksi Publikasi
-                        </div>
-
-                        <div class="publication-action-list">
-                            <button
-                                type="button"
-                                onclick="navigator.clipboard?.writeText(window.location.href)"
-                            >
-                                <span>Bagikan Publikasi</span>
-                                <span>↗</span>
-                            </button>
-
-                            <a href="{{ $collaborationUrl }}">
-                                <span>Gunakan untuk Diskusi</span>
-                                <span>→</span>
-                            </a>
-                        </div>
-                    </section>
-
-                    <section class="publication-panel">
-                        <div class="publication-panel-label">
-                            Sitasi
-                        </div>
-
-                        <div class="publication-citation-box">
+                        <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-7 text-slate-700">
                             {{ $citationText }}
                         </div>
 
                         <button
                             type="button"
                             onclick="navigator.clipboard?.writeText(@js($citationText))"
-                            class="publication-button-soft"
-                            style="margin-top:14px;width:100%;cursor:pointer;"
+                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-4 py-2.5 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
                         >
                             Salin Sitasi
                         </button>
+
+                        <x-share-buttons
+                            :title="$publication->title"
+                            :url="route('publications.show', $publication->slug)"
+                            :description="$summaryText"
+                            label="Bagikan Publikasi"
+                            class="mt-5"
+                        />
                     </section>
                 </aside>
             </div>
@@ -1044,11 +337,11 @@
     </section>
 
     <x-shared.cta-collaboration
-        eyebrow="Kolaborasi Publikasi"
-        title="Kembangkan riset atau publikasi berikutnya bersama Edulaw."
-        body="Gunakan publikasi ini sebagai awal diskusi untuk kajian, policy brief, kelas, atau diseminasi hukum yang lebih luas."
+        eyebrow="Kolaborasi Riset"
+        title="Kembangkan riset dan literasi hukum tanpa batas bersama Edulaw Project."
+        body="Kami membuka ruang kolaborasi untuk riset, publikasi, diskusi, dan penguatan kebijakan hukum yang berdampak bagi masyarakat."
         :primary-url="$collaborationUrl"
-        primary-label="Gunakan untuk Diskusi"
+        primary-label="Ajukan Kolaborasi"
         :secondary-url="$indexUrl"
         secondary-label="Lihat Publikasi Lainnya"
     />

@@ -6,8 +6,10 @@
     'backgroundImage' => null,
     'backgroundAlt' => '',
     'compact' => false,
+    'containerClass' => null,
     'gridClass' => null,
     'titleClass' => null,
+    'titleWidthClass' => 'max-w-4xl',
     'contentClass' => null,
     'descriptionClass' => null,
     'accentLine' => false,
@@ -22,6 +24,7 @@
     $defaultTitleClass = $compact
         ? 'text-3xl sm:text-4xl lg:text-[2.45rem]'
         : 'text-4xl sm:text-5xl lg:text-[3.25rem]';
+    $defaultContainerClass = 'relative z-10 mx-auto grid w-screen max-w-7xl '.($gridClass ?: $defaultGridClass);
 @endphp
 
 @once
@@ -60,7 +63,7 @@
     @endif
     <div class="absolute bottom-0 left-0 right-0 z-0 h-px bg-white/12"></div>
 
-    <div class="relative z-10 mx-auto grid w-screen max-w-7xl {{ $gridClass ?: $defaultGridClass }}">
+    <div class="{{ $containerClass ?: $defaultContainerClass }}">
         <div class="min-w-0 justify-self-start text-left">
             @if (! empty($breadcrumbs))
                 <nav class="flex flex-wrap items-center gap-2 {{ $compact ? 'text-xs' : 'text-sm' }} font-bold {{ $isDarkHero ? 'text-white/68' : 'text-slate-500' }}">
@@ -95,7 +98,7 @@
                 </p>
             @endif
 
-            <h1 class="{{ $eyebrow ? 'mt-2' : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} max-w-4xl font-black leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
+            <h1 class="{{ $eyebrow ? 'mt-2' : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} {{ $titleWidthClass }} font-black leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
                 {{ $title }}
             </h1>
         </div>

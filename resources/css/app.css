@@ -426,3 +426,31 @@
         scrollbar-width: none;
     }
 }
+
+.edulaw-readable,
+.edulaw-readable:is(p, li),
+.edulaw-readable :where(p, li) {
+    font-size: 1rem;
+    font-weight: 400;
+    letter-spacing: 0;
+    line-height: 1.75;
+    text-align: justify;
+}
+
+.edulaw-readable:is(p),
+.edulaw-readable :where(p) {
+    margin: 0 0 7.5pt;
+}
+
+.edulaw-readable :where(ul, ol) {
+    margin-block: 7.5pt;
+}
+
+.edulaw-readable:is(li),
+.edulaw-readable :where(li) {
+    margin-bottom: 7.5pt;
+}
+
+.edulaw-readable :where(p:last-child, li:last-child) {
+    margin-bottom: 0;
+}

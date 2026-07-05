@@ -10,13 +10,9 @@
 <main class="bg-brand-paper">
     <x-shared.page-header
         :title="$publication->title"
-        :description="$publication->excerpt"
         :eyebrow="$publication->type?->name"
-        :breadcrumbs="[
-            ['label' => 'Beranda', 'url' => '/'],
-            ['label' => 'Riset & Publikasi', 'url' => route('publications.index')],
-            ['label' => $publication->title],
-        ]"
+        container-class="relative z-10 mx-auto grid w-full max-w-7xl grid-cols-1 gap-0 px-5 py-11 sm:px-6 lg:min-h-[300px] lg:px-8 lg:py-16"
+        title-width-class="max-w-none"
     />
 
     <section class="py-14 lg:py-20">
@@ -26,10 +22,10 @@
 
                 <div class="p-6 sm:p-8">
                 <h2 class="text-2xl font-extrabold text-brand-ink">Ringkasan</h2>
-                <p class="mt-4 text-slate-600">{{ $publication->excerpt }}</p>
+                <p class="edulaw-readable mt-4 text-slate-600">{{ $publication->excerpt }}</p>
 
                 @if ($publication->description)
-                    <div class="prose prose-slate mt-6 max-w-none">
+                    <div class="edulaw-readable prose prose-slate mt-6 max-w-none">
                         {!! $publication->description !!}
                     </div>
                 @endif

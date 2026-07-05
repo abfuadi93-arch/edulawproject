@@ -54,7 +54,7 @@
             'title' => 'Beasiswa Studi Hukum dan Kebijakan Publik',
             'excerpt' => 'Kesempatan pendanaan studi untuk bidang hukum, kebijakan publik, demokrasi, dan tata kelola pemerintahan.',
             'date' => 'Batas akhir: 30 Juli 2026',
-            'url' => '/opportunities/beasiswa-studi-hukum-dan-kebijakan-publik',
+            'url' => '/opportunities',
             'meta' => 'Beasiswa',
         ],
         [

@@ -160,7 +160,7 @@
                                 {{ $section['title'] }}
                             </h2>
 
-                            <div class="mt-4 space-y-4 text-[15px] leading-8 text-slate-700 sm:text-base">
+                            <div class="edulaw-readable mt-4 text-[15px] text-slate-700 sm:text-base">
                                 @foreach ($section['content'] as $paragraph)
                                     <p>
                                         {{ $paragraph }}

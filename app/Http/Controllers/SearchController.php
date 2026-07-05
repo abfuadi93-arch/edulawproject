@@ -92,8 +92,9 @@ class SearchController extends Controller
                     'title' => $item->title,
                     'excerpt' => $item->excerpt,
                     'date' => optional($item->deadline)->translatedFormat('d M Y'),
-                    'url' => route('opportunities.show', $item->slug),
+                    'url' => $item->application_link ?: route('opportunities.index'),
                     'meta' => ucfirst(str_replace('_', ' ', (string) $item->type)),
+                    'external' => filled($item->application_link),
                     'sort_date' => optional($item->deadline)?->timestamp ?? 0,
                 ]);
 
