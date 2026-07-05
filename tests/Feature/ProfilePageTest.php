@@ -182,7 +182,9 @@ test('about page team cards link to active public profiles', function () {
         'slug' => 'abdul-basid-fuadi',
         'photo' => 'authors/abdul-basid-fuadi.webp',
         'position' => 'Founder',
+        'interests' => 'Hukum tata negara, demokrasi',
         'profile_type' => 'founder',
+        'sort_order' => 10,
         'is_active' => true,
     ]);
 
@@ -197,7 +199,19 @@ test('about page team cards link to active public profiles', function () {
         'name' => 'Manager Baru',
         'slug' => 'manager-baru',
         'position' => 'Manager Editorial',
+        'interests' => 'Editorial, riset hukum',
         'profile_type' => 'manager',
+        'sort_order' => 20,
+        'is_active' => true,
+    ]);
+
+    $firstManagerProfile = Author::query()->create([
+        'name' => 'Zed Manager',
+        'slug' => 'zed-manager',
+        'position' => 'Manager Program',
+        'interests' => 'Program',
+        'profile_type' => 'manager',
+        'sort_order' => 1,
         'is_active' => true,
     ]);
 
@@ -205,7 +219,9 @@ test('about page team cards link to active public profiles', function () {
         'name' => 'Writer Baru',
         'slug' => 'writer-baru',
         'position' => 'Writer',
+        'interests' => 'Literasi hukum',
         'profile_type' => 'team',
+        'sort_order' => 30,
         'is_active' => true,
     ]);
 
@@ -221,11 +237,17 @@ test('about page team cards link to active public profiles', function () {
         ->assertOk()
         ->assertSee(route('profiles.show', $activeProfile->slug), false)
         ->assertSee(route('profiles.show', $managerProfile->slug), false)
+        ->assertSee(route('profiles.show', $firstManagerProfile->slug), false)
         ->assertSee(route('profiles.show', $teamProfile->slug), false)
+        ->assertSeeInOrder(['Zed Manager', 'Manager Baru'])
         ->assertSee('Manager Editorial')
         ->assertSee('Writer')
+        ->assertSee('Hukum tata negara')
+        ->assertSee('demokrasi')
+        ->assertSee('Editorial')
+        ->assertSee('riset hukum')
+        ->assertSee('Literasi hukum')
         ->assertSee('authors/abdul-basid-fuadi.webp')
         ->assertDontSee('Nabila Rahma')
-        ->assertDontSee('Manager Program')
         ->assertDontSee(route('profiles.show', $inactiveProfile->slug), false);
 });

@@ -62,16 +62,30 @@
         ->squish()
         ->toString();
     $profileFor = fn (array $person) => $person['profile'] ?? $profileMap->get($profileLookupKey($person['name'] ?? null));
-    $personImage = fn (array $person, $profile = null): ?string => $profile?->photo_url ?: (($person['image'] ?? null) ?: asset('images/logo/icon-bg.png'));
-    $profilePerson = function ($profile, ?string $fallbackRole = null, bool $withDefaultDescription = true) use ($editorialCopy): array {
-        $bio = trim(strip_tags((string) $profile->bio));
-        $description = $bio !== '' ? Str::limit((string) $editorialCopy($bio), 130) : null;
+    $profileInterests = function ($profile): array {
+        $interests = $profile->interests;
+
+        if (is_string($interests)) {
+            $decoded = json_decode($interests, true);
+            $interests = json_last_error() === JSON_ERROR_NONE ? $decoded : preg_split('/,|\r\n|\r|\n/', $interests);
+        }
+
+        return collect(is_array($interests) ? $interests : [])
+            ->flatten()
+            ->map(fn ($interest): string => trim((string) $interest, " \t\n\r\0\x0B."))
+            ->filter()
+            ->values()
+            ->all();
+    };
+    $profilePerson = function ($profile, ?string $fallbackRole = null) use ($editorialCopy, $profileInterests): array {
+        $interests = $profileInterests($profile);
 
         return [
             'name' => $profile->name,
-            'role' => $editorialCopy($profile->position ?: $profile->profile_type_label ?: $fallbackRole),
-            'description' => $description ?: ($withDefaultDescription ? 'Bagian dari tim Edulaw Project.' : null),
-            'image' => $profile->photo_url,
+            'position' => $editorialCopy($profile->position ?: $profile->profile_type_label ?: $fallbackRole),
+            'interests' => $interests,
+            'interest_text' => collect($interests)->join(', '),
+            'photo' => $profile->photo_url ?: asset('images/logo/icon-bg.png'),
             'profile' => $profile,
         ];
     };
@@ -237,12 +251,11 @@
                             Penggerak Edulaw Project
                         </h3>
 
-                        <div class="mt-4 grid grid-cols-2 gap-4 lg:grid-cols-4">
+                        <div class="mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                             @foreach ($leaders as $leader)
                                 @php
                                     $profile = $profileFor($leader);
-                                    $image = $personImage($leader, $profile);
-                                    $leaderCardClass = 'group block rounded-2xl text-center transition hover:-translate-y-0.5';
+                                    $leaderCardClass = 'group block min-w-0 rounded-2xl p-1.5 text-center transition hover:-translate-y-0.5 hover:bg-slate-50';
                                 @endphp
 
                                 @if ($profile)
@@ -250,18 +263,19 @@
                                 @else
                                     <div class="{{ $leaderCardClass }}">
                                 @endif
-                                    <div class="mx-auto h-24 w-full overflow-hidden rounded-2xl bg-slate-100">
-                                        <img
-                                            src="{{ $image }}"
-                                            alt="{{ $leader['name'] }}"
-                                            class="h-full w-full object-cover object-top transition group-hover:scale-[1.03]"
-                                        >
-                                    </div>
-                                    <h4 class="mt-2 text-xs font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                                    <img
+                                        src="{{ $leader['photo'] }}"
+                                        alt="{{ $leader['name'] }}"
+                                        class="aspect-[4/3] w-full rounded-xl bg-brand-mist object-cover object-top shadow-sm"
+                                    >
+                                    <h4 class="mt-2 line-clamp-2 text-xs font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
                                         {{ $leader['name'] }}
                                     </h4>
-                                    <p class="text-[11px] font-bold text-slate-500">
-                                        {{ $leader['role'] }}
+                                    <p class="mt-1 line-clamp-1 text-[10px] font-bold leading-4 text-slate-600">
+                                        {{ $leader['position'] }}
+                                    </p>
+                                    <p class="mt-1 line-clamp-2 text-[10px] font-medium leading-4 text-slate-500">
+                                        Minat: {{ $leader['interest_text'] ?: '-' }}
                                     </p>
                                 @if ($profile)
                                     </a>
@@ -303,8 +317,7 @@
                     @foreach ($managers as $manager)
                         @php
                             $profile = $profileFor($manager);
-                            $image = $personImage($manager, $profile);
-                            $managerCardClass = 'group flex gap-4 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
+                            $managerCardClass = 'group block h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
                         @endphp
 
                         @if ($profile)
@@ -312,22 +325,24 @@
                         @else
                             <article class="{{ $managerCardClass }}">
                         @endif
-                            <img
-                                src="{{ $image }}"
-                                alt="{{ $manager['name'] }}"
-                                class="h-24 w-20 shrink-0 rounded-xl object-cover object-top"
-                            >
-
-                            <div>
-                                <h4 class="text-sm font-black text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                    {{ $manager['name'] }}
-                                </h4>
-                                <p class="mt-1 text-xs font-bold text-slate-600">
-                                    {{ $manager['role'] }}
-                                </p>
-                                <p class="mt-2 text-xs leading-5 text-slate-600">
-                                    {{ $manager['description'] }}
-                                </p>
+                            <div class="grid h-full grid-cols-[5rem_1fr] gap-3">
+                                <img
+                                    src="{{ $manager['photo'] }}"
+                                    alt="{{ $manager['name'] }}"
+                                    class="h-20 w-20 rounded-xl bg-brand-mist object-cover object-top"
+                                >
+                                <div class="min-w-0">
+                                    <h4 class="line-clamp-2 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                                        {{ $manager['name'] }}
+                                    </h4>
+                                    <p class="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-600">
+                                        {{ $manager['position'] }}
+                                    </p>
+                                    <p class="mt-2 line-clamp-4 text-xs leading-5 text-slate-500">
+                                        <span class="font-bold text-slate-600">Minat:</span>
+                                        {{ $manager['interest_text'] ?: '-' }}
+                                    </p>
+                                </div>
                             </div>
                         @if ($profile)
                             </a>
@@ -350,8 +365,7 @@
                     @foreach ($teamMembers as $member)
                         @php
                             $profile = $profileFor($member);
-                            $image = $personImage($member, $profile);
-                            $memberCardClass = 'group block rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
+                            $memberCardClass = 'group flex h-full min-h-[190px] flex-col rounded-2xl border border-slate-200 bg-white p-4 text-center shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
                         @endphp
 
                         @if ($profile)
@@ -360,21 +374,21 @@
                             <article class="{{ $memberCardClass }}">
                         @endif
                             <img
-                                src="{{ $image }}"
+                                src="{{ $member['photo'] }}"
                                 alt="{{ $member['name'] }}"
-                                class="mx-auto h-20 w-20 rounded-xl object-cover object-top transition group-hover:scale-[1.03]"
+                                class="mx-auto h-16 w-16 rounded-xl bg-brand-mist object-cover object-top"
                             >
-
-                            <h4 class="mt-3 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                            <h4 class="mt-3 line-clamp-2 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
                                 {{ $member['name'] }}
                             </h4>
 
-                            <p class="mt-1 text-xs font-bold text-slate-600">
-                                {{ $member['role'] }}
+                            <p class="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-600">
+                                {{ $member['position'] }}
                             </p>
 
-                            <p class="mt-2 text-xs leading-5 text-slate-600">
-                                {{ $member['description'] }}
+                            <p class="mt-3 line-clamp-3 text-xs leading-5 text-slate-500">
+                                <span class="font-bold text-slate-600">Minat:</span>
+                                {{ $member['interest_text'] ?: '-' }}
                             </p>
                         @if ($profile)
                             </a>

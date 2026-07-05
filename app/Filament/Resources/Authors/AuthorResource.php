@@ -102,6 +102,13 @@ class AuthorResource extends Resource
                                                     ->default('team')
                                                     ->required()
                                                     ->placeholder('Pilih peran profil'),
+
+                                                TextInput::make('sort_order')
+                                                    ->label('Urutan Tampil')
+                                                    ->numeric()
+                                                    ->minValue(0)
+                                                    ->placeholder('Contoh: 10')
+                                                    ->helperText('Angka kecil tampil lebih dulu di laman Tentang. Kosongkan untuk urutan nama.'),
                                             ]),
 
                                         Group::make()
@@ -251,6 +258,12 @@ class AuthorResource extends Resource
                     ->searchable(['position', 'institution'])
                     ->limit(48)
                     ->wrap(),
+
+                TextColumn::make('sort_order')
+                    ->label('Urutan')
+                    ->sortable()
+                    ->placeholder('-')
+                    ->toggleable(),
 
                 TextColumn::make('interests')
                     ->label('Minat')

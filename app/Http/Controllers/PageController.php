@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Support\EdulawSite;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
@@ -14,6 +15,12 @@ class PageController extends Controller
         $profiles = Author::query()
             ->with('user')
             ->where('is_active', true)
+            ->when(
+                Schema::hasColumn('authors', 'sort_order'),
+                fn ($query) => $query
+                    ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
+                    ->orderBy('sort_order')
+            )
             ->orderBy('name')
             ->get();
 

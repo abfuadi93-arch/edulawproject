@@ -39,6 +39,7 @@ class Author extends Model
         'institution',
         'position',
         'profile_type',
+        'sort_order',
         'social_links',
         'is_active',
     ];
@@ -46,6 +47,7 @@ class Author extends Model
     protected $casts = [
         'social_links' => 'array',
         'is_active' => 'boolean',
+        'sort_order' => 'integer',
     ];
 
     public static function uniqueSlugFor(string $name, ?int $ignoreId = null): string
