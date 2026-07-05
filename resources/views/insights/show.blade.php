@@ -2,13 +2,17 @@
 
 @section('title', ($insight->seo_title ?: $insight->title) . ' - Edulaw Project')
 @section('meta_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160))
-@section('og_title', $insight->seo_title ?: $insight->title . ' - Edulaw Project')
-@section('og_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160))
+@section('canonical_url', route('insights.show', $insight->slug))
+@section('og_title', ($insight->seo_title ?: $insight->title) . ' - Edulaw Project')
+@section('og_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?: 'Editorial Edulaw Project.')), 160))
 @section('og_type', 'article')
+@section('og_url', route('insights.show', $insight->slug))
 @section('og_image', edulaw_file_url($insight->og_image ?: $insight->cover_image, 'images/hero/hero-edulaw.jpg'))
-@section('twitter_title', $insight->seo_title ?: $insight->title . ' - Edulaw Project')
-@section('twitter_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160))
+@section('og_image_alt', $insight->title)
+@section('twitter_title', ($insight->seo_title ?: $insight->title) . ' - Edulaw Project')
+@section('twitter_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?: 'Editorial Edulaw Project.')), 160))
 @section('twitter_image', edulaw_file_url($insight->og_image ?: $insight->cover_image, 'images/hero/hero-edulaw.jpg'))
+@section('twitter_url', route('insights.show', $insight->slug))
 
 @push('styles')
     <style>

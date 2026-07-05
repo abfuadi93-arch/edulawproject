@@ -8,29 +8,62 @@
         $siteSettings = $siteSettings ?? [];
         $defaultTitle = $siteSettings['site.meta_title'] ?? 'Edulaw Project - Platform Literasi Hukum Digital';
         $defaultDescription = $siteSettings['site.meta_description'] ?? 'Edulaw Project adalah platform literasi hukum digital yang menghadirkan edukasi hukum, riset, program, multimedia, opportunities, dan ruang kolaborasi.';
+        $defaultImage = asset('images/hero/hero-edulaw.jpg');
+        $section = fn (string $name, ?string $fallback = null): string => trim($__env->yieldContent($name, $fallback ?? ''));
+        $absoluteUrl = function (?string $value): string {
+            $value = trim((string) $value);
+
+            if ($value === '') {
+                return url('/');
+            }
+
+            return \Illuminate\Support\Str::startsWith($value, ['http://', 'https://'])
+                ? $value
+                : url($value);
+        };
+
+        $pageTitle = strip_tags($section('title', $defaultTitle));
+        $metaDescription = \Illuminate\Support\Str::limit(strip_tags($section('meta_description', $defaultDescription)), 220);
+        $canonicalUrl = $absoluteUrl($section('canonical_url', url()->current()));
+        $ogTitle = strip_tags($section('og_title', $pageTitle));
+        $ogDescription = \Illuminate\Support\Str::limit(strip_tags($section('og_description', $metaDescription)), 220);
+        $ogType = strip_tags($section('og_type', 'website'));
+        $ogUrl = $absoluteUrl($section('og_url', $canonicalUrl));
+        $ogImage = $absoluteUrl($section('og_image', $defaultImage));
+        $ogImageAlt = \Illuminate\Support\Str::limit(strip_tags($section('og_image_alt', $ogTitle)), 120);
+        $twitterTitle = strip_tags($section('twitter_title', $ogTitle));
+        $twitterDescription = \Illuminate\Support\Str::limit(strip_tags($section('twitter_description', $ogDescription)), 220);
+        $twitterImage = $absoluteUrl($section('twitter_image', $ogImage));
+        $twitterUrl = $absoluteUrl($section('twitter_url', $ogUrl));
     @endphp
 
-    <title>@yield('title', $defaultTitle)</title>
+    <title>{{ $pageTitle }}</title>
 
     <meta
         name="description"
-        content="@yield('meta_description', $defaultDescription)"
+        content="{{ $metaDescription }}"
     >
 
     <meta name="theme-color" content="#1f3c69">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
 
     {{-- Open Graph --}}
-    <meta property="og:title" content="@yield('og_title', $defaultTitle)">
-    <meta property="og:description" content="@yield('og_description', $defaultDescription)">
-    <meta property="og:type" content="@yield('og_type', 'website')">
-    <meta property="og:url" content="{{ url()->current() }}">
-    <meta property="og:image" content="@yield('og_image', asset('images/hero/hero-edulaw.jpg'))">
+    <meta property="og:site_name" content="Edulaw Project">
+    <meta property="og:locale" content="id_ID">
+    <meta property="og:title" content="{{ $ogTitle }}">
+    <meta property="og:description" content="{{ $ogDescription }}">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:url" content="{{ $ogUrl }}">
+    <meta property="og:image" content="{{ $ogImage }}">
+    <meta property="og:image:secure_url" content="{{ $ogImage }}">
+    <meta property="og:image:alt" content="{{ $ogImageAlt }}">
 
     {{-- Twitter Card --}}
     <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="@yield('twitter_title', $defaultTitle)">
-    <meta name="twitter:description" content="@yield('twitter_description', $defaultDescription)">
-    <meta name="twitter:image" content="@yield('twitter_image', asset('images/hero/hero-edulaw.jpg'))">
+    <meta name="twitter:title" content="{{ $twitterTitle }}">
+    <meta name="twitter:description" content="{{ $twitterDescription }}">
+    <meta name="twitter:image" content="{{ $twitterImage }}">
+    <meta name="twitter:url" content="{{ $twitterUrl }}">
 
     {{-- Favicon placeholder --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}">

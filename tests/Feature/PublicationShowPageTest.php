@@ -51,6 +51,12 @@ test('publication detail hero contains eyebrow and title without body metadata',
         ->not->toContain('Publikasi Terkait')
         ->not->toContain('Belum ada publikasi terkait')
         ->not->toContain('Gunakan untuk Diskusi');
+
+    expect($html)
+        ->toContain('property="og:title" content="Judul Riset Fullwidth - Edulaw Project"')
+        ->toContain('property="og:type" content="article"')
+        ->toContain('property="og:url" content="'.route('publications.show', $publication->slug).'"')
+        ->toContain('name="twitter:card" content="summary_large_image"');
 });
 
 test('publication detail shows download action only in pdf preview card', function () {

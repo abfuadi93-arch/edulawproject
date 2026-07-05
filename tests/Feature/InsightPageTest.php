@@ -26,7 +26,7 @@ test('published insight index and detail pages render', function () {
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Edulaw Insight');
 
-    $this->get(route('insights.show', $insight->slug))
+    $html = $this->get(route('insights.show', $insight->slug))
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Artikel Editorial')
@@ -39,7 +39,14 @@ test('published insight index and detail pages render', function () {
         ->assertSee('Email')
         ->assertSee('Instagram')
         ->assertSee('Salin Link')
-        ->assertSee('edulaw-readable insight-article-body', false);
+        ->assertSee('edulaw-readable insight-article-body', false)
+        ->getContent();
+
+    expect($html)
+        ->toContain('property="og:title" content="Membaca Hukum Secara Publik - Edulaw Project"')
+        ->toContain('property="og:type" content="article"')
+        ->toContain('property="og:url" content="'.route('insights.show', $insight->slug).'"')
+        ->toContain('name="twitter:card" content="summary_large_image"');
 });
 
 test('legacy insight slug redirects permanently to canonical slug', function () {

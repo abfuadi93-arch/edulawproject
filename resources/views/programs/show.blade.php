@@ -1,6 +1,18 @@
 @extends('layouts.app')
 
-@section('title', $program->display_title . ' - Program Edulaw')
+@section('title', ($program->seo_title ?: $program->display_title) . ' - Program Edulaw')
+@section('meta_description', $program->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($program->short_description ?: ($program->description ?: 'Program Edulaw Project.')), 160))
+@section('canonical_url', route('programs.show', $program->slug))
+@section('og_title', ($program->seo_title ?: $program->display_title) . ' - Program Edulaw')
+@section('og_description', $program->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($program->short_description ?: ($program->description ?: 'Program Edulaw Project.')), 160))
+@section('og_type', 'article')
+@section('og_url', route('programs.show', $program->slug))
+@section('og_image', edulaw_file_url($program->og_image ?: ($program->hero_image ?: $program->image), 'images/hero/hero-edulaw.jpg'))
+@section('og_image_alt', $program->display_title)
+@section('twitter_title', ($program->seo_title ?: $program->display_title) . ' - Program Edulaw')
+@section('twitter_description', $program->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($program->short_description ?: ($program->description ?: 'Program Edulaw Project.')), 160))
+@section('twitter_image', edulaw_file_url($program->og_image ?: ($program->hero_image ?: $program->image), 'images/hero/hero-edulaw.jpg'))
+@section('twitter_url', route('programs.show', $program->slug))
 
 @section('content')
 @php
