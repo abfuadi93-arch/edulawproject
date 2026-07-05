@@ -24,12 +24,24 @@
 
         .insight-article-body > p:first-of-type::first-letter {
             float: left;
-            margin: 0.08em 0.12em 0 0;
+            margin: 0.08em 0.14em 0 0;
             color: #1f3c69;
-            font-family: 'Fira Sans', ui-sans-serif, system-ui, sans-serif;
-            font-size: 4.7rem;
+            font-family: var(--font-display);
+            font-size: 3.65rem;
             font-weight: 900;
-            line-height: 0.78;
+            letter-spacing: 0;
+            line-height: 0.88;
+        }
+
+        @supports (-webkit-initial-letter: 2) or (initial-letter: 2) {
+            .insight-article-body > p:first-of-type::first-letter {
+                -webkit-initial-letter: 2;
+                initial-letter: 2;
+                float: none;
+                margin: 0 0.16em 0 0;
+                font-size: inherit;
+                line-height: inherit;
+            }
         }
 
         .insight-article-body img {
@@ -39,7 +51,7 @@
 
         @media (max-width: 640px) {
             .insight-article-body > p:first-of-type::first-letter {
-                font-size: 4rem;
+                font-size: 3.2rem;
             }
         }
     </style>
