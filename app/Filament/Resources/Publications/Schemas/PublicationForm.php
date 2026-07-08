@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Publications\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -21,8 +22,6 @@ class PublicationForm
                     ->required(),
                 TextInput::make('slug')
                     ->required(),
-                Textarea::make('excerpt')
-                    ->columnSpanFull(),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 FileUpload::make('cover_image')
@@ -47,7 +46,12 @@ class PublicationForm
                 DatePicker::make('published_at'),
                 TextInput::make('page_count')
                     ->numeric(),
-                TextInput::make('status')
+                Select::make('status')
+                    ->options([
+                        'draft' => 'Draft',
+                        'reviewed' => 'Reviewed',
+                        'published' => 'Published',
+                    ])
                     ->required()
                     ->default('draft'),
                 Toggle::make('featured')

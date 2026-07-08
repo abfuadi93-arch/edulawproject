@@ -116,11 +116,7 @@ class Program extends Model
         $query->whereIn('status', ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived']);
 
         if (static::hasTableColumn('publication_status')) {
-            $query->where(function (Builder $publicationQuery): void {
-                $publicationQuery
-                    ->where('publication_status', 'published')
-                    ->orWhereNull('publication_status');
-            });
+            $query->where('publication_status', 'published');
         }
 
         return $query;
@@ -272,7 +268,7 @@ class Program extends Model
 
     public function getIsPublishedAttribute(): bool
     {
-        $publicationStatus = $this->attributes['publication_status'] ?? 'published';
+        $publicationStatus = $this->attributes['publication_status'] ?? null;
 
         return $publicationStatus === 'published'
             && in_array($this->attributes['status'] ?? null, ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived'], true);

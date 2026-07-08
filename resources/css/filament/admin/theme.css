@@ -259,6 +259,11 @@
     .fi-sc-form > .edulaw-admin-edit-shell.fi-sc.fi-grid > .fi-grid-col {
         grid-column: auto !important;
     }
+
+    .edulaw-admin-side-column.edulaw-admin-sticky-column {
+        position: sticky;
+        top: 5rem;
+    }
 }
 
 .fi-sc-form .edulaw-admin-two-column-section .fi-section-content.fi-sc.fi-grid {

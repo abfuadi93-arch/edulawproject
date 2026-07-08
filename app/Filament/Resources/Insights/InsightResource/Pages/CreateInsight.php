@@ -15,6 +15,7 @@ class CreateInsight extends CreateRecordAndReturn
 
         $data['created_by'] = $user?->id;
         $data['updated_by'] = $user?->id;
+        $data = InsightResource::prepareFormDataForPersistence($data);
 
         if (! InsightResource::canManageEditorialWorkflow()) {
             $data['status'] = 'draft';

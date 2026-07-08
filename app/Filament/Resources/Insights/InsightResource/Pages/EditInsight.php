@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Insights\InsightResource\Pages;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Filament\Resources\Pages\EditRecordAndReturn;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Validation\ValidationException;
@@ -25,8 +26,21 @@ class EditInsight extends EditRecordAndReturn
                 ->openUrlInNewTab()
                 ->visible(fn (): bool => filled($this->record?->slug)),
 
-            DeleteAction::make(),
+            ActionGroup::make([
+                DeleteAction::make()
+                    ->label('Hapus Editorial'),
+            ])
+                ->label('Lainnya')
+                ->icon('heroicon-o-ellipsis-vertical')
+                ->color('gray'),
         ];
+    }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['status'] = InsightResource::normalizeStatusForDisplay($data['status'] ?? null);
+
+        return $data;
     }
 
     protected function mutateFormDataBeforeSave(array $data): array
@@ -34,6 +48,7 @@ class EditInsight extends EditRecordAndReturn
         $user = auth()->user();
 
         $data['updated_by'] = $user?->id;
+        $data = InsightResource::prepareFormDataForPersistence($data);
 
         if (! $user) {
             throw new AuthorizationException;
@@ -46,13 +61,13 @@ class EditInsight extends EditRecordAndReturn
 
             $nextStatus = $data['status'] ?? $this->record->status;
 
-            if (! in_array($nextStatus, ['draft', 'submitted'], true)) {
+            if (! in_array($nextStatus, ['draft', 'reviewed'], true)) {
                 throw ValidationException::withMessages([
-                    'status' => 'Writer hanya dapat menyimpan draft atau submit editorial.',
+                    'status' => 'Writer hanya dapat menyimpan Draft atau Reviewed.',
                 ]);
             }
 
-            if ($nextStatus === 'submitted' && ! $user->can('submit insights')) {
+            if ($nextStatus === 'reviewed' && ! $user->can('submit insights')) {
                 throw new AuthorizationException;
             }
 

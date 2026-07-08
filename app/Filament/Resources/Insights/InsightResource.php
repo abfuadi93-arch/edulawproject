@@ -11,6 +11,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -28,6 +29,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class InsightResource extends Resource
@@ -59,105 +61,100 @@ class InsightResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('1. Informasi Artikel')
+                                Section::make('Konten Artikel')
                                     ->icon('heroicon-o-document-text')
-                                    ->description('Data utama yang membentuk identitas artikel di halaman Edulaw Editorial.')
+                                    ->description('Fokus utama penulisan editorial: judul, kategori, isi, dan gambar utama.')
                                     ->schema([
+                                        TextInput::make('title')
+                                            ->label('Judul Editorial')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                $currentSlug = (string) ($get('slug') ?? '');
+
+                                                if (filled($currentSlug) && $get('status') === 'published') {
+                                                    return;
+                                                }
+
+                                                $oldSlug = Str::slug((string) $old);
+
+                                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                    return;
+                                                }
+
+                                                $set('slug', Str::slug((string) $state));
+                                            })
+                                            ->helperText('Gunakan judul yang jelas dan kuat.')
+                                            ->columnSpanFull(),
+
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                TextInput::make('title')
-                                                    ->label('Judul Editorial')
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
-                                                    ->live(onBlur: true)
-                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
-                                                        $currentSlug = (string) ($get('slug') ?? '');
-
-                                                        if (filled($currentSlug) && $get('status') === 'published') {
-                                                            return;
-                                                        }
-
-                                                        $oldSlug = Str::slug((string) $old);
-
-                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
-                                                            return;
-                                                        }
-
-                                                        $set('slug', Str::slug((string) $state));
-                                                    })
-                                                    ->helperText('Judul singkat dan kuat untuk halaman Editorial.')
-                                                    ->columnSpanFull(),
-
-                                                TextInput::make('slug')
-                                                    ->label('Slug')
-                                                    ->required()
-                                                    ->unique(ignoreRecord: true)
-                                                    ->maxLength(255)
-                                                    ->placeholder('pembakaran-buku-tidak-selalu-menggunakan-api')
-                                                    ->helperText('Otomatis dibuat dari judul, dapat disesuaikan.')
-                                                    ->columnSpanFull(),
-
                                                 Select::make('insight_category_id')
                                                     ->label('Kategori')
                                                     ->relationship('category', 'name')
                                                     ->searchable()
                                                     ->preload()
-                                                    ->required()
-                                                    ->placeholder('Pilih kategori Editorial')
-                                                    ->helperText('Pilih jenis konten, misalnya Editorial, Opini, Analisis, atau Review Putusan.'),
+                                                    ->required(),
 
                                                 Select::make('tags')
                                                     ->label('Topik')
                                                     ->relationship('tags', 'name')
                                                     ->multiple()
                                                     ->searchable()
-                                                    ->preload()
-                                                    ->placeholder('Select an option')
-                                                    ->helperText('Pilih tema utama dari artikel.'),
-                                            ]),
-
-                                        Textarea::make('excerpt')
-                                            ->label('Ringkasan')
-                                            ->rows(4)
-                                            ->maxLength(300)
-                                            ->live()
-                                            ->placeholder('Tulis ringkasan artikel secara singkat dan jelas...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                                    ->preload(),
+                                            ])
                                             ->columnSpanFull(),
-                                    ])
-                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                                Section::make('2. Isi Artikel')
-                                    ->icon('heroicon-o-pencil-square')
-                                    ->description('Tulis artikel utama. Gunakan heading, kutipan, daftar, tautan, dan gambar seperlunya.')
-                                    ->schema([
                                         RichEditor::make('content')
-                                            ->label('Body')
+                                            ->label('Isi Artikel')
                                             ->required()
-                                            ->helperText('Gunakan paragraf pendek, subjudul yang rapi, dan sisipkan gambar hanya jika membantu pembaca.')
+                                            ->columnSpanFull(),
+
+                                        FileUpload::make('cover_image')
+                                            ->label('Gambar Utama')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('insights')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->imagePreviewHeight('160')
+                                            ->downloadable()
+                                            ->openable()
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(4096)
+                                            ->helperText('Rekomendasi rasio 16:9. Maks. 4 MB.')
                                             ->columnSpanFull(),
                                     ]),
 
-                                Section::make('SEO & Pratinjau')
+                                Section::make('SEO & Pengaturan Lanjutan')
                                     ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Metadata untuk hasil pencarian dan preview saat artikel dibagikan.')
+                                    ->description('Opsional. Jika kosong, sistem memakai judul, isi artikel, dan gambar utama.')
                                     ->schema([
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->placeholder('otomatis-dari-judul')
+                                            ->helperText('Alamat artikel. Otomatis dibuat dari judul, boleh disesuaikan sebelum terbit.')
+                                            ->columnSpanFull(),
+
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
                                             ->maxLength(60)
-                                            ->placeholder('Jika kosong, judul artikel akan digunakan.')
-                                            ->helperText('Ideal 50-60 karakter.'),
+                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul'),
 
                                         Textarea::make('seo_description')
                                             ->label('Meta Description')
                                             ->rows(3)
                                             ->maxLength(180)
-                                            ->placeholder('Deskripsi singkat untuk mesin pencari...')
-                                            ->helperText('Maksimal 180 karakter termasuk spasi.'),
+                                            ->placeholder('Otomatis dari awal isi artikel')
+                                            ->helperText('Maks. 180 karakter.'),
 
                                         FileUpload::make('og_image')
                                             ->label('Gambar OG')
@@ -167,21 +164,25 @@ class InsightResource extends Resource
                                             ->visibility('public')
                                             ->imageEditor()
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096),
+                                            ->maxSize(4096)
+                                            ->downloadable()
+                                            ->openable()
+                                            ->helperText('Kosongkan untuk memakai gambar utama.'),
                                     ])
-                                    ->collapsible(),
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
                             ])
                             ->columnSpan(['xl' => 8])
                             ->extraAttributes(['class' => 'edulaw-admin-main-column']),
 
                         Group::make()
                             ->schema([
-                                Section::make('Status Publikasi')
+                                Section::make('Publikasi')
                                     ->icon('heroicon-o-paper-airplane')
-                                    ->description('Status dan waktu tayang artikel.')
                                     ->schema([
                                         Select::make('status')
-                                            ->label('Status Editorial')
+                                            ->label('Status')
                                             ->options(fn (): array => static::statusOptionsForCurrentUser())
                                             ->default('draft')
                                             ->disabled(fn (string $operation): bool => $operation === 'create' && ! static::canManageEditorialWorkflow())
@@ -194,24 +195,9 @@ class InsightResource extends Resource
 
                                         Toggle::make('featured')
                                             ->label('Artikel Unggulan')
-                                            ->helperText('Aktifkan untuk menampilkan artikel ini di beranda.')
                                             ->default(false)
                                             ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
 
-                                        TextInput::make('reading_time')
-                                            ->label('Reading Time')
-                                            ->numeric()
-                                            ->suffix('menit')
-                                            ->default(3)
-                                            ->placeholder('Contoh: 8')
-                                            ->helperText('Estimasi waktu baca artikel dalam menit.'),
-                                    ])
-                                    ->columns(1),
-
-                                Section::make('Penulis')
-                                    ->icon('heroicon-o-user-circle')
-                                    ->description('Identitas penulis utama dan kontributor artikel.')
-                                    ->schema([
                                         Select::make('authors')
                                             ->label('Profil Terkait')
                                             ->relationship('authors', 'name')
@@ -219,35 +205,100 @@ class InsightResource extends Resource
                                             ->searchable()
                                             ->preload()
                                             ->required()
-                                            ->placeholder('Pilih profil')
-                                            ->helperText('Pilih satu atau lebih profil yang berperan sebagai penulis atau kontributor artikel.'),
-                                    ])
-                                    ->columns(1),
+                                            ->placeholder('Pilih profil'),
 
-                                Section::make('Media Artikel')
-                                    ->icon('heroicon-o-photo')
-                                    ->description('Gambar utama untuk listing dan detail artikel.')
-                                    ->schema([
-                                        FileUpload::make('cover_image')
-                                            ->label('Gambar Utama')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('insights')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->helperText('Rekomendasi rasio 16:9, ukuran maksimal 4MB.')
-                                            ->columnSpanFull(),
+                                        Placeholder::make('reading_time_preview')
+                                            ->label('Estimasi Baca')
+                                            ->content(fn ($get): string => static::estimateReadingTime($get('content')).' menit baca')
+                                            ->helperText('Dihitung otomatis saat artikel disimpan.'),
+
+                                        Placeholder::make('public_preview')
+                                            ->label('Pratinjau')
+                                            ->content(function ($get): HtmlString {
+                                                $slug = trim((string) ($get('slug') ?? ''));
+
+                                                if ($slug === '') {
+                                                    return new HtmlString('<span class="text-sm text-gray-500">Tersedia setelah judul dan slug terisi.</span>');
+                                                }
+
+                                                $url = route('insights.show', $slug);
+
+                                                return new HtmlString(
+                                                    '<a href="'.e($url).'" target="_blank" rel="noopener noreferrer" class="fi-btn fi-color-gray fi-size-sm">Buka pratinjau</a>'
+                                                );
+                                            }),
                                     ])
                                     ->columns(1),
                             ])
                             ->columnSpan(['xl' => 4])
-                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
                     ])
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
+    }
+
+    public static function prepareFormDataForPersistence(array $data): array
+    {
+        if (blank($data['slug'] ?? null) && filled($data['title'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['title']);
+        }
+
+        if (filled($data['slug'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['slug']);
+        }
+
+        $data['reading_time'] = static::estimateReadingTime($data['content'] ?? null);
+        $data['excerpt'] = static::excerptFromContent($data['content'] ?? null);
+
+        if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
+            $data['seo_title'] = (string) $data['title'];
+        }
+
+        if (blank($data['seo_description'] ?? null) && filled($data['excerpt'] ?? null)) {
+            $data['seo_description'] = static::excerptFromContent((string) $data['excerpt'], 180);
+        }
+
+        if (blank($data['og_image'] ?? null) && filled($data['cover_image'] ?? null)) {
+            $data['og_image'] = $data['cover_image'];
+        }
+
+        return $data;
+    }
+
+    public static function excerptFromContent(?string $html, int $limit = 220): ?string
+    {
+        $text = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8')) ?? '');
+
+        if ($text === '') {
+            return null;
+        }
+
+        if (mb_strlen($text) <= $limit) {
+            return $text;
+        }
+
+        $excerpt = rtrim(mb_substr($text, 0, max(0, $limit - 3)));
+        $lastSpace = mb_strrpos($excerpt, ' ');
+
+        if ($lastSpace !== false && $lastSpace >= 120) {
+            $excerpt = rtrim(mb_substr($excerpt, 0, $lastSpace));
+        }
+
+        return $excerpt.'...';
+    }
+
+    public static function estimateReadingTime(?string $html): int
+    {
+        $text = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8')) ?? '');
+
+        if ($text === '') {
+            return 1;
+        }
+
+        preg_match_all('/[\p{L}\p{N}]+(?:[\'’.-][\p{L}\p{N}]+)*/u', $text, $matches);
+
+        return max(1, (int) ceil(count($matches[0] ?? []) / 200));
     }
 
     public static function getEloquentQuery(): Builder
@@ -289,17 +340,44 @@ class InsightResource extends Resource
         if (! static::canManageEditorialWorkflow()) {
             return [
                 'draft' => 'Draft',
-                'submitted' => 'Submitted',
+                'reviewed' => 'Reviewed',
             ];
         }
 
+        return static::statusOptions();
+    }
+
+    public static function statusOptions(): array
+    {
         return [
             'draft' => 'Draft',
-            'submitted' => 'Submitted',
             'reviewed' => 'Reviewed',
             'published' => 'Published',
-            'archived' => 'Archived',
         ];
+    }
+
+    public static function normalizeStatusForDisplay(?string $status): string
+    {
+        return match ($status) {
+            'submitted' => 'reviewed',
+            'archived' => 'draft',
+            'reviewed', 'published' => $status,
+            default => 'draft',
+        };
+    }
+
+    public static function statusLabel(?string $status): string
+    {
+        return static::statusOptions()[static::normalizeStatusForDisplay($status)] ?? 'Draft';
+    }
+
+    public static function statusColor(?string $status): string
+    {
+        return match (static::normalizeStatusForDisplay($status)) {
+            'published' => 'success',
+            'reviewed' => 'warning',
+            default => 'primary',
+        };
     }
 
     public static function table(Table $table): Table
@@ -331,20 +409,8 @@ class InsightResource extends Resource
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'published' => 'success',
-                        'submitted', 'reviewed' => 'warning',
-                        'archived' => 'gray',
-                        default => 'primary',
-                    })
-                    ->formatStateUsing(fn (string $state): string => match ($state) {
-                        'draft' => 'Draft',
-                        'submitted' => 'Dalam Review',
-                        'reviewed' => 'Siap Terbit',
-                        'published' => 'Terbit',
-                        'archived' => 'Arsip',
-                        default => ucfirst($state),
-                    }),
+                    ->color(fn (?string $state): string => static::statusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
 
                 IconColumn::make('featured')
                     ->label('Unggulan')
@@ -382,13 +448,17 @@ class InsightResource extends Resource
 
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'draft' => 'Draft',
-                        'submitted' => 'Submitted',
-                        'reviewed' => 'Reviewed',
-                        'published' => 'Published',
-                        'archived' => 'Archived',
-                    ]),
+                    ->options(static::statusOptions())
+                    ->query(function (Builder $query, array $data): void {
+                        $status = $data['value'] ?? null;
+
+                        match ($status) {
+                            'draft' => $query->whereIn('status', ['draft', 'archived']),
+                            'reviewed' => $query->whereIn('status', ['reviewed', 'submitted']),
+                            'published' => $query->where('status', 'published'),
+                            default => null,
+                        };
+                    }),
 
                 SelectFilter::make('featured')
                     ->label('Unggulan')

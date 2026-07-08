@@ -12,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
@@ -30,6 +31,7 @@ use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class ProgramResource extends Resource
@@ -61,86 +63,51 @@ class ProgramResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('1. Identitas Program')
+                                Section::make('Konten Program')
                                     ->icon('heroicon-o-academic-cap')
-                                    ->description('Isi klasifikasi, judul, dan ringkasan utama program Edulaw.')
+                                    ->description('Fokus utama halaman program: judul, kategori, narasi, poin belajar, poster, dan narasumber.')
                                     ->schema([
+                                        TextInput::make('name')
+                                            ->label('Judul Kegiatan')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->placeholder('Diskusi Literasi Konstitusi Seri #13')
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                $currentSlug = (string) ($get('slug') ?? '');
+                                                $oldSlug = Str::slug((string) $old);
+
+                                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                    return;
+                                                }
+
+                                                $set('slug', Str::slug((string) $state));
+                                            })
+                                            ->columnSpanFull(),
+
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                TextInput::make('name')
-                                                    ->label('Judul Kegiatan')
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->placeholder('Inspiring Lecture Hukum dan Kebijakan Publik')
-                                                    ->live(onBlur: true)
-                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
-                                                        $currentSlug = (string) ($get('slug') ?? '');
-                                                        $oldSlug = Str::slug((string) $old);
-
-                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
-                                                            return;
-                                                        }
-
-                                                        $set('slug', Str::slug((string) $state));
-                                                    })
-                                                    ->columnSpanFull(),
-
-                                                TextInput::make('slug')
-                                                    ->label('Slug')
-                                                    ->required()
-                                                    ->unique(ignoreRecord: true)
-                                                    ->maxLength(255)
-                                                    ->helperText('Otomatis dari judul, tetapi boleh diedit manual.')
-                                                    ->columnSpanFull(),
-
                                                 Select::make('program_category_id')
                                                     ->label('Kategori Program')
                                                     ->relationship('programCategory', 'name')
                                                     ->searchable()
                                                     ->preload()
-                                                    ->required()
-                                                    ->helperText('Lecturer untuk kuliah/pengayaan besar, Discussion untuk forum dialogis, Training untuk kelas atau pelatihan.'),
+                                                    ->required(),
 
                                                 Select::make('type')
                                                     ->label('Jenis Program')
                                                     ->options(static::typeOptions())
                                                     ->searchable()
-                                                    ->required()
-                                                    ->helperText('Pilih jenis paling dekat dengan karakter kegiatan.'),
-
-                                                TextInput::make('short_title')
-                                                    ->label('Judul Pendek')
-                                                    ->maxLength(255)
-                                                    ->helperText('Digunakan untuk card publik jika judul utama terlalu panjang.'),
-
-                                                TextInput::make('subtitle')
-                                                    ->label('Tema / Subjudul')
-                                                    ->maxLength(255)
-                                                    ->helperText('Digunakan sebagai subtitle program.'),
+                                                    ->required(),
                                             ])
                                             ->columnSpanFull(),
 
-                                        Textarea::make('short_description')
-                                            ->label('Deskripsi Singkat')
-                                            ->required()
-                                            ->rows(4)
-                                            ->maxLength(500)
-                                            ->live()
-                                            ->placeholder('Tulis ringkasan program secara singkat dan jelas...')
-                                            ->helperText('Ringkasan untuk card dan hero halaman publik.')
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
-
-                                Section::make('2. Konten Halaman')
-                                    ->icon('heroicon-o-pencil-square')
-                                    ->description('Lengkapi narasi, poin belajar, dan catatan yang tampil pada detail program.')
-                                    ->schema([
                                         RichEditor::make('description')
                                             ->label('Deskripsi Detail')
+                                            ->required()
                                             ->columnSpanFull(),
 
                                         TagsInput::make('learning_points')
@@ -183,40 +150,45 @@ class ProgramResource extends Resource
                                                 ->filter(fn (?string $item): bool => filled($item))
                                                 ->values()
                                                 ->all())
-                                            ->helperText('Ketik satu poin lalu tekan Enter. Item dapat dihapus atau diurutkan ulang.')
+                                            ->helperText('Satu poin per item.')
                                             ->columnSpanFull(),
 
                                         Grid::make([
                                             'default' => 1,
-                                            'lg' => 3,
+                                            'lg' => 2,
                                         ])
                                             ->schema([
-                                                Textarea::make('orientation')
-                                                    ->label('Orientasi')
-                                                    ->rows(4),
+                                                FileUpload::make('image')
+                                                    ->label('Poster Kegiatan')
+                                                    ->image()
+                                                    ->disk('public')
+                                                    ->directory('programs/posters')
+                                                    ->visibility('public')
+                                                    ->imageEditor()
+                                                    ->imagePreviewHeight('180')
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                    ->maxSize(4096),
 
-                                                Textarea::make('method')
-                                                    ->label('Metode')
-                                                    ->rows(4),
-
-                                                Textarea::make('output')
-                                                    ->label('Output')
-                                                    ->rows(4),
+                                                FileUpload::make('hero_image')
+                                                    ->label('Gambar Hero')
+                                                    ->image()
+                                                    ->disk('public')
+                                                    ->directory('programs/heroes')
+                                                    ->visibility('public')
+                                                    ->imageEditor()
+                                                    ->imagePreviewHeight('180')
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                    ->maxSize(4096)
+                                                    ->helperText('Kosongkan untuk memakai poster.'),
                                             ])
                                             ->columnSpanFull(),
 
-                                        Textarea::make('notes')
-                                            ->label('Catatan')
-                                            ->rows(4)
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('3. Narasumber')
-                                    ->icon('heroicon-o-users')
-                                    ->description('Tambahkan narasumber, fasilitator, dan moderator kegiatan.')
-                                    ->schema([
                                         Repeater::make('speakers')
-                                            ->label('Daftar Narasumber')
+                                            ->label('Narasumber')
                                             ->schema([
                                                 Grid::make([
                                                     'default' => 1,
@@ -241,11 +213,11 @@ class ProgramResource extends Resource
                                                     ->directory('programs/speakers')
                                                     ->visibility('public')
                                                     ->imageEditor()
+                                                    ->imagePreviewHeight('120')
                                                     ->downloadable()
                                                     ->openable()
                                                     ->maxSize(2048)
-                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                                    ->columnSpanFull(),
+                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
 
                                                 Textarea::make('bio')
                                                     ->label('Bio')
@@ -259,6 +231,30 @@ class ProgramResource extends Resource
                                             ->addActionLabel('Tambah Narasumber')
                                             ->reorderable()
                                             ->collapsible()
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('Detail Tambahan')
+                                    ->icon('heroicon-o-clipboard-document-list')
+                                    ->description('Opsional untuk memperkaya detail program.')
+                                    ->schema([
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 3,
+                                        ])
+                                            ->schema([
+                                                Textarea::make('orientation')
+                                                    ->label('Orientasi')
+                                                    ->rows(3),
+
+                                                Textarea::make('method')
+                                                    ->label('Metode')
+                                                    ->rows(3),
+
+                                                Textarea::make('output')
+                                                    ->label('Output')
+                                                    ->rows(3),
+                                            ])
                                             ->columnSpanFull(),
 
                                         Grid::make([
@@ -274,12 +270,67 @@ class ProgramResource extends Resource
                                                     ->label('Afiliasi Moderator')
                                                     ->maxLength(255),
                                             ]),
-                                    ]),
 
-                                Section::make('Link dan CTA')
-                                    ->icon('heroicon-o-link')
-                                    ->description('Tambahkan tautan pendaftaran, dokumentasi, materi, dan tombol aksi.')
+                                        Textarea::make('notes')
+                                            ->label('Catatan')
+                                            ->rows(3)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
+
+                                Section::make('Pengaturan Lanjutan')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->description('Opsional. Slug, teks singkat, klasifikasi lanjutan, tautan, dan CTA.')
                                     ->schema([
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->helperText('Otomatis dari judul, boleh diedit sebelum terbit.')
+                                            ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('short_title')
+                                                    ->label('Judul Pendek')
+                                                    ->maxLength(255),
+
+                                                TextInput::make('subtitle')
+                                                    ->label('Tema / Subjudul')
+                                                    ->maxLength(255),
+
+                                                TextInput::make('duration')
+                                                    ->label('Durasi')
+                                                    ->maxLength(255)
+                                                    ->placeholder('1 Pertemuan'),
+
+                                                Select::make('level')
+                                                    ->label('Level')
+                                                    ->options(static::levelOptions())
+                                                    ->default('Umum')
+                                                    ->searchable(),
+
+                                                TextInput::make('audience')
+                                                    ->label('Target Peserta')
+                                                    ->maxLength(255),
+
+                                                TextInput::make('price_type')
+                                                    ->label('Jenis Biaya')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Gratis / Berbayar'),
+
+                                                Toggle::make('certificate_available')
+                                                    ->label('Sertifikat Tersedia')
+                                                    ->default(false),
+                                            ])
+                                            ->columnSpanFull(),
+
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
@@ -317,9 +368,8 @@ class ProgramResource extends Resource
 
                                                 TextInput::make('primary_button_url')
                                                     ->label('Link Tombol Utama')
-                                                    ->default('/program')
                                                     ->maxLength(255)
-                                                    ->helperText('Boleh memakai path internal seperti /program.'),
+                                                    ->helperText('Kosongkan untuk memakai link pendaftaran atau detail program.'),
 
                                                 TextInput::make('secondary_button_text')
                                                     ->label('Teks Tombol Kedua')
@@ -333,21 +383,26 @@ class ProgramResource extends Resource
                                                     ->helperText('Boleh memakai path internal seperti /kolaborasi.'),
                                             ])
                                             ->columnSpanFull(),
-                                    ]),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
 
                                 Section::make('SEO & Pratinjau')
                                     ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Opsional untuk judul mesin pencari dan gambar share.')
+                                    ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster.')
                                     ->schema([
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
-                                            ->maxLength(60),
+                                            ->maxLength(60)
+                                            ->placeholder(fn ($get): string => $get('name') ?: 'Otomatis dari judul'),
 
                                         Textarea::make('seo_description')
                                             ->label('SEO Description')
                                             ->rows(3)
                                             ->maxLength(180)
-                                            ->helperText('Maksimal 180 karakter termasuk spasi.'),
+                                            ->placeholder('Otomatis dari deskripsi detail')
+                                            ->helperText('Maks. 180 karakter.'),
 
                                         FileUpload::make('og_image')
                                             ->label('OG Image')
@@ -359,31 +414,25 @@ class ProgramResource extends Resource
                                             ->downloadable()
                                             ->openable()
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096),
+                                            ->maxSize(4096)
+                                            ->helperText('Kosongkan untuk memakai gambar hero atau poster.'),
                                     ])
                                     ->columns(1)
-                                    ->collapsible(),
+                                    ->collapsible()
+                                    ->collapsed(),
                             ])
                             ->columnSpan(['xl' => 8])
                             ->extraAttributes(['class' => 'edulaw-admin-main-column']),
 
                         Group::make()
                             ->schema([
-                                Section::make('Status Publikasi')
+                                Section::make('Publikasi')
                                     ->icon('heroicon-o-paper-airplane')
-                                    ->description('Atur status publikasi, urutan, dan penanda halaman.')
                                     ->schema([
                                         Select::make('publication_status')
                                             ->label('Status Publikasi')
                                             ->options(static::publicationStatusOptions())
                                             ->default('draft')
-                                            ->required(),
-
-                                        Select::make('status')
-                                            ->label('Status Kegiatan')
-                                            ->options(static::statusOptions())
-                                            ->default('upcoming')
-                                            ->live()
                                             ->required(),
 
                                         Toggle::make('featured')
@@ -395,103 +444,132 @@ class ProgramResource extends Resource
                                             ->default(false),
 
                                         TextInput::make('sort_order')
-                                            ->label('Urutan Otomatis')
+                                            ->label('Urutan')
                                             ->numeric()
-                                            ->default(fn (): int => ((int) Program::query()->max('sort_order')) + 1)
-                                            ->helperText('Urutan tampil dibuat otomatis saat program disimpan.'),
+                                            ->default(fn (): int => ((int) Program::query()->max('sort_order')) + 1),
+
+                                        Placeholder::make('public_preview')
+                                            ->label('Pratinjau')
+                                            ->content(function ($get): HtmlString {
+                                                $slug = trim((string) ($get('slug') ?? ''));
+
+                                                if ($slug === '') {
+                                                    return new HtmlString('<span class="text-sm text-gray-500">Tersedia setelah judul dan slug terisi.</span>');
+                                                }
+
+                                                $url = route('programs.show', $slug);
+
+                                                return new HtmlString(
+                                                    '<a href="'.e($url).'" target="_blank" rel="noopener noreferrer" class="fi-btn fi-color-gray fi-size-sm">Buka pratinjau</a>'
+                                                );
+                                            }),
                                     ])
                                     ->columns(1),
 
                                 Section::make('Pelaksanaan')
                                     ->icon('heroicon-o-calendar-days')
-                                    ->description('Atur waktu, format, lokasi, dan karakter kegiatan.')
                                     ->schema([
+                                        Select::make('status')
+                                            ->label('Status Kegiatan')
+                                            ->options(static::statusOptions())
+                                            ->default('upcoming')
+                                            ->live()
+                                            ->required(),
+
                                         DatePicker::make('event_date')
                                             ->label('Tanggal Mulai')
-                                            ->required(fn (Get $get): bool => ! in_array($get('status'), ['portfolio', 'archived'], true)),
+                                            ->required(fn (Get $get): bool => $get('status') !== 'completed'),
 
                                         DatePicker::make('end_date')
-                                            ->label('Tanggal Selesai')
-                                            ->helperText('Jika kosong, halaman publik boleh memakai tanggal mulai.'),
+                                            ->label('Tanggal Selesai'),
 
                                         Select::make('format')
                                             ->label('Format')
                                             ->options(static::formatOptions())
                                             ->required(),
 
-                                        TextInput::make('duration')
-                                            ->label('Durasi')
-                                            ->maxLength(255)
-                                            ->placeholder('1 Pertemuan, 2 Hari, 4 Sesi'),
-
-                                        Select::make('level')
-                                            ->label('Level')
-                                            ->options(static::levelOptions())
-                                            ->default('Umum')
-                                            ->searchable()
-                                            ->helperText('Umum untuk kegiatan terbuka, Intermediate untuk pembahasan dengan dasar hukum, Advanced untuk riset/disertasi atau kajian teoritis.'),
-
                                         TextInput::make('location')
                                             ->label('Lokasi')
                                             ->maxLength(255)
                                             ->placeholder('Online / Kampus / Kota / Hybrid'),
-
-                                        TextInput::make('audience')
-                                            ->label('Target Peserta')
-                                            ->maxLength(255)
-                                            ->placeholder('Mahasiswa, umum, peneliti, praktisi'),
-
-                                        TextInput::make('price_type')
-                                            ->label('Jenis Biaya')
-                                            ->maxLength(255)
-                                            ->placeholder('Gratis / Berbayar / Donasi'),
-
-                                        Toggle::make('certificate_available')
-                                            ->label('Sertifikat Tersedia')
-                                            ->default(false),
-                                    ])
-                                    ->columns(1),
-
-                                Section::make('Media')
-                                    ->icon('heroicon-o-photo')
-                                    ->description('Unggah poster dan hero image untuk halaman publik.')
-                                    ->schema([
-                                        FileUpload::make('image')
-                                            ->label('Poster Kegiatan')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('programs/posters')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->imagePreviewHeight('220')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->helperText('Path disimpan relatif pada disk public. Rekomendasi ukuran 1200 x 1600 px, maks. 4 MB.'),
-
-                                        FileUpload::make('hero_image')
-                                            ->label('Gambar Hero')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('programs/heroes')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->imagePreviewHeight('220')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->helperText('Opsional. Jika kosong, halaman publik memakai poster kegiatan.'),
                                     ])
                                     ->columns(1),
                             ])
                             ->columnSpan(['xl' => 4])
-                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
                     ])
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
+    }
+
+    public static function prepareFormDataForPersistence(array $data): array
+    {
+        if (blank($data['slug'] ?? null) && filled($data['name'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['name']);
+        }
+
+        if (filled($data['slug'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['slug']);
+        }
+
+        $data['publication_status'] = static::normalizePublicationStatusForForm($data['publication_status'] ?? null);
+        $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
+        $data['short_description'] = static::excerptFromDescription($data['description'] ?? null);
+
+        if (blank($data['primary_button_text'] ?? null)) {
+            $data['primary_button_text'] = 'Daftar Program';
+        }
+
+        if (blank($data['primary_button_url'] ?? null)) {
+            $data['primary_button_url'] = filled($data['registration_link'] ?? null)
+                ? $data['registration_link']
+                : (filled($data['slug'] ?? null) ? route('programs.show', $data['slug'], false) : '/program');
+        }
+
+        if (blank($data['secondary_button_text'] ?? null)) {
+            $data['secondary_button_text'] = 'Diskusikan Kolaborasi';
+        }
+
+        if (blank($data['secondary_button_url'] ?? null)) {
+            $data['secondary_button_url'] = '/kolaborasi';
+        }
+
+        if (blank($data['seo_title'] ?? null) && filled($data['name'] ?? null)) {
+            $data['seo_title'] = (string) $data['name'];
+        }
+
+        if (blank($data['seo_description'] ?? null) && filled($data['short_description'] ?? null)) {
+            $data['seo_description'] = static::excerptFromDescription((string) $data['short_description'], 180);
+        }
+
+        if (blank($data['og_image'] ?? null)) {
+            $data['og_image'] = $data['hero_image'] ?? $data['image'] ?? null;
+        }
+
+        return $data;
+    }
+
+    public static function excerptFromDescription(?string $html, int $limit = 220): ?string
+    {
+        $text = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8')) ?? '');
+
+        if ($text === '') {
+            return null;
+        }
+
+        if (mb_strlen($text) <= $limit) {
+            return $text;
+        }
+
+        $excerpt = rtrim(mb_substr($text, 0, max(0, $limit - 3)));
+        $lastSpace = mb_strrpos($excerpt, ' ');
+
+        if ($lastSpace !== false && $lastSpace >= 120) {
+            $excerpt = rtrim(mb_substr($excerpt, 0, $lastSpace));
+        }
+
+        return $excerpt.'...';
     }
 
     public static function table(Table $table): Table
@@ -550,25 +628,14 @@ class ProgramResource extends Resource
                 TextColumn::make('status')
                     ->label('Status Kegiatan')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'upcoming' => 'primary',
-                        'ongoing' => 'success',
-                        'completed' => 'info',
-                        'portfolio' => 'warning',
-                        'archived' => 'gray',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (?string $state): string => static::statusOptions()[$state] ?? ($state ? ucfirst($state) : '-')),
+                    ->color(fn (?string $state): string => static::statusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
 
                 TextColumn::make('publication_status')
                     ->label('Publikasi')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'published' => 'success',
-                        'archived' => 'gray',
-                        default => 'warning',
-                    })
-                    ->formatStateUsing(fn (?string $state): string => static::publicationStatusOptions()[$state] ?? ($state ? ucfirst($state) : '-')),
+                    ->color(fn (?string $state): string => static::publicationStatusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => static::publicationStatusLabel($state)),
 
                 IconColumn::make('featured')
                     ->label('Featured')
@@ -607,11 +674,29 @@ class ProgramResource extends Resource
 
                 SelectFilter::make('status')
                     ->label('Status Kegiatan')
-                    ->options(static::statusOptions()),
+                    ->options(static::statusOptions())
+                    ->query(function ($query, array $data): void {
+                        $status = $data['value'] ?? null;
+
+                        match ($status) {
+                            'upcoming', 'ongoing' => $query->where('status', $status),
+                            'completed' => $query->whereIn('status', ['completed', 'portfolio', 'archived']),
+                            default => null,
+                        };
+                    }),
 
                 SelectFilter::make('publication_status')
                     ->label('Status Publikasi')
-                    ->options(static::publicationStatusOptions()),
+                    ->options(static::publicationStatusOptions())
+                    ->query(function ($query, array $data): void {
+                        $status = $data['value'] ?? null;
+
+                        match ($status) {
+                            'draft' => $query->whereIn('publication_status', ['draft', 'archived']),
+                            'reviewed', 'published' => $query->where('publication_status', $status),
+                            default => null,
+                        };
+                    }),
 
                 SelectFilter::make('featured')
                     ->label('Featured')
@@ -651,6 +736,84 @@ class ProgramResource extends Resource
             ]);
     }
 
+    public static function statusOptions(): array
+    {
+        return [
+            'upcoming' => 'Upcoming',
+            'ongoing' => 'Ongoing',
+            'completed' => 'Completed',
+        ];
+    }
+
+    public static function statusLabel(?string $status): string
+    {
+        return match ($status) {
+            'upcoming' => 'Upcoming',
+            'ongoing' => 'Ongoing',
+            'completed' => 'Completed',
+            'portfolio', 'archived' => 'Archived',
+            default => ucfirst((string) ($status ?: 'Upcoming')),
+        };
+    }
+
+    public static function statusColor(?string $status): string
+    {
+        return match ($status) {
+            'upcoming' => 'primary',
+            'ongoing' => 'success',
+            'completed' => 'info',
+            'portfolio', 'archived' => 'gray',
+            default => 'gray',
+        };
+    }
+
+    public static function normalizeStatusForForm(?string $status): string
+    {
+        return match ($status) {
+            'ongoing', 'completed' => $status,
+            'portfolio', 'archived' => 'completed',
+            default => 'upcoming',
+        };
+    }
+
+    public static function publicationStatusOptions(): array
+    {
+        return [
+            'draft' => 'Draft',
+            'reviewed' => 'Reviewed',
+            'published' => 'Published',
+        ];
+    }
+
+    public static function publicationStatusLabel(?string $status): string
+    {
+        return match ($status) {
+            'draft' => 'Draft',
+            'reviewed' => 'Reviewed',
+            'published' => 'Published',
+            'archived' => 'Archived',
+            default => ucfirst((string) ($status ?: 'Draft')),
+        };
+    }
+
+    public static function publicationStatusColor(?string $status): string
+    {
+        return match ($status) {
+            'published' => 'success',
+            'reviewed' => 'warning',
+            'archived' => 'gray',
+            default => 'primary',
+        };
+    }
+
+    public static function normalizePublicationStatusForForm(?string $status): string
+    {
+        return match ($status) {
+            'reviewed', 'published' => $status,
+            default => 'draft',
+        };
+    }
+
     private static function typeOptions(): array
     {
         return [
@@ -686,26 +849,6 @@ class ProgramResource extends Resource
             'online' => 'Online',
             'offline' => 'Offline',
             'hybrid' => 'Hybrid',
-        ];
-    }
-
-    private static function statusOptions(): array
-    {
-        return [
-            'upcoming' => 'Upcoming',
-            'ongoing' => 'Ongoing',
-            'completed' => 'Completed',
-            'portfolio' => 'Portfolio',
-            'archived' => 'Archived',
-        ];
-    }
-
-    private static function publicationStatusOptions(): array
-    {
-        return [
-            'draft' => 'Draft',
-            'published' => 'Published',
-            'archived' => 'Archived',
         ];
     }
 

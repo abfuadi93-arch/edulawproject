@@ -136,10 +136,9 @@ class Insight extends Model
     {
         return match ($this->status) {
             'draft' => 'Draft',
-            'submitted' => 'Dalam Review',
-            'reviewed' => 'Siap Publikasi',
-            'published' => 'Terbit',
-            'archived' => 'Arsip',
+            'submitted', 'reviewed' => 'Reviewed',
+            'published' => 'Published',
+            'archived' => 'Draft',
             default => ucfirst((string) $this->status),
         };
     }
