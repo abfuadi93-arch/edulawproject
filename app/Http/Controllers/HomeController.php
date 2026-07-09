@@ -55,7 +55,9 @@ class HomeController extends Controller
             ->get();
 
         $latestOpportunities = Opportunity::query()
-            ->whereIn('status', ['open', 'closed'])
+            ->open()
+            ->orderByDesc('featured')
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
             ->latest()
             ->limit(3)

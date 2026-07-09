@@ -21,6 +21,11 @@ class EditAuthor extends EditRecordAndReturn
         ];
     }
 
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        return AuthorResource::prepareFormDataForPersistence($data, $this->record?->id);
+    }
+
     protected function getSaveFormAction(): Action
     {
         return parent::getSaveFormAction()

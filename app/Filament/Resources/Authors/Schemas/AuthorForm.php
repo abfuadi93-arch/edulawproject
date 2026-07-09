@@ -25,6 +25,10 @@ class AuthorForm
                     ->label('Email address')
                     ->email(),
                 Textarea::make('bio')
+                    ->label('Bio Profil')
+                    ->rows(6)
+                    ->maxLength(1000)
+                    ->helperText('Maksimal 1000 karakter.')
                     ->columnSpanFull(),
                 FileUpload::make('photo')
                     ->label('Photo')

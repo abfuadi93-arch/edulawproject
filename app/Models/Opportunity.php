@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\EdulawSite;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -50,6 +51,11 @@ class Opportunity extends Model
         return $this->belongsTo(User::class, 'updated_by');
     }
 
+    public function scopeOpen(Builder $query): Builder
+    {
+        return $query->where('status', 'open');
+    }
+
     public function getPosterUrlAttribute(): ?string
     {
         return EdulawSite::assetUrl($this->attributes['poster'] ?? null);
@@ -79,8 +85,7 @@ class Opportunity extends Model
         return match ($this->attributes['status'] ?? null) {
             'open' => 'Masih Dibuka',
             'closed' => 'Ditutup',
-            'archived' => 'Arsip',
-            default => ucfirst((string) ($this->attributes['status'] ?? 'Opportunity')),
+            default => 'Arsip',
         };
     }
 }

@@ -56,7 +56,6 @@ test('user can update only their own profile without changing blank password', f
         ->test(EditMyProfile::class)
         ->set('data.name', 'Updated Owner')
         ->set('data.email', 'updated-owner@example.test')
-        ->set('data.bio', 'Bio pribadi')
         ->set('data.institution', 'Edulaw Project')
         ->set('data.position', 'Writer')
         ->set('data.password', '')
@@ -69,7 +68,6 @@ test('user can update only their own profile without changing blank password', f
 
     expect($user->name)->toBe('Updated Owner')
         ->and($user->email)->toBe('updated-owner@example.test')
-        ->and($user->bio)->toBe('Bio pribadi')
         ->and($user->institution)->toBe('Edulaw Project')
         ->and($user->position)->toBe('Writer')
         ->and($user->password)->toBe($oldPassword)

@@ -25,4 +25,18 @@ class EditOpportunity extends EditRecordAndReturn
             DeleteAction::make(),
         ];
     }
+
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['status'] = OpportunityResource::normalizeStatusForForm($data['status'] ?? null);
+
+        return $data;
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        $data['updated_by'] = auth()->id();
+
+        return OpportunityResource::prepareFormDataForPersistence($data);
+    }
 }

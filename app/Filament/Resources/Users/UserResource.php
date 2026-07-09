@@ -8,16 +8,13 @@ use App\Filament\Resources\Users\Pages\ListUsers;
 use App\Models\User;
 use BackedEnum;
 use Filament\Actions;
-use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -46,17 +43,6 @@ class UserResource extends Resource
                 Section::make('Informasi Akun Admin')
                     ->description('Kelola akun login dan identitas dasar admin.')
                     ->schema([
-                        FileUpload::make('avatar')
-                            ->label('Avatar')
-                            ->image()
-                            ->disk('public')
-                            ->directory('avatars')
-                            ->visibility('public')
-                            ->imageEditor()
-                            ->maxSize(2048)
-                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                            ->columnSpanFull(),
-
                         TextInput::make('name')
                             ->label('Nama Akun')
                             ->required()
@@ -76,7 +62,17 @@ class UserResource extends Resource
                             ->dehydrateStateUsing(fn ($state) => filled($state) ? Hash::make($state) : null)
                             ->dehydrated(fn ($state) => filled($state))
                             ->required(fn (string $operation): bool => $operation === 'create')
-                            ->maxLength(255),
+                            ->same('password_confirmation')
+                            ->autocomplete('new-password'),
+
+                        TextInput::make('password_confirmation')
+                            ->label('Konfirmasi Password')
+                            ->password()
+                            ->revealable()
+                            ->required(fn (string $operation): bool => $operation === 'create')
+                            ->requiredWith('password')
+                            ->dehydrated(false)
+                            ->autocomplete('new-password'),
 
                         TextInput::make('institution')
                             ->label('Institusi')
@@ -85,11 +81,6 @@ class UserResource extends Resource
                         TextInput::make('position')
                             ->label('Posisi')
                             ->maxLength(255),
-
-                        Textarea::make('bio')
-                            ->label('Bio / Catatan')
-                            ->rows(4)
-                            ->columnSpanFull(),
 
                         Toggle::make('is_active')
                             ->label('Aktif')
@@ -105,7 +96,8 @@ class UserResource extends Resource
                             ->relationship('roles', 'name')
                             ->multiple()
                             ->searchable()
-                            ->preload(),
+                            ->preload()
+                            ->required(),
                     ]),
             ]);
     }
@@ -114,13 +106,6 @@ class UserResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('avatar')
-                    ->label('Avatar')
-                    ->disk('public')
-                    ->circular()
-                    ->size(44)
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
-
                 TextColumn::make('name')
                     ->label('Nama')
                     ->searchable()

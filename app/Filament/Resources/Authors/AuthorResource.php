@@ -56,41 +56,33 @@ class AuthorResource extends Resource
                     'lg' => 5,
                 ])
                     ->schema([
-                        Section::make('Informasi Profil')
-                            ->icon('heroicon-o-user-circle')
-                            ->description('Kelola identitas publik dan peran profil yang ditampilkan di laman tentang.')
+                        Group::make()
                             ->schema([
-                                TextInput::make('name')
-                                    ->label('Nama')
-                                    ->required()
-                                    ->maxLength(255)
-                                    ->live(onBlur: true)
-                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
-                                        $currentSlug = (string) ($get('slug') ?? '');
-                                        $oldSlug = Str::slug((string) $old);
-
-                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
-                                            return;
-                                        }
-
-                                        $set('slug', Str::slug((string) $state));
-                                    })
-                                    ->columnSpanFull(),
-
-                                TextInput::make('slug')
-                                    ->label('Slug')
-                                    ->required()
-                                    ->unique(ignoreRecord: true)
-                                    ->maxLength(255)
-                                    ->helperText('Digunakan sebagai identitas unik profil di website.')
-                                    ->columnSpanFull(),
-
-                                Grid::make([
-                                    'default' => 1,
-                                    'lg' => 2,
-                                ])
+                                Section::make('Informasi Profil')
+                                    ->icon('heroicon-o-user-circle')
+                                    ->description('Identitas publik yang tampil di laman tentang dan konten terkait.')
                                     ->schema([
-                                        Group::make()
+                                        TextInput::make('name')
+                                            ->label('Nama')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                $currentSlug = (string) ($get('slug') ?? '');
+                                                $oldSlug = Str::slug((string) $old);
+
+                                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                    return;
+                                                }
+
+                                                $set('slug', Str::slug((string) $state));
+                                            })
+                                            ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
                                             ->schema([
                                                 TextInput::make('position')
                                                     ->label('Jabatan')
@@ -110,46 +102,62 @@ class AuthorResource extends Resource
                                                     ->required()
                                                     ->placeholder('Pilih peran profil'),
 
-                                                TextInput::make('sort_order')
-                                                    ->label('Urutan Tampil')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->placeholder('Contoh: 10')
-                                                    ->helperText('Angka kecil tampil lebih dulu di laman Tentang. Kosongkan untuk urutan nama.'),
-                                            ]),
-
-                                        Group::make()
-                                            ->schema([
-                                                Textarea::make('bio')
-                                                    ->label('Bio Singkat')
-                                                    ->rows(5)
-                                                    ->maxLength(500)
-                                                    ->live()
-                                                    ->helperText(fn (?string $state): string => sprintf('%d/500 karakter', mb_strlen((string) $state)))
-                                                    ->placeholder('Tulis bio singkat yang dapat ditampilkan pada website.'),
-
-                                                TagsInput::make('interests')
-                                                    ->label('Minat / Keahlian')
-                                                    ->separator(',')
-                                                    ->splitKeys([',', 'Enter'])
-                                                    ->placeholder('Tambah minat atau keahlian...')
-                                                    ->helperText('Pisahkan tiap minat dengan enter atau koma.')
-                                                    ->suggestions([
-                                                        'Hukum Tata Negara',
-                                                        'Pemilu',
-                                                        'Kebijakan Publik',
-                                                        'Hukum Administrasi',
-                                                        'Advokasi',
-                                                        'Riset Hukum',
-                                                    ]),
-
                                                 Toggle::make('is_active')
                                                     ->label('Status Aktif')
-                                                    ->helperText('Profil ini ditampilkan di website.')
                                                     ->default(true),
-                                            ]),
+                                            ])
+                                            ->columnSpanFull(),
+
+                                        Textarea::make('bio')
+                                            ->label('Bio Profil')
+                                            ->rows(6)
+                                            ->maxLength(1000)
+                                            ->live()
+                                            ->helperText('Maksimal 1000 karakter.')
+                                            ->hint(fn (?string $state): string => sprintf('%d/1000 karakter', mb_strlen((string) $state)))
+                                            ->placeholder('Tulis bio profil yang dapat ditampilkan pada website.')
+                                            ->columnSpanFull(),
+
+                                        TagsInput::make('interests')
+                                            ->label('Minat / Keahlian')
+                                            ->separator(',')
+                                            ->splitKeys([',', 'Enter'])
+                                            ->placeholder('Tambah minat atau keahlian...')
+                                            ->helperText('Pisahkan tiap minat dengan enter atau koma.')
+                                            ->suggestions([
+                                                'Hukum Tata Negara',
+                                                'Pemilu',
+                                                'Kebijakan Publik',
+                                                'Hukum Administrasi',
+                                                'Advokasi',
+                                                'Riset Hukum',
+                                            ])
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('Pengaturan Lanjutan')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->description('Opsional. Slug dan urutan hanya perlu dibuka bila ingin disesuaikan.')
+                                    ->schema([
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->helperText('Otomatis dari nama.')
+                                            ->columnSpanFull(),
+
+                                        TextInput::make('sort_order')
+                                            ->label('Urutan Tampil')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->placeholder('Contoh: 10')
+                                            ->helperText('Angka kecil tampil lebih dulu.')
+                                            ->columnSpanFull(),
                                     ])
-                                    ->columnSpanFull(),
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
                             ])
                             ->columnSpan([
                                 'default' => 1,
@@ -161,7 +169,7 @@ class AuthorResource extends Resource
                             ->schema([
                                 Section::make('Foto Profil')
                                     ->icon('heroicon-o-photo')
-                                    ->description('Unggah foto profil untuk ditampilkan di website.')
+                                    ->description('Rekomendasi ukuran 400 x 400 px.')
                                     ->schema([
                                         FileUpload::make('photo')
                                             ->label('Photo')
@@ -173,33 +181,31 @@ class AuthorResource extends Resource
                                             ->imageEditor()
                                             ->maxSize(2048)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->helperText('Tarik & letakkan foto atau pilih berkas. Rekomendasi ukuran 400 x 400 px. Format: JPG, PNG, WebP. Maks. 2 MB.')
+                                            ->imagePreviewHeight('180')
+                                            ->helperText('JPG, PNG, WebP. Maks. 2 MB.')
                                             ->columnSpanFull(),
                                     ]),
 
                                 Section::make('Akun Admin dan Kontak (Opsional)')
                                     ->icon('heroicon-o-identification')
-                                    ->description('Profil boleh tidak punya akun admin. Akun admin wajib memiliki profil yang terhubung.')
+                                    ->description('Opsional untuk profil eksternal.')
                                     ->schema([
                                         Select::make('user_id')
                                             ->label('Akun Admin Terkait')
                                             ->relationship('user', 'name')
                                             ->searchable()
                                             ->preload()
-                                            ->placeholder('Profil publik tanpa akun admin')
-                                            ->helperText('Opsional. Tidak semua profil adalah akun admin.'),
+                                            ->placeholder('Profil publik tanpa akun admin'),
 
                                         TextInput::make('email')
                                             ->label('Email Kontak')
                                             ->email()
-                                            ->maxLength(255)
-                                            ->helperText('Email ini akan digunakan untuk komunikasi resmi.'),
+                                            ->maxLength(255),
                                     ])
                                     ->columns(1),
 
                                 Section::make('Tautan Sosial')
                                     ->icon('heroicon-o-link')
-                                    ->description('Kelola tautan sosial profil secara ringkas.')
                                     ->schema([
                                         Repeater::make('social_links')
                                             ->label('Tautan Sosial')
@@ -226,7 +232,9 @@ class AuthorResource extends Resource
                                             ->reorderable()
                                             ->collapsed()
                                             ->columnSpanFull(),
-                                    ]),
+                                    ])
+                                    ->collapsible()
+                                    ->collapsed(),
                             ])
                             ->columnSpan([
                                 'default' => 1,
@@ -311,6 +319,19 @@ class AuthorResource extends Resource
             ->recordActions([
                 EditAction::make(),
             ]);
+    }
+
+    public static function prepareFormDataForPersistence(array $data, ?int $ignoreId = null): array
+    {
+        if (blank($data['slug'] ?? null) && filled($data['name'] ?? null)) {
+            $data['slug'] = Author::uniqueSlugFor((string) $data['name'], $ignoreId);
+        }
+
+        if (filled($data['slug'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['slug']);
+        }
+
+        return $data;
     }
 
     public static function getEloquentQuery(): Builder

@@ -22,8 +22,6 @@ class OpportunityForm
                 TextInput::make('type')
                     ->required()
                     ->default('open_collaboration'),
-                Textarea::make('excerpt')
-                    ->columnSpanFull(),
                 Textarea::make('description')
                     ->columnSpanFull(),
                 FileUpload::make('poster')

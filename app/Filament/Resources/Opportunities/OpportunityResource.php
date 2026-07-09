@@ -10,6 +10,8 @@ use BackedEnum;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
+use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -53,146 +55,51 @@ class OpportunityResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('1. Informasi Opportunity')
+                                Section::make('Konten Opportunity')
                                     ->icon('heroicon-o-sparkles')
-                                    ->description('Kelola informasi ringkas peluang yang tampil di halaman Opportunities.')
+                                    ->description('Isi peluang utama: judul, jenis, deskripsi, poster, tautan pendaftaran, format, dan lokasi.')
                                     ->schema([
+                                        TextInput::make('title')
+                                            ->label('Judul')
+                                            ->required()
+                                            ->maxLength(255)
+                                            ->live(onBlur: true)
+                                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                                $currentSlug = (string) ($get('slug') ?? '');
+                                                $oldSlug = Str::slug((string) $old);
+
+                                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
+                                                    return;
+                                                }
+
+                                                $set('slug', Str::slug((string) $state));
+                                            })
+                                            ->columnSpanFull(),
+
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                TextInput::make('title')
-                                                    ->label('Judul')
-                                                    ->required()
-                                                    ->maxLength(255)
-                                                    ->live(onBlur: true)
-                                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
-                                                        $currentSlug = (string) ($get('slug') ?? '');
-                                                        $oldSlug = Str::slug((string) $old);
-
-                                                        if (filled($currentSlug) && $currentSlug !== $oldSlug) {
-                                                            return;
-                                                        }
-
-                                                        $set('slug', Str::slug((string) $state));
-                                                    }),
-
-                                                TextInput::make('slug')
-                                                    ->label('Slug')
-                                                    ->required()
-                                                    ->unique(ignoreRecord: true)
-                                                    ->maxLength(255)
-                                                    ->helperText('Slug digunakan sebagai alamat peluang di website.'),
-
                                                 Select::make('type')
                                                     ->label('Jenis Peluang')
-                                                    ->options([
-                                                        'scholarship' => 'Beasiswa',
-                                                        'internship' => 'Magang',
-                                                        'volunteer' => 'Volunteer',
-                                                        'fellowship' => 'Fellowship',
-                                                        'call_for_paper' => 'Call for Papers',
-                                                        'competition' => 'Kompetisi',
-                                                        'open_collaboration' => 'Kolaborasi Terbuka',
-                                                    ])
+                                                    ->options(static::typeOptions())
                                                     ->default('open_collaboration')
                                                     ->searchable()
                                                     ->required(),
 
-                                                TextInput::make('format')
-                                                    ->label('Format')
-                                                    ->placeholder('Online / Offline / Hybrid'),
-
-                                                TextInput::make('location')
-                                                    ->label('Lokasi')
+                                                TextInput::make('application_link')
+                                                    ->label('Link Pendaftaran')
+                                                    ->url()
                                                     ->maxLength(255)
-                                                    ->placeholder('Online / Jakarta / Hybrid')
-                                                    ->columnSpanFull(),
+                                                    ->placeholder('https://...'),
                                             ])
                                             ->columnSpanFull(),
 
-                                        Textarea::make('excerpt')
-                                            ->label('Ringkasan')
-                                            ->rows(6)
-                                            ->maxLength(300)
-                                            ->required()
-                                            ->live()
-                                            ->placeholder('Tulis ringkasan peluang secara singkat dan jelas...')
-                                            ->helperText('Maksimal 300 karakter termasuk spasi.')
+                                        RichEditor::make('description')
+                                            ->label('Deskripsi')
                                             ->columnSpanFull(),
-                                    ])
-                                    ->extraAttributes(['class' => 'edulaw-admin-two-column-section']),
 
-                                Section::make('Pendaftaran')
-                                    ->icon('heroicon-o-link')
-                                    ->description('Tambahkan tautan pendaftaran atau informasi aplikasi.')
-                                    ->schema([
-                                        TextInput::make('application_link')
-                                            ->label('Link Pendaftaran')
-                                            ->url()
-                                            ->maxLength(255)
-                                            ->placeholder('https://...'),
-                                    ]),
-
-                                Section::make('SEO & Pratinjau')
-                                    ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Optimasi mesin pencari untuk opportunity ini.')
-                                    ->schema([
-                                        TextInput::make('seo_title')
-                                            ->label('Meta Title')
-                                            ->maxLength(60),
-
-                                        Textarea::make('seo_description')
-                                            ->label('Meta Description')
-                                            ->rows(3)
-                                            ->maxLength(180),
-
-                                        FileUpload::make('og_image')
-                                            ->label('Gambar OG')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('seo/og-images')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->maxSize(4096)
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
-                                    ])
-                                    ->columns(1)
-                                    ->collapsible(),
-                            ])
-                            ->columnSpan(['xl' => 8])
-                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
-
-                        Group::make()
-                            ->schema([
-                                Section::make('Status Publikasi')
-                                    ->icon('heroicon-o-paper-airplane')
-                                    ->description('Atur status, tenggat, dan penanda peluang.')
-                                    ->schema([
-                                        Select::make('status')
-                                            ->label('Status')
-                                            ->options([
-                                                'open' => 'Open',
-                                                'closed' => 'Closed',
-                                                'archived' => 'Archived',
-                                            ])
-                                            ->default('open')
-                                            ->required(),
-
-                                        DatePicker::make('deadline')
-                                            ->label('Deadline'),
-
-                                        Toggle::make('featured')
-                                            ->label('Tampilkan sebagai unggulan')
-                                            ->default(false),
-                                    ])
-                                    ->columns(1),
-
-                                Section::make('Media')
-                                    ->icon('heroicon-o-photo')
-                                    ->description('Unggah poster untuk kartu Opportunities.')
-                                    ->schema([
                                         FileUpload::make('poster')
                                             ->label('Poster')
                                             ->image()
@@ -204,15 +111,213 @@ class OpportunityResource extends Resource
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(4096)
                                             ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('format')
+                                                    ->label('Format')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Online / Offline / Hybrid'),
+
+                                                TextInput::make('location')
+                                                    ->label('Lokasi')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Online / Jakarta / Hybrid'),
+                                            ])
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('Pengaturan Lanjutan')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->description('Opsional. Slug dan detail tambahan hanya perlu dibuka bila ingin disesuaikan.')
+                                    ->schema([
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->helperText('Otomatis dari judul, boleh diedit sebelum dipublikasikan.')
+                                            ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'lg' => 2,
+                                        ])
+                                            ->schema([
+                                                static::listRepeater('eligibility', 'Eligibility', 'Tambah Eligibility'),
+                                                static::listRepeater('benefits', 'Benefits', 'Tambah Benefit'),
+                                            ])
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
+
+                                Section::make('SEO & Pratinjau')
+                                    ->icon('heroicon-o-magnifying-glass')
+                                    ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster.')
+                                    ->schema([
+                                        TextInput::make('seo_title')
+                                            ->label('SEO Title')
+                                            ->maxLength(60)
+                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul'),
+
+                                        Textarea::make('seo_description')
+                                            ->label('SEO Description')
+                                            ->rows(3)
+                                            ->maxLength(180)
+                                            ->placeholder('Otomatis dari deskripsi')
+                                            ->helperText('Maks. 180 karakter.'),
+
+                                        FileUpload::make('og_image')
+                                            ->label('Gambar OG')
+                                            ->image()
+                                            ->disk('public')
+                                            ->directory('seo/og-images')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->maxSize(4096)
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->helperText('Kosongkan untuk memakai poster.'),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
+                            ])
+                            ->columnSpan(['xl' => 8])
+                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
+
+                        Group::make()
+                            ->schema([
+                                Section::make('Status Peluang')
+                                    ->icon('heroicon-o-paper-airplane')
+                                    ->schema([
+                                        Select::make('status')
+                                            ->label('Status')
+                                            ->options(static::statusOptions())
+                                            ->default('open')
+                                            ->required(),
+
+                                        DatePicker::make('deadline')
+                                            ->label('Deadline'),
+
+                                        Toggle::make('featured')
+                                            ->label('Tampilkan sebagai unggulan')
+                                            ->default(false),
                                     ])
                                     ->columns(1),
                             ])
                             ->columnSpan(['xl' => 4])
-                            ->extraAttributes(['class' => 'edulaw-admin-side-column']),
+                            ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
                     ])
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
             ]);
+    }
+
+    public static function prepareFormDataForPersistence(array $data): array
+    {
+        if (blank($data['slug'] ?? null) && filled($data['title'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['title']);
+        }
+
+        if (filled($data['slug'] ?? null)) {
+            $data['slug'] = Str::slug((string) $data['slug']);
+        }
+
+        $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
+        $data['excerpt'] = static::excerptFromDescription($data['description'] ?? null);
+
+        if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
+            $data['seo_title'] = (string) $data['title'];
+        }
+
+        if (blank($data['seo_description'] ?? null) && filled($data['excerpt'] ?? null)) {
+            $data['seo_description'] = static::excerptFromDescription((string) $data['excerpt'], 180);
+        }
+
+        if (blank($data['og_image'] ?? null) && filled($data['poster'] ?? null)) {
+            $data['og_image'] = $data['poster'];
+        }
+
+        return $data;
+    }
+
+    public static function excerptFromDescription(?string $html, int $limit = 220): ?string
+    {
+        $text = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8')) ?? '');
+
+        if ($text === '') {
+            return null;
+        }
+
+        if (mb_strlen($text) <= $limit) {
+            return $text;
+        }
+
+        $excerpt = rtrim(mb_substr($text, 0, max(0, $limit - 3)));
+        $lastSpace = mb_strrpos($excerpt, ' ');
+
+        if ($lastSpace !== false && $lastSpace >= 120) {
+            $excerpt = rtrim(mb_substr($excerpt, 0, $lastSpace));
+        }
+
+        return $excerpt.'...';
+    }
+
+    public static function statusOptions(): array
+    {
+        return [
+            'open' => 'Open',
+            'closed' => 'Closed',
+            'archived' => 'Archived',
+        ];
+    }
+
+    public static function statusLabel(?string $status): string
+    {
+        return static::statusOptions()[static::normalizeStatusForDisplay($status)] ?? 'Archived';
+    }
+
+    public static function statusColor(?string $status): string
+    {
+        return match (static::normalizeStatusForDisplay($status)) {
+            'open' => 'success',
+            'closed' => 'warning',
+            default => 'gray',
+        };
+    }
+
+    public static function normalizeStatusForDisplay(?string $status): string
+    {
+        return match ($status) {
+            'open', 'closed' => $status,
+            default => 'archived',
+        };
+    }
+
+    public static function normalizeStatusForForm(?string $status): string
+    {
+        return match ($status) {
+            'closed', 'archived' => $status,
+            default => 'open',
+        };
+    }
+
+    public static function typeOptions(): array
+    {
+        return [
+            'scholarship' => 'Beasiswa',
+            'internship' => 'Magang',
+            'volunteer' => 'Volunteer',
+            'fellowship' => 'Fellowship',
+            'call_for_paper' => 'Call for Papers',
+            'competition' => 'Kompetisi',
+            'open_collaboration' => 'Kolaborasi Terbuka',
+        ];
     }
 
     public static function table(Table $table): Table
@@ -253,16 +358,7 @@ class OpportunityResource extends Resource
                         default => 'gray',
                     })
                     ->wrap()
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'scholarship' => 'Beasiswa',
-                        'internship' => 'Magang',
-                        'volunteer' => 'Volunteer',
-                        'fellowship' => 'Fellowship',
-                        'call_for_paper' => 'Call for Papers',
-                        'competition' => 'Kompetisi',
-                        'open_collaboration' => 'Kolaborasi Terbuka',
-                        default => $state ? ucfirst($state) : '-',
-                    }),
+                    ->formatStateUsing(fn (?string $state): string => static::typeOptions()[$state] ?? ($state ? Str::headline(str_replace('_', ' ', $state)) : '-')),
 
                 TextColumn::make('deadline')
                     ->label('Deadline')
@@ -281,21 +377,11 @@ class OpportunityResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('status')
-                    ->label('Status')
+                    ->label('Status Peluang')
                     ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'open' => 'success',
-                        'closed' => 'warning',
-                        'archived' => 'gray',
-                        default => 'gray',
-                    })
+                    ->color(fn (?string $state): string => static::statusColor($state))
                     ->grow(false)
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'open' => 'Open',
-                        'closed' => 'Closed',
-                        'archived' => 'Archived',
-                        default => $state ? ucfirst($state) : '-',
-                    }),
+                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
 
                 IconColumn::make('featured')
                     ->label('Featured')
@@ -321,23 +407,11 @@ class OpportunityResource extends Resource
             ->filters([
                 SelectFilter::make('type')
                     ->label('Jenis')
-                    ->options([
-                        'scholarship' => 'Beasiswa',
-                        'internship' => 'Magang',
-                        'volunteer' => 'Volunteer',
-                        'fellowship' => 'Fellowship',
-                        'call_for_paper' => 'Call for Papers',
-                        'competition' => 'Kompetisi',
-                        'open_collaboration' => 'Kolaborasi Terbuka',
-                    ]),
+                    ->options(static::typeOptions()),
 
                 SelectFilter::make('status')
-                    ->label('Status')
-                    ->options([
-                        'open' => 'Open',
-                        'closed' => 'Closed',
-                        'archived' => 'Archived',
-                    ]),
+                    ->label('Status Peluang')
+                    ->options(static::statusOptions()),
             ])
             ->recordActions([
                 Actions\EditAction::make(),
@@ -347,6 +421,60 @@ class OpportunityResource extends Resource
                     Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    protected static function listRepeater(string $field, string $label, string $addActionLabel): Repeater
+    {
+        return Repeater::make($field)
+            ->label($label)
+            ->schema([
+                TextInput::make('item')
+                    ->label('Item')
+                    ->maxLength(255)
+                    ->required(),
+            ])
+            ->columns(1)
+            ->itemLabel(fn (array $state): ?string => $state['item'] ?? $label)
+            ->addActionLabel($addActionLabel)
+            ->reorderable()
+            ->collapsible()
+            ->afterStateHydrated(static function (Repeater $component): void {
+                $state = $component->getState();
+
+                if (blank($state)) {
+                    $component->state([]);
+
+                    return;
+                }
+
+                if (is_string($state)) {
+                    $state = preg_split('/\r\n|\r|\n/', $state) ?: [];
+                }
+
+                if (! is_array($state)) {
+                    $component->state([]);
+
+                    return;
+                }
+
+                $component->state(
+                    collect($state)
+                        ->map(fn ($item): ?string => is_array($item)
+                            ? ($item['item'] ?? $item['text'] ?? null)
+                            : $item)
+                        ->map(fn ($item): ?string => is_string($item) ? trim($item) : null)
+                        ->filter(fn (?string $item): bool => filled($item))
+                        ->map(fn (string $item): array => ['item' => $item])
+                        ->values()
+                        ->all()
+                );
+            })
+            ->dehydrateStateUsing(fn (?array $state): array => collect($state ?? [])
+                ->map(fn ($item): ?string => is_array($item) ? ($item['item'] ?? null) : $item)
+                ->map(fn ($item): ?string => is_string($item) ? trim($item) : null)
+                ->filter(fn (?string $item): bool => filled($item))
+                ->values()
+                ->all());
     }
 
     public static function getRelations(): array

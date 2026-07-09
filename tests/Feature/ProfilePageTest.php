@@ -90,7 +90,12 @@ test('public profile hides technical user data', function () {
         'institution' => 'user',
     ]);
 
-    $author = $user->profile;
+    $author = Author::query()->create([
+        'user_id' => $user->id,
+        'name' => 'Nabila Publik',
+        'slug' => 'nabila-publik',
+        'is_active' => true,
+    ]);
 
     $this->get(route('profiles.show', $author->slug))
         ->assertOk()

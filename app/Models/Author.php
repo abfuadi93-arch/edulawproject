@@ -108,8 +108,7 @@ class Author extends Model
 
     public function getPhotoUrlAttribute(): ?string
     {
-        return EdulawSite::assetUrl($this->attributes['photo'] ?? null)
-            ?: EdulawSite::assetUrl($this->user?->avatar);
+        return EdulawSite::assetUrl($this->attributes['photo'] ?? null);
     }
 
     public function user(): BelongsTo

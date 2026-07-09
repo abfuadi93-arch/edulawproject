@@ -4,7 +4,6 @@ use App\Models\Author;
 use App\Models\User;
 use Filament\Models\Contracts\HasAvatar;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Storage;
 
 test('admin users do not expose filament avatar images', function () {
     expect(is_subclass_of(User::class, HasAvatar::class))->toBeFalse()
@@ -12,39 +11,36 @@ test('admin users do not expose filament avatar images', function () {
         ->and(method_exists(User::class, 'getAvatarUrlAttribute'))->toBeFalse();
 });
 
-test('public author photo falls back to linked user avatar', function () {
+test('creating admin user does not automatically create public author profile', function () {
     $user = User::query()->create([
         'name' => 'Website Author',
         'email' => 'website-author@example.test',
         'password' => Hash::make('password'),
-        'avatar' => 'avatars/website-author.webp',
         'is_active' => true,
     ]);
 
-    $profile = Author::query()
-        ->where('user_id', $user->id)
-        ->first();
-
-    $profile->forceFill(['photo' => null])->save();
-    $profile->load('user');
-
-    expect($profile)->not->toBeNull()
-        ->and($profile->photo_url)->toBe(Storage::disk('public')->url('avatars/website-author.webp'));
+    expect($user->profile()->exists())->toBeFalse();
 });
 
-test('blank linked profile photo follows updated user avatar', function () {
+test('public author photo does not fall back to linked user avatar', function () {
     $user = User::query()->create([
-        'name' => 'Updated Avatar',
-        'email' => 'updated-avatar@example.test',
+        'name' => 'Linked Author',
+        'email' => 'linked-author@example.test',
         'password' => Hash::make('password'),
         'is_active' => true,
     ]);
 
-    $profile = $user->profile()->first();
-    $profile->forceFill(['photo' => null])->save();
+    $user->forceFill(['avatar' => 'avatars/linked-author.webp'])->save();
 
-    $user->forceFill(['avatar' => 'avatars/updated-avatar.webp'])->save();
+    $profile = Author::query()->create([
+        'user_id' => $user->id,
+        'name' => 'Linked Author',
+        'slug' => 'linked-author',
+        'email' => 'linked-author@example.test',
+        'photo' => null,
+        'profile_type' => 'team',
+        'is_active' => true,
+    ]);
 
-    expect($profile->refresh()->photo)->toBe('avatars/updated-avatar.webp')
-        ->and($profile->photo_url)->toBe(Storage::disk('public')->url('avatars/updated-avatar.webp'));
+    expect($profile->photo_url)->toBeNull();
 });

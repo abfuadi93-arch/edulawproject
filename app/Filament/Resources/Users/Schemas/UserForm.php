@@ -3,8 +3,6 @@
 namespace App\Filament\Resources\Users\Schemas;
 
 use Filament\Forms\Components\DateTimePicker;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Schema;
@@ -15,15 +13,6 @@ class UserForm
     {
         return $schema
             ->components([
-                FileUpload::make('avatar')
-                    ->label('Avatar')
-                    ->image()
-                    ->disk('public')
-                    ->directory('avatars')
-                    ->visibility('public')
-                    ->imageEditor()
-                    ->maxSize(2048)
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 TextInput::make('name')
                     ->required(),
                 TextInput::make('email')
@@ -34,8 +23,6 @@ class UserForm
                 TextInput::make('password')
                     ->password()
                     ->required(),
-                Textarea::make('bio')
-                    ->columnSpanFull(),
                 TextInput::make('institution'),
                 TextInput::make('position'),
                 Toggle::make('is_active')

@@ -173,9 +173,7 @@ class Program extends Model
         return match ($this->attributes['status'] ?? null) {
             'upcoming' => 'Segera Dibuka',
             'ongoing' => 'Berjalan',
-            'completed' => 'Selesai',
-            'portfolio' => 'Portofolio',
-            'archived' => 'Arsip',
+            'completed', 'portfolio', 'archived' => 'Arsip',
             default => ucfirst((string) ($this->attributes['status'] ?? 'Program')),
         };
     }

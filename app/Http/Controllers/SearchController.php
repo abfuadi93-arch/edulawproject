@@ -78,7 +78,7 @@ class SearchController extends Controller
                 ]);
 
             $opportunities = Opportunity::query()
-                ->whereIn('status', ['open', 'closed'])
+                ->open()
                 ->where(function ($q) use ($query) {
                     $q->where('title', 'like', "%{$query}%")
                         ->orWhere('excerpt', 'like', "%{$query}%")

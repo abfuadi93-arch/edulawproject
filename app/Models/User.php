@@ -21,8 +21,6 @@ class User extends Authenticatable implements FilamentUser
         'name',
         'email',
         'password',
-        'avatar',
-        'bio',
         'institution',
         'position',
         'is_active',
@@ -40,17 +38,6 @@ class User extends Authenticatable implements FilamentUser
             'password' => 'hashed',
             'is_active' => 'boolean',
         ];
-    }
-
-    protected static function booted(): void
-    {
-        static::created(function (User $user): void {
-            $user->ensureProfile();
-        });
-
-        static::updated(function (User $user): void {
-            $user->syncLinkedProfileBasics();
-        });
     }
 
     public function canAccessPanel(Panel $panel): bool
@@ -86,8 +73,6 @@ class User extends Authenticatable implements FilamentUser
                 'name' => $this->name,
                 'slug' => Author::uniqueSlugFor($this->name),
                 'email' => $this->email,
-                'bio' => $this->bio,
-                'photo' => $this->avatar,
                 'institution' => $this->institution,
                 'position' => $this->position,
                 'profile_type' => 'team',
@@ -99,8 +84,6 @@ class User extends Authenticatable implements FilamentUser
             'user_id' => $this->id,
             'name' => $this->name,
             'email' => $this->email,
-            'bio' => $this->bio,
-            'photo' => $profile->photo ?: $this->avatar,
             'institution' => $this->institution,
             'position' => $this->position,
             'profile_type' => $profile->profile_type ?: 'team',
@@ -112,18 +95,15 @@ class User extends Authenticatable implements FilamentUser
 
     public function syncLinkedProfileBasics(): void
     {
-        $profile = $this->ensureProfile();
-        $photo = $profile->photo;
+        $profile = $this->profile()->first();
 
-        if (blank($photo) || ($this->wasChanged('avatar') && $photo === $this->getOriginal('avatar'))) {
-            $photo = $this->avatar;
+        if (! $profile) {
+            return;
         }
 
         $profile->forceFill([
             'name' => $this->name,
             'email' => $this->email,
-            'bio' => $this->bio,
-            'photo' => $photo,
             'institution' => $this->institution,
             'position' => $this->position,
             'is_active' => $this->is_active !== false,

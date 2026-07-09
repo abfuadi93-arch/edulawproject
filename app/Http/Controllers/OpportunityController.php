@@ -10,8 +10,8 @@ class OpportunityController extends Controller
     public function index(Request $request)
     {
         $query = Opportunity::query()
-            ->whereIn('status', ['open', 'closed'])
-            ->orderByRaw("CASE WHEN status = 'open' THEN 0 ELSE 1 END")
+            ->open()
+            ->orderByDesc('featured')
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline');
 
@@ -59,13 +59,14 @@ class OpportunityController extends Controller
         $opportunities = $query->paginate(6)->withQueryString();
 
         $featuredOpportunity = Opportunity::query()
-            ->where('status', 'open')
+            ->open()
             ->where('featured', true)
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
             ->first();
 
         $opportunityTypes = Opportunity::query()
+            ->open()
             ->whereNotNull('type')
             ->select('type')
             ->distinct()

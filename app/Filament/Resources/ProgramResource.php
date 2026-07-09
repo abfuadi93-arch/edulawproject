@@ -478,7 +478,7 @@ class ProgramResource extends Resource
 
                                         DatePicker::make('event_date')
                                             ->label('Tanggal Mulai')
-                                            ->required(fn (Get $get): bool => $get('status') !== 'completed'),
+                                            ->required(fn (Get $get): bool => $get('status') !== 'archived'),
 
                                         DatePicker::make('end_date')
                                             ->label('Tanggal Selesai'),
@@ -680,7 +680,7 @@ class ProgramResource extends Resource
 
                         match ($status) {
                             'upcoming', 'ongoing' => $query->where('status', $status),
-                            'completed' => $query->whereIn('status', ['completed', 'portfolio', 'archived']),
+                            'archived' => $query->whereIn('status', ['archived', 'completed', 'portfolio']),
                             default => null,
                         };
                     }),
@@ -741,7 +741,7 @@ class ProgramResource extends Resource
         return [
             'upcoming' => 'Upcoming',
             'ongoing' => 'Ongoing',
-            'completed' => 'Completed',
+            'archived' => 'Archived',
         ];
     }
 
@@ -750,8 +750,7 @@ class ProgramResource extends Resource
         return match ($status) {
             'upcoming' => 'Upcoming',
             'ongoing' => 'Ongoing',
-            'completed' => 'Completed',
-            'portfolio', 'archived' => 'Archived',
+            'archived', 'completed', 'portfolio' => 'Archived',
             default => ucfirst((string) ($status ?: 'Upcoming')),
         };
     }
@@ -761,8 +760,7 @@ class ProgramResource extends Resource
         return match ($status) {
             'upcoming' => 'primary',
             'ongoing' => 'success',
-            'completed' => 'info',
-            'portfolio', 'archived' => 'gray',
+            'archived', 'completed', 'portfolio' => 'gray',
             default => 'gray',
         };
     }
@@ -770,8 +768,8 @@ class ProgramResource extends Resource
     public static function normalizeStatusForForm(?string $status): string
     {
         return match ($status) {
-            'ongoing', 'completed' => $status,
-            'portfolio', 'archived' => 'completed',
+            'ongoing', 'archived' => $status,
+            'completed', 'portfolio' => 'archived',
             default => 'upcoming',
         };
     }

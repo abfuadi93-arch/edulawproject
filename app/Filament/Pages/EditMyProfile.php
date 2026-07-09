@@ -4,8 +4,6 @@ namespace App\Filament\Pages;
 
 use App\Models\User;
 use BackedEnum;
-use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
@@ -48,8 +46,6 @@ class EditMyProfile extends Page
         $this->form->fill($this->getUser()->only([
             'name',
             'email',
-            'avatar',
-            'bio',
             'institution',
             'position',
         ]));
@@ -72,24 +68,6 @@ class EditMyProfile extends Page
                     'lg' => 5,
                 ])
                     ->schema([
-                        Section::make('Foto Profil')
-                            ->schema([
-                                FileUpload::make('avatar')
-                                    ->label('Avatar')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('avatars')
-                                    ->visibility('public')
-                                    ->avatar()
-                                    ->imageEditor()
-                                    ->maxSize(2048)
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
-                            ])
-                            ->columnSpan([
-                                'default' => 1,
-                                'lg' => 2,
-                            ]),
-
                         Section::make('Informasi Akun')
                             ->schema([
                                 TextInput::make('name')
@@ -112,16 +90,11 @@ class EditMyProfile extends Page
                                 TextInput::make('position')
                                     ->label('Posisi')
                                     ->maxLength(255),
-
-                                Textarea::make('bio')
-                                    ->label('Bio')
-                                    ->rows(5)
-                                    ->columnSpanFull(),
                             ])
                             ->columns(2)
                             ->columnSpan([
                                 'default' => 1,
-                                'lg' => 3,
+                                'lg' => 5,
                             ]),
                     ])
                     ->columnSpanFull(),
@@ -146,7 +119,9 @@ class EditMyProfile extends Page
                             ->dehydrated(false)
                             ->autocomplete('new-password'),
                     ])
-                    ->columns(2),
+                    ->columns(2)
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 

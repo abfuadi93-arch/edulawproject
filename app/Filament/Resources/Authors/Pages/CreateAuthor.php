@@ -8,4 +8,9 @@ use App\Filament\Resources\Pages\CreateRecordAndReturn;
 class CreateAuthor extends CreateRecordAndReturn
 {
     protected static string $resource = AuthorResource::class;
+
+    protected function mutateFormDataBeforeCreate(array $data): array
+    {
+        return AuthorResource::prepareFormDataForPersistence($data);
+    }
 }

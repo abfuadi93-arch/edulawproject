@@ -84,9 +84,7 @@
     $authorName = $primaryAuthor?->name ?: $insight->creator?->name ?: $insight->reviewer?->name ?: 'Edulaw Project';
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorBio = $primaryAuthor?->bio;
-    $authorPhoto = $primaryAuthor?->photo_url
-        ?: edulaw_file_url($insight->creator?->avatar)
-        ?: edulaw_file_url($insight->reviewer?->avatar);
+    $authorPhoto = $primaryAuthor?->photo_url;
     $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
     $additionalAuthorsCount = max($insight->authors->count() - 1, 0);
     $authorInitials = \Illuminate\Support\Str::of($authorName)
