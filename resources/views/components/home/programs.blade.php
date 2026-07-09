@@ -4,33 +4,6 @@
 
 @php
     $programCollection = collect($programs)->take(3)->values();
-
-    $fallbackImages = [
-        'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1200&q=85',
-        'https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1200&q=85',
-    ];
-
-    $resolveImagePath = function ($path) {
-        return edulaw_file_url($path);
-    };
-
-    $resolveImage = function ($program, $fallback) use ($resolveImagePath) {
-        $image = collect([
-            data_get($program, 'poster_url'),
-            data_get($program, 'poster_image_url'),
-            data_get($program, 'cover_image_url'),
-            data_get($program, 'image_url'),
-            data_get($program, 'poster'),
-            data_get($program, 'poster_image'),
-            data_get($program, 'cover_image'),
-            data_get($program, 'image'),
-            data_get($program, 'thumbnail'),
-            data_get($program, 'og_image'),
-        ])->first(fn ($path) => filled($path));
-
-        return $resolveImagePath($image) ?? $fallback;
-    };
 @endphp
 
 <section class="bg-[#FBF8F1] py-8 lg:py-10">
@@ -66,12 +39,10 @@
         <div class="mt-6 grid auto-rows-fr gap-5 lg:grid-cols-3">
             @forelse ($programCollection as $program)
                 @php
-                    $fallbackIndex = $loop->index % count($fallbackImages);
-                    $image = $resolveImage($program, $fallbackImages[$fallbackIndex]);
-
+                    $image = $program->hero_image_url ?: $program->image_url;
                     $category = $program->display_category ?? $program->category?->name ?? 'Program';
-                    $format = $program->display_format ?? $program->format ?? '-';
-                    $level = $program->level ?? 'Umum';
+                    $format = $program->display_format ?? \Illuminate\Support\Str::headline((string) ($program->format ?: 'Program'));
+                    $level = $program->display_level ?? 'Umum';
                     $audience = $program->audience ?? 'Terbuka';
                     $eventDate = $program->event_date ?? $program->starts_at ?? null;
                 @endphp
@@ -79,16 +50,29 @@
                 <article class="group h-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
                     <a href="{{ route('programs.show', $program->slug) }}" class="flex h-full flex-col">
                         {{-- Image --}}
-                        <div class="relative h-63.75 overflow-hidden bg-brand-navy">
-                            <img
-                                src="{{ $image }}"
-                                alt="{{ $program->name }}"
-                                class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                loading="lazy"
-                            >
+                        <div class="relative h-[255px] overflow-hidden bg-brand-navy">
+                            @if ($image)
+                                <img
+                                    src="{{ $image }}"
+                                    alt="{{ $program->display_title }}"
+                                    class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                                    loading="lazy"
+                                >
+                            @else
+                                <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-[#0b6f6b]">
+                                    <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-center text-white shadow-sm backdrop-blur">
+                                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber">
+                                            Program Edulaw
+                                        </p>
+                                        <p class="mt-2 text-sm font-semibold text-white/80">
+                                            Poster sedang disiapkan
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
 
-                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/86 via-brand-navy/26 to-transparent"></div>
-                            <div class="absolute inset-0 bg-linear-to-r from-brand-navy/35 via-transparent to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/78 via-brand-navy/20 to-transparent"></div>
+                            <div class="absolute inset-0 bg-linear-to-r from-brand-navy/28 via-transparent to-transparent"></div>
 
                             <div class="absolute left-4 top-4 flex flex-wrap items-center gap-2">
                                 <span class="inline-flex rounded-md bg-brand-amber px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-black shadow-sm">
@@ -104,7 +88,7 @@
 
                             <div class="absolute bottom-4 left-4 right-4">
                                 <h3 class="line-clamp-2 text-[1.55rem] font-black leading-tight tracking-tight text-white">
-                                    {{ $program->name }}
+                                    {{ $program->display_title }}
                                 </h3>
                             </div>
                         </div>
@@ -112,7 +96,7 @@
                         {{-- Body --}}
                         <div class="flex flex-1 flex-col p-4">
                             <p class="line-clamp-3 text-[15px] leading-6 text-slate-600">
-                                {{ $program->short_description }}
+                                {{ $program->display_description ?: 'Informasi program akan diperbarui oleh tim Edulaw Project.' }}
                             </p>
 
                             <div class="mt-4 grid grid-cols-3 gap-3 border-y border-slate-100 py-3">
@@ -162,66 +146,15 @@
                     </a>
                 </article>
             @empty
-                <div class="col-span-full flex min-h-55 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-white/80 p-8 text-center shadow-sm">
-                    <div>
-                        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-brand-navy text-brand-amber">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M12 3 4 7l8 4 8-4-8-4Zm-6 8 6 3 6-3M6 15l6 3 6-3" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                            </svg>
-                        </div>
-
-                        <h3 class="mt-4 text-lg font-black text-brand-ink">
-                            Belum ada program dipublikasikan.
-                        </h3>
-
-                        <p class="mt-1 text-sm text-slate-500">
-                            Program yang sudah aktif akan tampil di bagian ini.
-                        </p>
-                    </div>
+                <div class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
+                    <p class="text-sm font-black text-brand-ink">
+                        Konten sedang disiapkan.
+                    </p>
+                    <p class="mt-1 text-xs leading-5 text-slate-500">
+                        Program upcoming atau ongoing akan tampil otomatis di sini.
+                    </p>
                 </div>
             @endforelse
-
-            {{-- Cadangan visual jika data kurang dari 3 --}}
-            @if ($programCollection->isNotEmpty())
-                @for ($i = $programCollection->count(); $i < 3; $i++)
-                    <article class="h-full overflow-hidden rounded-xl border border-dashed border-slate-300 bg-white/75 shadow-sm">
-                        <div class="flex h-full min-h-107.5col">
-                            <div class="relative h-63.75 bg-linear-to-br from-white via-[#FDFBF7] to-slate-100">
-                                <div class="absolute inset-0 flex items-center justify-center">
-                                    <div class="flex h-14 w-14 items-center justify-center rounded-xl bg-white text-brand-navy shadow-sm ring-1 ring-slate-200">
-                                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M12 6v12M6 12h12" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
-                                        </svg>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="flex flex-1 flex-col p-4">
-                                <p class="text-[11px] font-black uppercase tracking-[0.14em] text-brand-navy">
-                                    Program Edulaw
-                                </p>
-
-                                <h3 class="mt-2 text-lg font-black leading-tight text-brand-ink">
-                                    Program lainnya sedang disiapkan.
-                                </h3>
-
-                                <p class="mt-2 text-sm leading-6 text-slate-500">
-                                    Kelas, diskusi, atau pelatihan baru akan tampil setelah dipublikasikan.
-                                </p>
-
-                                <div class="mt-auto pt-4">
-                                    <span class="inline-flex items-center gap-2 text-sm font-black text-brand-navy">
-                                        Segera hadir
-                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </div>
-                    </article>
-                @endfor
-            @endif
         </div>
     </div>
 </section>

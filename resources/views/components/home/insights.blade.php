@@ -1,6 +1,7 @@
 @props([
     'featuredInsight' => null,
     'insights' => collect(),
+    'categories' => collect(),
 ])
 
 @php
@@ -13,21 +14,16 @@
         ->take(3)
         ->values();
 
-    $fallbackImage = 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85';
-
-    $smallFallbacks = [
-        'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=800&q=85',
-        'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=800&q=85',
-        'https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=800&q=85',
-    ];
-
-    $categories = [
+    $categoryLinks = collect([
         ['label' => 'Semua', 'url' => route('insights.index')],
-        ['label' => 'Law 101', 'url' => route('insights.index', ['category' => 'law-101'])],
-        ['label' => 'Regulatory Update', 'url' => route('insights.index', ['category' => 'regulatory-update'])],
-        ['label' => 'Constitution & Governance', 'url' => route('insights.index', ['category' => 'constitution-governance'])],
-        ['label' => 'Legal Editorial', 'url' => route('insights.index', ['category' => 'legal-insight'])],
-    ];
+    ])->merge(
+        collect($categories)
+            ->filter(fn ($category) => filled($category->slug ?? null))
+            ->map(fn ($category) => [
+                'label' => $category->name,
+                'url' => route('insights.index', ['category' => $category->slug]),
+            ])
+    )->take(6);
 
     $primaryAuthor = function ($insight) {
         return $insight && $insight->relationLoaded('authors')
@@ -78,7 +74,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 lg:justify-end">
-                    @foreach ($categories as $category)
+                    @foreach ($categoryLinks as $category)
                         <a
                             href="{{ $category['url'] }}"
                             class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-extrabold text-slate-600 shadow-sm transition hover:border-brand-black hover:bg-brand-black hover:text-white"
@@ -95,13 +91,26 @@
                 {{-- Featured Editorial --}}
                 <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
                     <a href="{{ route('insights.show', $featured->slug) }}" class="block h-full">
-                        <div class="relative h-67.5 overflow-hidden bg-slate-100 sm:h-80 lg:h-87.5">
-                            <img
-                                src="{{ $featured->cover_image_url ?: $fallbackImage }}"
-                                alt="{{ $featured->title }}"
-                                class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                loading="lazy"
-                            >
+                        <div class="relative h-[270px] overflow-hidden bg-slate-100 sm:h-80 lg:h-[350px]">
+                            @if ($featured->cover_image_url)
+                                <img
+                                    src="{{ $featured->cover_image_url }}"
+                                    alt="{{ $featured->title }}"
+                                    class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
+                                    loading="lazy"
+                                >
+                            @else
+                                <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-brand-teal">
+                                    <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-center text-white shadow-sm backdrop-blur">
+                                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber">
+                                            Editorial Edulaw
+                                        </p>
+                                        <p class="mt-2 text-sm font-semibold text-white/80">
+                                            Konten visual sedang disiapkan
+                                        </p>
+                                    </div>
+                                </div>
+                            @endif
 
                             <div class="absolute inset-0 bg-linear-to-t from-brand-navy/82 via-brand-navy/18 to-transparent"></div>
 
@@ -170,19 +179,26 @@
                 <div class="grid gap-4">
                     @foreach ($list as $item)
                         @php
-                            $fallbackIndex = $loop->index % count($smallFallbacks);
-                            $thumb = $item->cover_image_url ?: $smallFallbacks[$fallbackIndex];
+                            $thumb = $item->cover_image_url;
                         @endphp
 
                         <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-brand-ink/10">
-                            <a href="{{ route('insights.show', $item->slug) }}" class="grid min-h-37.5 grid-cols-[132px_1fr] sm:grid-cols-[170px_1fr]">
+                            <a href="{{ route('insights.show', $item->slug) }}" class="grid min-h-[150px] grid-cols-[132px_1fr] sm:grid-cols-[170px_1fr]">
                                 <div class="relative overflow-hidden bg-slate-100">
-                                    <img
-                                        src="{{ $thumb }}"
-                                        alt="{{ $item->title }}"
-                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
-                                        loading="lazy"
-                                    >
+                                    @if ($thumb)
+                                        <img
+                                            src="{{ $thumb }}"
+                                            alt="{{ $item->title }}"
+                                            class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                                            loading="lazy"
+                                        >
+                                    @else
+                                        <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-blue to-brand-teal">
+                                            <span class="rounded-full bg-white/15 px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-white">
+                                                Editorial
+                                            </span>
+                                        </div>
+                                    @endif
 
                                     <div class="absolute inset-0 bg-brand-navy/10"></div>
                                 </div>
@@ -209,40 +225,16 @@
                             </a>
                         </article>
                     @endforeach
-
-                    {{-- Keep right side visually filled until 3 cards --}}
-                    @for ($i = $list->count(); $i < 3; $i++)
-                        <div class="flex min-h-37.5 items-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-4">
-                            <div>
-                                <p class="text-sm font-black text-brand-ink">
-                                    Editorial lainnya sedang disiapkan.
-                                </p>
-                                <p class="mt-1 text-sm leading-5 text-slate-500">
-                                    Konten terbaru akan tampil otomatis setelah dipublikasikan.
-                                </p>
-                            </div>
-                        </div>
-                    @endfor
                 </div>
             </div>
         @else
-            <div class="mt-5 flex min-h-55 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-                <div>
-                    <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-brand-navy text-brand-amber">
-                        <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M7 3h7l4 4v14H7V3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                            <path d="M14 3v5h5M10 13h6M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                    </div>
-
-                    <h3 class="mt-4 text-lg font-black text-brand-ink">
-                        Belum ada editorial dipublikasikan.
-                    </h3>
-
-                    <p class="mt-1 text-sm text-slate-500">
-                        Editorial yang sudah berstatus published akan tampil di sini.
-                    </p>
-                </div>
+            <div class="mt-5 rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
+                <p class="text-sm font-black text-brand-ink">
+                    Konten sedang disiapkan.
+                </p>
+                <p class="mt-1 text-xs leading-5 text-slate-500">
+                    Editorial published akan tampil otomatis di sini.
+                </p>
             </div>
         @endif
     </div>

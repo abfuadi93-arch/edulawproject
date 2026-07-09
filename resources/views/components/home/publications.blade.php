@@ -3,14 +3,19 @@
 ])
 
 @php
-    $publicationTypes = [
-        'Semua',
-        'Jurnal',
-        'Policy Brief',
-        'Kajian Hukum',
-        'Working Paper',
-        'Buku Digital',
-    ];
+    $publicationTypes = collect($publications)
+        ->map(fn ($publication) => $publication->type)
+        ->filter()
+        ->unique('slug')
+        ->map(fn ($type) => [
+            'label' => $type->name,
+            'slug' => $type->slug,
+        ])
+        ->prepend([
+            'label' => 'Semua',
+            'slug' => null,
+        ])
+        ->values();
 
     $coverPalettes = [
         [
@@ -104,10 +109,10 @@
                 <div class="flex flex-wrap items-center gap-2 lg:justify-end">
                     @foreach ($publicationTypes as $type)
                         <a
-                            href="{{ route('publications.index', ['type' => \Illuminate\Support\Str::slug($type)]) }}"
+                            href="{{ $type['slug'] ? route('publications.index', ['type' => $type['slug']]) : route('publications.index') }}"
                             class="inline-flex items-center rounded-full border border-slate-200 bg-white px-3 py-1.5 text-[11px] font-extrabold text-slate-600 shadow-sm transition hover:border-brand-black hover:bg-brand-black hover:text-white"
                         >
-                            {{ $type }}
+                            {{ $type['label'] }}
                         </a>
                     @endforeach
                 </div>
@@ -120,6 +125,7 @@
                     $typeName = $publication->type?->name ?? 'Publikasi';
                     $palette = $coverPalettes[$loop->index % count($coverPalettes)];
                     $publishedAt = optional($publication->published_at)->translatedFormat('M Y') ?: 'Edulaw Project';
+                    $downloadUrl = $publication->download_url;
 
                     $authorName = $publication->display_author
                         ?? $publication->display_authors
@@ -267,9 +273,8 @@
                             </a>
 
                             <a
-                                href="{{ $publication->download_url ?: route('publications.show', $publication->slug) }}"
-                                target="_blank"
-                                rel="noopener noreferrer"
+                                href="{{ $downloadUrl ?: route('publications.show', $publication->slug) }}"
+                                @if ($downloadUrl) target="_blank" rel="noopener noreferrer" @endif
                                 class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-brand-ink transition hover:border-brand-amber hover:bg-brand-amber-soft hover:text-brand-black"
                                 aria-label="Unduh atau buka publikasi"
                             >
@@ -281,23 +286,13 @@
                     </div>
                 </article>
             @empty
-                <div class="col-span-full flex min-h-55 items-center justify-center rounded-xl border border-dashed border-slate-300 bg-slate-50 p-8 text-center">
-                    <div>
-                        <div class="mx-auto flex h-12 w-12 items-center justify-center rounded-lg bg-brand-navy text-brand-amber">
-                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                <path d="M7 3h7l4 4v14H7V3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                <path d="M14 3v5h5M10 13h6M10 17h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                            </svg>
-                        </div>
-
-                        <h3 class="mt-4 text-lg font-black text-brand-ink">
-                            Belum ada publikasi dipublikasikan.
-                        </h3>
-
-                        <p class="mt-1 text-sm text-slate-500">
-                            Publikasi yang sudah berstatus published akan tampil di sini.
-                        </p>
-                    </div>
+                <div class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
+                    <p class="text-sm font-black text-brand-ink">
+                        Konten sedang disiapkan.
+                    </p>
+                    <p class="mt-1 text-xs leading-5 text-slate-500">
+                        Publikasi published akan tampil otomatis di sini.
+                    </p>
                 </div>
             @endforelse
         </div>

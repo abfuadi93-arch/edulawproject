@@ -5,7 +5,7 @@
 @section('content')
     <x-home.hero :hero="$homeHero" :values="$homeValues" />
     <x-home.audience :intro="$homeAudienceIntro" :audiences="$homeAudiences" />
-    <x-home.insights :featuredInsight="$featuredInsight" :insights="$latestInsights" />
+    <x-home.insights :featuredInsight="$featuredInsight" :insights="$latestInsights" :categories="$insightCategories" />
     <x-home.publications :publications="$latestPublications" />
     <x-home.programs :programs="$latestPrograms" />
     <x-home.multimedia-opportunities

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Insight;
+use App\Models\InsightCategory;
 use App\Models\Multimedia;
 use App\Models\Opportunity;
 use App\Models\Program;
@@ -14,20 +15,31 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $featuredInsight = Insight::with(['categoryRelation', 'authors.user'])
+        $homeInsights = Insight::with(['categoryRelation', 'authors.user', 'tags'])
             ->published()
-            ->featured()
+            ->orderByDesc('featured')
             ->ordered()
-            ->first();
-
-        $latestInsights = Insight::with(['categoryRelation', 'authors.user'])
-            ->published()
-            ->ordered()
-            ->limit(3)
+            ->limit(4)
             ->get();
 
-        $latestPublications = Publication::with(['type', 'authors.user'])
-            ->where('status', 'published')
+        $featuredInsight = $homeInsights->firstWhere('featured', true) ?: $homeInsights->first();
+
+        $latestInsights = $homeInsights
+            ->when($featuredInsight, fn ($collection) => $collection->where('id', '!=', $featuredInsight->id))
+            ->take(3)
+            ->values();
+
+        $insightCategories = InsightCategory::query()
+            ->where('is_active', true)
+            ->whereHas('insights', fn ($query) => $query->published())
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->limit(5)
+            ->get(['name', 'slug']);
+
+        $latestPublications = Publication::with(['type', 'authors.user', 'tags'])
+            ->published()
+            ->orderByDesc('featured')
             ->orderByDesc('published_at')
             ->latest()
             ->limit(4)
@@ -36,26 +48,35 @@ class HomeController extends Controller
         $latestPrograms = Program::with('categoryRelation')
             ->visible()
             ->active()
-            ->ordered()
-            ->limit(3)
-            ->get();
-
-        $featuredMultimedia = Multimedia::query()
-            ->published()
-            ->featured()
-            ->orderByDesc('published_at')
-            ->latest()
-            ->first();
-
-        $latestMultimedia = Multimedia::query()
-            ->published()
-            ->orderByDesc('published_at')
+            ->orderByDesc('featured')
+            ->orderBy('sort_order')
+            ->orderByRaw('CASE WHEN event_date IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('event_date')
             ->latest()
             ->limit(3)
             ->get();
+
+        $homeMultimedia = Multimedia::query()
+            ->published()
+            ->orderByDesc('featured')
+            ->orderByDesc('published_at')
+            ->latest()
+            ->limit(4)
+            ->get();
+
+        $featuredMultimedia = $homeMultimedia->firstWhere('featured', true) ?: $homeMultimedia->first();
+
+        $latestMultimedia = $homeMultimedia
+            ->when($featuredMultimedia, fn ($collection) => $collection->where('id', '!=', $featuredMultimedia->id))
+            ->take(3)
+            ->values();
 
         $latestOpportunities = Opportunity::query()
             ->open()
+            ->where(function ($query) {
+                $query->whereNull('deadline')
+                    ->orWhereDate('deadline', '>=', now()->toDateString());
+            })
             ->orderByDesc('featured')
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
@@ -72,6 +93,7 @@ class HomeController extends Controller
         return view('home', compact(
             'featuredInsight',
             'latestInsights',
+            'insightCategories',
             'latestPublications',
             'latestPrograms',
             'featuredMultimedia',
