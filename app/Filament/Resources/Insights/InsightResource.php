@@ -146,8 +146,9 @@ class InsightResource extends Resource
 
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
-                                            ->maxLength(60)
-                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul'),
+                                            ->maxLength(300)
+                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul')
+                                            ->helperText('Maks. 300 karakter.'),
 
                                         Textarea::make('seo_description')
                                             ->label('Meta Description')

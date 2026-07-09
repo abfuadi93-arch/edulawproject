@@ -172,8 +172,9 @@ class PublicationResource extends Resource
 
                                         TextInput::make('seo_title')
                                             ->label('Judul SEO')
-                                            ->maxLength(60)
-                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul'),
+                                            ->maxLength(300)
+                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul')
+                                            ->helperText('Maks. 300 karakter.'),
 
                                         Textarea::make('seo_description')
                                             ->label('Deskripsi SEO')

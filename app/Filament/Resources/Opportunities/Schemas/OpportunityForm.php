@@ -46,7 +46,9 @@ class OpportunityForm
                     ->default('open'),
                 Toggle::make('featured')
                     ->required(),
-                TextInput::make('seo_title'),
+                TextInput::make('seo_title')
+                    ->maxLength(300)
+                    ->helperText('Maks. 300 karakter.'),
                 Textarea::make('seo_description')
                     ->columnSpanFull(),
                 FileUpload::make('og_image')
