@@ -106,18 +106,18 @@
             ?? null;
     };
 
-    $opportunityUrl = function ($opportunity) use ($externalUrl, $contactUrl) {
-        return $externalUrl($opportunity) ?: $contactUrl;
+    $opportunityUrl = function ($opportunity) use ($contactUrl) {
+        return filled($opportunity?->slug)
+            ? route('opportunities.show', $opportunity->slug)
+            : $contactUrl;
     };
 
-    $isExternalOpportunity = function ($opportunity) use ($externalUrl) {
-        $url = $externalUrl($opportunity);
-
-        return $url && Str::startsWith($url, ['http://', 'https://']);
+    $isExternalOpportunity = function ($opportunity) {
+        return false;
     };
 
-    $buttonLabel = function ($opportunity) use ($externalUrl) {
-        return $externalUrl($opportunity) ? 'Buka Peluang' : 'Tanya Informasi';
+    $buttonLabel = function ($opportunity) {
+        return 'Lihat Detail';
     };
 
     $opportunityTypeName = function ($opportunity) use ($typeLabels) {

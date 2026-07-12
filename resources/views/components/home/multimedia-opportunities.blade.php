@@ -5,8 +5,6 @@
 ])
 
 @php
-    use Illuminate\Support\Str;
-
     $mainMultimedia = $featuredMultimedia ?: $multimediaItems->first();
 
     $sideMultimedia = $multimediaItems
@@ -19,28 +17,17 @@
     };
 
     $externalOpportunityUrl = function ($opportunity) {
-        return $opportunity->application_link
-            ?? $opportunity->external_url
-            ?? $opportunity->url
-            ?? route('opportunities.index');
+        return filled($opportunity?->slug)
+            ? route('opportunities.show', $opportunity->slug)
+            : route('opportunities.index');
     };
 
     $isExternalOpportunityUrl = function ($opportunity) {
-        $url = $opportunity->application_link
-            ?? $opportunity->external_url
-            ?? $opportunity->url
-            ?? null;
-
-        return $url && Str::startsWith($url, ['http://', 'https://']);
+        return false;
     };
 
     $opportunityButtonLabel = function ($opportunity) {
-        $url = $opportunity->application_link
-            ?? $opportunity->external_url
-            ?? $opportunity->url
-            ?? null;
-
-        return $url ? 'Buka Peluang' : 'Lihat Peluang';
+        return 'Lihat Detail';
     };
 @endphp
 

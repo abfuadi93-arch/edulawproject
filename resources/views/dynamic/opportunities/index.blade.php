@@ -5,8 +5,10 @@
 @section('content')
 @php
     $opportunityImage = fn ($opportunity) => $opportunity?->poster_url ?: 'https://images.unsplash.com/photo-1521737604893-d14cc237f11d?auto=format&fit=crop&w=1200&q=85';
-    $opportunityUrl = fn ($opportunity) => $opportunity?->application_link ?: route('opportunities.index');
-    $isExternalOpportunity = fn ($opportunity) => filled($opportunity?->application_link);
+    $opportunityUrl = fn ($opportunity) => filled($opportunity?->slug)
+        ? route('opportunities.show', $opportunity->slug)
+        : route('opportunities.index');
+    $isExternalOpportunity = fn ($opportunity) => false;
 @endphp
 
 <main class="bg-brand-paper">
@@ -46,7 +48,7 @@
                                 @if ($isExternalOpportunity($featuredOpportunity)) target="_blank" rel="noopener noreferrer" @endif
                                 class="mt-6 inline-flex rounded-xl bg-brand-black px-4 py-2 text-sm font-bold text-white"
                             >
-                                Buka Peluang
+                                Lihat Detail
                             </a>
                         </div>
                     </div>
@@ -89,7 +91,7 @@
                                 <h3 class="mt-3 text-xl font-extrabold text-brand-ink">{{ $opportunity->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $opportunity->excerpt }}</p>
                                 <div class="mt-3 text-xs text-slate-500">Batas akhir: {{ optional($opportunity->deadline)->translatedFormat('d M Y') }}</div>
-                                <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Buka Peluang →</span>
+                                <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Lihat Detail →</span>
                             </div>
                         </a>
                     </article>

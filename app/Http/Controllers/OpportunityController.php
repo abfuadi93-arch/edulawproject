@@ -78,4 +78,24 @@ class OpportunityController extends Controller
             'opportunityTypes'
         ));
     }
+
+    public function show(string $slug)
+    {
+        $opportunity = Opportunity::query()
+            ->open()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $relatedOpportunities = Opportunity::query()
+            ->open()
+            ->whereKeyNot($opportunity->id)
+            ->when($opportunity->type, fn ($query) => $query->where('type', $opportunity->type))
+            ->orderByDesc('featured')
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('deadline')
+            ->limit(3)
+            ->get();
+
+        return view('opportunities.show', compact('opportunity', 'relatedOpportunities'));
+    }
 }
