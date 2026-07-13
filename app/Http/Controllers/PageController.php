@@ -12,6 +12,27 @@ class PageController extends Controller
 {
     public function about(): View
     {
+        $profilePriority = [
+            'founder' => 1,
+            'co_founder' => 2,
+            'manager' => 3,
+            'team' => 4,
+        ];
+
+        $technicalProfile = function (Author $author): bool {
+            $position = Str::of((string) $author->position)
+                ->lower()
+                ->squish()
+                ->toString();
+            $name = Str::of((string) $author->name)
+                ->lower()
+                ->squish()
+                ->toString();
+
+            return in_array($position, ['admin', 'superadmin', 'user'], true)
+                || in_array($name, ['redaksi edulaw', 'super admin'], true);
+        };
+
         $profiles = Author::query()
             ->with('user')
             ->where('is_active', true)
@@ -22,7 +43,20 @@ class PageController extends Controller
                     ->orderBy('sort_order')
             )
             ->orderBy('name')
-            ->get();
+            ->get()
+            ->reject($technicalProfile)
+            ->sortBy(function (Author $author) use ($profilePriority): string {
+                $role = $author->profile_role_key ?: 'team';
+                $priority = $profilePriority[$role] ?? $profilePriority['team'];
+                $sortOrder = $author->sort_order ?? 999999;
+
+                return sprintf('%02d-%06d-%s', $priority, $sortOrder, $author->name);
+            })
+            ->unique(fn (Author $author): string => $this->profileLookupKey($author->name))
+            ->values();
+        $organizationProfiles = $profiles
+            ->filter(fn (Author $author): bool => $author->show_in_organization !== false)
+            ->values();
 
         return view('pages.about', [
             'aboutHero' => EdulawSite::block('about.hero'),
@@ -36,6 +70,9 @@ class PageController extends Controller
             'aboutProfiles' => $profiles
                 ->keyBy(fn (Author $author): string => $this->profileLookupKey($author->name)),
             'aboutProfilesByRole' => $profiles
+                ->groupBy(fn (Author $author): string => $author->profile_role_key ?: 'team')
+                ->map(fn ($profiles) => $profiles->values()),
+            'aboutOrganizationProfilesByRole' => $organizationProfiles
                 ->groupBy(fn (Author $author): string => $author->profile_role_key ?: 'team')
                 ->map(fn ($profiles) => $profiles->values()),
             'sharedCta' => EdulawSite::block('shared.cta'),

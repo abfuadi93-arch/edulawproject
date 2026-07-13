@@ -42,11 +42,13 @@ class Author extends Model
         'sort_order',
         'social_links',
         'is_active',
+        'show_in_organization',
     ];
 
     protected $casts = [
         'social_links' => 'array',
         'is_active' => 'boolean',
+        'show_in_organization' => 'boolean',
         'sort_order' => 'integer',
     ];
 

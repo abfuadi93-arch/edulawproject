@@ -102,6 +102,11 @@ class AuthorResource extends Resource
                                                     ->required()
                                                     ->placeholder('Pilih peran profil'),
 
+                                                Toggle::make('show_in_organization')
+                                                    ->label('Tampilkan di Struktur Organisasi')
+                                                    ->default(true)
+                                                    ->helperText('Matikan untuk profil publik yang tidak masuk struktur organisasi.'),
+
                                                 Toggle::make('is_active')
                                                     ->label('Status Aktif')
                                                     ->default(true),
@@ -291,6 +296,12 @@ class AuthorResource extends Resource
                     ->label('Status')
                     ->boolean()
                     ->sortable(),
+
+                IconColumn::make('show_in_organization')
+                    ->label('Struktur')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')

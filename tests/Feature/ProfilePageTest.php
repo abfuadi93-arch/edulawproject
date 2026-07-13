@@ -200,6 +200,16 @@ test('about page team cards link to active public profiles', function () {
         'is_active' => false,
     ]);
 
+    $directorProfile = Author::query()->create([
+        'name' => 'Umi Zakia Azzahro',
+        'slug' => 'umi-zakia-azzahro',
+        'position' => 'Co-Founder',
+        'interests' => 'Operasional, kolaborasi',
+        'profile_type' => 'co_founder',
+        'sort_order' => 12,
+        'is_active' => true,
+    ]);
+
     $managerProfile = Author::query()->create([
         'name' => 'Manager Baru',
         'slug' => 'manager-baru',
@@ -221,12 +231,43 @@ test('about page team cards link to active public profiles', function () {
     ]);
 
     $teamProfile = Author::query()->create([
-        'name' => 'Writer Baru',
-        'slug' => 'writer-baru',
-        'position' => 'Writer',
-        'interests' => 'Literasi hukum',
+        'name' => 'Fadlah Nur',
+        'slug' => 'fadlah-nur',
         'profile_type' => 'team',
         'sort_order' => 30,
+        'is_active' => true,
+    ]);
+
+    $seniorResearcherProfile = Author::query()->create([
+        'name' => 'Lalu Rizqi Ramdani Alfaen',
+        'slug' => 'lalu-rizqi-ramdani-alfaen',
+        'profile_type' => 'team',
+        'sort_order' => 99,
+        'is_active' => true,
+    ]);
+
+    $publicOnlyProfile = Author::query()->create([
+        'name' => 'Kontributor Publik',
+        'slug' => 'kontributor-publik',
+        'bio' => 'Profil publik yang tidak masuk struktur organisasi.',
+        'profile_type' => 'team',
+        'is_active' => true,
+        'show_in_organization' => false,
+    ]);
+
+    Author::query()->create([
+        'name' => 'Super Admin',
+        'slug' => 'super-admin',
+        'position' => 'superadmin',
+        'profile_type' => 'team',
+        'is_active' => true,
+    ]);
+
+    Author::query()->create([
+        'name' => 'Redaksi Edulaw',
+        'slug' => 'redaksi-edulaw',
+        'position' => 'admin',
+        'profile_type' => 'team',
         'is_active' => true,
     ]);
 
@@ -240,19 +281,39 @@ test('about page team cards link to active public profiles', function () {
 
     $this->get(route('about'))
         ->assertOk()
+        ->assertSee('Penggerak Edulaw Project')
+        ->assertSee('Vision &amp; Mission', false)
+        ->assertSee('Menjadi wadah edukasi hukum yang berorientasi pada kesetaraan, kemanusiaan, dan kemajuan')
+        ->assertSee('Menyediakan pendidikan hukum yang berkualitas dan setara bagi semua lapisan masyarakat.')
+        ->assertSee('Memperluas jaringan keilmuan melalui program kolaboratif.')
+        ->assertSee('Struktur Organisasi')
+        ->assertSee('Edulaw Project Organizational Structure')
         ->assertSee(route('profiles.show', $activeProfile->slug), false)
+        ->assertSee(route('profiles.show', $directorProfile->slug), false)
         ->assertSee(route('profiles.show', $managerProfile->slug), false)
         ->assertSee(route('profiles.show', $firstManagerProfile->slug), false)
         ->assertSee(route('profiles.show', $teamProfile->slug), false)
+        ->assertSee(route('profiles.show', $seniorResearcherProfile->slug), false)
+        ->assertSeeInOrder(['Edulaw Project Organizational Structure', 'Director', 'Umi Zakia Azzahro', 'Director of Operations', 'Manager'])
         ->assertSeeInOrder(['Zed Manager', 'Manager Baru'])
+        ->assertSeeInOrder(['Research Team', 'Lalu Rizqi Ramdani Alfaen', 'Senior Researcher', 'Fadlah Nur', 'Junior Researcher'])
+        ->assertDontSee('Internship Member')
+        ->assertDontSee('Tim Pelaksana')
         ->assertSee('Manager Editorial')
-        ->assertSee('Writer')
         ->assertSee('Hukum tata negara')
         ->assertSee('demokrasi')
         ->assertSee('Editorial')
         ->assertSee('riset hukum')
-        ->assertSee('Literasi hukum')
         ->assertSee('authors/abdul-basid-fuadi.webp')
         ->assertDontSee('Nabila Rahma')
+        ->assertDontSee('Super Admin')
+        ->assertDontSee('Redaksi Edulaw')
+        ->assertDontSee('Kontributor Publik')
+        ->assertDontSee(route('profiles.show', $publicOnlyProfile->slug), false)
         ->assertDontSee(route('profiles.show', $inactiveProfile->slug), false);
+
+    $this->get(route('profiles.show', $publicOnlyProfile->slug))
+        ->assertOk()
+        ->assertSee('Kontributor Publik')
+        ->assertSee('Profil publik yang tidak masuk struktur organisasi.');
 });
