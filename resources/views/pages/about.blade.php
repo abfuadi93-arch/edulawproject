@@ -395,7 +395,7 @@
     {{-- Vision & Mission --}}
     <section class="border-b border-slate-200 bg-white py-8 lg:py-9">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
                 <div>
                     <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                         Vision &amp; Mission
@@ -404,9 +404,6 @@
                         Arah kerja Edulaw Project.
                     </h2>
                 </div>
-                <p class="max-w-3xl text-sm leading-6 text-slate-600 lg:text-right">
-                    Visi dan misi menjadi pijakan Edulaw Project dalam membangun pendidikan hukum yang setara, humanis, dan kolaboratif.
-                </p>
             </div>
 
             <div class="mt-5 grid gap-4 lg:grid-cols-[0.95fr_1.05fr]">
@@ -449,7 +446,7 @@
     @if ($orgHasProfiles)
     <section id="tim" class="border-b border-slate-200 bg-[#f7f8fa] py-10 lg:py-12">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-3 lg:flex-row lg:items-end lg:justify-between">
+            <div>
                 <div>
                     <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
                         Struktur Organisasi
@@ -458,9 +455,6 @@
                         Edulaw Project Organizational Structure
                     </h2>
                 </div>
-                <p class="max-w-3xl text-sm leading-7 text-slate-600 lg:text-right">
-                    Susunan tim Edulaw Project mengikuti peran profil publik yang dikelola dari panel admin.
-                </p>
             </div>
 
             <div class="mt-8 space-y-8">
