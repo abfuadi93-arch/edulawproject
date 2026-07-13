@@ -203,7 +203,7 @@ test('about page team cards link to active public profiles', function () {
     $directorProfile = Author::query()->create([
         'name' => 'Umi Zakia Azzahro',
         'slug' => 'umi-zakia-azzahro',
-        'position' => 'Co-Founder',
+        'position' => 'Director of Operations (non-aktif)',
         'interests' => 'Operasional, kolaborasi',
         'profile_type' => 'co_founder',
         'sort_order' => 12,
@@ -288,13 +288,14 @@ test('about page team cards link to active public profiles', function () {
         ->assertSee('Memperluas jaringan keilmuan melalui program kolaboratif.')
         ->assertSee('Struktur Organisasi')
         ->assertSee('Edulaw Project Organizational Structure')
+        ->assertSeeInOrder(['Penggerak Edulaw Project', 'Umi Zakia Azzahro', 'Co-Founder', 'Vision'])
         ->assertSee(route('profiles.show', $activeProfile->slug), false)
         ->assertSee(route('profiles.show', $directorProfile->slug), false)
         ->assertSee(route('profiles.show', $managerProfile->slug), false)
         ->assertSee(route('profiles.show', $firstManagerProfile->slug), false)
         ->assertSee(route('profiles.show', $teamProfile->slug), false)
         ->assertSee(route('profiles.show', $seniorResearcherProfile->slug), false)
-        ->assertSeeInOrder(['Edulaw Project Organizational Structure', 'Director', 'Umi Zakia Azzahro', 'Director of Operations', 'Manager'])
+        ->assertSeeInOrder(['Edulaw Project Organizational Structure', 'Director', 'Umi Zakia Azzahro', 'Director of Operations (non-aktif)', 'Manager'])
         ->assertSeeInOrder(['Zed Manager', 'Manager Baru'])
         ->assertSeeInOrder(['Research Team', 'Lalu Rizqi Ramdani Alfaen', 'Senior Researcher', 'Fadlah Nur', 'Junior Researcher'])
         ->assertDontSee('Internship Member')

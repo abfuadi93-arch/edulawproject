@@ -97,10 +97,11 @@
         'fadlah nur' => 'Junior Researcher',
     ];
     $profileFor = fn (array $person) => $person['profile'] ?? $profileMap->get($profileLookupKey($person['name'] ?? null));
-    $organizationPositionFor = fn (array $person, ?string $fallback = null): string => $organizationPositions[$profileLookupKey($person['name'] ?? null)]
-        ?? $fallback
-        ?? $person['position']
-        ?? '-';
+    $organizationPositionFor = fn (array $person, ?string $fallback = null): string => $person['job_title']
+        ?: ($organizationPositions[$profileLookupKey($person['name'] ?? null)]
+            ?? $fallback
+            ?? $person['profile_role']
+            ?? '-');
     $withOrganizationPosition = fn (array $person, ?string $fallback = null): array => array_merge($person, [
         'organization_position' => $organizationPositionFor($person, $fallback),
     ]);
@@ -121,10 +122,14 @@
     };
     $profilePerson = function ($profile, ?string $fallbackRole = null) use ($editorialCopy, $profileInterests): array {
         $interests = $profileInterests($profile);
+        $jobTitle = $editorialCopy($profile->position);
+        $profileRole = $editorialCopy($profile->profile_type_label ?: $fallbackRole);
 
         return [
             'name' => $profile->name,
-            'position' => $editorialCopy($profile->position ?: $profile->profile_type_label ?: $fallbackRole),
+            'position' => $jobTitle ?: $profileRole,
+            'job_title' => $jobTitle,
+            'profile_role' => $profileRole,
             'interests' => $interests,
             'interest_text' => collect($interests)->join(', '),
             'photo' => $profile->photo_url ?: asset('images/logo/icon-bg.png'),
@@ -165,7 +170,7 @@
         ->all();
     $managers = $organizationRoleProfiles('manager')
         ->map(fn ($profile): array => $profilePerson($profile, 'Manager'))
-        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['position'] ?: 'Manager'))
+        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['job_title'] ?: 'Manager'))
         ->values()
         ->all();
     $managerKeys = collect($managers)
@@ -175,7 +180,7 @@
     $teamMembers = $organizationRoleProfiles('team')
         ->reject(fn ($profile): bool => in_array($profileLookupKey($profile->name), array_merge($leaderKeys, $managerKeys), true))
         ->map(fn ($profile): array => $profilePerson($profile, 'Officer, Writer, & Designer'))
-        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['position'] ?: 'Officer, Writer, & Designer'))
+        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['job_title'] ?: 'Officer, Writer, & Designer'))
         ->values()
         ->all();
     $isResearchMember = fn (array $person): bool => Str::contains(
@@ -368,7 +373,7 @@
                                         {{ $leader['name'] }}
                                     </h4>
                                     <p class="mt-1 line-clamp-1 text-[10px] font-bold leading-4 text-slate-600">
-                                        {{ $leader['position'] }}
+                                        {{ $leader['profile_role'] ?: $leader['position'] }}
                                     </p>
                                     <p class="mt-1 line-clamp-2 text-[10px] font-medium leading-4 text-slate-500">
                                         Minat: {{ $leader['interest_text'] ?: '-' }}
