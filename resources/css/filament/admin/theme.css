@@ -4,6 +4,33 @@
 @source '../../../../resources/views/filament/**/*';
 
 :root {
+    /* Edulaw semantic color system. Component rules consume these tokens so the
+       light and dark themes keep the same hierarchy without color inversion. */
+    --bg-primary: #f6f8fb;
+    --bg-secondary: #ffffff;
+    --bg-card: #ffffff;
+    --bg-card-hover: #f3f7fc;
+    --bg-input: #ffffff;
+    --bg-disabled: #f1f5f9;
+    --border: #cbd8ea;
+    --border-strong: #9fb2ce;
+    --divider: #94a3b8;
+    --text-primary: #080f1f;
+    --text-body: #0f172a;
+    --text-secondary: #475569;
+    --text-muted: #68778d;
+    --text-placeholder: #64748b;
+    --text-disabled: #475569;
+    --primary: #1d4ed8;
+    --primary-hover: #2563eb;
+    --primary-active: #3b82f6;
+    --success: #22c55e;
+    --warning: #f59e0b;
+    --danger: #ef4444;
+    --info: #38bdf8;
+    --card-radius: 1rem;
+    --card-shadow: 0 18px 38px -34px rgba(15, 23, 42, 0.55);
+
     --edulaw-admin-ink: #0f172a;
     --edulaw-admin-heading: #080f1f;
     --edulaw-admin-muted: #68778d;
@@ -18,6 +45,46 @@
     --edulaw-admin-blue-soft: #eef4ff;
     --edulaw-admin-red: #ef4444;
     --edulaw-admin-shadow: 0 18px 38px -34px rgba(15, 23, 42, 0.55);
+}
+
+.dark {
+    color-scheme: dark;
+    --bg-primary: #0f172a;
+    --bg-secondary: #111827;
+    --bg-card: #1e293b;
+    --bg-card-hover: #273449;
+    --bg-input: #111827;
+    --bg-disabled: #1e293b;
+    --border: #334155;
+    --border-strong: #475569;
+    --divider: #475569;
+    --text-primary: #f8fafc;
+    --text-body: #e2e8f0;
+    --text-secondary: #cbd5e1;
+    --text-muted: #94a3b8;
+    /* Slate 400 is used for actual placeholder text to meet AA on Slate 900.
+       Slate 500 remains the decorative/disabled token below. */
+    --text-placeholder: #94a3b8;
+    --text-disabled: #94a3b8;
+    --primary: #1d4ed8;
+    --primary-hover: #2563eb;
+    --primary-active: #3b82f6;
+    --card-shadow: 0 18px 32px -20px rgba(0, 0, 0, 0.55);
+
+    --edulaw-admin-ink: var(--text-body);
+    --edulaw-admin-heading: var(--text-primary);
+    --edulaw-admin-muted: var(--text-muted);
+    --edulaw-admin-soft: var(--bg-primary);
+    --edulaw-admin-panel: var(--bg-card);
+    --edulaw-admin-panel-subtle: var(--bg-secondary);
+    --edulaw-admin-border: var(--border);
+    --edulaw-admin-border-strong: var(--border-strong);
+    --edulaw-admin-border-navy: var(--border);
+    --edulaw-admin-navy: var(--primary);
+    --edulaw-admin-blue: var(--primary);
+    --edulaw-admin-blue-soft: #1e3a8a;
+    --edulaw-admin-red: var(--danger);
+    --edulaw-admin-shadow: var(--card-shadow);
 }
 
 .fi-body {
@@ -178,7 +245,7 @@
 .edulaw-admin-card {
     overflow: hidden;
     border: 1px solid var(--edulaw-admin-border-navy);
-    border-radius: 0.65rem;
+    border-radius: var(--card-radius);
     background: var(--edulaw-admin-panel);
     box-shadow: var(--edulaw-admin-shadow);
 }
@@ -600,4 +667,623 @@
         justify-content: stretch;
         width: 100%;
     }
+}
+
+/* --------------------------------------------------------------------------
+   Edulaw dark theme
+   -------------------------------------------------------------------------- */
+
+.dark .fi-body,
+.dark .fi-layout,
+.dark .fi-main,
+.dark .fi-page {
+    background: var(--bg-primary);
+    color: var(--text-body);
+}
+
+.dark .fi-topbar,
+.dark .fi-sidebar-header {
+    border-color: var(--border);
+    background: rgba(17, 24, 39, 0.96);
+    box-shadow: 0 1px 0 rgba(71, 85, 105, 0.22);
+}
+
+.dark .fi-sidebar {
+    border-color: var(--border);
+    background: #020617;
+}
+
+.dark .fi-sidebar-nav,
+.dark .fi-sidebar-footer {
+    background: #020617;
+}
+
+.dark .fi-sidebar-group-label {
+    color: var(--text-muted);
+}
+
+.dark .fi-sidebar-item-btn,
+.dark .fi-sidebar-item-label,
+.dark .fi-sidebar-item-icon {
+    color: var(--text-secondary);
+}
+
+.dark .fi-sidebar-item-btn:hover {
+    background: #1e293b;
+    color: var(--text-primary);
+}
+
+.dark .fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
+.dark .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
+    color: var(--text-primary);
+}
+
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
+    background: #2563eb;
+    color: #ffffff;
+    box-shadow: 0 8px 18px -12px rgba(37, 99, 235, 0.9);
+}
+
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon,
+.dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
+    color: #ffffff;
+}
+
+.dark .fi-header-heading,
+.dark .fi-section-header-heading,
+.dark .fi-ta-header-heading,
+.dark .fi-wi-stats-overview-stat-value,
+.dark .fi-modal-heading {
+    color: var(--text-primary);
+}
+
+.dark .fi-header-subheading,
+.dark .fi-breadcrumbs,
+.dark .fi-breadcrumbs-item,
+.dark .fi-breadcrumbs-item a,
+.dark .fi-section-header-description,
+.dark .fi-ta-header-description,
+.dark .fi-modal-description,
+.dark .fi-pagination-overview {
+    color: var(--text-muted);
+}
+
+.dark .fi-section,
+.dark .fi-wi-stats-overview-stat,
+.dark .fi-ta-ctn,
+.dark .edulaw-admin-card {
+    border-color: var(--border);
+    background: var(--bg-card);
+    box-shadow: var(--card-shadow);
+}
+
+.dark .fi-section-header,
+.dark .fi-section-content,
+.dark .fi-section-footer,
+.dark .fi-ta-header,
+.dark .fi-ta-header-toolbar,
+.dark .fi-ta-content-ctn {
+    border-color: var(--border);
+    background: var(--bg-card);
+}
+
+.dark .fi-section-header:hover:has(.fi-section-collapse-btn) {
+    background: var(--bg-card-hover);
+}
+
+.dark .fi-section-collapse-btn .fi-icon {
+    color: var(--text-secondary);
+}
+
+.dark .fi-section:not(.fi-collapsed) .fi-section-collapse-btn .fi-icon {
+    color: #60a5fa;
+}
+
+.dark .fi-fo-field-wrp-label,
+.dark .fi-fo-field-wrp-label span,
+.dark .fi-sc-section-label {
+    color: var(--text-body);
+    font-weight: 600;
+}
+
+.dark .fi-fo-field-label-required-mark,
+.dark .fi-fo-table-repeater-header-required-mark {
+    color: var(--danger);
+}
+
+.dark .fi-fo-field-wrp-helper-text {
+    color: var(--text-muted);
+}
+
+.dark .fi-fo-field-wrp-error-message,
+.dark .fi-fo-file-upload-error-message {
+    color: #fca5a5;
+}
+
+.dark .fi-input-wrp,
+.dark .fi-select-input,
+.dark .fi-textarea,
+.dark .fi-fo-rich-editor,
+.dark .fi-fo-tags-input-wrp,
+.dark .fi-fo-key-value-table-ctn {
+    border-color: var(--border);
+    background: var(--bg-input);
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.dark .fi-input-wrp:hover:not(:focus-within),
+.dark .fi-textarea:hover:not(:focus),
+.dark .fi-fo-rich-editor:hover:not(:focus-within) {
+    border-color: #60a5fa;
+}
+
+.dark .fi-input-wrp:focus-within,
+.dark .fi-textarea:focus,
+.dark .fi-fo-rich-editor:focus-within {
+    border-color: #3b82f6;
+    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.24);
+}
+
+.dark .fi-input,
+.dark .fi-select-input,
+.dark .fi-select-input-btn,
+.dark .fi-textarea,
+.dark .fi-fo-date-time-picker-display-text-input {
+    color: var(--text-primary);
+}
+
+.dark .fi-input::placeholder,
+.dark .fi-textarea::placeholder,
+.dark .fi-fo-date-time-picker-display-text-input::placeholder,
+.dark .fi-select-input-placeholder {
+    color: var(--text-placeholder);
+    opacity: 1;
+}
+
+.dark .fi-input:disabled,
+.dark .fi-select-input:disabled,
+.dark .fi-textarea:disabled,
+.dark .fi-fo-date-time-picker-display-text-input:disabled,
+.dark .fi-input-wrp:has(:disabled) {
+    color: var(--text-disabled);
+    -webkit-text-fill-color: var(--text-disabled);
+    border-color: #334155;
+    background: var(--bg-disabled);
+    opacity: 1;
+}
+
+.dark .fi-input-wrp:has(:disabled) {
+    box-shadow: inset 0 0 0 1px rgba(71, 85, 105, 0.22);
+}
+
+/* Selects and dropdowns */
+.dark .fi-dropdown-panel,
+.dark .fi-select-input-options-ctn,
+.dark .fi-fo-rich-editor-dropdown-tool-menu {
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.8);
+}
+
+.dark .fi-dropdown-header,
+.dark .fi-select-input-search-ctn {
+    border-color: var(--border);
+    background: var(--bg-input);
+    color: var(--text-muted);
+}
+
+.dark .fi-dropdown-list,
+.dark .fi-dropdown-list-item,
+.dark .fi-dropdown-list-item-label,
+.dark .fi-select-input-option {
+    color: var(--text-body);
+}
+
+.dark .fi-dropdown-list-item:hover,
+.dark .fi-dropdown-list-item:focus-visible,
+.dark .fi-select-input-option:hover,
+.dark .fi-select-input-option:focus-visible {
+    background: #334155;
+    color: #ffffff;
+}
+
+.dark .fi-dropdown-list-item.fi-selected,
+.dark .fi-select-input-option.fi-selected,
+.dark .fi-select-input-option[aria-selected="true"] {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Rich editor */
+.dark .fi-fo-rich-editor-toolbar,
+.dark .fi-fo-rich-editor-floating-toolbar,
+.dark .fi-fo-rich-editor-panels,
+.dark .fi-fo-rich-editor-panel-header {
+    border-color: var(--border);
+    background: var(--bg-input);
+}
+
+.dark .fi-fo-rich-editor-tool,
+.dark .fi-fo-rich-editor-dropdown-tool-trigger,
+.dark .fi-fo-rich-editor-dropdown-tool-option,
+.dark .fi-fo-rich-editor-dropdown-tool-chevron {
+    color: var(--text-secondary);
+}
+
+.dark .fi-fo-rich-editor-tool:hover,
+.dark .fi-fo-rich-editor-tool:focus-visible,
+.dark .fi-fo-rich-editor-dropdown-tool-trigger:hover,
+.dark .fi-fo-rich-editor-dropdown-tool-option:hover {
+    background: #334155;
+    color: #ffffff;
+}
+
+.dark .fi-fo-rich-editor-tool.fi-active,
+.dark .fi-fo-rich-editor-dropdown-tool-trigger.fi-active,
+.dark .fi-fo-rich-editor-dropdown-tool-option.fi-active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.dark .fi-fo-rich-editor-content {
+    background: var(--bg-input);
+    color: var(--text-primary);
+    caret-color: #60a5fa;
+}
+
+.dark .fi-fo-rich-editor-content ::selection {
+    background: rgba(59, 130, 246, 0.65);
+    color: #ffffff;
+}
+
+.dark .fi-fo-rich-editor-content.fi-prose {
+    --prose-color: var(--text-body);
+    --prose-heading-color: var(--text-primary);
+    --prose-strong-color: var(--text-primary);
+    --prose-link-color: #60a5fa;
+    --prose-link-underline-color: #3b82f6;
+    --prose-code-color: var(--text-body);
+    --prose-blockquote-border-color: var(--text-muted);
+    --prose-pre-bg: #111827;
+    --prose-th-borders: var(--divider);
+    --prose-td-borders: var(--border);
+}
+
+/* File upload / FilePond */
+.dark .fi-fo-file-upload .filepond--root,
+.dark .fi-fo-file-upload .filepond--panel-root,
+.dark .fi-fo-file-upload .filepond--drop-label {
+    border-color: #475569;
+    background: var(--bg-input);
+    color: var(--text-secondary);
+}
+
+.dark .fi-fo-file-upload .filepond--panel-root {
+    border: 1px dashed #475569;
+}
+
+.dark .fi-fo-file-upload .filepond--root:hover .filepond--panel-root {
+    border-color: #3b82f6;
+    background: #1e293b;
+}
+
+.dark .fi-fo-file-upload .filepond--drop-label svg,
+.dark .fi-fo-file-upload .fi-icon {
+    color: #60a5fa;
+}
+
+/* Actions, toggles and badges */
+.dark .fi-btn.fi-color-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+.dark .fi-btn.fi-color-primary:hover {
+    background: #3b82f6;
+}
+
+.dark .fi-btn.fi-color-gray {
+    border-color: var(--border-strong);
+    background: #334155;
+    color: var(--text-primary);
+}
+
+.dark .fi-btn.fi-color-gray:hover {
+    background: #475569;
+    color: #ffffff;
+}
+
+.dark .fi-icon-btn:hover,
+.dark .fi-link:hover {
+    background: #1e293b;
+}
+
+.dark .fi-toggle.fi-toggle-off {
+    background: #334155;
+}
+
+.dark .fi-toggle.fi-toggle-on,
+.dark .fi-toggle.fi-checked {
+    background: #2563eb;
+}
+
+.dark .fi-toggle > :first-child {
+    background: #ffffff;
+}
+
+.dark .fi-badge.fi-color-gray {
+    background: #475569;
+    color: #f8fafc;
+}
+
+.dark .fi-badge.fi-color-warning {
+    background: #f59e0b;
+    color: #111827;
+}
+
+.dark .fi-badge.fi-color-success {
+    background: #16a34a;
+    color: #ffffff;
+}
+
+.dark .fi-badge.fi-color-danger {
+    background: #dc2626;
+    color: #ffffff;
+}
+
+.dark .fi-badge.fi-color-primary {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Tables, pagination, tabs and empty states */
+.dark .fi-ta-table,
+.dark .fi-ta-row {
+    background: var(--bg-card);
+}
+
+.dark .fi-ta-header-cell,
+.dark .fi-ta-table-head-groups-row {
+    border-color: var(--border);
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+.dark .fi-ta-cell,
+.dark .fi-ta-row {
+    border-color: var(--border);
+    color: var(--text-body);
+}
+
+.dark .fi-ta-row:hover {
+    background: var(--bg-card-hover);
+}
+
+.dark .fi-ta-empty-state-icon-ctn,
+.dark .fi-ta-empty-state-icon {
+    color: #60a5fa;
+}
+
+.dark .fi-ta-empty-state-heading {
+    color: var(--text-secondary);
+}
+
+.dark .fi-ta-empty-state-description {
+    color: var(--text-muted);
+}
+
+.dark .fi-pagination,
+.dark .fi-tabs,
+.dark .fi-sc-tabs {
+    border-color: var(--border);
+    background: var(--bg-card);
+}
+
+.dark .fi-pagination-item-btn,
+.dark .fi-pagination-previous-btn,
+.dark .fi-pagination-next-btn,
+.dark .fi-tabs-item,
+.dark .fi-sc-tabs-tab {
+    color: var(--text-secondary);
+}
+
+.dark .fi-pagination-item-btn:hover,
+.dark .fi-pagination-previous-btn:hover,
+.dark .fi-pagination-next-btn:hover,
+.dark .fi-tabs-item:hover,
+.dark .fi-sc-tabs-tab:hover {
+    background: var(--bg-card-hover);
+    color: #ffffff;
+}
+
+.dark .fi-pagination-item.fi-active .fi-pagination-item-btn,
+.dark .fi-tabs-item.fi-active,
+.dark .fi-tabs-item[aria-selected="true"],
+.dark .fi-sc-tabs-tab.fi-active {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Modals, notifications and date picker */
+.dark .fi-modal-close-overlay {
+    background: rgba(2, 6, 23, 0.78);
+}
+
+.dark .fi-modal-window,
+.dark .fi-modal-header,
+.dark .fi-modal-content,
+.dark .fi-modal-footer,
+.dark .fi-no-notification {
+    border-color: var(--border);
+    background: var(--bg-card);
+    color: var(--text-body);
+}
+
+.dark .fi-modal-header,
+.dark .fi-modal-footer {
+    border-color: var(--border);
+}
+
+.dark .fi-no-notification-unread-ctn {
+    background: rgba(37, 99, 235, 0.14);
+}
+
+.dark .fi-no-notification-title {
+    color: var(--text-primary);
+}
+
+.dark .fi-no-notification-body,
+.dark .fi-no-notification-date {
+    color: var(--text-muted);
+}
+
+.dark .fi-fo-date-time-picker-panel {
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+    color: var(--text-body);
+    box-shadow: 0 18px 36px -18px rgba(0, 0, 0, 0.85);
+}
+
+.dark .fi-fo-date-time-picker-month-select,
+.dark .fi-fo-date-time-picker-year-input,
+.dark .fi-fo-date-time-picker-time-inputs input,
+.dark .fi-fo-date-time-picker-calendar-day {
+    background: var(--bg-input);
+    color: var(--text-primary);
+}
+
+.dark .fi-fo-date-time-picker-calendar-day:hover,
+.dark .fi-fo-date-time-picker-calendar-day.fi-focused {
+    background: #334155;
+}
+
+.dark .fi-fo-date-time-picker-calendar-day.fi-selected {
+    background: #2563eb;
+    color: #ffffff;
+}
+
+/* Edulaw custom widgets still use utility colors in their Blade markup. This
+   scoped bridge makes them consume the same semantic tokens as Filament. */
+.dark .fi-wi .bg-white {
+    background-color: var(--bg-card) !important;
+}
+
+.dark .fi-wi .bg-slate-50,
+.dark .fi-wi .bg-slate-100 {
+    background-color: var(--bg-secondary) !important;
+}
+
+.dark .fi-wi .border-slate-200,
+.dark .fi-wi .ring-slate-200 {
+    border-color: var(--border) !important;
+    --tw-ring-color: var(--border) !important;
+}
+
+.dark .fi-wi .text-slate-950,
+.dark .fi-wi .text-slate-900,
+.dark .fi-wi .text-slate-800 {
+    color: var(--text-primary) !important;
+}
+
+.dark .fi-wi .text-slate-700,
+.dark .fi-wi .text-slate-600 {
+    color: var(--text-body) !important;
+}
+
+.dark .fi-wi .text-slate-500,
+.dark .fi-wi .text-slate-400 {
+    color: var(--text-muted) !important;
+}
+
+.dark .fi-wi .bg-blue-50 {
+    background-color: rgba(37, 99, 235, 0.16) !important;
+}
+
+.dark .fi-wi .bg-emerald-50 {
+    background-color: rgba(16, 185, 129, 0.14) !important;
+}
+
+.dark .fi-wi .bg-amber-50 {
+    background-color: rgba(245, 158, 11, 0.14) !important;
+}
+
+.dark .fi-wi .bg-orange-50 {
+    background-color: rgba(249, 115, 22, 0.14) !important;
+}
+
+.dark .fi-wi .bg-rose-50 {
+    background-color: rgba(244, 63, 94, 0.14) !important;
+}
+
+.dark .fi-wi .text-blue-600,
+.dark .fi-wi .text-blue-700 {
+    color: #60a5fa !important;
+}
+
+.dark .fi-wi .text-emerald-600,
+.dark .fi-wi .text-emerald-700 {
+    color: #34d399 !important;
+}
+
+.dark .fi-wi .text-amber-700 {
+    color: #fbbf24 !important;
+}
+
+.dark .fi-wi .text-orange-700 {
+    color: #fb923c !important;
+}
+
+.dark .fi-wi .text-rose-700 {
+    color: #fb7185 !important;
+}
+
+.dark .fi-wi .border-blue-200,
+.dark .fi-wi .border-blue-500 {
+    border-color: #3b82f6 !important;
+}
+
+.dark .fi-wi .border-emerald-200,
+.dark .fi-wi .border-emerald-500 {
+    border-color: #10b981 !important;
+}
+
+.dark .fi-wi .border-amber-200 {
+    border-color: #f59e0b !important;
+}
+
+.dark .fi-wi .border-orange-200,
+.dark .fi-wi .border-orange-500 {
+    border-color: #f97316 !important;
+}
+
+.dark .fi-wi .border-rose-200,
+.dark .fi-wi .border-rose-500 {
+    border-color: #f43f5e !important;
+}
+
+.dark .fi-wi .hover\:bg-slate-50:hover,
+.dark .fi-wi .group:hover .group-hover\:bg-slate-50 {
+    background-color: var(--bg-card-hover) !important;
+}
+
+.dark .edulaw-topbar-site-link {
+    border-color: var(--border);
+    background: var(--bg-secondary);
+    color: var(--text-secondary);
+}
+
+.dark .edulaw-topbar-site-link:hover {
+    border-color: #3b82f6;
+    background: var(--bg-card);
+    color: #60a5fa;
+}
+
+.dark .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions {
+    border-color: var(--border);
+    background: rgba(30, 41, 59, 0.96);
+    box-shadow: 0 18px 40px rgba(0, 0, 0, 0.36);
+}
+
+.dark .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions::before {
+    color: var(--text-primary);
 }
