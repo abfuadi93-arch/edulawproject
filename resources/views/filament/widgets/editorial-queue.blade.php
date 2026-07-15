@@ -4,20 +4,21 @@
             <div>
                 <p class="text-sm font-black text-slate-950">Editorial Queue</p>
                 <p class="mt-1 text-xs leading-5 edulaw-admin-muted">
-                    Editorial yang masih perlu ditulis, ditinjau, atau disiapkan untuk terbit.
+                    Drafts, reviewed pieces and recently published editorials.
                 </p>
             </div>
-            <span class="rounded-full bg-amber-100 px-2.5 py-1 text-xs font-black text-amber-700">
-                {{ $count }}
-            </span>
+            <a href="{{ $indexUrl }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-3 py-2 text-xs font-black text-slate-950 shadow-sm transition hover:border-blue-200 hover:text-blue-700">
+                View All
+                <x-filament::icon icon="heroicon-o-chevron-right" class="h-4 w-4" />
+            </a>
         </header>
 
-        <div class="min-h-72">
+        <div class="min-h-64">
             @forelse ($items as $item)
                 @php
-                    $badgeClass = match ($item['status']) {
-                        'submitted' => 'bg-orange-50 text-orange-700 ring-orange-200',
-                        'reviewed' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+                    $badgeClass = match ($item['statusTone']) {
+                        'green' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+                        'blue' => 'bg-blue-50 text-blue-700 ring-blue-200',
                         default => 'bg-slate-50 text-slate-700 ring-slate-200',
                     };
                 @endphp
@@ -28,9 +29,16 @@
                             <p class="line-clamp-2 text-sm font-black leading-5 text-slate-950">
                                 {{ $item['title'] }}
                             </p>
-                            <p class="mt-1 line-clamp-1 text-xs edulaw-admin-muted">
-                                {{ $item['meta'] }}
-                            </p>
+                            <div class="mt-2 flex flex-wrap gap-x-3 gap-y-1 text-xs edulaw-admin-muted">
+                                <span class="inline-flex items-center gap-1">
+                                    <x-filament::icon icon="heroicon-o-user" class="h-3.5 w-3.5" />
+                                    {{ $item['author'] }}
+                                </span>
+                                <span class="inline-flex items-center gap-1">
+                                    <x-filament::icon icon="heroicon-o-folder" class="h-3.5 w-3.5" />
+                                    {{ $item['category'] }}
+                                </span>
+                            </div>
                         </div>
                         <span class="shrink-0 rounded-md px-2 py-1 text-xs font-black ring-1 {{ $badgeClass }}">
                             {{ $item['statusLabel'] }}
@@ -47,21 +55,14 @@
                             <x-filament::icon icon="heroicon-o-check" class="h-6 w-6" />
                         </div>
                         <p class="mt-4 text-sm font-black text-slate-950">
-                            Queue editorial kosong
+                            No pending reviews.
                         </p>
                         <p class="mt-1 max-w-sm text-xs leading-5 edulaw-admin-muted">
-                            Semua editorial sudah tertangani. Tidak ada naskah yang menunggu review.
+                            Editorial drafts and reviews will appear here.
                         </p>
                     </div>
                 </div>
             @endforelse
         </div>
-
-        <footer class="border-t border-slate-200 p-4 text-center">
-            <a href="{{ $indexUrl }}" class="inline-flex items-center gap-2 rounded-lg border border-slate-200 bg-white px-4 py-2 text-xs font-black text-slate-950 shadow-sm transition hover:border-blue-200 hover:text-blue-700">
-                Lihat semua queue
-                <x-filament::icon icon="heroicon-o-chevron-right" class="h-4 w-4" />
-            </a>
-        </footer>
     </section>
 </x-filament-widgets::widget>

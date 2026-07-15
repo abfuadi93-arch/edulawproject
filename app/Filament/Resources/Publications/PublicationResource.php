@@ -35,9 +35,9 @@ class PublicationResource extends Resource
 {
     protected static ?string $model = Publication::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?string $navigationLabel = 'Publikasi';
+    protected static ?string $navigationLabel = 'Publications';
 
     protected static ?string $modelLabel = 'Publikasi';
 

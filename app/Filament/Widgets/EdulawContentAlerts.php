@@ -17,11 +17,19 @@ class EdulawContentAlerts extends Widget
         'xl' => 6,
     ];
 
-    protected static ?int $sort = 20;
+    protected static ?int $sort = 40;
 
     public static function canView(): bool
     {
-        return (bool) auth()->user()?->hasRole('super_admin');
+        if (! auth()->user()?->hasRole('super_admin')) {
+            return false;
+        }
+
+        return (bool) config('app.debug')
+            || Publication::where('status', 'draft')->exists()
+            || Insight::whereIn('status', ['draft', 'submitted', 'reviewed'])->exists()
+            || Program::whereNull('program_category_id')->exists()
+            || User::whereNull('email_verified_at')->exists();
     }
 
     protected function getViewData(): array

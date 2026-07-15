@@ -25,9 +25,9 @@ class ContactMessageResource extends Resource
 {
     protected static ?string $model = ContactMessage::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Interaksi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Interaction';
 
-    protected static ?string $navigationLabel = 'Pesan Kontak';
+    protected static ?string $navigationLabel = 'Messages';
 
     protected static ?string $modelLabel = 'Pesan Kontak';
 

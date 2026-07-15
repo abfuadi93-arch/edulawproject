@@ -36,9 +36,9 @@ class InsightResource extends Resource
 {
     protected static ?string $model = Insight::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Konten Website';
+    protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?string $navigationLabel = 'Edulaw Editorial';
+    protected static ?string $navigationLabel = 'Editorial';
 
     protected static ?string $modelLabel = 'Editorial';
 

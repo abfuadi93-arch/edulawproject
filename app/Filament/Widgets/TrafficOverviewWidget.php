@@ -11,9 +11,12 @@ class TrafficOverviewWidget extends Widget
 {
     protected string $view = 'filament.widgets.traffic-overview';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 6,
+    ];
 
-    protected static ?int $sort = -15;
+    protected static ?int $sort = 20;
 
     protected static bool $isLazy = false;
 
@@ -31,13 +34,15 @@ class TrafficOverviewWidget extends Widget
         $todayVisits = PageVisit::query()
             ->whereDate('visited_at', $today)
             ->count();
-        $sevenDayVisits = PageVisit::query()
+        $todayVisitors = PageVisit::query()
+            ->whereDate('visited_at', $today)
+            ->distinct()
+            ->count('visitor_id');
+        $sevenDayVisitors = PageVisit::query()
             ->since($lastSevenDays)
-            ->count();
-        $thirtyDayVisits = PageVisit::query()
-            ->since($lastThirtyDays)
-            ->count();
-        $uniqueVisitors = PageVisit::query()
+            ->distinct()
+            ->count('visitor_id');
+        $thirtyDayVisitors = PageVisit::query()
             ->since($lastThirtyDays)
             ->distinct()
             ->count('visitor_id');
@@ -45,28 +50,28 @@ class TrafficOverviewWidget extends Widget
         return [
             'stats' => [
                 [
-                    'label' => 'Hari ini',
+                    'label' => "Today's pageviews",
                     'value' => number_format($todayVisits, 0, ',', '.'),
                     'icon' => 'heroicon-o-calendar-days',
                     'tone' => 'primary',
                 ],
                 [
-                    'label' => '7 hari',
-                    'value' => number_format($sevenDayVisits, 0, ',', '.'),
-                    'icon' => 'heroicon-o-chart-bar',
+                    'label' => "Today's visitors",
+                    'value' => number_format($todayVisitors, 0, ',', '.'),
+                    'icon' => 'heroicon-o-user',
                     'tone' => 'success',
                 ],
                 [
-                    'label' => '30 hari',
-                    'value' => number_format($thirtyDayVisits, 0, ',', '.'),
-                    'icon' => 'heroicon-o-arrow-trending-up',
+                    'label' => '7-day visitors',
+                    'value' => number_format($sevenDayVisitors, 0, ',', '.'),
+                    'icon' => 'heroicon-o-chart-bar',
                     'tone' => 'warning',
                 ],
                 [
-                    'label' => 'Visitor unik',
-                    'value' => number_format($uniqueVisitors, 0, ',', '.'),
-                    'icon' => 'heroicon-o-user-group',
-                    'tone' => 'slate',
+                    'label' => '30-day visitors',
+                    'value' => number_format($thirtyDayVisitors, 0, ',', '.'),
+                    'icon' => 'heroicon-o-arrow-trending-up',
+                    'tone' => 'warning',
                 ],
             ],
             'dailySeries' => $this->dailySeries($lastSevenDays),

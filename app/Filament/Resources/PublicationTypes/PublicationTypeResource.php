@@ -26,7 +26,7 @@ class PublicationTypeResource extends Resource
 {
     protected static ?string $model = PublicationType::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
 
     protected static ?string $navigationLabel = 'Tipe Publikasi';
 

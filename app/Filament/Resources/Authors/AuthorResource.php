@@ -34,7 +34,7 @@ class AuthorResource extends Resource
 {
     protected static ?string $model = Author::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
 
     protected static ?string $navigationLabel = 'Profil';
 

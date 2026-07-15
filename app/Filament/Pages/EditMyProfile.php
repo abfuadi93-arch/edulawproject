@@ -25,6 +25,8 @@ class EditMyProfile extends Page
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
+    protected static string|\UnitEnum|null $navigationGroup = 'Account';
+
     protected static ?int $navigationSort = -9;
 
     protected string $view = 'filament.pages.edit-my-profile';

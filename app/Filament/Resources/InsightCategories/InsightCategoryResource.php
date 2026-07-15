@@ -26,7 +26,7 @@ class InsightCategoryResource extends Resource
 {
     protected static ?string $model = InsightCategory::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
 
     protected static ?string $navigationLabel = 'Kategori Editorial';
 

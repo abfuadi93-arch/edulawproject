@@ -26,7 +26,7 @@ class ProgramCategoryResource extends Resource
 {
     protected static ?string $model = ProgramCategory::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
 
     protected static ?string $navigationLabel = 'Kategori Program';
 

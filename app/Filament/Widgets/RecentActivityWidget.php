@@ -14,6 +14,7 @@ use App\Models\Program;
 use App\Models\Publication;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Str;
 
 class RecentActivityWidget extends Widget
 {
@@ -24,7 +25,9 @@ class RecentActivityWidget extends Widget
         'xl' => 6,
     ];
 
-    protected static ?int $sort = 11;
+    protected static ?int $sort = 30;
+
+    protected static bool $isLazy = false;
 
     public static function canView(): bool
     {
@@ -48,7 +51,7 @@ class RecentActivityWidget extends Widget
             ->merge($this->mapMessages())
             ->merge($this->mapCollaborations())
             ->sortByDesc('date')
-            ->take(5)
+            ->take(6)
             ->values();
 
         return [
@@ -62,7 +65,9 @@ class RecentActivityWidget extends Widget
             return collect();
         }
 
-        $query = InsightResource::getEloquentQuery()->latest('updated_at');
+        $query = InsightResource::getEloquentQuery()
+            ->with(['creator', 'updater'])
+            ->latest('updated_at');
 
         if (! InsightResource::canManageEditorialWorkflow()) {
             $query->where('status', 'draft');
@@ -70,14 +75,14 @@ class RecentActivityWidget extends Widget
 
         return $query->take(3)
             ->get()
-            ->map(fn (Insight $insight): array => [
-                'label' => 'Editorial diperbarui',
-                'title' => $insight->title,
-                'date' => $insight->updated_at,
-                'time' => $insight->updated_at?->diffForHumans(),
-                'tone' => 'primary',
-                'url' => InsightResource::getUrl('edit', ['record' => $insight->getKey()]),
-            ]);
+            ->map(fn (Insight $insight): array => $this->activity(
+                userName: $this->actorName($insight->updater?->name, $insight->creator?->name),
+                action: 'updated Editorial',
+                title: $insight->title,
+                date: $insight->updated_at,
+                tone: 'blue',
+                url: InsightResource::getUrl('edit', ['record' => $insight->getKey()]),
+            ));
     }
 
     private function mapPublications(): Collection
@@ -87,17 +92,18 @@ class RecentActivityWidget extends Widget
         }
 
         return Publication::query()
+            ->with(['creator', 'updater'])
             ->latest('updated_at')
             ->take(2)
             ->get()
-            ->map(fn (Publication $publication): array => [
-                'label' => 'Publikasi diperbarui',
-                'title' => $publication->title,
-                'date' => $publication->updated_at,
-                'time' => $publication->updated_at?->diffForHumans(),
-                'tone' => 'success',
-                'url' => PublicationResource::getUrl('edit', ['record' => $publication->getKey()]),
-            ]);
+            ->map(fn (Publication $publication): array => $this->activity(
+                userName: $this->actorName($publication->updater?->name, $publication->creator?->name),
+                action: 'updated Publication',
+                title: $publication->title,
+                date: $publication->updated_at,
+                tone: 'green',
+                url: PublicationResource::getUrl('edit', ['record' => $publication->getKey()]),
+            ));
     }
 
     private function mapPrograms(): Collection
@@ -107,17 +113,18 @@ class RecentActivityWidget extends Widget
         }
 
         return Program::query()
+            ->with(['creator', 'updater'])
             ->latest('updated_at')
             ->take(2)
             ->get()
-            ->map(fn (Program $program): array => [
-                'label' => 'Program diperbarui',
-                'title' => $program->name,
-                'date' => $program->updated_at,
-                'time' => $program->updated_at?->diffForHumans(),
-                'tone' => 'warning',
-                'url' => ProgramResource::getUrl('edit', ['record' => $program->getKey()]),
-            ]);
+            ->map(fn (Program $program): array => $this->activity(
+                userName: $this->actorName($program->updater?->name, $program->creator?->name),
+                action: 'updated Program',
+                title: $program->name,
+                date: $program->updated_at,
+                tone: 'orange',
+                url: ProgramResource::getUrl('edit', ['record' => $program->getKey()]),
+            ));
     }
 
     private function mapMessages(): Collection
@@ -130,14 +137,14 @@ class RecentActivityWidget extends Widget
             ->latest('updated_at')
             ->take(2)
             ->get()
-            ->map(fn (ContactMessage $message): array => [
-                'label' => 'Pesan kontak masuk',
-                'title' => $message->subject ?: $message->name,
-                'date' => $message->updated_at,
-                'time' => $message->updated_at?->diffForHumans(),
-                'tone' => 'danger',
-                'url' => ContactMessageResource::getUrl('edit', ['record' => $message->getKey()]),
-            ]);
+            ->map(fn (ContactMessage $message): array => $this->activity(
+                userName: $message->name ?: 'Website Visitor',
+                action: 'sent Contact Message',
+                title: $message->subject ?: $message->name,
+                date: $message->updated_at,
+                tone: 'red',
+                url: ContactMessageResource::getUrl('edit', ['record' => $message->getKey()]),
+            ));
     }
 
     private function mapCollaborations(): Collection
@@ -150,13 +157,42 @@ class RecentActivityWidget extends Widget
             ->latest('updated_at')
             ->take(2)
             ->get()
-            ->map(fn (CollaborationSubmission $submission): array => [
-                'label' => 'Pengajuan kolaborasi',
-                'title' => $submission->name,
-                'date' => $submission->updated_at,
-                'time' => $submission->updated_at?->diffForHumans(),
-                'tone' => 'purple',
-                'url' => CollaborationSubmissionResource::getUrl('edit', ['record' => $submission->getKey()]),
-            ]);
+            ->map(fn (CollaborationSubmission $submission): array => $this->activity(
+                userName: $submission->name ?: 'Website Visitor',
+                action: 'submitted Collaboration Request',
+                title: $submission->subject ?: $submission->name,
+                date: $submission->updated_at,
+                tone: 'purple',
+                url: CollaborationSubmissionResource::getUrl('edit', ['record' => $submission->getKey()]),
+            ));
+    }
+
+    private function activity(string $userName, string $action, ?string $title, mixed $date, string $tone, string $url): array
+    {
+        return [
+            'userName' => $userName,
+            'initials' => $this->initials($userName),
+            'action' => $action,
+            'title' => $title ?: 'Untitled',
+            'date' => $date,
+            'time' => $date?->diffForHumans(),
+            'tone' => $tone,
+            'url' => $url,
+        ];
+    }
+
+    private function actorName(?string ...$names): string
+    {
+        return collect($names)->filter()->first() ?: 'Edulaw Admin';
+    }
+
+    private function initials(string $name): string
+    {
+        return Str::of($name)
+            ->explode(' ')
+            ->filter()
+            ->take(2)
+            ->map(fn (string $word): string => Str::upper(Str::substr($word, 0, 1)))
+            ->join('') ?: 'EA';
     }
 }

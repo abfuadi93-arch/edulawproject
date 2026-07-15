@@ -15,7 +15,9 @@ class EditorialQueueWidget extends Widget
         'xl' => 6,
     ];
 
-    protected static ?int $sort = 10;
+    protected static ?int $sort = -10;
+
+    protected static bool $isLazy = false;
 
     public static function canView(): bool
     {
@@ -26,7 +28,7 @@ class EditorialQueueWidget extends Widget
     {
         $query = InsightResource::getEloquentQuery()
             ->with(['authors', 'category'])
-            ->whereIn('status', ['draft', 'submitted', 'reviewed'])
+            ->whereIn('status', ['draft', 'submitted', 'reviewed', 'published'])
             ->latest('updated_at');
 
         if (! InsightResource::canManageEditorialWorkflow()) {
@@ -37,12 +39,18 @@ class EditorialQueueWidget extends Widget
             ->get()
             ->map(fn (Insight $insight): array => [
                 'title' => $insight->title,
-                'meta' => trim(($insight->display_author ?: 'Edulaw Project').' - '.($insight->display_category ?: 'Belum dikategorikan'), ' -'),
+                'author' => $insight->display_author ?: 'Edulaw Project',
+                'category' => $insight->display_category ?: 'Editorial',
                 'status' => $insight->status,
                 'statusLabel' => match ($insight->status) {
-                    'submitted' => 'Dalam Review',
-                    'reviewed' => 'Siap Terbit',
+                    'submitted', 'reviewed' => 'Reviewed',
+                    'published' => 'Published',
                     default => 'Draft',
+                },
+                'statusTone' => match ($insight->status) {
+                    'submitted', 'reviewed' => 'green',
+                    'published' => 'blue',
+                    default => 'slate',
                 },
                 'updated' => $insight->updated_at?->diffForHumans(),
                 'url' => InsightResource::getUrl('edit', ['record' => $insight->getKey()]),

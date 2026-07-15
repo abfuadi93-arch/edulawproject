@@ -22,7 +22,7 @@ class TagResource extends Resource
 {
     protected static ?string $model = Tag::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Referensi Konten';
+    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
 
     protected static ?string $navigationLabel = 'Tag';
 

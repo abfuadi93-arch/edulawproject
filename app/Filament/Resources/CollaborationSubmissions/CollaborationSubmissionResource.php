@@ -26,9 +26,9 @@ class CollaborationSubmissionResource extends Resource
 {
     protected static ?string $model = CollaborationSubmission::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Interaksi';
+    protected static string|\UnitEnum|null $navigationGroup = 'Interaction';
 
-    protected static ?string $navigationLabel = 'Pengajuan Kolaborasi';
+    protected static ?string $navigationLabel = 'Collaboration';
 
     protected static ?string $modelLabel = 'Pengajuan Kolaborasi';
 
