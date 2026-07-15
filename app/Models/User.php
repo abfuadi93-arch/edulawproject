@@ -47,7 +47,7 @@ class User extends Authenticatable implements FilamentUser
 
     public function profile(): HasOne
     {
-        return $this->hasOne(Author::class)->oldestOfMany();
+        return $this->hasOne(Author::class);
     }
 
     public function profiles(): HasMany
@@ -82,31 +82,14 @@ class User extends Authenticatable implements FilamentUser
 
         $profile->forceFill([
             'user_id' => $this->id,
-            'name' => $this->name,
-            'email' => $this->email,
-            'institution' => $this->institution,
-            'position' => $this->position,
+            'name' => $profile->name ?: $this->name,
+            'slug' => $profile->slug ?: Author::uniqueSlugFor($profile->name ?: $this->name, $profile->id),
+            'email' => $profile->email ?: $this->email,
+            'institution' => $profile->institution ?: $this->institution,
+            'position' => $profile->position ?: $this->position,
             'profile_type' => $profile->profile_type ?: 'team',
-            'is_active' => $profile->is_active ?? ($this->is_active !== false),
         ])->saveQuietly();
 
         return $profile->refresh();
-    }
-
-    public function syncLinkedProfileBasics(): void
-    {
-        $profile = $this->profile()->first();
-
-        if (! $profile) {
-            return;
-        }
-
-        $profile->forceFill([
-            'name' => $this->name,
-            'email' => $this->email,
-            'institution' => $this->institution,
-            'position' => $this->position,
-            'is_active' => $this->is_active !== false,
-        ])->saveQuietly();
     }
 }

@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\EdulawSite;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -31,6 +32,7 @@ class Author extends Model
     protected $fillable = [
         'user_id',
         'name',
+        'title',
         'slug',
         'email',
         'bio',
@@ -38,9 +40,12 @@ class Author extends Model
         'photo',
         'institution',
         'position',
+        'location',
         'profile_type',
         'sort_order',
         'social_links',
+        'seo_title',
+        'meta_description',
         'is_active',
         'show_in_organization',
     ];
@@ -111,6 +116,59 @@ class Author extends Model
     public function getPhotoUrlAttribute(): ?string
     {
         return EdulawSite::assetUrl($this->attributes['photo'] ?? null);
+    }
+
+    protected function interests(): Attribute
+    {
+        return Attribute::make(
+            get: function (?string $value): array {
+                if (blank($value)) {
+                    return [];
+                }
+
+                $decoded = json_decode($value, true);
+
+                return collect(is_array($decoded) ? $decoded : preg_split('/[,;\r\n]+/', $value))
+                    ->flatten()
+                    ->map(fn ($interest): string => trim((string) $interest))
+                    ->filter()
+                    ->unique(fn (string $interest): string => Str::lower($interest))
+                    ->values()
+                    ->all();
+            },
+            set: function (array|string|null $value): ?string {
+                $interests = collect(is_array($value) ? $value : preg_split('/[,;\r\n]+/', (string) $value))
+                    ->flatten()
+                    ->map(fn ($interest): string => trim((string) $interest))
+                    ->filter()
+                    ->unique(fn (string $interest): string => Str::lower($interest))
+                    ->values();
+
+                return $interests->isEmpty() ? null : $interests->toJson();
+            }
+        );
+    }
+
+    /**
+     * Normalize both the legacy repeater shape and the current keyed JSON shape.
+     *
+     * @return array<string, string>
+     */
+    public function socialLinksMap(): array
+    {
+        $links = $this->social_links ?? [];
+
+        if (! array_is_list($links)) {
+            return collect($links)
+                ->mapWithKeys(fn ($url, $platform): array => [Str::snake((string) $platform) => trim((string) $url)])
+                ->filter()
+                ->all();
+        }
+
+        return collect($links)
+            ->filter(fn ($link): bool => is_array($link) && filled($link['platform'] ?? null) && filled($link['url'] ?? null))
+            ->mapWithKeys(fn (array $link): array => [Str::snake((string) $link['platform']) => trim((string) $link['url'])])
+            ->all();
     }
 
     public function user(): BelongsTo

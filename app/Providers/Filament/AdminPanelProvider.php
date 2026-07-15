@@ -32,6 +32,7 @@ class AdminPanelProvider extends PanelProvider
             ->path('admin')
             ->login()
             ->passwordReset()
+            ->profile()
             ->registration(Register::class)
             ->brandName('Edulaw Project')
             ->brandLogo(function (): HtmlString {

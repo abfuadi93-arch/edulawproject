@@ -39,15 +39,19 @@
         : 'Profil penulis akan diperbarui secara berkala seiring dengan publikasi dan kontribusi penulis di Edulaw Project.';
     $bio = trim(strip_tags((string) $author->bio));
     $bioSummary = Str::limit($bio !== '' ? $bio : $bioFallback, 210);
-    $metaDescription = Str::limit($bio !== '' ? $bio : collect([$publicPosition, $publicInstitution])->filter()->join(' - '), 160);
+    $metaDescription = Str::limit(
+        $author->meta_description ?: ($bio !== '' ? $bio : collect([$publicPosition, $publicInstitution])->filter()->join(' - ')),
+        180
+    );
+    $profileTitle = $author->seo_title ?: $author->name . ' - Profil Edulaw Project';
 @endphp
 
-@section('title', $author->name . ' - Profil Edulaw Project')
+@section('title', $profileTitle)
 @section('meta_description', $metaDescription)
-@section('og_title', $author->name . ' - Profil Edulaw Project')
+@section('og_title', $profileTitle)
 @section('og_description', Str::limit($metaDescription, 180))
 @section('og_image', $photoUrl ?: asset('images/hero/hero-edulaw.jpg'))
-@section('twitter_title', $author->name . ' - Profil Edulaw Project')
+@section('twitter_title', $profileTitle)
 @section('twitter_description', Str::limit($metaDescription, 180))
 @section('twitter_image', $photoUrl ?: asset('images/hero/hero-edulaw.jpg'))
 
@@ -681,6 +685,27 @@
         ->take(8)
         ->values();
 
+    $socialLinks = collect($author->socialLinksMap());
+    $profileLinks = collect([
+        'Website' => $socialLinks->get('website'),
+        'LinkedIn' => $socialLinks->get('linkedin'),
+        'Google Scholar' => $socialLinks->get('google_scholar'),
+        'ORCID' => filled($socialLinks->get('orcid'))
+            ? (Str::startsWith($socialLinks->get('orcid'), ['http://', 'https://'])
+                ? $socialLinks->get('orcid')
+                : 'https://orcid.org/'.$socialLinks->get('orcid'))
+            : null,
+        'Scopus' => filled($socialLinks->get('scopus'))
+            ? (Str::startsWith($socialLinks->get('scopus'), ['http://', 'https://'])
+                ? $socialLinks->get('scopus')
+                : 'https://www.scopus.com/authid/detail.uri?authorId='.urlencode($socialLinks->get('scopus')))
+            : null,
+        'Instagram' => $socialLinks->get('instagram'),
+        'Twitter / X' => $socialLinks->get('twitter'),
+        'YouTube' => $socialLinks->get('youtube'),
+        'ResearchGate' => $socialLinks->get('researchgate'),
+    ])->filter();
+
     $publishedDate = function ($date): string {
         if (! $date) {
             return 'Belum dijadwalkan';
@@ -717,6 +742,9 @@
                     <span class="profile-badge">{{ $heroBadge }}</span>
                     <h1 class="profile-hero__title">{{ $author->name }}</h1>
                     <p class="profile-hero__meta">
+                        @if ($author->title)
+                            <span>{{ $author->title }}</span><br>
+                        @endif
                         <span class="profile-hero__position">{{ $publicPosition }}</span><br>
                         {{ $publicInstitution }}
                     </p>
@@ -766,6 +794,12 @@
                             <dt>Institusi</dt>
                             <dd>{{ $publicInstitution }}</dd>
                         </div>
+                        @if ($author->location)
+                            <div>
+                                <dt>Lokasi</dt>
+                                <dd>{{ $author->location }}</dd>
+                            </div>
+                        @endif
                         @if ($joinedAt)
                             <div>
                                 <dt>Bergabung sejak</dt>
@@ -778,6 +812,26 @@
                         </div>
                     </dl>
                 </div>
+
+                @if ($profileLinks->isNotEmpty() || $author->email)
+                    <div class="profile-card profile-card__pad">
+                        <p class="profile-kicker">Kontak & Tautan</p>
+                        <dl class="profile-info-list">
+                            @if ($author->email)
+                                <div>
+                                    <dt>Email</dt>
+                                    <dd><a href="mailto:{{ $author->email }}">{{ $author->email }}</a></dd>
+                                </div>
+                            @endif
+                            @foreach ($profileLinks as $label => $url)
+                                <div>
+                                    <dt>{{ $label }}</dt>
+                                    <dd><a href="{{ $url }}" target="_blank" rel="noopener noreferrer">Buka profil</a></dd>
+                                </div>
+                            @endforeach
+                        </dl>
+                    </div>
+                @endif
 
                 @if ($focusItems->isNotEmpty())
                     <div class="profile-card profile-card__pad">

@@ -9,8 +9,6 @@ use App\Models\Author;
 use BackedEnum;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
-use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\Repeater\TableColumn;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -79,6 +77,12 @@ class AuthorResource extends Resource
                                             })
                                             ->columnSpanFull(),
 
+                                        TextInput::make('title')
+                                            ->label('Gelar')
+                                            ->maxLength(100)
+                                            ->placeholder('S.H., M.H.')
+                                            ->columnSpanFull(),
+
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
@@ -93,6 +97,11 @@ class AuthorResource extends Resource
                                                     ->label('Afiliasi')
                                                     ->maxLength(255)
                                                     ->placeholder('Edulaw Project / Institusi asal'),
+
+                                                TextInput::make('location')
+                                                    ->label('Lokasi')
+                                                    ->maxLength(255)
+                                                    ->placeholder('Jakarta, Indonesia'),
 
                                                 Select::make('profile_type')
                                                     ->label('Peran Profil')
@@ -184,10 +193,12 @@ class AuthorResource extends Resource
                                             ->visibility('public')
                                             ->avatar()
                                             ->imageEditor()
-                                            ->maxSize(2048)
+                                            ->imageCropAspectRatio('1:1')
+                                            ->imageEditorAspectRatios(['1:1'])
+                                            ->maxSize(4096)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->imagePreviewHeight('180')
-                                            ->helperText('JPG, PNG, WebP. Maks. 2 MB.')
+                                            ->helperText('JPG, PNG, WebP. Crop persegi, maks. 4 MB.')
                                             ->columnSpanFull(),
                                     ]),
 
@@ -198,6 +209,7 @@ class AuthorResource extends Resource
                                         Select::make('user_id')
                                             ->label('Akun Admin Terkait')
                                             ->relationship('user', 'name')
+                                            ->unique(Author::class, 'user_id', ignoreRecord: true)
                                             ->searchable()
                                             ->preload()
                                             ->placeholder('Profil publik tanpa akun admin'),
@@ -206,37 +218,37 @@ class AuthorResource extends Resource
                                             ->label('Email Kontak')
                                             ->email()
                                             ->maxLength(255),
+
                                     ])
                                     ->columns(1),
 
                                 Section::make('Tautan Sosial')
                                     ->icon('heroicon-o-link')
                                     ->schema([
-                                        Repeater::make('social_links')
-                                            ->label('Tautan Sosial')
-                                            ->schema([
-                                                TextInput::make('platform')
-                                                    ->label('Platform')
-                                                    ->prefixIcon('heroicon-o-globe-alt')
-                                                    ->placeholder('LinkedIn / Instagram / Website'),
+                                        TextInput::make('social_links.website')->label('Website')->url()->maxLength(500),
+                                        TextInput::make('social_links.linkedin')->label('LinkedIn')->url()->maxLength(500),
+                                        TextInput::make('social_links.google_scholar')->label('Google Scholar')->url()->maxLength(500),
+                                        TextInput::make('social_links.orcid')->label('ORCID')->maxLength(100),
+                                        TextInput::make('social_links.scopus')->label('Scopus ID')->maxLength(100),
+                                        TextInput::make('social_links.instagram')->label('Instagram')->url()->maxLength(500),
+                                        TextInput::make('social_links.twitter')->label('Twitter / X')->url()->maxLength(500),
+                                        TextInput::make('social_links.youtube')->label('YouTube')->url()->maxLength(500),
+                                        TextInput::make('social_links.researchgate')->label('ResearchGate')->url()->maxLength(500),
+                                    ])
+                                    ->collapsible()
+                                    ->collapsed(),
 
-                                                TextInput::make('url')
-                                                    ->label('URL')
-                                                    ->url()
-                                                    ->placeholder('https://...'),
-                                            ])
-                                            ->table([
-                                                TableColumn::make('Platform'),
-                                                TableColumn::make('URL'),
-                                            ])
-                                            ->itemLabel(fn (array $state): ?string => collect([
-                                                $state['platform'] ?? null,
-                                                $state['url'] ?? null,
-                                            ])->filter()->join(' - ') ?: 'Tautan sosial')
-                                            ->addActionLabel('Tambah Tautan Sosial')
-                                            ->reorderable()
-                                            ->collapsed()
-                                            ->columnSpanFull(),
+                                Section::make('SEO Profil')
+                                    ->icon('heroicon-o-magnifying-glass')
+                                    ->schema([
+                                        TextInput::make('seo_title')
+                                            ->label('SEO Title')
+                                            ->maxLength(300),
+
+                                        Textarea::make('meta_description')
+                                            ->label('Meta Description')
+                                            ->rows(4)
+                                            ->maxLength(180),
                                     ])
                                     ->collapsible()
                                     ->collapsed(),
@@ -340,6 +352,10 @@ class AuthorResource extends Resource
 
         if (filled($data['slug'] ?? null)) {
             $data['slug'] = Str::slug((string) $data['slug']);
+        }
+
+        if (isset($data['social_links']) && is_array($data['social_links'])) {
+            $data['social_links'] = (new Author(['social_links' => $data['social_links']]))->socialLinksMap();
         }
 
         return $data;

@@ -26,6 +26,13 @@ class EditAuthor extends EditRecordAndReturn
         return AuthorResource::prepareFormDataForPersistence($data, $this->record?->id);
     }
 
+    protected function mutateFormDataBeforeFill(array $data): array
+    {
+        $data['social_links'] = $this->record->socialLinksMap();
+
+        return $data;
+    }
+
     protected function getSaveFormAction(): Action
     {
         return parent::getSaveFormAction()
