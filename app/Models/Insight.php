@@ -12,6 +12,8 @@ class Insight extends Model
 {
     use HasFactory;
 
+    private const DEFAULT_COVER_IMAGE = 'images/hero/hero-edulaw.jpg';
+
     protected $fillable = [
         'insight_category_id',
         'title',
@@ -163,9 +165,12 @@ class Insight extends Model
         return $this->attributes['seo_description'] ?? null;
     }
 
-    public function getCoverImageUrlAttribute(): ?string
+    public function getCoverImageUrlAttribute(): string
     {
-        return $this->resolveImageUrl($this->attributes['cover_image'] ?? null);
+        return edulaw_file_url(
+            $this->attributes['cover_image'] ?? null,
+            self::DEFAULT_COVER_IMAGE,
+        );
     }
 
     public function getOgImageUrlAttribute(): ?string

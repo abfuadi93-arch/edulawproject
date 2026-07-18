@@ -73,7 +73,7 @@
         return max(1, (int) ceil($words / 200)) . ' menit baca';
     };
 
-    $coverImage = edulaw_file_url($insight->cover_image);
+    $coverImage = $insight->cover_image_url;
     $categoryName = $insight->display_category;
     $publishedDate = optional($insight->published_at)->translatedFormat('d F Y') ?? 'Belum dijadwalkan';
     $description = $insight->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($insight->content ?? ''), 180);
@@ -306,16 +306,12 @@
                     @foreach ($relatedInsights as $item)
                         <article class="group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
                             <a href="{{ route('insights.show', $item->slug) }}" class="block overflow-hidden bg-slate-100">
-                                @if (edulaw_file_url($item->cover_image))
-                                    <img
-                                        src="{{ edulaw_file_url($item->cover_image) }}"
-                                        alt="{{ $item->title }}"
-                                        class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105"
-                                        loading="lazy"
-                                    >
-                                @else
-                                    <div class="aspect-[16/10] w-full bg-linear-to-br from-brand-navy to-slate-800"></div>
-                                @endif
+                                <img
+                                    src="{{ $item->cover_image_url }}"
+                                    alt="{{ $item->title }}"
+                                    class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105"
+                                    loading="lazy"
+                                >
                             </a>
 
                             <div class="flex flex-1 flex-col p-5">

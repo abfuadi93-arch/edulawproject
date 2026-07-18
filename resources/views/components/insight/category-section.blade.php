@@ -16,8 +16,8 @@
         ->values();
 @endphp
 
-<section class="bg-white py-16">
-    <div class="mx-auto max-w-[1400px] px-4 sm:px-6 lg:px-8">
+<section class="bg-white pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-12 lg:pb-12">
+    <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
                 <h2 class="text-3xl font-black leading-tight text-brand-ink">

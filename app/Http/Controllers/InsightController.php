@@ -2,21 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Insight;
 use App\Models\InsightCategory;
+use App\Models\PageVisit;
 use App\Models\Tag;
-use Illuminate\Http\Request;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Illuminate\View\View;
 
 class InsightController extends Controller
 {
     private const LEGACY_SLUG_REDIRECTS = [
-        'worklife-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental'
-            => 'work-life-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental',
+        'worklife-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental' => 'work-life-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental',
     ];
 
     public function index(Request $request): View
@@ -61,9 +61,10 @@ class InsightController extends Controller
         return view('insights.index', [
             'latestInsights' => $latestInsights,
             'insightChannels' => $this->insightChannels($insightCategories),
-            'editorialPicks' => $this->editorialPicks($latestInsights->pluck('id')->all()),
+            'editorialPicks' => $this->editorialPicks($latestInsights->take(6)->pluck('id')->all()),
             'popularInsights' => $this->popularInsights(),
             'popularTags' => $this->popularTags(),
+            'editorialContributors' => $this->editorialContributors(),
             'insights' => $query
                 ->orderByDesc('published_at')
                 ->latest('id')
@@ -166,7 +167,7 @@ class InsightController extends Controller
         $secondaryFallback = Insight::query()
             ->with(['categoryRelation', 'authors.user'])
             ->published()
-            ->whereNotIn('id', $picks->pluck('id')->all())
+            ->whereNotIn('id', $excludedIds->merge($picks->pluck('id'))->unique()->all())
             ->orderByDesc('published_at')
             ->latest('id')
             ->take($target - $picks->count())
@@ -180,23 +181,43 @@ class InsightController extends Controller
 
     private function popularInsights(): Collection
     {
-        $query = Insight::query()
-            ->with(['categoryRelation', 'authors.user'])
-            ->published();
+        $visitsBySlug = PageVisit::query()
+            ->selectRaw('path, COUNT(*) as visit_count')
+            ->where('route_name', 'insights.show')
+            ->where('status_code', 200)
+            ->since(now()->subDays(30)->startOfDay())
+            ->groupBy('path')
+            ->orderByDesc('visit_count')
+            ->limit(50)
+            ->get()
+            ->mapWithKeys(fn (PageVisit $visit): array => [
+                Str::afterLast(rawurldecode($visit->path), '/') => (int) $visit->visit_count,
+            ]);
 
-        $countColumn = collect(['views_count', 'view_count', 'read_count', 'reads_count'])
-            ->first(fn (string $column): bool => Schema::hasColumn('insights', $column));
-
-        if ($countColumn) {
-            $query->orderByDesc($countColumn);
-        } else {
-            $query->orderByDesc('published_at');
+        if ($visitsBySlug->isEmpty()) {
+            return collect();
         }
 
-        return $query
-            ->latest('id')
-            ->take(5)
-            ->get();
+        $insightsBySlug = Insight::query()
+            ->with(['categoryRelation', 'authors.user'])
+            ->published()
+            ->whereIn('slug', $visitsBySlug->keys()->all())
+            ->get()
+            ->keyBy('slug');
+
+        return $visitsBySlug
+            ->map(function (int $visitCount, string $slug) use ($insightsBySlug): ?Insight {
+                $insight = $insightsBySlug->get($slug);
+
+                if ($insight) {
+                    $insight->setAttribute('visit_count', $visitCount);
+                }
+
+                return $insight;
+            })
+            ->filter()
+            ->take(20)
+            ->values();
     }
 
     private function popularTags(): Collection
@@ -225,6 +246,22 @@ class InsightController extends Controller
             ->orderByDesc('published_insights_count')
             ->orderBy('name')
             ->take(12)
+            ->get();
+    }
+
+    private function editorialContributors(): Collection
+    {
+        return Author::query()
+            ->where('is_active', true)
+            ->whereNotNull('slug')
+            ->whereHas('insights', fn ($query) => $query->published())
+            ->withCount([
+                'insights as published_insights_count' => fn ($query) => $query->published(),
+            ])
+            ->orderByDesc('published_insights_count')
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->take(4)
             ->get();
     }
 

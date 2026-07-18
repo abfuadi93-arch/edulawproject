@@ -1,7 +1,9 @@
 <?php
 
+use App\Models\Author;
 use App\Models\Insight;
 use App\Models\InsightCategory;
+use App\Models\PageVisit;
 
 test('published insight index and detail pages render', function () {
     $category = InsightCategory::query()->create([
@@ -24,7 +26,8 @@ test('published insight index and detail pages render', function () {
     $this->get(route('insights.index'))
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
-        ->assertSee('Edulaw Insight');
+        ->assertSee('Edulaw Insight')
+        ->assertSee(asset('images/hero/hero-edulaw.jpg'), false);
 
     $html = $this->get(route('insights.show', $insight->slug))
         ->assertOk()
@@ -39,6 +42,7 @@ test('published insight index and detail pages render', function () {
         ->assertSee('Email')
         ->assertSee('Instagram')
         ->assertSee('Salin Link')
+        ->assertSee(asset('images/hero/hero-edulaw.jpg'), false)
         ->assertSee('edulaw-readable insight-article-body', false)
         ->getContent();
 
@@ -72,6 +76,193 @@ test('legacy insight slug redirects permanently to canonical slug', function () 
         ->assertRedirect(route('insights.show', $insight->slug));
 });
 
+test('latest featured insight is excluded from editorial picks once it is already used', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    $featuredInsight = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Pilihan Redaksi',
+        'slug' => 'editorial-pilihan-redaksi',
+        'content' => '<p>Editorial unggulan.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+        'featured' => true,
+    ]);
+
+    foreach (range(1, 5) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Terbaru {$position}",
+            'slug' => "editorial-terbaru-{$position}",
+            'content' => '<p>Editorial terbaru.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($position),
+        ]);
+    }
+
+    $olderFeaturedInsight = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Pilihan Berikutnya',
+        'slug' => 'editorial-pilihan-berikutnya',
+        'content' => '<p>Editorial pilihan berikutnya.</p>',
+        'status' => 'published',
+        'published_at' => now()->subDays(10),
+        'featured' => true,
+    ]);
+
+    $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertViewHas('editorialPicks', function ($picks) use ($featuredInsight, $olderFeaturedInsight): bool {
+            return ! $picks->contains('id', $featuredInsight->id)
+                && $picks->contains('id', $olderFeaturedInsight->id);
+        });
+});
+
+test('most read insights are ordered by page visits from the last 30 days', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Opini Publik',
+        'slug' => 'opini-publik',
+        'is_active' => true,
+    ]);
+
+    foreach (range(1, 6) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Terbaru Tanpa Kunjungan {$position}",
+            'slug' => "editorial-terbaru-tanpa-kunjungan-{$position}",
+            'content' => '<p>Editorial terbaru tanpa kunjungan.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($position),
+        ]);
+    }
+
+    foreach (range(1, 5) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Cadangan Pilihan {$position}",
+            'slug' => "editorial-cadangan-pilihan-{$position}",
+            'content' => '<p>Editorial cadangan pilihan editor.</p>',
+            'status' => 'published',
+            'published_at' => now()->subDays($position),
+        ]);
+    }
+
+    $lessRead = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Lebih Sedikit Dibaca',
+        'slug' => 'editorial-lebih-sedikit-dibaca',
+        'content' => '<p>Editorial lebih sedikit dibaca.</p>',
+        'status' => 'published',
+        'published_at' => now()->subDays(7),
+    ]);
+
+    $mostRead = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Paling Banyak Dibaca',
+        'slug' => 'editorial-paling-banyak-dibaca',
+        'content' => '<p>Editorial paling banyak dibaca.</p>',
+        'status' => 'published',
+        'published_at' => now()->subDays(8),
+    ]);
+
+    foreach ([[$lessRead, 2], [$mostRead, 4]] as [$insight, $visits]) {
+        foreach (range(1, $visits) as $index) {
+            PageVisit::query()->create([
+                'visitor_id' => "reader-{$insight->id}-{$index}",
+                'method' => 'GET',
+                'path' => "insight/{$insight->slug}",
+                'full_url' => route('insights.show', $insight->slug),
+                'route_name' => 'insights.show',
+                'status_code' => 200,
+                'visited_at' => now(),
+            ]);
+        }
+    }
+
+    $response = $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertSee('Paling Banyak Dibaca')
+        ->assertSee('4 kali dibaca');
+
+    $html = $response->getContent();
+
+    expect($html)
+        ->toContain('data-most-read-item')
+        ->toContain('Editorial Paling Banyak Dibaca')
+        ->toContain('Editorial Lebih Sedikit Dibaca');
+
+    expect(strpos($html, 'Editorial Paling Banyak Dibaca'))
+        ->toBeLessThan(strpos($html, 'Editorial Lebih Sedikit Dibaca'));
+
+    $response
+        ->assertViewHas('popularInsights', function ($insights) use ($mostRead, $lessRead): bool {
+            return $insights->pluck('id')->all() === [$mostRead->id, $lessRead->id];
+        });
+});
+
+test('most read section renders five visited insights', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Opini Publik',
+        'slug' => 'opini-publik',
+        'is_active' => true,
+    ]);
+
+    foreach (range(1, 6) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Terbaru Non-Ranking {$position}",
+            'slug' => "editorial-terbaru-non-ranking-{$position}",
+            'content' => '<p>Editorial terbaru non-ranking.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($position),
+        ]);
+    }
+
+    foreach (range(1, 5) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Cadangan Non-Ranking {$position}",
+            'slug' => "editorial-cadangan-non-ranking-{$position}",
+            'content' => '<p>Editorial cadangan non-ranking.</p>',
+            'status' => 'published',
+            'published_at' => now()->subDays($position),
+        ]);
+    }
+
+    $insights = collect(range(1, 5))->map(function (int $position) use ($category): Insight {
+        $insight = Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Most Read Editorial {$position}",
+            'slug' => "most-read-editorial-{$position}",
+            'content' => "<p>Most read editorial {$position}.</p>",
+            'status' => 'published',
+            'published_at' => now()->subDays($position + 6),
+        ]);
+
+        PageVisit::query()->create([
+            'visitor_id' => "most-read-reader-{$position}",
+            'method' => 'GET',
+            'path' => "insight/{$insight->slug}",
+            'full_url' => route('insights.show', $insight->slug),
+            'route_name' => 'insights.show',
+            'status_code' => 200,
+            'visited_at' => now(),
+        ]);
+
+        return $insight;
+    });
+
+    $response = $this->get(route('insights.index'))->assertOk();
+
+    $insights->each(fn (Insight $insight) => $response->assertSee($insight->title));
+
+    expect(substr_count($response->getContent(), 'data-most-read-item'))->toBe(5);
+});
+
 test('published insight without publish date remains hidden', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
@@ -90,4 +281,175 @@ test('published insight without publish date remains hidden', function () {
 
     $this->get(route('insights.show', $insight->slug))
         ->assertNotFound();
+});
+
+test('editorial index excludes drafts and keeps category and search filters', function () {
+    $firstCategory = InsightCategory::query()->create([
+        'name' => 'Legal 101',
+        'slug' => 'legal-101',
+        'is_active' => true,
+    ]);
+    $secondCategory = InsightCategory::query()->create([
+        'name' => 'Law & Governance',
+        'slug' => 'law-governance',
+        'is_active' => true,
+    ]);
+
+    $matching = Insight::query()->create([
+        'insight_category_id' => $firstCategory->id,
+        'title' => 'Panduan Hak Warga Negara',
+        'slug' => 'panduan-hak-warga-negara',
+        'content' => '<p>Penjelasan hak warga negara.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+    $other = Insight::query()->create([
+        'insight_category_id' => $secondCategory->id,
+        'title' => 'Tata Kelola Pemerintahan',
+        'slug' => 'tata-kelola-pemerintahan',
+        'content' => '<p>Analisis tata kelola.</p>',
+        'status' => 'published',
+        'published_at' => now()->subMinute(),
+    ]);
+    Insight::query()->create([
+        'insight_category_id' => $firstCategory->id,
+        'title' => 'Editorial Masih Draft',
+        'slug' => 'editorial-masih-draft',
+        'content' => '<p>Belum terbit.</p>',
+        'status' => 'draft',
+    ]);
+
+    $this->get(route('insights.index', ['category' => $firstCategory->slug]))
+        ->assertOk()
+        ->assertViewHas('insights', fn ($insights) => $insights->pluck('id')->all() === [$matching->id]);
+
+    $this->get(route('insights.index', ['q' => 'Tata Kelola']))
+        ->assertOk()
+        ->assertViewHas('insights', fn ($insights) => $insights->pluck('id')->all() === [$other->id]);
+});
+
+test('editorial archive pagination remains available', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    foreach (range(1, 10) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Arsip {$position}",
+            'slug' => "editorial-arsip-{$position}",
+            'content' => '<p>Konten arsip.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($position),
+        ]);
+    }
+
+    $this->get(route('insights.index', ['archive' => 'latest', 'page' => 2]))
+        ->assertOk()
+        ->assertSee('Halaman 2 dari 2')
+        ->assertViewHas('insights', fn ($insights) => $insights->currentPage() === 2 && $insights->count() === 1);
+});
+
+test('active editorial contributor links to public profile with published count', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+    $insight = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Tulisan Kontributor Aktif',
+        'slug' => 'tulisan-kontributor-aktif',
+        'content' => '<p>Konten kontributor.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+    $author = Author::query()->create([
+        'name' => 'Nadia Peneliti',
+        'slug' => 'nadia-peneliti',
+        'position' => 'Peneliti Hukum',
+        'is_active' => true,
+    ]);
+    $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
+
+    $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertSee('Kontributor Editorial')
+        ->assertSee('Peneliti Hukum')
+        ->assertSee('1 tulisan terbit')
+        ->assertSee(route('profiles.show', $author->slug), false);
+});
+
+test('editorial contributor labels use public author position instead of auth roles', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    $authors = collect([
+        ['name' => 'Nora Publik', 'slug' => 'nora-publik', 'title' => 'admin', 'expected' => 'Kontributor Editorial'],
+        ['name' => 'Redaksi Publik', 'slug' => 'redaksi-publik', 'position' => 'Redaksi Edulaw', 'expected' => 'Tim Editorial'],
+        ['name' => 'Riset Publik', 'slug' => 'riset-publik', 'position' => 'Tim Riset', 'expected' => 'Tim Riset Edulaw'],
+        ['name' => 'Kontributor Publik', 'slug' => 'kontributor-publik', 'position' => 'Kontributoe', 'expected' => 'Kontributor Editorial'],
+    ])->map(function (array $authorData, int $index) use ($category): Author {
+        $insight = Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Tulisan Kontributor Publik {$index}",
+            'slug' => "tulisan-kontributor-publik-{$index}",
+            'content' => '<p>Konten kontributor publik.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($index),
+        ]);
+
+        $author = Author::query()->create([
+            'name' => $authorData['name'],
+            'slug' => $authorData['slug'],
+            'title' => $authorData['title'] ?? null,
+            'position' => $authorData['position'] ?? null,
+            'is_active' => true,
+        ]);
+
+        $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'admin']);
+
+        return $author;
+    });
+
+    $response = $this->get(route('insights.index'))->assertOk();
+    $html = $response->getContent();
+
+    expect($html)
+        ->toContain('Tim Editorial')
+        ->toContain('Tim Riset Edulaw')
+        ->not->toContain('>admin<')
+        ->not->toContain('>Kontributoe<');
+
+    $authors->each(fn (Author $author) => $response->assertSee(route('profiles.show', $author->slug), false));
+});
+
+test('empty optional editorial sections stay hidden and featured article is not repeated in latest list', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+    $featured = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Utama Tunggal',
+        'slug' => 'editorial-utama-tunggal',
+        'content' => '<p>Konten editorial utama.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    $response = $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertDontSee('Paling Banyak Dibaca')
+        ->assertDontSee('Kontributor Editorial');
+
+    expect($response->getContent())
+        ->toContain('data-featured-editorial="'.$featured->id.'"')
+        ->not->toContain('data-latest-editorial="'.$featured->id.'"');
 });
