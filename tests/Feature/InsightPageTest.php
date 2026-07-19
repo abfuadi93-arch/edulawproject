@@ -27,7 +27,14 @@ test('published insight index and detail pages render', function () {
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Edulaw Insight')
-        ->assertSee(asset('images/hero/hero-edulaw.jpg'), false);
+        ->assertSee('Jelajahi Artikel Terbaru')
+        ->assertSee('href="#editorial-terbaru"', false)
+        ->assertSee('Ajukan Kolaborasi')
+        ->assertSee(route('collaboration.index'), false)
+        ->assertDontSee('Jelajahi Arsip')
+        ->assertDontSee('Baca Editorial Terbaru')
+        ->assertSee('Editorial Edulaw')
+        ->assertSee('Baca Selengkapnya');
 
     $html = $this->get(route('insights.show', $insight->slug))
         ->assertOk()
@@ -120,6 +127,86 @@ test('latest featured insight is excluded from editorial picks once it is alread
             return ! $picks->contains('id', $featuredInsight->id)
                 && $picks->contains('id', $olderFeaturedInsight->id);
         });
+});
+
+test('editorial picks do not fallback to ordinary latest articles', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Featured Sudah Dipakai',
+        'slug' => 'editorial-featured-sudah-dipakai',
+        'content' => '<p>Editorial featured yang tampil sebagai pembuka.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+        'featured' => true,
+    ]);
+
+    foreach (range(1, 6) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Biasa {$position}",
+            'slug' => "editorial-biasa-{$position}",
+            'content' => '<p>Editorial biasa tanpa kurasi redaksi.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($position),
+            'featured' => false,
+        ]);
+    }
+
+    $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertDontSee('Pilihan Editor')
+        ->assertViewHas('editorialPicks', fn ($picks): bool => $picks->isEmpty());
+});
+
+test('editorial category section is capped to four compact blocks', function () {
+    $categories = collect([
+        ['name' => 'Regulatory Update', 'slug' => 'regulatory-update'],
+        ['name' => 'Edulaw Insight', 'slug' => 'edulaw-insight'],
+        ['name' => 'Legal 101', 'slug' => 'legal-101'],
+        ['name' => 'Law & Governance', 'slug' => 'law-governance'],
+        ['name' => 'Teknologi Hukum', 'slug' => 'teknologi-hukum'],
+    ])->map(fn (array $category, int $index): InsightCategory => InsightCategory::query()->create([
+        'name' => $category['name'],
+        'slug' => $category['slug'],
+        'description' => "Deskripsi {$category['name']}.",
+        'is_active' => true,
+        'sort_order' => $index + 1,
+    ]));
+
+    $offset = 0;
+    foreach (range(1, 5) as $round) {
+        foreach ($categories as $category) {
+            Insight::query()->create([
+                'insight_category_id' => $category->id,
+                'title' => "{$category->name} Artikel {$round}",
+                'slug' => "{$category->slug}-artikel-{$round}",
+                'content' => '<p>Konten editorial kategori.</p>',
+                'status' => 'published',
+                'published_at' => now()->subHours($offset++),
+            ]);
+        }
+    }
+
+    $html = $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertSee('Jelajahi Berdasarkan Kategori')
+        ->assertSee('Lihat Semua Kategori')
+        ->getContent();
+
+    expect(substr_count($html, 'data-editorial-category-block='))
+        ->toBe(4);
+
+    expect(substr_count($html, 'data-category-featured='))
+        ->toBe(4);
+
+    expect(substr_count($html, 'data-category-list-item='))
+        ->toBeLessThanOrEqual(8);
 });
 
 test('most read insights are ordered by page visits from the last 30 days', function () {

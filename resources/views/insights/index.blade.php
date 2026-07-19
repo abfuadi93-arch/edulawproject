@@ -97,8 +97,8 @@
         ->filter()
         ->unique();
 
-    $channelOrder = collect(['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance']);
-    $orderedChannels = $channelOrder->map(fn (string $label) => $insightChannels->firstWhere('label', $label))
+    $primaryChannelOrder = collect(['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance']);
+    $orderedChannels = $primaryChannelOrder->map(fn (string $label) => $insightChannels->firstWhere('label', $label))
         ->filter()
         ->values();
 
@@ -121,7 +121,18 @@
         ->filter()
         ->unique();
 
-    $categoryBlocks = $orderedChannels->map(function (array $channel) use (&$usedInsightIds): array {
+    $categoryChannels = $insightChannels
+        ->filter(fn (array $channel): bool => collect($channel['articles'] ?? [])->isNotEmpty())
+        ->sortBy(fn (array $channel): array => [
+            (int) (($channel['category']?->sort_order ?? 999)),
+            -1 * (int) ($channel['article_count'] ?? 0),
+            $primaryChannelOrder->search($channel['label']) === false ? 99 : $primaryChannelOrder->search($channel['label']),
+            $channel['label'],
+        ])
+        ->take(4)
+        ->values();
+
+    $categoryBlocks = $categoryChannels->map(function (array $channel) use (&$usedInsightIds): array {
         $category = $channel['category'] ?? null;
         $channelArticles = collect($channel['articles'] ?? [])
             ->unique('id')
@@ -131,18 +142,6 @@
             ->whereNotIn('id', $usedInsightIds->all())
             ->take(3)
             ->values();
-
-        if ($items->count() < 3) {
-            $items = $items
-                ->concat(
-                    $channelArticles
-                        ->whereNotIn('id', $items->pluck('id')->all())
-                        ->take(3 - $items->count())
-                )
-                ->unique('id')
-                ->take(3)
-                ->values();
-        }
 
         $usedInsightIds = $usedInsightIds
             ->merge($items->pluck('id'))
@@ -161,6 +160,7 @@
 
     $latestArchiveUrl = route('insights.index', ['archive' => 'latest']).'#insight-archive';
     $editorialArchiveUrl = route('insights.index', ['featured' => 1]).'#insight-archive';
+    $allCategoriesUrl = route('insights.index', ['archive' => 'latest']).'#insight-archive';
 @endphp
 
 <div class="overflow-x-clip bg-white text-brand-ink">
@@ -188,6 +188,7 @@
         :category-name="$categoryName"
         :published-date="$publishedDate"
         :reading-time="$readingTime"
+        :author-name="$authorName"
         :archive-url="$latestArchiveUrl"
     />
 
@@ -201,13 +202,16 @@
     />
 
     @if ($categoryBlocks->isNotEmpty())
-        <section class="bg-[#fbfaf7] pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-12 lg:pb-12">
+        <section class="bg-[#fbfaf7] py-12 sm:py-14 lg:py-16">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-                <div class="max-w-3xl">
-                    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Kanal pengetahuan</p>
-                    <h2 class="mt-2 text-balance font-display text-3xl font-bold text-brand-ink sm:text-4xl">Jelajahi Berdasarkan Kategori</h2>
+                <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+                    <div class="max-w-3xl">
+                        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Kanal pengetahuan</p>
+                        <h2 class="mt-2 text-balance font-display text-3xl font-bold text-brand-ink sm:text-4xl">Jelajahi Berdasarkan Kategori</h2>
+                    </div>
+                    <a href="{{ $allCategoriesUrl }}" class="inline-flex min-h-10 w-fit items-center justify-center rounded-full border border-brand-amber/50 bg-white px-4 text-sm font-bold text-brand-navy shadow-sm transition hover:border-brand-amber hover:bg-brand-amber-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Lihat Semua Kategori</a>
                 </div>
-                <div class="mt-8 grid gap-x-10 gap-y-10 lg:grid-cols-2">
+                <div class="mt-8 grid gap-5 md:grid-cols-2 lg:gap-6">
                     @foreach ($categoryBlocks as $blockIndex => $block)
                         <x-insight.editorial-category-block
                             :block="$block"

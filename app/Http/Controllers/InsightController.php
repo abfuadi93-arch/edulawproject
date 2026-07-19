@@ -129,54 +129,22 @@ class InsightController extends Controller
 
     private function editorialPicks(array $excludedIds = []): Collection
     {
-        $target = 5;
-        $excludedIds = collect($excludedIds)->filter()->unique()->values();
+        $excludedIds = collect($excludedIds)
+            ->filter()
+            ->unique()
+            ->values()
+            ->all();
 
-        $featured = Insight::query()
+        return Insight::query()
             ->with(['categoryRelation', 'authors.user'])
             ->published()
             ->featured()
-            ->whereNotIn('id', $excludedIds->all())
+            ->whereNotIn('id', $excludedIds)
+            ->orderByDesc('updated_at')
             ->orderByDesc('published_at')
             ->latest('id')
-            ->take($target)
+            ->take(4)
             ->get();
-
-        if ($featured->count() >= $target) {
-            return $featured;
-        }
-
-        $fallback = Insight::query()
-            ->with(['categoryRelation', 'authors.user'])
-            ->published()
-            ->whereNotIn('id', $excludedIds->merge($featured->pluck('id'))->unique()->all())
-            ->orderByDesc('published_at')
-            ->latest('id')
-            ->take($target - $featured->count())
-            ->get();
-
-        $picks = $featured
-            ->concat($fallback)
-            ->take($target)
-            ->values();
-
-        if ($picks->count() >= $target) {
-            return $picks;
-        }
-
-        $secondaryFallback = Insight::query()
-            ->with(['categoryRelation', 'authors.user'])
-            ->published()
-            ->whereNotIn('id', $excludedIds->merge($picks->pluck('id'))->unique()->all())
-            ->orderByDesc('published_at')
-            ->latest('id')
-            ->take($target - $picks->count())
-            ->get();
-
-        return $picks
-            ->concat($secondaryFallback)
-            ->take($target)
-            ->values();
     }
 
     private function popularInsights(): Collection
