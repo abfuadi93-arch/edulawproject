@@ -2,7 +2,7 @@
 
 @if ($contributors->isNotEmpty())
     @php
-        $contributors = collect($contributors)->take(4);
+        $contributors = collect($contributors)->take(8);
 
         $publicRoleLabel = function ($author): string {
             $rawLabel = collect([
@@ -42,15 +42,15 @@
                 <h2 class="mt-2 font-display text-3xl font-bold text-brand-ink sm:text-4xl">Kontributor Editorial</h2>
             </div>
 
-            <div class="mt-8 grid gap-x-6 gap-y-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="mt-8 grid gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($contributors as $author)
-                    <a href="{{ route('profiles.show', $author->slug) }}" class="group flex min-w-0 items-center gap-3 rounded-md p-2 transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber lg:block lg:p-0">
+                    <a href="{{ route('profiles.show', $author->slug) }}" class="group flex min-w-0 items-center gap-3 rounded-md p-2 transition hover:bg-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                         @if ($author->photo_url)
-                            <img src="{{ $author->photo_url }}" alt="Foto profil {{ $author->name }}" loading="lazy" class="h-14 w-14 shrink-0 rounded-lg object-cover ring-1 ring-slate-200 lg:aspect-square lg:h-auto lg:w-full lg:rounded-xl">
+                            <img src="{{ $author->photo_url }}" alt="Foto profil {{ $author->name }}" loading="lazy" class="h-12 w-12 shrink-0 rounded-lg object-cover ring-1 ring-slate-200">
                         @else
-                            <span class="grid h-14 w-14 shrink-0 place-items-center rounded-lg bg-brand-navy text-lg font-bold text-white lg:aspect-square lg:h-auto lg:w-full lg:rounded-xl lg:text-4xl">{{ Illuminate\Support\Str::upper(Illuminate\Support\Str::substr($author->name, 0, 1)) }}</span>
+                            <span class="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-brand-navy text-base font-bold text-white">{{ Illuminate\Support\Str::upper(Illuminate\Support\Str::substr($author->name, 0, 1)) }}</span>
                         @endif
-                        <span class="min-w-0 lg:mt-3 lg:block">
+                        <span class="min-w-0">
                             <span class="line-clamp-2 block font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $author->name }}</span>
                             <span class="mt-1 line-clamp-2 block text-xs font-medium leading-5 text-slate-500">{{ $publicRoleLabel($author) }}</span>
                             <span class="mt-1.5 block text-[11px] font-bold text-brand-coral">{{ $author->published_insights_count }} tulisan terbit</span>

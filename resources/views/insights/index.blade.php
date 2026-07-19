@@ -123,10 +123,26 @@
 
     $categoryBlocks = $orderedChannels->map(function (array $channel) use (&$usedInsightIds): array {
         $category = $channel['category'] ?? null;
-        $items = collect($channel['articles'] ?? [])
+        $channelArticles = collect($channel['articles'] ?? [])
+            ->unique('id')
+            ->values();
+
+        $items = $channelArticles
             ->whereNotIn('id', $usedInsightIds->all())
             ->take(3)
             ->values();
+
+        if ($items->count() < 3) {
+            $items = $items
+                ->concat(
+                    $channelArticles
+                        ->whereNotIn('id', $items->pluck('id')->all())
+                        ->take(3 - $items->count())
+                )
+                ->unique('id')
+                ->take(3)
+                ->values();
+        }
 
         $usedInsightIds = $usedInsightIds
             ->merge($items->pluck('id'))

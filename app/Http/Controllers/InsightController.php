@@ -254,14 +254,13 @@ class InsightController extends Controller
         return Author::query()
             ->where('is_active', true)
             ->whereNotNull('slug')
-            ->whereHas('insights', fn ($query) => $query->published())
             ->withCount([
                 'insights as published_insights_count' => fn ($query) => $query->published(),
             ])
             ->orderByDesc('published_insights_count')
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->take(4)
+            ->take(8)
             ->get();
     }
 
@@ -325,7 +324,7 @@ class InsightController extends Controller
                 ->latest('id')
                 ->get()
                 ->groupBy('insight_category_id')
-                ->map(fn (Collection $items): Collection => $items->take(4)->values())
+                ->map(fn (Collection $items): Collection => $items->take(8)->values())
             : collect();
 
         return $definitions->map(function (array $definition) use ($categories, $articlesByCategory): array {
