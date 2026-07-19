@@ -55,14 +55,61 @@ class InsightController extends Controller
             ->published()
             ->orderByDesc('published_at')
             ->latest('id')
-            ->take(12)
+            ->take(40)
             ->get();
+
+        $featuredMain = Insight::query()
+            ->with(['categoryRelation', 'authors.user'])
+            ->published()
+            ->featured()
+            ->orderByDesc('published_at')
+            ->latest('id')
+            ->first() ?: $latestInsights->first();
+
+        $featuredEditorials = collect([$featuredMain])
+            ->filter()
+            ->concat($latestInsights->whereNotIn('id', [$featuredMain?->id])->take(2))
+            ->unique('id')
+            ->take(3)
+            ->values();
+
+        $shownIds = $featuredEditorials->pluck('id')->filter()->values();
+        $editorialPicks = $this->editorialPicks($shownIds->all());
+        $shownIds = $shownIds->merge($editorialPicks->pluck('id'))->unique()->values();
+
+        $insightChannels = $this->insightChannels($insightCategories);
+        $categorySections = $this->categorySections($insightChannels, $shownIds);
+
+        $latestEditorials = $latestInsights
+            ->whereNotIn('id', $shownIds->all())
+            ->take(6)
+            ->values();
+
+        $popularInsights = $this->popularInsights();
+        $popularEditorials = $popularInsights->isNotEmpty()
+            ? $popularInsights->take(5)->values()
+            : $latestInsights->take(5)->values();
+
+        $recentSidebarEditorials = $latestInsights
+            ->whereNotIn('id', $popularEditorials->pluck('id')->all())
+            ->take(5)
+            ->values();
+
+        if ($recentSidebarEditorials->isEmpty()) {
+            $recentSidebarEditorials = $latestInsights->take(5)->values();
+        }
 
         return view('insights.index', [
             'latestInsights' => $latestInsights,
-            'insightChannels' => $this->insightChannels($insightCategories),
-            'editorialPicks' => $this->editorialPicks($latestInsights->take(6)->pluck('id')->all()),
-            'popularInsights' => $this->popularInsights(),
+            'featuredEditorials' => $featuredEditorials,
+            'editorialPicks' => $editorialPicks,
+            'categorySections' => $categorySections,
+            'latestEditorials' => $latestEditorials,
+            'popularEditorials' => $popularEditorials,
+            'popularHasViews' => $popularInsights->isNotEmpty(),
+            'recentSidebarEditorials' => $recentSidebarEditorials,
+            'insightChannels' => $insightChannels,
+            'popularInsights' => $popularInsights,
             'popularTags' => $this->popularTags(),
             'editorialContributors' => $this->editorialContributors(),
             'insights' => $query
@@ -312,6 +359,39 @@ class InsightController extends Controller
                     : route('insights.index', ['q' => $definition['label']]),
             ];
         });
+    }
+
+    private function categorySections(Collection $channels, Collection $shownIds): Collection
+    {
+        $labels = collect(['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance']);
+
+        return $labels
+            ->map(fn (string $label): ?array => $channels->firstWhere('label', $label))
+            ->filter()
+            ->map(function (array $channel) use ($shownIds): array {
+                $allArticles = collect($channel['articles'] ?? [])->unique('id')->values();
+                $articles = $allArticles
+                    ->whereNotIn('id', $shownIds->all())
+                    ->take(3)
+                    ->values();
+
+                if ($articles->count() < 3) {
+                    $articles = $articles
+                        ->concat($allArticles->whereNotIn('id', $articles->pluck('id')->all()))
+                        ->unique('id')
+                        ->take(3)
+                        ->values();
+                }
+
+                return [
+                    'title' => $channel['label'],
+                    'description' => $channel['category']?->description ?: ($channel['description'] ?? null),
+                    'items' => $articles,
+                    'url' => ($channel['url'] ?? route('insights.index')).'#insight-archive',
+                ];
+            })
+            ->filter(fn (array $section): bool => collect($section['items'])->isNotEmpty())
+            ->values();
     }
 
     private function resolveInsightCategory(Collection $categories, array $aliases): ?InsightCategory

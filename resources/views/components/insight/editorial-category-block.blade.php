@@ -10,15 +10,15 @@
                 <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-coral">Kategori</p>
                 <h3 class="mt-1 text-balance font-display text-xl font-bold text-brand-ink sm:text-2xl">{{ $block['title'] }}</h3>
                 @if (filled($block['description'] ?? null))
-                    <p class="mt-1.5 line-clamp-2 text-sm leading-6 text-slate-500">{{ $block['description'] }}</p>
+                    <p class="mt-1.5 line-clamp-1 text-sm leading-6 text-slate-500">{{ $block['description'] }}</p>
                 @endif
             </div>
-            <a href="{{ $block['url'] }}" class="shrink-0 rounded-full border border-brand-amber/40 px-3 py-1.5 text-xs font-bold text-brand-navy transition hover:border-brand-amber hover:bg-brand-amber-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Lihat</a>
+            <a href="{{ $block['url'] }}" class="inline-flex min-h-11 shrink-0 items-center rounded-full border border-brand-amber/40 px-3 text-xs font-bold text-brand-navy transition duration-200 hover:border-brand-amber hover:bg-brand-amber-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Lihat Kategori</a>
         </div>
 
         <div class="group mt-4" data-category-featured="{{ $featured->id }}">
             <a href="{{ route('insights.show', $featured->slug) }}" class="rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">
-                <div class="relative aspect-[16/9] max-h-44 overflow-hidden rounded-xl bg-slate-100">
+                <div class="relative h-40 overflow-hidden rounded-xl bg-slate-100 sm:h-44">
                     @if (edulaw_file_exists($featured->cover_image))
                         <img src="{{ $featured->cover_image_url }}" alt="{{ $featured->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02] motion-reduce:transition-none">
                     @else

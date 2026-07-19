@@ -27,7 +27,7 @@ test('published insight index and detail pages render', function () {
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Edulaw Insight')
-        ->assertSee('Jelajahi Artikel Terbaru')
+        ->assertSee('Jelajahi Artikel')
         ->assertSee('href="#editorial-terbaru"', false)
         ->assertSee('Ajukan Kolaborasi')
         ->assertSee(route('collaboration.index'), false)
@@ -350,6 +350,30 @@ test('most read section renders five visited insights', function () {
     expect(substr_count($response->getContent(), 'data-most-read-item'))->toBe(5);
 });
 
+test('most read section stays hidden when no visit data exists', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Opini Publik',
+        'slug' => 'opini-publik',
+        'is_active' => true,
+    ]);
+
+    foreach (range(1, 8) as $position) {
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => "Editorial Tanpa Data Kunjungan {$position}",
+            'slug' => "editorial-tanpa-data-kunjungan-{$position}",
+            'content' => '<p>Editorial ini belum memiliki data kunjungan.</p>',
+            'status' => 'published',
+            'published_at' => now()->subMinutes($position),
+        ]);
+    }
+
+    $this->get(route('insights.index'))
+        ->assertOk()
+        ->assertDontSee('Paling Banyak Dibaca')
+        ->assertViewHas('popularInsights', fn ($insights): bool => $insights->isEmpty());
+});
+
 test('published insight without publish date remains hidden', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
@@ -457,6 +481,7 @@ test('active editorial contributor links to public profile with published count'
         'name' => 'Nadia Peneliti',
         'slug' => 'nadia-peneliti',
         'position' => 'Peneliti Hukum',
+        'photo' => 'authors/foto-yang-tidak-tersedia.jpg',
         'is_active' => true,
     ]);
     $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
@@ -466,6 +491,9 @@ test('active editorial contributor links to public profile with published count'
         ->assertSee('Kontributor Editorial')
         ->assertSee('Peneliti Hukum')
         ->assertSee('1 tulisan terbit')
+        ->assertSee('Lihat Semua Kontributor')
+        ->assertSee('onerror="this.remove()"', false)
+        ->assertSee('aria-hidden="true">N</span>', false)
         ->assertSee(route('profiles.show', $author->slug), false);
 });
 
@@ -514,6 +542,41 @@ test('editorial contributor labels use public author position instead of auth ro
         ->not->toContain('>Kontributoe<');
 
     $authors->each(fn (Author $author) => $response->assertSee(route('profiles.show', $author->slug), false));
+});
+
+test('editorial contributor grid is capped to six profiles', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    $insight = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Tulisan Bersama Kontributor',
+        'slug' => 'tulisan-bersama-kontributor',
+        'content' => '<p>Konten editorial bersama.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    foreach (range(1, 7) as $position) {
+        $author = Author::query()->create([
+            'name' => "Kontributor {$position}",
+            'slug' => "kontributor-{$position}",
+            'position' => 'Penulis Hukum',
+            'sort_order' => $position,
+            'is_active' => true,
+        ]);
+
+        $author->insights()->attach($insight->id, ['author_order' => $position, 'role' => 'Penulis']);
+    }
+
+    $html = $this->get(route('insights.index'))
+        ->assertOk()
+        ->getContent();
+
+    expect(substr_count($html, 'data-editorial-contributor='))->toBe(6);
 });
 
 test('empty optional editorial sections stay hidden and featured article is not repeated in latest list', function () {

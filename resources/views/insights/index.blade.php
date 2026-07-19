@@ -8,11 +8,14 @@
     use Illuminate\Support\Carbon;
     use Illuminate\Support\Str;
 
-    $latestInsights = collect($latestInsights ?? []);
+    $featuredEditorials = collect($featuredEditorials ?? []);
     $editorialPicks = collect($editorialPicks ?? []);
-    $popularInsights = collect($popularInsights ?? []);
-    $insightChannels = collect($insightChannels ?? []);
+    $categorySections = collect($categorySections ?? []);
+    $latestEditorials = collect($latestEditorials ?? []);
+    $popularEditorials = collect($popularEditorials ?? []);
+    $recentSidebarEditorials = collect($recentSidebarEditorials ?? []);
     $contributors = collect($editorialContributors ?? []);
+    $orderedChannels = collect($insightChannels ?? [])->filter(fn (array $channel): bool => in_array($channel['label'] ?? '', ['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance'], true))->values();
     $archiveItems = $insights instanceof AbstractPaginator ? $insights->getCollection() : collect($insights ?? []);
     $selectedCategory = $selectedCategory ?? request('category');
     $search = $search ?? request('q', '');
@@ -25,7 +28,7 @@
 
     $publishedDate = function ($article): string {
         if (blank($article?->published_at)) {
-            return 'Belum dijadwalkan';
+            return '';
         }
 
         try {
@@ -54,7 +57,7 @@
                 ->join(', ');
         }
 
-        return $article?->creator?->name ?: 'Edulaw Project';
+        return 'Edulaw Project';
     };
 
     $excerpt = function ($article, int $limit = 200): string {
@@ -72,147 +75,45 @@
         return Str::limit($text, $limit);
     };
 
-    $featuredArticle = $latestInsights->first();
-    $usedInsightIds = collect([$featuredArticle?->id])
-        ->filter()
-        ->unique();
-
-    $latestArticles = $latestInsights
-        ->whereNotIn('id', $usedInsightIds->all())
-        ->take(5)
-        ->values();
-    $usedInsightIds = $usedInsightIds
-        ->merge($latestArticles->pluck('id'))
-        ->filter()
-        ->unique();
-
-    $editorialPicksDisplay = $editorialPicks
-        ->filter()
-        ->whereNotIn('id', $usedInsightIds->all())
-        ->unique('id')
-        ->take(4)
-        ->values();
-    $usedInsightIds = $usedInsightIds
-        ->merge($editorialPicksDisplay->pluck('id'))
-        ->filter()
-        ->unique();
-
-    $primaryChannelOrder = collect(['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance']);
-    $orderedChannels = $primaryChannelOrder->map(fn (string $label) => $insightChannels->firstWhere('label', $label))
-        ->filter()
-        ->values();
-
-    $popularInsightsDisplay = $popularInsights
-        ->whereNotIn('id', $usedInsightIds->all())
-        ->unique('id')
-        ->take(5)
-        ->values();
-
-    if ($popularInsightsDisplay->isEmpty()) {
-        $popularInsightsDisplay = $latestInsights
-            ->whereNotIn('id', $usedInsightIds->all())
-            ->unique('id')
-            ->take(5)
-            ->values();
-    }
-
-    $usedInsightIds = $usedInsightIds
-        ->merge($popularInsightsDisplay->pluck('id'))
-        ->filter()
-        ->unique();
-
-    $categoryChannels = $insightChannels
-        ->filter(fn (array $channel): bool => collect($channel['articles'] ?? [])->isNotEmpty())
-        ->sortBy(fn (array $channel): array => [
-            (int) (($channel['category']?->sort_order ?? 999)),
-            -1 * (int) ($channel['article_count'] ?? 0),
-            $primaryChannelOrder->search($channel['label']) === false ? 99 : $primaryChannelOrder->search($channel['label']),
-            $channel['label'],
-        ])
-        ->take(4)
-        ->values();
-
-    $categoryBlocks = $categoryChannels->map(function (array $channel) use (&$usedInsightIds): array {
-        $category = $channel['category'] ?? null;
-        $channelArticles = collect($channel['articles'] ?? [])
-            ->unique('id')
-            ->values();
-
-        $items = $channelArticles
-            ->whereNotIn('id', $usedInsightIds->all())
-            ->take(3)
-            ->values();
-
-        $usedInsightIds = $usedInsightIds
-            ->merge($items->pluck('id'))
-            ->filter()
-            ->unique();
-
-        return [
-            'title' => $category?->name ?: $channel['label'],
-            'description' => $category?->description ?: ($channel['description'] ?? null),
-            'items' => $items,
-            'url' => ($channel['url'] ?? route('insights.index')).'#insight-archive',
-        ];
-    })
-        ->filter(fn (array $block): bool => collect($block['items'] ?? [])->isNotEmpty())
-        ->values();
-
     $latestArchiveUrl = route('insights.index', ['archive' => 'latest']).'#insight-archive';
     $editorialArchiveUrl = route('insights.index', ['featured' => 1]).'#insight-archive';
-    $allCategoriesUrl = route('insights.index', ['archive' => 'latest']).'#insight-archive';
 @endphp
 
 <div class="overflow-x-clip bg-white text-brand-ink">
     <x-insight.editorial-hero :archive-url="$latestArchiveUrl" />
 
     <x-insight.featured-editorial
-        :article="$featuredArticle"
-        :excerpt="$excerpt"
+        :articles="$featuredEditorials"
         :category-name="$categoryName"
         :published-date="$publishedDate"
         :reading-time="$readingTime"
         :author-name="$authorName"
-    />
-
-    <x-insight.editorial-toolbar
-        :channels="$orderedChannels"
-        :selected-category="$selectedCategory"
-        :search="$search"
-        :featured-only="$featuredOnly"
-    />
-
-    <x-insight.editorial-latest-list
-        :articles="$latestArticles"
-        :excerpt="$excerpt"
-        :category-name="$categoryName"
-        :published-date="$publishedDate"
-        :reading-time="$readingTime"
-        :author-name="$authorName"
-        :archive-url="$latestArchiveUrl"
     />
 
     <x-insight.editorial-picks
-        :articles="$editorialPicksDisplay"
-        :excerpt="$excerpt"
+        :articles="$editorialPicks"
         :category-name="$categoryName"
         :published-date="$publishedDate"
-        :author-name="$authorName"
+        :reading-time="$readingTime"
         :archive-url="$editorialArchiveUrl"
     />
 
-    @if ($categoryBlocks->isNotEmpty())
-        <section class="bg-[#fbfaf7] py-12 sm:py-14 lg:py-16">
+    @if ($categorySections->isNotEmpty())
+        <section class="bg-[#fbfaf7] py-10 sm:py-12 lg:py-14" aria-labelledby="editorial-categories-heading">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
-                    <div class="max-w-3xl">
-                        <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Kanal pengetahuan</p>
-                        <h2 class="mt-2 text-balance font-display text-3xl font-bold text-brand-ink sm:text-4xl">Jelajahi Berdasarkan Kategori</h2>
+                    <div>
+                        <div class="flex items-center gap-3">
+                            <h2 id="editorial-categories-heading" class="text-balance font-display text-2xl font-bold text-brand-navy sm:text-3xl">Jelajahi Berdasarkan Kategori</h2>
+                            <span class="h-1 w-10 rounded-full bg-brand-amber" aria-hidden="true"></span>
+                        </div>
+                        <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-600">Temukan editorial berdasarkan tema hukum yang paling relevan.</p>
                     </div>
-                    <a href="{{ $allCategoriesUrl }}" class="inline-flex min-h-10 w-fit items-center justify-center rounded-full border border-brand-amber/50 bg-white px-4 text-sm font-bold text-brand-navy shadow-sm transition hover:border-brand-amber hover:bg-brand-amber-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Lihat Semua Kategori</a>
+                    <a href="{{ $latestArchiveUrl }}" class="inline-flex min-h-11 w-fit items-center justify-center rounded-full border border-brand-amber/50 bg-white px-4 text-sm font-bold text-brand-navy shadow-sm transition hover:border-brand-amber hover:bg-brand-amber-soft">Lihat Semua Kategori</a>
                 </div>
-                <div class="mt-8 grid gap-5 md:grid-cols-2 lg:gap-6">
-                    @foreach ($categoryBlocks as $blockIndex => $block)
+
+                <div class="mt-7 grid gap-5 md:grid-cols-2">
+                    @foreach ($categorySections as $blockIndex => $block)
                         <x-insight.editorial-category-block
                             :block="$block"
                             :index="$blockIndex"
@@ -225,34 +126,51 @@
         </section>
     @endif
 
-    <x-insight.editorial-most-read
-        :articles="$popularInsightsDisplay"
+    <x-insight.editorial-latest-list
+        :articles="$latestEditorials"
+        :popular-articles="$popularEditorials"
+        :recent-articles="$recentSidebarEditorials"
+        :popular-has-views="$popularHasViews ?? false"
+        :excerpt="$excerpt"
         :category-name="$categoryName"
+        :published-date="$publishedDate"
         :reading-time="$readingTime"
+        :archive-url="$latestArchiveUrl"
     />
 
     <x-insight.editorial-contributors :contributors="$contributors" />
 
     @if ($showFilteredArchive)
-        <section id="insight-archive" class="border-t border-slate-200 bg-white pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-12 lg:pb-12">
+        <x-insight.editorial-toolbar
+            :channels="$orderedChannels"
+            :selected-category="$selectedCategory"
+            :search="$search"
+            :featured-only="$featuredOnly"
+        />
+
+        <section id="insight-archive" class="border-t border-slate-200 bg-[#fbfaf7] py-10 sm:py-12 lg:py-14">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                     <div>
                         <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Arsip Editorial</p>
-                        <h2 class="mt-2 font-display text-3xl font-bold text-brand-ink sm:text-4xl">{{ $featuredOnly ? 'Semua Pilihan Editor' : 'Hasil Jelajah Editorial' }}</h2>
+                        <h2 class="mt-2 font-display text-3xl font-bold text-brand-navy">{{ $featuredOnly ? 'Semua Pilihan Editor' : 'Hasil Jelajah Editorial' }}</h2>
                     </div>
-                    <a href="{{ route('insights.index') }}" class="inline-flex min-h-10 w-fit items-center rounded-md border border-slate-200 px-4 text-sm font-semibold text-brand-navy hover:border-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">Atur ulang</a>
+                    <a href="{{ route('insights.index') }}" class="inline-flex min-h-10 w-fit items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-brand-navy hover:border-brand-navy">Atur ulang</a>
                 </div>
 
-                <div class="mt-8 divide-y divide-slate-200 border-y border-slate-200">
+                <div class="mt-7 divide-y divide-slate-200 border-y border-slate-200">
                     @forelse ($archiveItems as $article)
-                        <article class="group py-6">
-                            <a href="{{ route('insights.show', $article->slug) }}" class="grid gap-5 rounded-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber sm:grid-cols-[170px_minmax(0,1fr)]">
-                                <div class="aspect-[16/10] overflow-hidden rounded-xl bg-slate-100">
-                                    <img src="{{ $article->cover_image_url }}" alt="{{ $article->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025] motion-reduce:transition-none">
+                        <article class="group py-5">
+                            <a href="{{ route('insights.show', $article->slug) }}" class="grid gap-5 rounded-sm focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber sm:grid-cols-[170px_minmax(0,1fr)]">
+                                <div class="relative aspect-16/10 overflow-hidden rounded-xl bg-brand-navy">
+                                    @if (filled($article->cover_image) && edulaw_file_exists($article->cover_image))
+                                        <img src="{{ $article->cover_image_url }}" alt="{{ $article->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025] motion-reduce:transition-none">
+                                    @else
+                                        <div class="absolute inset-0 bg-linear-to-br from-brand-navy via-[#244972] to-[#0f766e]"></div>
+                                    @endif
                                 </div>
                                 <div class="min-w-0 self-center">
-                                    <p class="text-[10px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
+                                    <p class="text-[10px] font-bold uppercase tracking-widest text-brand-coral">{{ $categoryName($article) }}</p>
                                     <h3 class="mt-2 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
                                     @if ($excerpt($article, 150) !== '')
                                         <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ $excerpt($article, 150) }}</p>
@@ -271,10 +189,10 @@
                         <p class="text-sm font-medium text-slate-500">Halaman {{ $insights->currentPage() }} dari {{ $insights->lastPage() }}</p>
                         <div class="flex gap-2">
                             @if (! $insights->onFirstPage())
-                                <a href="{{ $insights->previousPageUrl() }}#insight-archive" class="inline-flex min-h-10 items-center rounded-md border border-slate-200 px-4 text-sm font-semibold text-brand-navy hover:border-brand-navy">Sebelumnya</a>
+                                <a href="{{ $insights->previousPageUrl() }}#insight-archive" class="inline-flex min-h-10 items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-brand-navy hover:border-brand-navy">Sebelumnya</a>
                             @endif
                             @if ($insights->hasMorePages())
-                                <a href="{{ $insights->nextPageUrl() }}#insight-archive" class="inline-flex min-h-10 items-center rounded-md bg-brand-navy px-4 text-sm font-semibold text-white hover:bg-brand-ink">Berikutnya</a>
+                                <a href="{{ $insights->nextPageUrl() }}#insight-archive" class="inline-flex min-h-10 items-center rounded-full bg-brand-navy px-4 text-sm font-semibold text-white hover:bg-brand-ink">Berikutnya</a>
                             @endif
                         </div>
                     </nav>
