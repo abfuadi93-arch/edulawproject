@@ -18,7 +18,7 @@
         <div class="grid gap-8 lg:grid-cols-[1.15fr_2.85fr]">
             {{-- Brand --}}
             <div>
-                <a href="{{ url('/') }}" class="inline-flex items-center">
+                <a href="{{ route('home') }}" class="inline-flex items-center">
                     <img
                         src="{{ $footerLogo }}"
                         alt="{{ $siteName }}"
@@ -45,11 +45,11 @@
                         </h3>
 
                         <ul class="mt-4 space-y-2.5 text-sm">
-                            <li><a href="{{ url('/insight') }}" class="text-slate-600 transition hover:text-brand-ink">Editorial</a></li>
-                            <li><a href="{{ url('/publikasi') }}" class="text-slate-600 transition hover:text-brand-ink">Riset &amp; Publikasi</a></li>
-                            <li><a href="{{ url('/program') }}" class="text-slate-600 transition hover:text-brand-ink">Program</a></li>
-                            <li><a href="{{ url('/peluang') }}" class="text-slate-600 transition hover:text-brand-ink">Opportunities</a></li>
-                            <li><a href="{{ url('/multimedia') }}" class="text-slate-600 transition hover:text-brand-ink">Multimedia</a></li>
+                            <li><a href="{{ route('insights.index') }}" class="text-slate-600 transition hover:text-brand-ink">Editorial</a></li>
+                            <li><a href="{{ route('publications.index') }}" class="text-slate-600 transition hover:text-brand-ink">Riset &amp; Publikasi</a></li>
+                            <li><a href="{{ route('programs.index') }}" class="text-slate-600 transition hover:text-brand-ink">Program</a></li>
+                            <li><a href="{{ route('opportunities.index') }}" class="text-slate-600 transition hover:text-brand-ink">Opportunities</a></li>
+                            <li><a href="{{ route('multimedia.index') }}" class="text-slate-600 transition hover:text-brand-ink">Multimedia</a></li>
                         </ul>
                     </div>
 
@@ -60,9 +60,9 @@
                         </h3>
 
                         <ul class="mt-4 space-y-2.5 text-sm">
-                            <li><a href="{{ url('/kolaborasi') }}" class="text-slate-600 transition hover:text-brand-ink">Ajukan Kolaborasi</a></li>
-                            <li><a href="{{ url('/tentang') }}" class="text-slate-600 transition hover:text-brand-ink">Tentang Edulaw</a></li>
-                            <li><a href="{{ url('/kontak') }}" class="text-slate-600 transition hover:text-brand-ink">Kontak</a></li>
+                            <li><a href="{{ route('collaboration.index') }}" class="text-slate-600 transition hover:text-brand-ink">Ajukan Kolaborasi</a></li>
+                            <li><a href="{{ route('about') }}" class="text-slate-600 transition hover:text-brand-ink">Tentang Edulaw</a></li>
+                            <li><a href="{{ route('contact.index') }}" class="text-slate-600 transition hover:text-brand-ink">Kontak</a></li>
                         </ul>
                     </div>
 
@@ -187,10 +187,10 @@
             </p>
 
             <div class="flex flex-wrap gap-x-5 gap-y-2">
-                <a href="{{ url('/kebijakan-privasi') }}" class="transition hover:text-brand-ink">
+                <a href="{{ route('privacy') }}" class="transition hover:text-brand-ink">
                     Kebijakan Privasi
                 </a>
-                <a href="{{ url('/syarat-ketentuan') }}" class="transition hover:text-brand-ink">
+                <a href="{{ route('terms') }}" class="transition hover:text-brand-ink">
                     Syarat &amp; Ketentuan
                 </a>
             </div>

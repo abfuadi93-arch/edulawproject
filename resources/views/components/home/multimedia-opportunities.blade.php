@@ -13,7 +13,8 @@
         ->values();
 
     $multimediaUrl = function ($item) {
-        return $item?->media_url ?: $item?->embed_url ?: null;
+        return \App\Support\EdulawSite::resolveUrl($item?->media_url)
+            ?: \App\Support\EdulawSite::resolveUrl($item?->embed_url);
     };
 
     $externalOpportunityUrl = function ($opportunity) {

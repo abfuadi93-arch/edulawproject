@@ -4,6 +4,8 @@
 
 @php
     $programCollection = collect($programs)->take(3)->values();
+    $hasProgramIndex = \Illuminate\Support\Facades\Route::has('programs.index');
+    $hasProgramShow = \Illuminate\Support\Facades\Route::has('programs.show');
 @endphp
 
 <section class="bg-[#FBF8F1] py-8 lg:py-10">
@@ -25,6 +27,7 @@
                 </p>
             </div>
 
+            @if ($hasProgramIndex)
             <a
                 href="{{ route('programs.index') }}"
                 class="inline-flex w-fit shrink-0 items-center gap-2 pt-1 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
@@ -34,16 +37,17 @@
                     <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </a>
+            @endif
         </div>
 
         <div class="mt-6 grid auto-rows-fr gap-5 lg:grid-cols-3">
-            @forelse ($programCollection as $program)
+            @forelse ($hasProgramShow ? $programCollection : collect() as $program)
                 @php
                     $image = $program->hero_image_url ?: $program->image_url;
-                    $category = $program->display_category ?? $program->category?->name ?? 'Program';
-                    $format = $program->display_format ?? \Illuminate\Support\Str::headline((string) ($program->format ?: 'Program'));
-                    $level = $program->display_level ?? 'Umum';
-                    $audience = $program->audience ?? 'Terbuka';
+                    $category = $program->categoryRelation?->name;
+                    $format = $program->display_format;
+                    $level = $program->display_level;
+                    $audience = $program->audience;
                     $eventDate = $program->event_date ?? $program->starts_at ?? null;
                 @endphp
 
@@ -75,9 +79,11 @@
                             <div class="absolute inset-0 bg-linear-to-r from-brand-navy/28 via-transparent to-transparent"></div>
 
                             <div class="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-                                <span class="inline-flex rounded-md bg-brand-amber px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-black shadow-sm">
-                                    {{ $category }}
-                                </span>
+                                @if ($category)
+                                    <span class="inline-flex rounded-md bg-brand-amber px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-black shadow-sm">
+                                        {{ $category }}
+                                    </span>
+                                @endif
 
                                 @if ($eventDate)
                                     <span class="inline-flex rounded-md bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-ink shadow-sm backdrop-blur">
@@ -95,11 +101,15 @@
 
                         {{-- Body --}}
                         <div class="flex flex-1 flex-col p-4">
-                            <p class="line-clamp-3 text-[15px] leading-6 text-slate-600">
-                                {{ $program->display_description ?: 'Informasi program akan diperbarui oleh tim Edulaw Project.' }}
-                            </p>
+                            @if ($program->display_description)
+                                <p class="line-clamp-3 text-[15px] leading-6 text-slate-600">
+                                    {{ $program->display_description }}
+                                </p>
+                            @endif
 
-                            <div class="mt-4 grid grid-cols-3 gap-3 border-y border-slate-100 py-3">
+                            @if ($format || $level || $audience)
+                            <div class="mt-4 grid grid-flow-col auto-cols-fr gap-3 border-y border-slate-100 py-3">
+                                @if ($format)
                                 <div>
                                     <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
                                         Format
@@ -109,7 +119,9 @@
                                         {{ $format }}
                                     </p>
                                 </div>
+                                @endif
 
+                                @if ($level)
                                 <div>
                                     <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
                                         Level
@@ -119,7 +131,9 @@
                                         {{ $level }}
                                     </p>
                                 </div>
+                                @endif
 
+                                @if ($audience)
                                 <div>
                                     <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
                                         Audiens
@@ -129,7 +143,9 @@
                                         {{ \Illuminate\Support\Str::limit($audience, 18) }}
                                     </p>
                                 </div>
+                                @endif
                             </div>
+                            @endif
 
                             <div class="mt-auto flex items-center justify-between gap-4 pt-4">
                                 <span class="text-sm font-black text-brand-ink">
@@ -147,11 +163,8 @@
                 </article>
             @empty
                 <div class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
-                    <p class="text-sm font-black text-brand-ink">
-                        Konten sedang disiapkan.
-                    </p>
-                    <p class="mt-1 text-xs leading-5 text-slate-500">
-                        Program upcoming atau ongoing akan tampil otomatis di sini.
+                    <p class="text-sm leading-6 text-slate-600">
+                        Belum ada program yang ditampilkan. Nantikan program terbaru dari Edulaw Project.
                     </p>
                 </div>
             @endforelse

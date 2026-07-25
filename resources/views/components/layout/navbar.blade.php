@@ -21,28 +21,28 @@
     $navItems = [
         [
             'label' => 'Program',
-            'url' => '/program',
-            'active' => request()->is('program*'),
+            'url' => route('programs.index'),
+            'active' => request()->routeIs('programs.*'),
         ],
         [
             'label' => 'Editorial',
-            'url' => '/insight',
-            'active' => request()->is('insight*'),
+            'url' => route('insights.index'),
+            'active' => request()->routeIs('insights.*'),
         ],
         [
             'label' => 'Publikasi & Riset',
-            'url' => '/riset-publikasi',
-            'active' => request()->is('riset-publikasi*'),
+            'url' => route('publications.index'),
+            'active' => request()->routeIs('publications.*'),
         ],
         [
             'label' => 'Opportunities',
-            'url' => '/opportunities',
-            'active' => request()->is('opportunities*'),
+            'url' => route('opportunities.index'),
+            'active' => request()->routeIs('opportunities.*'),
         ],
         [
             'label' => 'Multimedia',
-            'url' => '/multimedia',
-            'active' => request()->is('multimedia*'),
+            'url' => route('multimedia.index'),
+            'active' => request()->routeIs('multimedia.*'),
         ],
     ];
 @endphp
@@ -56,7 +56,7 @@
 
             {{-- Brand --}}
             <a
-                href="{{ url('/') }}"
+                href="{{ route('home') }}"
                 class="flex shrink-0 items-center gap-4"
                 aria-label="{{ $siteName }}"
             >
@@ -81,7 +81,7 @@
             <nav class="hidden flex-1 items-center justify-center gap-7 lg:flex xl:gap-9">
                 @foreach($navItems as $item)
                     <a
-                        href="{{ url($item['url']) }}"
+                        href="{{ $item['url'] }}"
                         @if($item['active']) aria-current="page" @endif
                         class="group relative whitespace-nowrap text-sm font-semibold transition duration-300
                             {{ $item['active']
@@ -103,7 +103,7 @@
             {{-- Desktop Actions --}}
             <div class="hidden shrink-0 items-center gap-3 lg:flex">
                 <a
-                    href="{{ url('/search') }}"
+                    href="{{ route('search.index') }}"
                     aria-label="Cari"
                     class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition duration-300 hover:border-brand-navy hover:text-brand-navy"
                 >
@@ -123,7 +123,7 @@
                 </a>
 
                 <a
-                    href="{{ url('/kolaborasi') }}"
+                    href="{{ route('collaboration.index') }}"
                     class="inline-flex items-center justify-center rounded-lg bg-brand-navy px-5 py-3 text-sm font-bold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-slate-900"
                 >
                     Ajukan Kolaborasi
@@ -184,7 +184,7 @@
             <nav class="space-y-1">
 
                 <a
-                    href="{{ url('/') }}"
+                    href="{{ route('home') }}"
                     class="block rounded-xl px-4 py-3 text-sm font-semibold
                         {{ $isHome
                             ? 'bg-brand-navy text-white'
@@ -195,7 +195,7 @@
 
                 @foreach($navItems as $item)
                     <a
-                        href="{{ url($item['url']) }}"
+                        href="{{ $item['url'] }}"
                         class="block rounded-xl px-4 py-3 text-sm font-semibold
                             {{ $item['active']
                                 ? 'bg-brand-navy text-white'
@@ -208,7 +208,7 @@
                 <div class="my-4 border-t border-slate-200"></div>
 
                 <a
-                    href="{{ url('/search') }}"
+                    href="{{ route('search.index') }}"
                     class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-brand-navy"
                 >
                     <span>Cari</span>
@@ -229,7 +229,7 @@
                 </a>
 
                 <a
-                    href="{{ url('/kolaborasi') }}"
+                    href="{{ route('collaboration.index') }}"
                     class="mt-3 block rounded-xl bg-brand-navy px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-900"
                 >
                     Ajukan Kolaborasi

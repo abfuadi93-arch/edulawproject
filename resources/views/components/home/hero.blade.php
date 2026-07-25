@@ -7,9 +7,9 @@
     $heroEyebrow = $hero?->eyebrow ?? 'Equal · Educative · Embrace';
     $heroTitle = $hero?->title ?? 'Membangun Literasi Hukum yang Mudah Diakses, Relevan, dan Berdampak';
     $heroDescription = $hero?->body ?? 'Edulaw Project menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum dalam satu platform digital yang terintegrasi.';
-    $primaryUrl = $hero?->resolved_url ?? url('/insight');
+    $primaryUrl = $hero?->resolved_url ?? route('insights.index');
     $primaryLabel = str_replace(['Insight', 'insight'], ['Editorial', 'editorial'], $hero?->url_label ?? 'Jelajahi Editorial');
-    $secondaryUrl = \App\Support\EdulawSite::resolveUrl($heroMeta['secondary_url'] ?? null, url('/program'));
+    $secondaryUrl = \App\Support\EdulawSite::resolveUrl($heroMeta['secondary_url'] ?? null, route('programs.index'));
     $secondaryLabel = $heroMeta['secondary_label'] ?? 'Lihat Program';
 
     $fallbackValues = [

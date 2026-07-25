@@ -3,6 +3,9 @@
 ])
 
 @php
+    $hasPublicationIndex = \Illuminate\Support\Facades\Route::has('publications.index');
+    $hasPublicationShow = \Illuminate\Support\Facades\Route::has('publications.show');
+
     $publicationTypes = collect($publications)
         ->map(fn ($publication) => $publication->type)
         ->filter()
@@ -84,15 +87,17 @@
                     Publikasi Edulaw
                 </p>
 
-                <a
-                    href="{{ route('publications.index') }}"
-                    class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
-                >
-                    Lihat Semua Publikasi
-                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
+                @if ($hasPublicationIndex)
+                    <a
+                        href="{{ route('publications.index') }}"
+                        class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
+                    >
+                        Lihat Semua Publikasi
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                @endif
             </div>
 
             <div class="mt-1.5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -107,6 +112,7 @@
                 </div>
 
                 <div class="flex flex-wrap items-center gap-2 lg:justify-end">
+                    @if ($hasPublicationIndex)
                     @foreach ($publicationTypes as $type)
                         <a
                             href="{{ $type['slug'] ? route('publications.index', ['type' => $type['slug']]) : route('publications.index') }}"
@@ -115,16 +121,17 @@
                             {{ $type['label'] }}
                         </a>
                     @endforeach
+                    @endif
                 </div>
             </div>
         </div>
 
         <div class="mt-5 grid auto-rows-fr gap-4 sm:grid-cols-2 lg:grid-cols-4">
-            @forelse ($publications as $publication)
+            @forelse ($hasPublicationShow ? $publications : collect() as $publication)
                 @php
-                    $typeName = $publication->type?->name ?? 'Publikasi';
+                    $typeName = $publication->type?->name;
                     $palette = $coverPalettes[$loop->index % count($coverPalettes)];
-                    $publishedAt = optional($publication->published_at)->translatedFormat('M Y') ?: 'Edulaw Project';
+                    $publishedAt = optional($publication->published_at)->translatedFormat('M Y');
                     $downloadUrl = $publication->download_url;
 
                     $authorName = $publication->display_author
@@ -151,11 +158,13 @@
 
                                         <div class="absolute inset-0 bg-brand-navy/5"></div>
 
+                                        @if ($typeName)
                                         <div class="absolute left-3 top-3">
                                             <span class="inline-flex items-center rounded-md bg-white/85 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.13em] text-brand-ink shadow-sm backdrop-blur">
                                                 {{ $typeName }}
                                             </span>
                                         </div>
+                                        @endif
 
                                         @if ($authorName)
                                             <div class="absolute bottom-3 left-3 right-3">
@@ -187,11 +196,13 @@
                                                     <span class="h-2.5 w-2.5 shrink-0 rounded-full {{ $palette['accent'] }}"></span>
                                                 </div>
 
+                                                @if ($typeName)
                                                 <div class="mt-7">
                                                     <span class="inline-flex items-center rounded-md bg-white/60 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.13em] {{ $palette['text'] }} shadow-sm ring-1 ring-white/70">
                                                         {{ $typeName }}
                                                     </span>
                                                 </div>
+                                                @endif
 
                                                 <h3 class="mt-4 line-clamp-6 text-[1.05rem] font-black leading-tight tracking-tight {{ $palette['text'] }}">
                                                     {{ $publication->title }}
@@ -206,9 +217,11 @@
                                                 <div class="mt-auto">
                                                     <span class="block h-1 w-12 rounded-full {{ $palette['accent'] }}"></span>
 
-                                                    <p class="mt-2 text-[11px] font-bold {{ $palette['muted'] }}">
-                                                        {{ $publishedAt }}
-                                                    </p>
+                                                    @if ($publishedAt)
+                                                        <p class="mt-2 text-[11px] font-bold {{ $palette['muted'] }}">
+                                                            {{ $publishedAt }}
+                                                        </p>
+                                                    @endif
                                                 </div>
                                             </div>
                                         </div>
@@ -220,20 +233,29 @@
                             <div class="flex flex-1 flex-col pt-3">
                                 <div class="flex items-start justify-between gap-3">
                                     <div class="min-w-0">
-                                        <p class="text-[11px] font-black uppercase tracking-[0.14em] text-brand-navy">
-                                            {{ $typeName }}
-                                        </p>
+                                        @if ($typeName)
+                                            <p class="text-[11px] font-black uppercase tracking-[0.14em] text-brand-navy">
+                                                {{ $typeName }}
+                                            </p>
+                                        @endif
 
-                                        <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-slate-500">
-                                            <span>{{ optional($publication->published_at)->translatedFormat('M Y') ?: '-' }}</span>
+                                        @if ($publication->published_at || ! empty($publication->page_count) || $authorName)
+                                            <div class="mt-2 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-slate-500">
+                                            @if ($publication->published_at)
+                                                <span>{{ $publication->published_at->translatedFormat('M Y') }}</span>
+                                            @endif
 
                                             @if (! empty($publication->page_count))
-                                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                                @if ($publication->published_at)
+                                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                                @endif
                                                 <span>{{ $publication->page_count }} hlm</span>
                                             @endif
 
                                             @if ($authorName)
-                                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                                @if ($publication->published_at || ! empty($publication->page_count))
+                                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                                @endif
                                                 <span class="inline-flex max-w-full items-center gap-1.5">
                                                     @if ($primaryAuthor?->photo_url)
                                                         <img
@@ -252,6 +274,7 @@
                                                 </span>
                                             @endif
                                         </div>
+                                        @endif
                                     </div>
 
                                     <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-brand-navy ring-1 ring-slate-200 transition group-hover:bg-brand-navy group-hover:text-white">
@@ -264,7 +287,7 @@
                         </a>
 
                         {{-- Actions --}}
-                        <div class="mt-3 grid grid-cols-[1fr_2.75rem] gap-2">
+                        <div class="mt-3 grid {{ $downloadUrl ? 'grid-cols-[1fr_2.75rem]' : 'grid-cols-1' }} gap-2">
                             <a
                                 href="{{ route('publications.show', $publication->slug) }}"
                                 class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-black px-3 py-2 text-xs font-bold text-white transition hover:bg-brand-navy"
@@ -272,26 +295,26 @@
                                 Baca Ringkasan
                             </a>
 
-                            <a
-                                href="{{ $downloadUrl ?: route('publications.show', $publication->slug) }}"
-                                @if ($downloadUrl) target="_blank" rel="noopener noreferrer" @endif
-                                class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-brand-ink transition hover:border-brand-amber hover:bg-brand-amber-soft hover:text-brand-black"
-                                aria-label="Unduh atau buka publikasi"
-                            >
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </a>
+                            @if ($downloadUrl)
+                                <a
+                                    href="{{ $downloadUrl }}"
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    class="inline-flex h-11 w-11 items-center justify-center rounded-lg border border-slate-200 bg-white text-brand-ink transition hover:border-brand-amber hover:bg-brand-amber-soft hover:text-brand-black"
+                                    aria-label="Unduh atau buka publikasi"
+                                >
+                                    <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M12 4v11m0 0 4-4m-4 4-4-4M5 20h14" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                                    </svg>
+                                </a>
+                            @endif
                         </div>
                     </div>
                 </article>
             @empty
                 <div class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
-                    <p class="text-sm font-black text-brand-ink">
-                        Konten sedang disiapkan.
-                    </p>
-                    <p class="mt-1 text-xs leading-5 text-slate-500">
-                        Publikasi published akan tampil otomatis di sini.
+                    <p class="text-sm leading-6 text-slate-600">
+                        Belum ada publikasi yang tersedia. Nantikan riset dan publikasi terbaru dari Edulaw Project.
                     </p>
                 </div>
             @endforelse

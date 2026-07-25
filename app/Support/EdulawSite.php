@@ -52,11 +52,41 @@ class EdulawSite
             return null;
         }
 
-        if (Str::startsWith($value, ['http://', 'https://', 'mailto:', 'tel:', '#'])) {
+        if ($value === '#' || Str::startsWith(Str::lower($value), ['javascript:', 'data:'])) {
+            return filled($default) && $default !== $value
+                ? self::resolveUrl($default)
+                : null;
+        }
+
+        if (Str::startsWith($value, ['http://', 'https://'])) {
+            return filter_var($value, FILTER_VALIDATE_URL)
+                ? $value
+                : (filled($default) && $default !== $value ? self::resolveUrl($default) : null);
+        }
+
+        if (Str::startsWith($value, 'mailto:')) {
+            return filter_var(Str::after($value, 'mailto:'), FILTER_VALIDATE_EMAIL)
+                ? $value
+                : (filled($default) && $default !== $value ? self::resolveUrl($default) : null);
+        }
+
+        if (Str::startsWith($value, 'tel:')) {
+            return preg_match('/^tel:\+?[0-9().\s-]+$/', $value) === 1
+                ? $value
+                : (filled($default) && $default !== $value ? self::resolveUrl($default) : null);
+        }
+
+        if (Str::startsWith($value, '#')) {
+            return filled($default) && $default !== $value
+                ? self::resolveUrl($default)
+                : null;
+        }
+
+        if (Str::startsWith($value, ['/', '?'])) {
             return $value;
         }
 
-        return url(Str::startsWith($value, '/') ? $value : '/'.$value);
+        return url('/'.$value);
     }
 
     public static function block(string $area): ?Fluent

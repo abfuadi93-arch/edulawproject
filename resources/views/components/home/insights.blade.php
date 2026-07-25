@@ -6,6 +6,8 @@
 
 @php
     $insightCollection = collect($insights);
+    $hasInsightIndex = \Illuminate\Support\Facades\Route::has('insights.index');
+    $hasInsightShow = \Illuminate\Support\Facades\Route::has('insights.show');
 
     $featured = $featuredInsight ?: $insightCollection->first();
 
@@ -14,7 +16,7 @@
         ->take(3)
         ->values();
 
-    $categoryLinks = collect([
+    $categoryLinks = $hasInsightIndex ? collect([
         ['label' => 'Semua', 'url' => route('insights.index')],
     ])->merge(
         collect($categories)
@@ -23,7 +25,7 @@
                 'label' => $category->name,
                 'url' => route('insights.index', ['category' => $category->slug]),
             ])
-    )->take(6);
+    )->take(6) : collect();
 
     $primaryAuthor = function ($insight) {
         return $insight && $insight->relationLoaded('authors')
@@ -51,15 +53,17 @@
                     Editorial Edulaw
                 </p>
 
-                <a
-                    href="{{ route('insights.index') }}"
-                    class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
-                >
-                    Lihat Semua Editorial
-                    <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
+                @if ($hasInsightIndex)
+                    <a
+                        href="{{ route('insights.index') }}"
+                        class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
+                    >
+                        Lihat Semua Editorial
+                        <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                @endif
             </div>
 
             <div class="mt-1.5 flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
@@ -86,7 +90,7 @@
             </div>
         </div>
 
-        @if ($featured)
+        @if ($featured && $hasInsightShow)
             <div class="mt-5 grid gap-4 lg:grid-cols-[1.08fr_0.92fr]">
                 {{-- Featured Editorial --}}
                 <article class="group overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
@@ -138,10 +142,14 @@
                             @endphp
 
                             <div class="mt-4 flex flex-wrap items-center gap-x-3 gap-y-2 text-xs font-semibold text-slate-500">
-                                <span>{{ optional($featured->published_at)->translatedFormat('d M Y') ?: '-' }}</span>
-                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                <span>{{ $featured->reading_time ? $featured->reading_time.' min read' : '-' }}</span>
-                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                @if ($featured->published_at)
+                                    <span>{{ $featured->published_at->translatedFormat('d M Y') }}</span>
+                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                @endif
+                                @if ($featured->reading_time)
+                                    <span>{{ $featured->reading_time }} min read</span>
+                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                @endif
                                 <span class="inline-flex max-w-full items-center gap-2">
                                     @if ($featuredAuthor?->photo_url)
                                         <img
@@ -216,11 +224,19 @@
                                         {{ $item->excerpt }}
                                     </p>
 
-                                    <div class="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-2 text-[11px] font-semibold text-slate-500">
-                                        <span>{{ optional($item->published_at)->translatedFormat('d M Y') ?: '-' }}</span>
-                                        <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                        <span>{{ $item->reading_time ? $item->reading_time.' min read' : '-' }}</span>
-                                    </div>
+                                    @if ($item->published_at || $item->reading_time)
+                                        <div class="mt-auto flex flex-wrap items-center gap-x-2 gap-y-1 pt-2 text-[11px] font-semibold text-slate-500">
+                                            @if ($item->published_at)
+                                                <span>{{ $item->published_at->translatedFormat('d M Y') }}</span>
+                                            @endif
+                                            @if ($item->published_at && $item->reading_time)
+                                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                            @endif
+                                            @if ($item->reading_time)
+                                                <span>{{ $item->reading_time }} min read</span>
+                                            @endif
+                                        </div>
+                                    @endif
                                 </div>
                             </a>
                         </article>
@@ -229,12 +245,17 @@
             </div>
         @else
             <div class="mt-5 rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
-                <p class="text-sm font-black text-brand-ink">
-                    Konten sedang disiapkan.
+                <p class="text-sm leading-6 text-slate-600">
+                    Belum ada Insight yang ditampilkan. Nantikan analisis hukum terbaru dari Edulaw Project.
                 </p>
-                <p class="mt-1 text-xs leading-5 text-slate-500">
-                    Editorial published akan tampil otomatis di sini.
-                </p>
+                @if ($hasInsightIndex)
+                    <a
+                        href="{{ route('insights.index') }}"
+                        class="mt-3 inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-black px-4 py-2 text-xs font-bold text-white transition hover:bg-brand-navy"
+                    >
+                        Lihat Semua Insight
+                    </a>
+                @endif
             </div>
         @endif
     </div>
