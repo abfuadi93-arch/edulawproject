@@ -2,7 +2,7 @@
 
 @if ($contributors->isNotEmpty())
     @php
-        $contributors = collect($contributors)->take(6);
+        $contributors = collect($contributors)->take(8);
 
         $publicRoleLabel = function ($author): string {
             $rawLabel = collect([
@@ -45,7 +45,7 @@
                 <a href="{{ route('about') }}#tim" class="inline-flex min-h-11 w-fit items-center justify-center rounded-full border border-brand-amber/50 bg-white px-4 text-sm font-bold text-brand-navy shadow-sm transition duration-200 hover:border-brand-amber hover:bg-brand-amber-soft focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Lihat Semua Kontributor</a>
             </div>
 
-            <div class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+            <div class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($contributors as $author)
                     <a href="{{ route('profiles.show', $author->slug) }}" class="group flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm shadow-brand-ink/5 transition duration-200 hover:border-brand-amber/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber" data-editorial-contributor="{{ $author->id }}">
                         <span class="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-navy text-base font-bold text-white ring-1 ring-slate-200">

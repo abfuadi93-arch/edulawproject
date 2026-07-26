@@ -544,7 +544,7 @@ test('editorial contributor labels use public author position instead of auth ro
     $authors->each(fn (Author $author) => $response->assertSee(route('profiles.show', $author->slug), false));
 });
 
-test('editorial contributor grid is capped to six profiles', function () {
+test('editorial contributor grid is capped to eight profiles', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
         'slug' => 'edulaw-insight',
@@ -560,7 +560,7 @@ test('editorial contributor grid is capped to six profiles', function () {
         'published_at' => now(),
     ]);
 
-    foreach (range(1, 7) as $position) {
+    foreach (range(1, 9) as $position) {
         $author = Author::query()->create([
             'name' => "Kontributor {$position}",
             'slug' => "kontributor-{$position}",
@@ -576,7 +576,7 @@ test('editorial contributor grid is capped to six profiles', function () {
         ->assertOk()
         ->getContent();
 
-    expect(substr_count($html, 'data-editorial-contributor='))->toBe(6);
+    expect(substr_count($html, 'data-editorial-contributor='))->toBe(8);
 });
 
 test('empty optional editorial sections stay hidden and featured article is not repeated in latest list', function () {
