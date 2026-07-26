@@ -22,7 +22,7 @@
     $resolvedPrimaryLabel = $primaryLabel ?? $block?->url_label ?? 'Ajukan Kerja Sama';
     $resolvedSecondaryUrl = $secondaryUrl ?? \App\Support\EdulawSite::resolveUrl($meta['secondary_url'] ?? null, route('programs.index'));
     $resolvedSecondaryLabel = $secondaryLabel ?? $meta['secondary_label'] ?? 'Lihat Program';
-    $resolvedBackgroundAlt = $backgroundAlt ?? $block?->image_alt ?? '';
+    $resolvedBackgroundAlt = $backgroundAlt ?? $block?->image_alt ?? 'Kegiatan kolaborasi Edulaw Project';
 @endphp
 
 <x-shared.cta-section

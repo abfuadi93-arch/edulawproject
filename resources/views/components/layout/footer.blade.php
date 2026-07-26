@@ -1,199 +1,184 @@
 @php
-    $siteSettings = $siteSettings ?? [];
-    $siteName = $siteSettings['site.name'] ?? 'Edulaw Project';
-    $footerLogo = \App\Support\EdulawSite::assetUrl($siteSettings['site.footer_logo'] ?? null, 'images/logo/edulaw-logo.png');
-    $siteDescription = $siteSettings['site.short_description'] ?? 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.';
-    $tagline = $siteSettings['site.tagline'] ?? 'Equal. Educative. Embrace.';
-    $email = $siteSettings['contact.email'] ?? 'hello@edulawproject.id';
-    $whatsappLabel = $siteSettings['contact.whatsapp_label'] ?? '0815-2992-7677';
-    $whatsappUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['contact.whatsapp_url'] ?? null, 'https://wa.me/6281529927677');
-    $location = $siteSettings['contact.location'] ?? 'Jakarta, Indonesia';
-    $instagramUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['social.instagram_url'] ?? null, 'https://www.instagram.com/edulaw.project');
-    $youtubeUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['social.youtube_url'] ?? null, 'https://www.youtube.com/@EdulawProject');
-    $linkedinUrl = \App\Support\EdulawSite::resolveUrl($siteSettings['social.linkedin_url'] ?? null, 'https://www.linkedin.com/company/edulaw-project/');
+    use App\Support\EdulawSite;
+    use Illuminate\Support\Facades\Route;
+
+    $settings = $siteSettings ?? EdulawSite::settings();
+    $siteName = filled($settings['site.name'] ?? null) ? $settings['site.name'] : 'Edulaw Project';
+    $siteDescription = filled($settings['site.short_description'] ?? null) ? $settings['site.short_description'] : null;
+    $tagline = filled($settings['site.tagline'] ?? null) ? $settings['site.tagline'] : null;
+    $footerLogo = EdulawSite::assetUrl('images/logo/edulaw-logo-white.png')
+        ?: EdulawSite::assetUrl($settings['site.footer_logo'] ?? null, 'images/logo/edulaw-logo.png');
+
+    $email = filter_var($settings['contact.email'] ?? null, FILTER_VALIDATE_EMAIL) ?: null;
+    $emailUrl = $email ? EdulawSite::resolveUrl('mailto:'.$email) : null;
+    $whatsappLabel = filled($settings['contact.whatsapp_label'] ?? null) ? $settings['contact.whatsapp_label'] : null;
+    $whatsappUrl = EdulawSite::resolveUrl($settings['contact.whatsapp_url'] ?? null);
+    $location = filled($settings['contact.location'] ?? null) ? $settings['contact.location'] : null;
+
+    $primaryLinks = collect([
+        ['label' => 'Beranda', 'route' => 'home'],
+        ['label' => 'Program Edulaw', 'route' => 'programs.index'],
+        ['label' => 'Editorial', 'route' => 'insights.index'],
+        ['label' => 'Riset & Publikasi', 'route' => 'publications.index'],
+        ['label' => 'Opportunities', 'route' => 'opportunities.index'],
+        ['label' => 'Multimedia', 'route' => 'multimedia.index'],
+        ['label' => 'Tentang Edulaw', 'route' => 'about'],
+    ])->filter(fn (array $link): bool => Route::has($link['route']));
+
+    $editorialSubmissionRoute = collect([
+        'editorial-submissions.create',
+        'submissions.create',
+        'insights.submit',
+    ])->first(fn (string $routeName): bool => Route::has($routeName));
+
+    $writerGuidelineRoute = collect([
+        'writer-guidelines',
+        'insights.guidelines',
+    ])->first(fn (string $routeName): bool => Route::has($routeName));
+
+    $contributionLinks = collect([
+        $editorialSubmissionRoute ? ['label' => 'Kirim Tulisan', 'route' => $editorialSubmissionRoute] : null,
+        $writerGuidelineRoute ? ['label' => 'Pedoman Penulis', 'route' => $writerGuidelineRoute] : null,
+        Route::has('collaboration.index') ? ['label' => 'Ajukan Kolaborasi', 'route' => 'collaboration.index'] : null,
+    ])->filter();
+
+    $socialLinks = collect([
+        ['label' => 'Instagram', 'url' => EdulawSite::resolveUrl($settings['social.instagram_url'] ?? null)],
+        ['label' => 'LinkedIn', 'url' => EdulawSite::resolveUrl($settings['social.linkedin_url'] ?? null)],
+    ])->filter(fn (array $link): bool => filled($link['url']));
+
+    $legalLinks = collect([
+        ['label' => 'Kebijakan Privasi', 'route' => 'privacy'],
+        ['label' => 'Syarat & Ketentuan', 'route' => 'terms'],
+    ])->filter(fn (array $link): bool => Route::has($link['route']));
 @endphp
 
-<footer class="border-t border-slate-200 bg-white text-brand-ink">
-    <div class="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8 lg:py-9">
-        <div class="grid gap-8 lg:grid-cols-[1.15fr_2.85fr]">
-            {{-- Brand --}}
+<footer class="relative overflow-hidden bg-brand-navy text-white">
+    <svg class="pointer-events-none absolute -right-32 top-0 h-full w-[62rem] text-brand-teal/12" viewBox="0 0 1000 620" fill="none" aria-hidden="true">
+        <path d="M500-80 930 620H70L500-80Z" stroke="currentColor" stroke-width="2"/>
+        <path d="m500 165 250 405H250l250-405Z" stroke="currentColor" stroke-width="2"/>
+        <path d="m500 405 115 185H385l115-185Z" stroke="currentColor" stroke-width="2"/>
+    </svg>
+
+    <div class="relative z-10 mx-auto grid max-w-7xl gap-9 px-5 py-10 sm:grid-cols-2 sm:px-6 lg:grid-cols-[1.5fr_.9fr_1fr_1.1fr] lg:gap-12 lg:px-8 lg:py-14">
             <div>
-                <a href="{{ route('home') }}" class="inline-flex items-center">
-                    <img
-                        src="{{ $footerLogo }}"
-                        alt="{{ $siteName }}"
-                        class="h-10 w-auto max-w-48 object-contain"
-                    >
+                <a href="{{ route('home') }}" class="inline-flex min-h-11 items-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">
+                    @if ($footerLogo)
+                        <img
+                            src="{{ $footerLogo }}"
+                            alt="{{ $siteName }}"
+                            width="649"
+                            height="240"
+                            class="h-11 w-auto max-w-52 object-contain"
+                            loading="lazy"
+                            decoding="async"
+                        >
+                    @else
+                        <span class="font-display text-xl font-extrabold text-white">{{ $siteName }}</span>
+                    @endif
                 </a>
 
-                <p class="mt-4 max-w-sm text-sm leading-6 text-slate-600">
-                    {{ $siteDescription }}
-                </p>
+                @if ($siteDescription)
+                    <p class="mt-5 max-w-sm text-sm leading-7 text-white/72">{{ $siteDescription }}</p>
+                @endif
 
-                <p class="mt-4 inline-flex rounded-full border border-brand-silver bg-brand-paper px-3.5 py-1.5 text-xs font-bold text-brand-ink">
-                    {{ $tagline }}
-                </p>
+                @if ($tagline)
+                    <p class="mt-4 text-xs font-extrabold tracking-[0.08em] text-brand-amber">{{ $tagline }}</p>
+                @endif
 
+                @if ($socialLinks->isNotEmpty())
+                    <div class="mt-6 flex flex-wrap gap-2.5" aria-label="Media sosial Edulaw Project">
+                        @foreach ($socialLinks as $link)
+                            <a
+                                href="{{ $link['url'] }}"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                aria-label="{{ $link['label'] }} Edulaw Project"
+                                class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-white/20 bg-white/5 text-white transition hover:-translate-y-0.5 hover:border-brand-amber hover:bg-brand-amber hover:text-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber"
+                            >
+                                @if ($link['label'] === 'Instagram')
+                                    <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" stroke-width="1.8"/>
+                                        <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
+                                        <path d="M17.2 6.8h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
+                                    </svg>
+                                @else
+                                    <svg class="h-4.5 w-4.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                        <path d="M7 10v8M7 7h.01M11 18v-4.8c0-2 1.2-3.2 3-3.2s3 1.2 3 3.4V18" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"/>
+                                        <rect x="3" y="3" width="18" height="18" rx="4" stroke="currentColor" stroke-width="1.8"/>
+                                    </svg>
+                                @endif
+                            </a>
+                        @endforeach
+                    </div>
+                @endif
+
+                <a href="#main-content" class="mt-7 inline-flex min-h-11 items-center gap-2 rounded-lg border border-white/35 px-4 py-2.5 text-xs font-extrabold uppercase tracking-[0.08em] text-white transition hover:border-brand-amber hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                    <span aria-hidden="true">↑</span>
+                    Kembali ke Atas
+                </a>
+            </div>
+
+            <nav aria-label="Navigasi footer">
+                <h2 class="text-sm font-extrabold text-white">Peta Situs</h2>
+                <ul class="mt-4 space-y-1.5 text-sm">
+                    @foreach ($primaryLinks as $link)
+                        <li>
+                            <a href="{{ route($link['route']) }}" class="inline-flex min-h-9 items-center text-white/70 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                {{ $link['label'] }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+            </nav>
+
+            <div>
+                <h2 class="text-sm font-extrabold text-white">Kontribusi</h2>
+                <ul class="mt-4 space-y-1.5 text-sm">
+                    @foreach ($contributionLinks as $link)
+                        <li>
+                            <a href="{{ route($link['route']) }}" class="inline-flex min-h-9 items-center text-white/70 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                {{ $link['label'] }}
+                            </a>
+                        </li>
+                    @endforeach
+                </ul>
+
+                @if ($legalLinks->isNotEmpty())
+                    <h2 class="mt-6 text-sm font-extrabold text-white">Legal</h2>
+                    <ul class="mt-3 space-y-1.5 text-sm">
+                        @foreach ($legalLinks as $link)
+                            <li>
+                                <a href="{{ route($link['route']) }}" class="inline-flex min-h-9 items-center text-white/70 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                    {{ $link['label'] }}
+                                </a>
+                            </li>
+                        @endforeach
+                    </ul>
+                @endif
             </div>
 
             <div>
-                <div class="grid gap-8 sm:grid-cols-3">
-                    {{-- Kanal Utama --}}
-                    <div>
-                        <h3 class="text-sm font-extrabold text-brand-ink">
-                            Kanal Utama
-                        </h3>
-
-                        <ul class="mt-4 space-y-2.5 text-sm">
-                            <li><a href="{{ route('insights.index') }}" class="text-slate-600 transition hover:text-brand-ink">Editorial</a></li>
-                            <li><a href="{{ route('publications.index') }}" class="text-slate-600 transition hover:text-brand-ink">Riset &amp; Publikasi</a></li>
-                            <li><a href="{{ route('programs.index') }}" class="text-slate-600 transition hover:text-brand-ink">Program</a></li>
-                            <li><a href="{{ route('opportunities.index') }}" class="text-slate-600 transition hover:text-brand-ink">Opportunities</a></li>
-                            <li><a href="{{ route('multimedia.index') }}" class="text-slate-600 transition hover:text-brand-ink">Multimedia</a></li>
-                        </ul>
-                    </div>
-
-                    {{-- Kolaborasi --}}
-                    <div>
-                        <h3 class="text-sm font-extrabold text-brand-ink">
-                            Kolaborasi
-                        </h3>
-
-                        <ul class="mt-4 space-y-2.5 text-sm">
-                            <li><a href="{{ route('collaboration.index') }}" class="text-slate-600 transition hover:text-brand-ink">Ajukan Kolaborasi</a></li>
-                            <li><a href="{{ route('about') }}" class="text-slate-600 transition hover:text-brand-ink">Tentang Edulaw</a></li>
-                            <li><a href="{{ route('contact.index') }}" class="text-slate-600 transition hover:text-brand-ink">Kontak</a></li>
-                        </ul>
-                    </div>
-
-                    {{-- Follow Us --}}
-                    <div>
-                        <h3 class="text-sm font-extrabold text-brand-ink">
-                            Follow Us
-                        </h3>
-
-                        <ul class="mt-4 space-y-3 text-sm font-semibold text-slate-600">
-                            <li>
-                                <a
-                                    href="{{ $instagramUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="group flex items-center gap-2.5 transition hover:text-brand-ink"
-                                >
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-linear-to-br from-[#f58529] via-[#dd2a7b] to-[#8134af] text-white shadow-sm transition group-hover:-translate-y-0.5">
-                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <rect x="4" y="4" width="16" height="16" rx="5" stroke="currentColor" stroke-width="1.8"/>
-                                            <circle cx="12" cy="12" r="3.5" stroke="currentColor" stroke-width="1.8"/>
-                                            <path d="M17.2 6.8h.01" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/>
-                                        </svg>
-                                    </span>
-                                    Instagram
-                                </a>
-                            </li>
-
-                            <li>
-                                <a
-                                    href="{{ $youtubeUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="group flex items-center gap-2.5 transition hover:text-brand-ink"
-                                >
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#ff0033] text-white shadow-sm transition group-hover:-translate-y-0.5">
-                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M21 12s0-3.5-.45-5a2.6 2.6 0 0 0-1.85-1.85C17.2 4.75 12 4.75 12 4.75s-5.2 0-6.7.4A2.6 2.6 0 0 0 3.45 7C3 8.5 3 12 3 12s0 3.5.45 5a2.6 2.6 0 0 0 1.85 1.85c1.5.4 6.7.4 6.7.4s5.2 0 6.7-.4A2.6 2.6 0 0 0 20.55 17C21 15.5 21 12 21 12Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                            <path d="m10 9 5 3-5 3V9Z" fill="currentColor"/>
-                                        </svg>
-                                    </span>
-                                    YouTube
-                                </a>
-                            </li>
-
-                            <li>
-                                <a
-                                    href="{{ $linkedinUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="group flex items-center gap-2.5 transition hover:text-brand-ink"
-                                >
-                                    <span class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#0a66c2] text-white shadow-sm transition group-hover:-translate-y-0.5">
-                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M6.5 9.5V18M10.5 18v-5.1c0-2 1.2-3.4 3.2-3.4 1.9 0 3.3 1.2 3.3 3.6V18M6.5 6.5h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                            <rect x="4" y="4" width="16" height="16" rx="3" stroke="currentColor" stroke-width="1.8"/>
-                                        </svg>
-                                    </span>
-                                    LinkedIn
-                                </a>
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-
-                {{-- Terhubung --}}
-                <div class="mt-6 border-t border-slate-100 pt-5">
-                    <div class="grid gap-4 sm:grid-cols-3">
-                        <div class="flex min-w-0 items-start gap-2.5 text-sm">
-                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-paper text-brand-navy">
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M4 6h16v12H4V6Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <path d="m4 7 8 6 8-6" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </span>
-                            <div class="min-w-0">
-                                <p class="font-extrabold text-brand-ink">Email</p>
-                                <a href="mailto:{{ $email }}" class="mt-0.5 block truncate text-slate-600 transition hover:text-brand-navy">
-                                    {{ $email }}
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="flex min-w-0 items-start gap-2.5 text-sm">
-                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-paper text-brand-navy">
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M7 4h10v16H7V4Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <path d="M11 17h2" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                </svg>
-                            </span>
-                            <div class="min-w-0">
-                                <p class="font-extrabold text-brand-ink">WhatsApp</p>
-                                <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="mt-0.5 block truncate text-slate-600 transition hover:text-brand-navy">
-                                    {{ $whatsappLabel }}
-                                </a>
-                            </div>
-                        </div>
-
-                        <div class="flex min-w-0 items-start gap-2.5 text-sm">
-                            <span class="mt-0.5 flex h-7 w-7 shrink-0 items-center justify-center rounded-full bg-brand-paper text-brand-navy">
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M12 21s7-5.1 7-11a7 7 0 1 0-14 0c0 5.9 7 11 7 11Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <circle cx="12" cy="10" r="2.2" stroke="currentColor" stroke-width="1.8"/>
-                                </svg>
-                            </span>
-                            <div class="min-w-0">
-                                <p class="font-extrabold text-brand-ink">Lokasi</p>
-                                <p class="mt-0.5 truncate text-slate-600">
-                                    {{ $location }}
-                                </p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                <h2 class="text-sm font-extrabold text-white">Hubungi Kami</h2>
+                <ul class="mt-4 space-y-2 text-sm">
+                    @if ($emailUrl)
+                        <li><a href="{{ $emailUrl }}" class="inline-flex min-h-9 items-center break-all text-white/70 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $email }}</a></li>
+                    @endif
+                    @if ($whatsappUrl && $whatsappLabel)
+                        <li>
+                            <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-9 items-center gap-1 text-white/70 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                WhatsApp: {{ $whatsappLabel }} <span aria-hidden="true">↗</span>
+                            </a>
+                        </li>
+                    @endif
+                    @if ($location)
+                        <li class="pt-1 leading-6 text-white/60">{{ $location }}</li>
+                    @endif
+                </ul>
             </div>
-        </div>
+    </div>
 
-        {{-- Bottom --}}
-        <div class="mt-6 flex flex-col gap-3 border-t border-slate-200 pt-4 text-sm font-medium text-slate-500 md:flex-row md:items-center md:justify-between">
-            <p>
-                © {{ now()->year }} {{ $siteName }}. All rights reserved.
-            </p>
-
-            <div class="flex flex-wrap gap-x-5 gap-y-2">
-                <a href="{{ route('privacy') }}" class="transition hover:text-brand-ink">
-                    Kebijakan Privasi
-                </a>
-                <a href="{{ route('terms') }}" class="transition hover:text-brand-ink">
-                    Syarat &amp; Ketentuan
-                </a>
-            </div>
-        </div>
+    <div class="relative z-10 bg-brand-amber px-5 py-3 text-center text-xs font-bold text-brand-ink">
+        © {{ now()->year }} {{ $siteName }}. Hak cipta dilindungi.
     </div>
 </footer>

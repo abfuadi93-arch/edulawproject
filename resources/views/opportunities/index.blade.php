@@ -106,18 +106,22 @@
             ?? null;
     };
 
-    $opportunityUrl = function ($opportunity) use ($contactUrl) {
-        return filled($opportunity?->slug)
-            ? route('opportunities.show', $opportunity->slug)
+    $opportunityUrl = function ($opportunity) use ($contactUrl, $externalUrl) {
+        $url = $externalUrl($opportunity);
+
+        return filled($url) && filter_var($url, FILTER_VALIDATE_URL) && Str::startsWith($url, ['http://', 'https://'])
+            ? $url
             : $contactUrl;
     };
 
-    $isExternalOpportunity = function ($opportunity) {
-        return false;
+    $isExternalOpportunity = function ($opportunity) use ($externalUrl) {
+        $url = $externalUrl($opportunity);
+
+        return filled($url) && filter_var($url, FILTER_VALIDATE_URL) && Str::startsWith($url, ['http://', 'https://']);
     };
 
-    $buttonLabel = function ($opportunity) {
-        return 'Lihat Detail';
+    $buttonLabel = function ($opportunity) use ($isExternalOpportunity) {
+        return $isExternalOpportunity($opportunity) ? 'Lihat Peluang' : 'Hubungi Edulaw';
     };
 
     $opportunityTypeName = function ($opportunity) use ($typeLabels) {

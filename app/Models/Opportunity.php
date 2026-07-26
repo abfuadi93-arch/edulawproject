@@ -56,6 +56,26 @@ class Opportunity extends Model
         return $query->where('status', 'open');
     }
 
+    public function scopeActive(Builder $query): Builder
+    {
+        return $query
+            ->open()
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('deadline')
+                    ->orWhereDate('deadline', '>=', today());
+            });
+    }
+
+    public function scopeWithExternalLink(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query): void {
+            $query
+                ->where('application_link', 'like', 'https://%')
+                ->orWhere('application_link', 'like', 'http://%');
+        });
+    }
+
     public function getPosterUrlAttribute(): ?string
     {
         return EdulawSite::assetUrl($this->attributes['poster'] ?? null);

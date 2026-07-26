@@ -29,10 +29,6 @@
         return edulaw_file_url($path);
     };
 
-    $fileUrl = function (?string $path) {
-        return edulaw_file_url($path);
-    };
-
     $publicationTypeName = function ($publication) {
         return $publication?->type?->name
             ?? $publication?->publicationType?->name
@@ -111,9 +107,9 @@
         return route('publications.show', $publication->slug);
     };
 
-    $downloadUrl = function ($publication) use ($fileUrl) {
+    $downloadUrl = function ($publication) {
         if (! empty($publication->pdf_file)) {
-            return $fileUrl($publication->pdf_file);
+            return route('publications.download', $publication->slug);
         }
 
         if (! empty($publication->external_url)) {
@@ -123,12 +119,12 @@
         return null;
     };
 
-    $pdfPreviewUrl = function ($publication) use ($fileUrl) {
+    $pdfPreviewUrl = function ($publication) {
         if (empty($publication->pdf_file)) {
             return null;
         }
 
-        return $fileUrl($publication->pdf_file) . '#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH';
+        return route('publications.preview', $publication->slug).'#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH';
     };
 
     $availableYears = $publicationItems

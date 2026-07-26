@@ -10,7 +10,8 @@ class OpportunityController extends Controller
     public function index(Request $request)
     {
         $query = Opportunity::query()
-            ->open()
+            ->active()
+            ->withExternalLink()
             ->orderByDesc('featured')
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline');
@@ -59,14 +60,16 @@ class OpportunityController extends Controller
         $opportunities = $query->paginate(6)->withQueryString();
 
         $featuredOpportunity = Opportunity::query()
-            ->open()
+            ->active()
+            ->withExternalLink()
             ->where('featured', true)
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
             ->first();
 
         $opportunityTypes = Opportunity::query()
-            ->open()
+            ->active()
+            ->withExternalLink()
             ->whereNotNull('type')
             ->select('type')
             ->distinct()
@@ -77,25 +80,5 @@ class OpportunityController extends Controller
             'featuredOpportunity',
             'opportunityTypes'
         ));
-    }
-
-    public function show(string $slug)
-    {
-        $opportunity = Opportunity::query()
-            ->open()
-            ->where('slug', $slug)
-            ->firstOrFail();
-
-        $relatedOpportunities = Opportunity::query()
-            ->open()
-            ->whereKeyNot($opportunity->id)
-            ->when($opportunity->type, fn ($query) => $query->where('type', $opportunity->type))
-            ->orderByDesc('featured')
-            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
-            ->orderBy('deadline')
-            ->limit(3)
-            ->get();
-
-        return view('opportunities.show', compact('opportunity', 'relatedOpportunities'));
     }
 }

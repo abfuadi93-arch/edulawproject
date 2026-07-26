@@ -78,7 +78,8 @@ class SearchController extends Controller
                 ]);
 
             $opportunities = Opportunity::query()
-                ->open()
+                ->active()
+                ->withExternalLink()
                 ->where(function ($q) use ($query) {
                     $q->where('title', 'like', "%{$query}%")
                         ->orWhere('excerpt', 'like', "%{$query}%")
@@ -92,9 +93,9 @@ class SearchController extends Controller
                     'title' => $item->title,
                     'excerpt' => $item->excerpt,
                     'date' => optional($item->deadline)->translatedFormat('d M Y'),
-                    'url' => route('opportunities.show', $item->slug),
+                    'url' => $item->application_link,
                     'meta' => ucfirst(str_replace('_', ' ', (string) $item->type)),
-                    'external' => false,
+                    'external' => true,
                     'sort_date' => optional($item->deadline)?->timestamp ?? 0,
                 ]);
 

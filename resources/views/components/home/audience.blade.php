@@ -1,98 +1,82 @@
-@props(['intro' => null, 'audiences' => collect()])
-
 @php
-    $introEyebrow = $intro?->eyebrow ?? 'Siapa yang Kami Layani';
-    $introTitle = $intro?->title ?? 'Ruang literasi hukum untuk berbagai kebutuhan.';
-
-    $fallbackAudiences = [
+    $audiences = [
         [
-            'title' => 'Mahasiswa',
-            'description' => 'Akses hukum untuk penelitian, penulisan, dan pengembangan diri.',
+            'title' => 'Mahasiswa & Pembelajar Hukum',
+            'description' => 'Materi, program, dan perspektif untuk memperkuat proses belajar hukum.',
             'icon' => 'cap',
-            'accent' => 'bg-brand-amber text-brand-black',
+            'accent' => 'bg-brand-amber-soft text-brand-navy',
+            'link_label' => 'Lihat Program Edulaw',
+            'link_url' => '#program-edulaw',
         ],
         [
-            'title' => 'Profesional Hukum',
-            'description' => 'Perbarui keahlian, temukan perspektif baru.',
+            'title' => 'Peneliti & Akademisi',
+            'description' => 'Riset, publikasi, dan ruang pertukaran gagasan hukum yang relevan.',
+            'icon' => 'book',
+            'accent' => 'bg-brand-teal-soft text-brand-navy',
+            'link_label' => 'Jelajahi Riset & Publikasi',
+            'link_url' => '#riset-publikasi',
+        ],
+        [
+            'title' => 'Praktisi & Profesional',
+            'description' => 'Insight dan peluang pengembangan kapasitas untuk praktik profesional.',
             'icon' => 'briefcase',
-            'accent' => 'bg-brand-teal text-brand-ink',
+            'accent' => 'bg-brand-sky-soft text-brand-navy',
+            'link_label' => 'Baca Edulaw Insight',
+            'link_url' => '#edulaw-insight',
         ],
         [
-            'title' => 'Masyarakat',
-            'description' => 'Pahami hak dan kewajiban, ambil bagian dalam perubahan.',
+            'title' => 'Masyarakat & Komunitas',
+            'description' => 'Pengetahuan hukum yang lebih mudah dipahami untuk kepentingan publik.',
             'icon' => 'users',
-            'accent' => 'bg-brand-coral text-brand-ink',
-        ],
-        [
-            'title' => 'Pembuat Kebijakan',
-            'description' => 'Dapatkan data dan perspektif hukum yang kredibel.',
-            'icon' => 'building',
-            'accent' => 'bg-brand-sky text-white',
+            'accent' => 'bg-brand-coral-soft text-brand-ink',
+            'link_label' => 'Jelajahi Multimedia',
+            'link_url' => '#multimedia',
         ],
     ];
-
-    $audienceCards = ($audiences instanceof \Illuminate\Support\Collection && $audiences->isNotEmpty())
-        ? $audiences->map(fn ($audience) => [
-            'title' => $audience->title,
-            'description' => $audience->body,
-            'icon' => $audience->icon ?: 'users',
-            'accent' => $audience->accent ?: 'bg-brand-amber text-brand-black',
-        ])->all()
-        : $fallbackAudiences;
 @endphp
 
-<section class="bg-white py-6 lg:py-7">
-    <div class="section-shell relative">
-        <div class="grid gap-5 lg:grid-cols-[0.55fr_1.45fr] lg:items-stretch">
-            {{-- Left text --}}
-            <div class="flex flex-col justify-center">
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-navy">
-                    {{ $introEyebrow }}
+<section class="home-section bg-white" aria-labelledby="home-audience-title" data-home-audience>
+    <div class="section-shell">
+        <div class="home-section-header">
+            <div class="home-section-copy">
+                <p class="home-section-eyebrow">Audience</p>
+                <h2 id="home-audience-title" class="home-section-title">Untuk Siapa Edulaw</h2>
+                <p class="home-section-description">
+                    Edulaw menghadirkan ruang belajar, riset, dan kolaborasi hukum untuk beragam kebutuhan.
                 </p>
-
-                <h2 class="mt-2 text-xl font-extrabold leading-tight tracking-normal text-brand-ink sm:text-2xl">
-                    {{ $introTitle }}
-                </h2>
             </div>
+        </div>
 
-            {{-- Right cards --}}
-            <div class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                @foreach ($audienceCards as $audience)
-                    <article class="group flex h-full min-h-28 items-start gap-3 rounded-xl border border-brand-ink/10 bg-white p-4 shadow-sm shadow-brand-ink/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-navy/20 hover:shadow-lg hover:shadow-brand-ink/10">
-                        <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl {{ $audience['accent'] }} shadow-sm transition duration-300 group-hover:scale-105">
-                            @if ($audience['icon'] === 'cap')
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M3 8.5 12 4l9 4.5-9 4.5L3 8.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <path d="M7 11v4.2c0 1.2 2.2 2.3 5 2.3s5-1.1 5-2.3V11M21 9v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            @elseif ($audience['icon'] === 'briefcase')
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M9 7V5.8C9 4.8 9.8 4 10.8 4h2.4C14.2 4 15 4.8 15 5.8V7M5 7h14v12H5V7Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
-                                    <path d="M5 12h14M10 12v1.2h4V12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            @elseif ($audience['icon'] === 'users')
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M16 19c0-2.2-1.8-4-4-4s-4 1.8-4 4M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 6c0-1.7-.9-3.2-2.3-4M18 10a2.5 2.5 0 0 0-2-2.45M6 18c0-1.7.9-3.2 2.3-4M6 10a2.5 2.5 0 0 1 2-2.45" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            @else
-                                <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M4 20h16M6 20V8l6-4 6 4v12M9 20v-5h6v5M9 10h.01M12 10h.01M15 10h.01" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            @endif
-                        </div>
-
-                        <div class="min-w-0">
-                            <h3 class="text-[15px] font-extrabold leading-snug tracking-normal text-brand-ink">
-                                {{ $audience['title'] }}
-                            </h3>
-
-                            <p class="mt-1 line-clamp-2 text-xs leading-5 text-slate-600">
-                                {{ $audience['description'] }}
-                            </p>
-                        </div>
-                    </article>
-                @endforeach
-            </div>
+        <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+            @foreach ($audiences as $audience)
+                <article class="home-card flex h-full flex-col p-5" data-home-audience-card>
+                    <span class="flex h-11 w-11 items-center justify-center rounded-xl {{ $audience['accent'] }}" aria-hidden="true">
+                        @if ($audience['icon'] === 'cap')
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                <path d="M3 8.5 12 4l9 4.5-9 4.5-9-4.5Z M7 11v4.2c0 1.2 2.2 2.3 5 2.3s5-1.1 5-2.3V11 M21 9v5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        @elseif ($audience['icon'] === 'book')
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                <path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H11v16H6.5A2.5 2.5 0 0 0 4 21V5.5Zm16 0A2.5 2.5 0 0 0 17.5 3H13v16h4.5A2.5 2.5 0 0 1 20 21V5.5Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
+                            </svg>
+                        @elseif ($audience['icon'] === 'briefcase')
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                <path d="M9 7V5.8C9 4.8 9.8 4 10.8 4h2.4c1 0 1.8.8 1.8 1.8V7 M5 7h14v12H5V7Zm0 5h14 M10 12v1.2h4V12" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        @else
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none">
+                                <path d="M16 19c0-2.2-1.8-4-4-4s-4 1.8-4 4 M12 12a3 3 0 1 0 0-6 3 3 0 0 0 0 6Zm6 6c0-1.7-.9-3.2-2.3-4 M6 18c0-1.7.9-3.2 2.3-4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                            </svg>
+                        @endif
+                    </span>
+                    <h3 class="mt-4 text-base font-extrabold leading-snug text-brand-ink">{{ $audience['title'] }}</h3>
+                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ $audience['description'] }}</p>
+                    <a href="{{ $audience['link_url'] }}" class="home-card-link mt-auto inline-flex min-h-11 items-center gap-2 pt-4 text-sm font-extrabold text-brand-navy">
+                        {{ $audience['link_label'] }}
+                        <span aria-hidden="true">↓</span>
+                    </a>
+                </article>
+            @endforeach
         </div>
     </div>
 </section>

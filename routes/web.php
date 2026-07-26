@@ -30,6 +30,8 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/insight/{slug}', [InsightController::class, 'show'])->name('insights.show');
 
     Route::get('/riset-publikasi', [PublicationController::class, 'index'])->name('publications.index');
+    Route::get('/riset-publikasi/{slug}/preview', [PublicationController::class, 'preview'])->name('publications.preview');
+    Route::get('/riset-publikasi/{slug}/download', [PublicationController::class, 'download'])->name('publications.download');
     Route::get('/riset-publikasi/{slug}', [PublicationController::class, 'show'])->name('publications.show');
     Route::redirect('/publikasi', '/riset-publikasi', 301);
     Route::redirect('/publikasi/{slug}', '/riset-publikasi/{slug}', 301);
@@ -39,11 +41,7 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/program/{slug}', [ProgramController::class, 'show'])->name('programs.show');
 
     Route::get('/opportunities', [OpportunityController::class, 'index'])->name('opportunities.index');
-    Route::get('/opportunities/{slug}', [OpportunityController::class, 'show'])->name('opportunities.show');
     Route::redirect('/peluang', '/opportunities', 301);
-    Route::get('/peluang/{slug}', function (string $slug) {
-        return redirect()->route('opportunities.show', $slug, 301);
-    });
 
     Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');

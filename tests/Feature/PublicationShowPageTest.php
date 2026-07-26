@@ -2,6 +2,7 @@
 
 use App\Models\Publication;
 use App\Models\PublicationType;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 test('publication detail hero contains eyebrow and title without body metadata', function () {
@@ -60,6 +61,8 @@ test('publication detail hero contains eyebrow and title without body metadata',
 });
 
 test('publication detail shows download action only in pdf preview card', function () {
+    Storage::fake('public');
+
     $type = PublicationType::query()->create([
         'name' => 'Policy Brief',
         'slug' => 'policy-brief-download',
@@ -76,10 +79,72 @@ test('publication detail shows download action only in pdf preview card', functi
         'pdf_file' => 'publications/dokumen.pdf',
     ]);
 
+    Storage::disk('public')->put('publications/dokumen.pdf', '%PDF-1.4 test');
+
     $html = $this->get(route('publications.show', $publication->slug))
         ->assertOk()
         ->assertSee('Ringkasan Publikasi')
         ->getContent();
 
     expect(substr_count($html, 'Unduh Publikasi'))->toBe(1);
+});
+
+test('published publication pdf can be previewed and downloaded with safe disposition headers', function () {
+    Storage::fake('public');
+    Storage::disk('public')->put('publications/pdfs/rahasia-server.pdf', '%PDF-1.4 public');
+
+    $publication = Publication::query()->create([
+        'title' => 'Kajian Akses Publik',
+        'slug' => 'kajian-akses-publik',
+        'status' => 'published',
+        'published_at' => now()->toDateString(),
+        'pdf_file' => 'public/storage/publications/pdfs/rahasia-server.pdf',
+    ]);
+
+    $this->get(route('publications.preview', $publication->slug))
+        ->assertOk()
+        ->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('content-disposition', 'inline; filename=kajian-akses-publik.pdf');
+
+    $download = $this->get(route('publications.download', $publication->slug))
+        ->assertOk()
+        ->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('content-disposition', 'attachment; filename=kajian-akses-publik.pdf');
+
+    expect($download->headers->get('content-disposition'))
+        ->not->toContain('rahasia-server')
+        ->not->toContain(storage_path());
+});
+
+test('non-published publication files are not publicly accessible', function (string $status) {
+    Storage::fake('public');
+    Storage::disk('public')->put("publications/{$status}.pdf", '%PDF-1.4 private');
+
+    $publication = Publication::query()->create([
+        'title' => "Publikasi {$status}",
+        'slug' => "publikasi-{$status}",
+        'status' => $status,
+        'pdf_file' => "publications/{$status}.pdf",
+    ]);
+
+    $this->get(route('publications.show', $publication->slug))->assertNotFound();
+    $this->get(route('publications.preview', $publication->slug))->assertNotFound();
+    $this->get(route('publications.download', $publication->slug))->assertNotFound();
+})->with(['draft', 'reviewed']);
+
+test('missing publication file returns not found without exposing its storage path', function () {
+    Storage::fake('public');
+
+    $publication = Publication::query()->create([
+        'title' => 'Publikasi Tanpa File',
+        'slug' => 'publikasi-tanpa-file',
+        'status' => 'published',
+        'published_at' => now()->toDateString(),
+        'pdf_file' => 'publications/private/missing.pdf',
+    ]);
+
+    $response = $this->get(route('publications.download', $publication->slug))
+        ->assertNotFound();
+
+    $response->assertDontSee('publications/private/missing.pdf', false);
 });

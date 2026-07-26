@@ -23,11 +23,10 @@
     $indexUrl = Route::has('publications.index') ? route('publications.index') : url('/riset-publikasi');
     $collaborationUrl = Route::has('collaboration.index') ? route('collaboration.index') : url('/kolaborasi');
 
-    $fileUrl = fn (?string $path): ?string => edulaw_file_url($path);
     $coverImage = edulaw_file_url($publication->cover_image ?? null);
-    $pdfUrl = filled($publication->pdf_file) ? $fileUrl($publication->pdf_file) : null;
-    $externalUrl = filled($publication->external_url) ? $publication->external_url : null;
-    $pdfPreviewUrl = $pdfUrl ? $pdfUrl.'#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH' : null;
+    $pdfUrl = $hasPdfFile ? route('publications.download', $publication->slug) : null;
+    $pdfPreviewUrl = $hasPdfFile ? route('publications.preview', $publication->slug).'#page=1&toolbar=0&navpanes=0&scrollbar=0&view=FitH' : null;
+    $externalUrl = \App\Support\EdulawSite::resolveUrl($publication->external_url);
 
     $typeName = $publication?->type?->name
         ?? $publication?->publicationType?->name
@@ -189,8 +188,6 @@
                             @if ($pdfUrl)
                                 <a
                                     href="{{ $pdfUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
                                     class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]"
                                 >
                                     Unduh Publikasi

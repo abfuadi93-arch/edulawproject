@@ -8,21 +8,20 @@
     $hasProgramShow = \Illuminate\Support\Facades\Route::has('programs.show');
 @endphp
 
-<section class="bg-[#FBF8F1] py-8 lg:py-10">
+<section id="program-edulaw" class="home-section scroll-mt-24 bg-[#FBF8F1]" aria-labelledby="home-programs-title">
     <div class="section-shell">
         {{-- Header --}}
-        <div class="flex flex-col gap-4 lg:flex-row lg:items-start lg:justify-between">
-            <div class="max-w-5xl">
-                <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-sky shadow-sm ring-1 ring-slate-200">
-                    <span class="h-2 w-2 rounded-full bg-brand-sky"></span>
+        <div class="home-section-header">
+            <div class="home-section-copy">
+                <p class="home-section-eyebrow">
                     Program Edulaw
                 </p>
 
-                <h2 class="mt-1.5 max-w-5xl text-2xl font-black leading-tight tracking-tight text-brand-ink sm:text-3xl lg:text-[2.15rem]">
+                <h2 id="home-programs-title" class="home-section-title">
                     Ruang Belajar dan Pengembangan Kapasitas Hukum
                 </h2>
 
-                <p class="mt-2 max-w-4xl text-sm leading-6 text-slate-600 sm:text-[15px]">
+                <p class="home-section-description">
                     Kelas, diskusi, pelatihan, dan forum pengembangan kapasitas hukum bersama Edulaw Project.
                 </p>
             </div>
@@ -30,7 +29,7 @@
             @if ($hasProgramIndex)
             <a
                 href="{{ route('programs.index') }}"
-                class="inline-flex w-fit shrink-0 items-center gap-2 pt-1 text-sm font-extrabold text-brand-ink transition hover:text-brand-navy"
+                class="section-link w-fit shrink-0"
             >
                 Lihat Semua Program
                 <svg class="h-4 w-4 transition" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -40,27 +39,44 @@
             @endif
         </div>
 
-        <div class="mt-6 grid auto-rows-fr gap-5 lg:grid-cols-3">
+        <div class="mt-8 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
             @forelse ($hasProgramShow ? $programCollection : collect() as $program)
                 @php
                     $image = $program->hero_image_url ?: $program->image_url;
                     $category = $program->categoryRelation?->name;
                     $format = $program->display_format;
-                    $level = $program->display_level;
-                    $audience = $program->audience;
                     $eventDate = $program->event_date ?? $program->starts_at ?? null;
+                    $endDate = $program->end_date ?? null;
+                    $statusLabel = $program->status === 'ongoing' ? 'Ongoing' : 'Upcoming';
+                    $dateLabel = $eventDate
+                        ? $eventDate->translatedFormat('d M Y')
+                        : null;
+
+                    if ($eventDate && $endDate) {
+                        $dateLabel = $eventDate->isSameDay($endDate)
+                            ? $eventDate->translatedFormat('d M Y')
+                            : $eventDate->translatedFormat('d M Y').' – '.$endDate->translatedFormat('d M Y');
+                    }
+
+                    $formatLocation = collect([$format, $program->location])
+                        ->filter()
+                        ->unique()
+                        ->join(' · ');
                 @endphp
 
-                <article class="group h-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-ink/10">
-                    <a href="{{ route('programs.show', $program->slug) }}" class="flex h-full flex-col">
+                <article data-home-program class="home-card home-card-interactive group h-full">
+                    <a href="{{ route('programs.show', $program->slug) }}" class="home-card-link flex h-full flex-col">
                         {{-- Image --}}
-                        <div class="relative h-[255px] overflow-hidden bg-brand-navy">
+                        <div class="relative aspect-[16/10] overflow-hidden bg-brand-navy">
                             @if ($image)
                                 <img
                                     src="{{ $image }}"
-                                    alt="{{ $program->display_title }}"
+                                    alt="Poster {{ $program->display_title }}"
+                                    width="1200"
+                                    height="800"
                                     class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                                     loading="lazy"
+                                    decoding="async"
                                 >
                             @else
                                 <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-[#0b6f6b]">
@@ -80,16 +96,24 @@
 
                             <div class="absolute left-4 top-4 flex flex-wrap items-center gap-2">
                                 @if ($category)
-                                    <span class="inline-flex rounded-md bg-brand-amber px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-black shadow-sm">
+                                    <span class="text-xs font-bold text-white drop-shadow">
                                         {{ $category }}
                                     </span>
                                 @endif
 
-                                @if ($eventDate)
-                                    <span class="inline-flex rounded-md bg-white/90 px-3 py-1 text-[10px] font-black uppercase tracking-[0.13em] text-brand-ink shadow-sm backdrop-blur">
-                                        {{ optional($eventDate)->translatedFormat('d M Y') }}
-                                    </span>
-                                @endif
+                                <span class="inline-flex items-center gap-1.5 rounded-md {{ $program->status === 'ongoing' ? 'bg-brand-teal text-brand-black' : 'bg-brand-amber text-brand-black' }} px-2.5 py-1 text-xs font-bold shadow-sm">
+                                    @if ($program->status === 'ongoing')
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <path d="m8 5 11 7-11 7V5Z" fill="currentColor"/>
+                                        </svg>
+                                    @else
+                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                            <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/>
+                                            <path d="M12 8v4l2.5 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
+                                        </svg>
+                                    @endif
+                                    {{ $statusLabel }}
+                                </span>
                             </div>
 
                             <div class="absolute bottom-4 left-4 right-4">
@@ -100,47 +124,35 @@
                         </div>
 
                         {{-- Body --}}
-                        <div class="flex flex-1 flex-col p-4">
+                        <div class="flex flex-1 flex-col p-5">
                             @if ($program->display_description)
                                 <p class="line-clamp-3 text-[15px] leading-6 text-slate-600">
                                     {{ $program->display_description }}
                                 </p>
                             @endif
 
-                            @if ($format || $level || $audience)
-                            <div class="mt-4 grid grid-flow-col auto-cols-fr gap-3 border-y border-slate-100 py-3">
-                                @if ($format)
+                            @if ($dateLabel || $formatLocation)
+                            <div class="mt-4 grid gap-3 border-y border-slate-100 py-3 sm:grid-cols-2">
+                                @if ($dateLabel)
                                 <div>
-                                    <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-                                        Format
+                                    <p class="text-xs font-semibold text-slate-500">
+                                        Waktu
                                     </p>
 
-                                    <p class="mt-1 line-clamp-1 text-sm font-extrabold text-brand-ink">
-                                        {{ $format }}
+                                    <p class="home-meta mt-1 font-bold text-brand-ink">
+                                        {{ $dateLabel }}
                                     </p>
                                 </div>
                                 @endif
 
-                                @if ($level)
+                                @if ($formatLocation)
                                 <div>
-                                    <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-                                        Level
+                                    <p class="text-xs font-semibold text-slate-500">
+                                        Format / Lokasi
                                     </p>
 
-                                    <p class="mt-1 line-clamp-1 text-sm font-extrabold text-brand-ink">
-                                        {{ $level }}
-                                    </p>
-                                </div>
-                                @endif
-
-                                @if ($audience)
-                                <div>
-                                    <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">
-                                        Audiens
-                                    </p>
-
-                                    <p class="mt-1 line-clamp-1 text-sm font-extrabold text-brand-ink">
-                                        {{ \Illuminate\Support\Str::limit($audience, 18) }}
+                                    <p class="home-meta mt-1 line-clamp-2 font-bold text-brand-ink">
+                                        {{ $formatLocation }}
                                     </p>
                                 </div>
                                 @endif
@@ -148,11 +160,11 @@
                             @endif
 
                             <div class="mt-auto flex items-center justify-between gap-4 pt-4">
-                                <span class="text-sm font-black text-brand-ink">
-                                    Lihat Detail
+                                <span class="text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">
+                                    Lihat Program
                                 </span>
 
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-black text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
+                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-navy text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
                                     <svg class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                                     </svg>
@@ -162,7 +174,7 @@
                     </a>
                 </article>
             @empty
-                <div class="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
+                <div class="home-empty-state col-span-full">
                     <p class="text-sm leading-6 text-slate-600">
                         Belum ada program yang ditampilkan. Nantikan program terbaru dari Edulaw Project.
                     </p>

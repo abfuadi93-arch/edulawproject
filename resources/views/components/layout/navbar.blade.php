@@ -30,7 +30,7 @@
             'active' => request()->routeIs('insights.*'),
         ],
         [
-            'label' => 'Publikasi & Riset',
+            'label' => 'Riset & Publikasi',
             'url' => route('publications.index'),
             'active' => request()->routeIs('publications.*'),
         ],
@@ -48,7 +48,25 @@
 @endphp
 
 <header
-    x-data="{ mobileMenu: false }"
+    x-data="{
+        mobileMenu: false,
+        toggleMenu() {
+            this.mobileMenu ? this.closeMenu() : this.openMenu();
+        },
+        openMenu() {
+            this.mobileMenu = true;
+            this.$nextTick(() => this.$refs.firstMobileLink?.focus());
+        },
+        closeMenu(restoreFocus = true) {
+            this.mobileMenu = false;
+            if (restoreFocus) {
+                this.$nextTick(() => this.$refs.menuButton?.focus());
+            }
+        },
+    }"
+    @keydown.escape.window="if (mobileMenu) closeMenu()"
+    @resize.window="if (window.innerWidth >= 1024) mobileMenu = false"
+    @click.outside="mobileMenu = false"
     class="sticky top-0 z-50 border-b border-slate-200 bg-white"
 >
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
@@ -63,7 +81,10 @@
                 <img
                     src="{{ $logo }}"
                     alt="{{ $siteName }}"
+                    width="378"
+                    height="512"
                     class="h-10 w-auto"
+                    decoding="async"
                 >
 
                 <div class="hidden md:block">
@@ -78,7 +99,7 @@
             </a>
 
             {{-- Desktop Navigation --}}
-            <nav class="hidden flex-1 items-center justify-center gap-7 lg:flex xl:gap-9">
+            <nav class="hidden flex-1 items-center justify-center gap-7 lg:flex xl:gap-9" aria-label="Navigasi utama">
                 @foreach($navItems as $item)
                     <a
                         href="{{ $item['url'] }}"
@@ -105,7 +126,7 @@
                 <a
                     href="{{ route('search.index') }}"
                     aria-label="Cari"
-                    class="inline-flex h-10 w-10 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition duration-300 hover:border-brand-navy hover:text-brand-navy"
+                    class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition duration-300 hover:border-brand-navy hover:text-brand-navy"
                 >
                     <svg
                         class="h-5 w-5"
@@ -124,7 +145,7 @@
 
                 <a
                     href="{{ route('collaboration.index') }}"
-                    class="inline-flex items-center justify-center rounded-lg bg-brand-navy px-5 py-3 text-sm font-bold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-slate-900"
+                    class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-bold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-slate-900"
                 >
                     Ajukan Kolaborasi
                 </a>
@@ -133,10 +154,14 @@
             {{-- Mobile Trigger --}}
             <button
                 type="button"
-                @click="mobileMenu = ! mobileMenu"
+                x-ref="menuButton"
+                @click="toggleMenu()"
                 class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:border-brand-navy hover:text-brand-navy lg:hidden"
+                aria-expanded="false"
                 :aria-expanded="mobileMenu.toString()"
                 aria-label="Buka menu"
+                :aria-label="mobileMenu ? 'Tutup menu' : 'Buka menu'"
+                aria-controls="mobile-navigation"
             >
                 <svg
                     x-show="!mobileMenu"
@@ -175,16 +200,19 @@
 
     {{-- Mobile Menu --}}
     <div
+        id="mobile-navigation"
         x-show="mobileMenu"
         x-transition.opacity.duration.200ms
         x-cloak
         class="border-t border-slate-200 bg-white lg:hidden"
     >
         <div class="mx-auto max-w-7xl px-5 py-4">
-            <nav class="space-y-1">
+            <nav class="space-y-1" aria-label="Navigasi mobile">
 
                 <a
+                    x-ref="firstMobileLink"
                     href="{{ route('home') }}"
+                    @if ($isHome) aria-current="page" @endif
                     class="block rounded-xl px-4 py-3 text-sm font-semibold
                         {{ $isHome
                             ? 'bg-brand-navy text-white'
@@ -196,6 +224,7 @@
                 @foreach($navItems as $item)
                     <a
                         href="{{ $item['url'] }}"
+                        @if($item['active']) aria-current="page" @endif
                         class="block rounded-xl px-4 py-3 text-sm font-semibold
                             {{ $item['active']
                                 ? 'bg-brand-navy text-white'

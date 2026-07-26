@@ -2,8 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Author;
 use App\Models\Insight;
-use App\Models\InsightCategory;
 use App\Models\Multimedia;
 use App\Models\Opportunity;
 use App\Models\Program;
@@ -18,7 +18,8 @@ class HomeController extends Controller
         $homeInsights = Insight::with(['categoryRelation', 'authors.user', 'tags'])
             ->published()
             ->orderByDesc('featured')
-            ->ordered()
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
             ->limit(4)
             ->get();
 
@@ -29,80 +30,76 @@ class HomeController extends Controller
             ->take(3)
             ->values();
 
-        $insightCategories = InsightCategory::query()
-            ->where('is_active', true)
-            ->whereHas('insights', fn ($query) => $query->published())
-            ->orderBy('sort_order')
-            ->orderBy('name')
-            ->limit(5)
-            ->get(['name', 'slug']);
-
         $latestPublications = Publication::with(['type', 'authors.user', 'tags'])
             ->published()
             ->orderByDesc('featured')
             ->orderByDesc('published_at')
-            ->latest()
-            ->limit(4)
+            ->orderByDesc('id')
+            ->limit(3)
             ->get();
 
         $latestPrograms = Program::with('categoryRelation')
             ->visible()
             ->active()
-            ->orderByDesc('featured')
-            ->orderBy('sort_order')
+            ->orderByRaw("CASE status WHEN 'ongoing' THEN 0 WHEN 'upcoming' THEN 1 ELSE 2 END")
             ->orderByRaw('CASE WHEN event_date IS NULL THEN 1 ELSE 0 END')
             ->orderBy('event_date')
-            ->latest()
+            ->orderByDesc('id')
             ->limit(3)
             ->get();
 
-        $homeMultimedia = Multimedia::query()
-            ->published()
-            ->orderByDesc('featured')
-            ->orderByDesc('published_at')
-            ->latest()
+        $latestOpportunities = Opportunity::query()
+            ->active()
+            ->withExternalLink()
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('deadline')
+            ->orderByDesc('id')
             ->limit(4)
             ->get();
 
-        $featuredMultimedia = $homeMultimedia->firstWhere('featured', true) ?: $homeMultimedia->first();
-
-        $latestMultimedia = $homeMultimedia
-            ->when($featuredMultimedia, fn ($collection) => $collection->where('id', '!=', $featuredMultimedia->id))
-            ->take(3)
-            ->values();
-
-        $latestOpportunities = Opportunity::query()
-            ->open()
-            ->where(function ($query) {
-                $query->whereNull('deadline')
-                    ->orWhereDate('deadline', '>=', now()->toDateString());
-            })
-            ->orderByDesc('featured')
-            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
-            ->orderBy('deadline')
-            ->latest()
+        $latestMultimedia = Multimedia::query()
+            ->published()
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
             ->limit(3)
             ->get();
 
+        $credibilityStats = collect([
+            [
+                'label' => 'Insight Terbit',
+                'value' => Insight::query()->published()->count(),
+            ],
+            [
+                'label' => 'Publikasi',
+                'value' => Publication::query()->published()->count(),
+            ],
+            [
+                'label' => 'Program Terlaksana',
+                'value' => Program::query()->visible()->archived()->count(),
+            ],
+            [
+                'label' => 'Kontributor Aktif',
+                'value' => Author::query()->where('is_active', true)->count(),
+            ],
+        ])
+            ->filter(fn (array $stat): bool => $stat['value'] > 0)
+            ->take(4)
+            ->values();
+
         $homeHero = EdulawSite::block('home.hero');
         $homeValues = EdulawSite::blocks('home.values');
-        $homeAudienceIntro = EdulawSite::block('home.audience_intro');
-        $homeAudiences = EdulawSite::blocks('home.audience');
         $sharedCta = EdulawSite::block('shared.cta');
 
         return view('home', compact(
             'featuredInsight',
             'latestInsights',
-            'insightCategories',
             'latestPublications',
             'latestPrograms',
-            'featuredMultimedia',
-            'latestMultimedia',
             'latestOpportunities',
+            'latestMultimedia',
+            'credibilityStats',
             'homeHero',
             'homeValues',
-            'homeAudienceIntro',
-            'homeAudiences',
             'sharedCta',
         ));
     }
