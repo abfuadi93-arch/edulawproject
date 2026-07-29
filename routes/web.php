@@ -13,6 +13,7 @@ use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Middleware\TrackPageVisit;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\SitemapController;
 
 Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/', [HomeController::class, 'index'])->name('home');
@@ -45,4 +46,7 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
 
     Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
+
+    Route::get('/sitemap.xml', [SitemapController::class, 'index'])
+    ->name('sitemap');
 });
