@@ -78,6 +78,9 @@
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7017591389930348"
+        crossorigin="anonymous"></script>
+
     <style>
         html {
             scroll-behavior: smooth;
