@@ -421,6 +421,7 @@
         font-size: .9rem;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         line-height: 1.65;
         margin-top: .7rem;
         overflow: hidden;
@@ -472,6 +473,7 @@
         font-weight: 950;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
+        line-clamp: 2;
         letter-spacing: 0;
         line-height: 1.28;
         overflow: hidden;

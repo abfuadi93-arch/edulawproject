@@ -275,7 +275,7 @@ class InsightController extends Controller
             ->orderByDesc('published_insights_count')
             ->orderBy('sort_order')
             ->orderBy('name')
-            ->take(8)
+            ->take(10)
             ->get();
     }
 
