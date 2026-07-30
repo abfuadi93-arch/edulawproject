@@ -174,14 +174,14 @@ class PublicationResource extends Resource
                                             ->label('Judul SEO')
                                             ->maxLength(300)
                                             ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul')
-                                            ->helperText('Maks. 300 karakter.'),
+                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
 
                                         Textarea::make('seo_description')
                                             ->label('Deskripsi SEO')
                                             ->rows(3)
                                             ->maxLength(180)
                                             ->placeholder('Otomatis dari awal deskripsi')
-                                            ->helperText('Maks. 180 karakter.'),
+                                            ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
 
                                         FileUpload::make('og_image')
                                             ->label('Gambar OG')

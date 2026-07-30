@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Syarat & Ketentuan - Edulaw Project')
+@section('title', 'Syarat dan Ketentuan | Edulaw Project')
+@section('meta_description', 'Baca syarat dan ketentuan penggunaan situs Edulaw Project, termasuk hak, tanggung jawab, penggunaan konten, serta batasan layanan pengguna.')
 
 @section('content')
 @php

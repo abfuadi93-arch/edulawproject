@@ -396,14 +396,14 @@ class ProgramResource extends Resource
                                             ->label('SEO Title')
                                             ->maxLength(300)
                                             ->placeholder(fn ($get): string => $get('name') ?: 'Otomatis dari judul')
-                                            ->helperText('Maks. 300 karakter.'),
+                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
 
                                         Textarea::make('seo_description')
                                             ->label('SEO Description')
                                             ->rows(3)
                                             ->maxLength(180)
                                             ->placeholder('Otomatis dari deskripsi detail')
-                                            ->helperText('Maks. 180 karakter.'),
+                                            ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
 
                                         FileUpload::make('og_image')
                                             ->label('OG Image')

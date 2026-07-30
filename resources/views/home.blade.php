@@ -1,10 +1,8 @@
 @extends('layouts.app')
 
-@section('title', config('edulaw.site.meta_title') ?: 'Edulaw Project')
-@section('meta_description', config('edulaw.site.meta_description') ?: 'Edukasi, riset, dan literasi hukum untuk kepentingan publik.')
+@section('title', config('edulaw.site.meta_title') ?: 'Literasi, Riset, dan Edukasi Hukum | Edulaw Project')
+@section('meta_description', config('edulaw.site.meta_description') ?: 'Temukan edukasi, riset, publikasi, program, dan analisis hukum yang membantu masyarakat memahami isu hukum secara jernih dan tepercaya.')
 @section('canonical_url', route('home'))
-@section('og_url', route('home'))
-@section('twitter_url', route('home'))
 
 @section('content')
     <x-home.hero :hero="$homeHero" :values="$homeValues" />

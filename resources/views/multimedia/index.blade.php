@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Multimedia - Edulaw Project')
+@section('title', 'Multimedia Edukasi Hukum | Edulaw Project')
+@section('meta_description', 'Tonton video, dokumentasi, dan konten visual Edulaw Project yang membahas hukum, kebijakan publik, riset, serta edukasi untuk masyarakat.')
 
 @section('content')
 @php

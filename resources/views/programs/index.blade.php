@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Program Edulaw - Edulaw Project')
+@section('title', 'Program Edukasi Hukum | Edulaw Project')
+@section('meta_description', 'Temukan program edukasi, diskusi, pelatihan, dan kegiatan hukum Edulaw Project untuk memperluas pengetahuan serta partisipasi publik.')
 
 @section('content')
 @php

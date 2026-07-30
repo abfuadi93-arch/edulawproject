@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Kebijakan Privasi - Edulaw Project')
+@section('title', 'Kebijakan Privasi | Edulaw Project')
+@section('meta_description', 'Pelajari cara Edulaw Project mengumpulkan, menggunakan, melindungi, dan mengelola data pribadi pengguna saat mengakses layanan situs kami.')
 
 @section('content')
 @php

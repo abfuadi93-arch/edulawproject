@@ -54,7 +54,7 @@ test('published insight index and detail pages render', function () {
         ->getContent();
 
     expect($html)
-        ->toContain('property="og:title" content="Membaca Hukum Secara Publik - Edulaw Project"')
+        ->toContain('property="og:title" content="Membaca Hukum Secara Publik | Edulaw Project"')
         ->toContain('property="og:type" content="article"')
         ->toContain('property="og:url" content="'.route('insights.show', $insight->slug).'"')
         ->toContain('name="twitter:card" content="summary_large_image"');

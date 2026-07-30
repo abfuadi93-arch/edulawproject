@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Terjadi Kesalahan - Edulaw Project')
+@section('title', 'Terjadi Kesalahan | Edulaw Project')
+@section('meta_description', 'Layanan Edulaw Project sedang mengalami kendala sementara. Silakan muat ulang halaman atau kembali beberapa saat lagi.')
+@section('robots', 'noindex,nofollow')
 
 @section('content')
 <main class="min-h-[calc(100vh-82px)] bg-[#fbf7ef]">

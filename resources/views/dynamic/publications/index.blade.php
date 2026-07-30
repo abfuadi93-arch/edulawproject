@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Riset & Publikasi - Edulaw Project')
+@section('title', 'Riset dan Publikasi Hukum | Edulaw Project')
+@section('meta_description', 'Jelajahi hasil riset, policy brief, laporan, dan publikasi hukum Edulaw Project yang menyajikan analisis berbasis bukti untuk kepentingan publik.')
 
 @section('content')
 @php

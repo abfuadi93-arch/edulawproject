@@ -164,14 +164,14 @@ class OpportunityResource extends Resource
                                             ->label('SEO Title')
                                             ->maxLength(300)
                                             ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul')
-                                            ->helperText('Maks. 300 karakter.'),
+                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
 
                                         Textarea::make('seo_description')
                                             ->label('SEO Description')
                                             ->rows(3)
                                             ->maxLength(180)
                                             ->placeholder('Otomatis dari deskripsi')
-                                            ->helperText('Maks. 180 karakter.'),
+                                            ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
 
                                         FileUpload::make('og_image')
                                             ->label('Gambar OG')

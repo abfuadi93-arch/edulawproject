@@ -54,7 +54,7 @@ test('publication detail hero contains eyebrow and title without body metadata',
         ->not->toContain('Gunakan untuk Diskusi');
 
     expect($html)
-        ->toContain('property="og:title" content="Judul Riset Fullwidth - Edulaw Project"')
+        ->toContain('property="og:title" content="Judul Riset Fullwidth | Edulaw Project"')
         ->toContain('property="og:type" content="article"')
         ->toContain('property="og:url" content="'.route('publications.show', $publication->slug).'"')
         ->toContain('name="twitter:card" content="summary_large_image"');

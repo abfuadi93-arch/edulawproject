@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Halaman Tidak Ditemukan - Edulaw Project')
+@section('title', 'Halaman Tidak Ditemukan | Edulaw Project')
+@section('meta_description', 'Halaman yang Anda cari tidak ditemukan. Kembali ke Edulaw Project untuk menjelajahi insight, riset, publikasi, dan program hukum.')
+@section('robots', 'noindex,nofollow')
 
 @section('content')
 <main class="min-h-[calc(100vh-82px)] bg-[#fbf7ef]">

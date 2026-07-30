@@ -48,9 +48,10 @@ class OpportunityForm
                     ->required(),
                 TextInput::make('seo_title')
                     ->maxLength(300)
-                    ->helperText('Maks. 300 karakter.'),
+                    ->helperText('Target 45–65 karakter. Nama situs ditambahkan otomatis.'),
                 Textarea::make('seo_description')
-                    ->columnSpanFull(),
+                    ->columnSpanFull()
+                    ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
                 FileUpload::make('og_image')
                     ->label('OG Image')
                     ->image()

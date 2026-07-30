@@ -71,19 +71,12 @@
     $relatedOpportunities = collect($relatedOpportunities ?? []);
 @endphp
 
-@section('title', ($opportunity->seo_title ?: $opportunity->title) . ' - Opportunities Edulaw')
+@section('title', $opportunity->seo_title ?: $opportunity->title)
 @section('meta_description', $opportunity->seo_description ?: $summary)
 @section('canonical_url', $detailUrl)
-@section('og_title', ($opportunity->seo_title ?: $opportunity->title) . ' - Opportunities Edulaw')
-@section('og_description', $opportunity->seo_description ?: $summary)
 @section('og_type', 'article')
-@section('og_url', $detailUrl)
 @section('og_image', $ogImage)
 @section('og_image_alt', $opportunity->title)
-@section('twitter_title', ($opportunity->seo_title ?: $opportunity->title) . ' - Opportunities Edulaw')
-@section('twitter_description', $opportunity->seo_description ?: $summary)
-@section('twitter_image', $ogImage)
-@section('twitter_url', $detailUrl)
 
 @section('content')
 <main class="bg-[#f7f8fa]">

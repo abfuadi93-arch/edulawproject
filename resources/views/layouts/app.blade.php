@@ -6,8 +6,8 @@
 
     @php
         $siteSettings = $siteSettings ?? [];
-        $defaultTitle = $siteSettings['site.meta_title'] ?? 'Edulaw Project - Platform Literasi Hukum Digital';
-        $defaultDescription = $siteSettings['site.meta_description'] ?? 'Edulaw Project adalah platform literasi hukum digital yang menghadirkan edukasi hukum, riset, program, multimedia, opportunities, dan ruang kolaborasi.';
+        $defaultTitle = $siteSettings['site.meta_title'] ?? 'Literasi dan Riset Hukum';
+        $defaultDescription = $siteSettings['site.meta_description'] ?? 'Akses edukasi, riset, publikasi, dan analisis hukum yang relevan untuk membantu masyarakat memahami isu hukum secara jernih.';
         $defaultImage = asset('images/hero/hero-edulaw.jpg');
         $section = fn (string $name, ?string $fallback = null): string => trim($__env->yieldContent($name, $fallback ?? ''));
         $absoluteUrl = function (?string $value): string {
@@ -22,48 +22,49 @@
                 : url($value);
         };
 
-        $pageTitle = strip_tags($section('title', $defaultTitle));
-        $metaDescription = \Illuminate\Support\Str::limit(strip_tags($section('meta_description', $defaultDescription)), 220);
+        $formatTitle = function (string $title): string {
+            $title = \Illuminate\Support\Str::squish(strip_tags($title));
+
+            foreach ([' - Edulaw Project', ' - Program Edulaw', ' - Opportunities Edulaw'] as $suffix) {
+                if (\Illuminate\Support\Str::endsWith($title, $suffix)) {
+                    $title = \Illuminate\Support\Str::beforeLast($title, $suffix);
+                    break;
+                }
+            }
+
+            if ($title === '' || $title === 'Edulaw Project') {
+                $title = 'Literasi dan Riset Hukum';
+            }
+
+            return \Illuminate\Support\Str::endsWith($title, '| Edulaw Project')
+                ? $title
+                : $title.' | Edulaw Project';
+        };
+
+        $pageTitle = $formatTitle($section('title', $defaultTitle));
+        $metaDescription = \Illuminate\Support\Str::limit(
+            \Illuminate\Support\Str::squish(strip_tags($section('meta_description', $defaultDescription))),
+            160,
+            '…',
+        );
         $canonicalUrl = $absoluteUrl($section('canonical_url', url()->current()));
-        $ogTitle = strip_tags($section('og_title', $pageTitle));
-        $ogDescription = \Illuminate\Support\Str::limit(strip_tags($section('og_description', $metaDescription)), 220);
         $ogType = strip_tags($section('og_type', 'website'));
-        $ogUrl = $absoluteUrl($section('og_url', $canonicalUrl));
         $ogImage = $absoluteUrl($section('og_image', $defaultImage));
-        $ogImageAlt = \Illuminate\Support\Str::limit(strip_tags($section('og_image_alt', $ogTitle)), 120);
-        $twitterTitle = strip_tags($section('twitter_title', $ogTitle));
-        $twitterDescription = \Illuminate\Support\Str::limit(strip_tags($section('twitter_description', $ogDescription)), 220);
-        $twitterImage = $absoluteUrl($section('twitter_image', $ogImage));
-        $twitterUrl = $absoluteUrl($section('twitter_url', $ogUrl));
+        $ogImageAlt = \Illuminate\Support\Str::limit(strip_tags($section('og_image_alt', $pageTitle)), 120);
+        $robots = strip_tags($section('robots', 'index,follow'));
     @endphp
 
-    <title>{{ $pageTitle }}</title>
-
-    <meta
-        name="description"
-        content="{{ $metaDescription }}"
-    >
+    <x-seo
+        :title="$pageTitle"
+        :description="$metaDescription"
+        :canonical="$canonicalUrl"
+        :image="$ogImage"
+        :image-alt="$ogImageAlt"
+        :type="$ogType"
+        :robots="$robots"
+    />
 
     <meta name="theme-color" content="#1f3c69">
-    <link rel="canonical" href="{{ $canonicalUrl }}">
-
-    {{-- Open Graph --}}
-    <meta property="og:site_name" content="Edulaw Project">
-    <meta property="og:locale" content="id_ID">
-    <meta property="og:title" content="{{ $ogTitle }}">
-    <meta property="og:description" content="{{ $ogDescription }}">
-    <meta property="og:type" content="{{ $ogType }}">
-    <meta property="og:url" content="{{ $ogUrl }}">
-    <meta property="og:image" content="{{ $ogImage }}">
-    <meta property="og:image:secure_url" content="{{ $ogImage }}">
-    <meta property="og:image:alt" content="{{ $ogImageAlt }}">
-
-    {{-- Twitter Card --}}
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="{{ $twitterTitle }}">
-    <meta name="twitter:description" content="{{ $twitterDescription }}">
-    <meta name="twitter:image" content="{{ $twitterImage }}">
-    <meta name="twitter:url" content="{{ $twitterUrl }}">
 
     {{-- Favicon placeholder --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}">

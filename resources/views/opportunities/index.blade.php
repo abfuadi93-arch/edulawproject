@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
-@section('title', 'Opportunities - Edulaw Project')
+@section('title', 'Peluang dan Kesempatan Hukum | Edulaw Project')
+@section('meta_description', 'Temukan beasiswa, fellowship, magang, kompetisi, call for paper, dan peluang kolaborasi hukum yang telah dikurasi oleh Edulaw Project.')
 
 @section('content')
 @php

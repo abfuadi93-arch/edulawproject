@@ -243,12 +243,14 @@ class AuthorResource extends Resource
                                     ->schema([
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
-                                            ->maxLength(300),
+                                            ->maxLength(300)
+                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
 
                                         Textarea::make('meta_description')
                                             ->label('Meta Description')
                                             ->rows(4)
-                                            ->maxLength(180),
+                                            ->maxLength(180)
+                                            ->helperText('Target 120–160 karakter. Jelaskan profil dan bidang kontribusi secara alami.'),
                                     ])
                                     ->collapsible()
                                     ->collapsed(),

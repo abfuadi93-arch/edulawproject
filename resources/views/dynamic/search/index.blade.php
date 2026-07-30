@@ -1,6 +1,8 @@
 @extends('layouts.app')
 
-@section('title', 'Pencarian - Edulaw Project')
+@section('title', 'Pencarian Konten | Edulaw Project')
+@section('meta_description', 'Cari insight, riset, publikasi, program, multimedia, dan konten hukum lain yang tersedia di situs Edulaw Project secara cepat dan mudah.')
+@section('robots', 'noindex,follow')
 
 @section('content')
 <main class="bg-brand-paper">

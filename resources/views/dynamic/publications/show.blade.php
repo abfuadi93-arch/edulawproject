@@ -1,6 +1,11 @@
 @extends('layouts.app')
 
-@section('title', $publication->title.' - Edulaw Project')
+@section('title', $publication->seo_title ?: $publication->title)
+@section('meta_description', $publication->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($publication->description ?: ($publication->excerpt ?: 'Baca publikasi dan hasil riset hukum dari Edulaw Project.')), 160))
+@section('canonical_url', route('publications.show', $publication->slug))
+@section('og_type', 'article')
+@section('og_image', edulaw_file_url($publication->og_image ?: $publication->cover_image, 'images/hero/hero-edulaw.jpg'))
+@section('og_image_alt', $publication->title)
 
 @section('content')
 @php

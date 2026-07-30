@@ -18,8 +18,8 @@ class SiteContentSeeder extends Seeder
     {
         $settings = [
             ['group' => 'Identitas', 'key' => 'site.name', 'label' => 'Nama Situs', 'value' => 'Edulaw Project', 'sort_order' => 1],
-            ['group' => 'Identitas', 'key' => 'site.meta_title', 'label' => 'Meta Title Default', 'value' => 'Edulaw Project - Platform Literasi Hukum Digital', 'sort_order' => 2],
-            ['group' => 'Identitas', 'key' => 'site.meta_description', 'label' => 'Meta Description Default', 'type' => 'textarea', 'value' => 'Edulaw Project adalah platform literasi hukum digital yang menghadirkan edukasi hukum, riset, program, multimedia, opportunities, dan ruang kolaborasi.', 'sort_order' => 3],
+            ['group' => 'Identitas', 'key' => 'site.meta_title', 'label' => 'Meta Title Default', 'value' => 'Literasi, Riset, dan Edukasi Hukum | Edulaw Project', 'sort_order' => 2],
+            ['group' => 'Identitas', 'key' => 'site.meta_description', 'label' => 'Meta Description Default', 'type' => 'textarea', 'value' => 'Temukan edukasi, riset, publikasi, program, dan analisis hukum yang membantu masyarakat memahami isu hukum secara jernih dan tepercaya.', 'sort_order' => 3],
             ['group' => 'Identitas', 'key' => 'site.short_description', 'label' => 'Deskripsi Singkat', 'type' => 'textarea', 'value' => 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.', 'sort_order' => 4],
             ['group' => 'Identitas', 'key' => 'site.tagline', 'label' => 'Tagline', 'value' => '#TemanBelajarHukumTerbaikmu', 'sort_order' => 5],
             ['group' => 'Identitas', 'key' => 'site.nav_subtitle', 'label' => 'Subtitle Navbar', 'value' => 'Legal Education · Research · Policy', 'sort_order' => 6],

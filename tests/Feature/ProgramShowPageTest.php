@@ -81,7 +81,7 @@ test('program detail page renders compact editorial layout without repeated tech
         ->and(preg_match_all('/>\s*Level\s*</', $html))->toBe(1);
 
     expect($html)
-        ->toContain('property="og:title" content="Kelas Hukum dan Kebijakan Publik - Program Edulaw"')
+        ->toContain('property="og:title" content="Kelas Hukum dan Kebijakan Publik | Edulaw Project"')
         ->toContain('property="og:type" content="article"')
         ->toContain('property="og:url" content="'.route('programs.show', $program->slug).'"')
         ->toContain('name="twitter:card" content="summary_large_image"');

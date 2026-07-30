@@ -43,17 +43,15 @@
         $author->meta_description ?: ($bio !== '' ? $bio : collect([$publicPosition, $publicInstitution])->filter()->join(' - ')),
         180
     );
-    $profileTitle = $author->seo_title ?: $author->name . ' - Profil Edulaw Project';
+    $profileTitle = $author->seo_title ?: $author->name . ' - Profil';
 @endphp
 
 @section('title', $profileTitle)
 @section('meta_description', $metaDescription)
-@section('og_title', $profileTitle)
-@section('og_description', Str::limit($metaDescription, 180))
+@section('canonical_url', route('profiles.show', $author->slug))
+@section('og_type', 'profile')
 @section('og_image', $photoUrl ?: asset('images/hero/hero-edulaw.jpg'))
-@section('twitter_title', $profileTitle)
-@section('twitter_description', Str::limit($metaDescription, 180))
-@section('twitter_image', $photoUrl ?: asset('images/hero/hero-edulaw.jpg'))
+@section('og_image_alt', 'Foto profil ' . $author->name)
 
 @push('styles')
 <style>
