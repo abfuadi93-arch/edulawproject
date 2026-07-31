@@ -530,15 +530,15 @@
     max-width: 68ch;
     margin: 0 0 2rem;
     padding: 1.15rem 1.25rem;
-    border-left: 4px solid #d99a21;
+    border-left: 4px solid #e78b72;
     border-radius: 0 1rem 1rem 0;
-    background: #f8f5ee;
+    background: #ffe3dd;
     color: var(--color-brand-navy);
     font-size: clamp(1.05rem, 1rem + 0.2vw, 1.18rem);
     font-weight: 650;
     line-height: 1.75;
     text-align: left;
-    box-shadow: 0 10px 30px rgba(31, 60, 105, 0.05);
+    box-shadow: 0 10px 30px rgba(190, 85, 65, 0.08);
 }
 
 .insight-article-body {
@@ -734,11 +734,6 @@
     overflow-y: auto;
     scrollbar-width: thin;
     scrollbar-color: rgba(217, 154, 33, 0.55) transparent;
-}
-
-.insight-sidebar {
-    scrollbar-width: thin;
-    scrollbar-color: rgba(31, 60, 105, 0.25) transparent;
 }
 
 @supports (-webkit-initial-letter: 2) or (initial-letter: 2) {

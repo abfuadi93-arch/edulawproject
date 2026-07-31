@@ -145,8 +145,8 @@
                 @endif
             </article>
 
-            <aside class="insight-sidebar grid gap-5 self-start md:grid-cols-2 lg:sticky lg:top-24 lg:block lg:max-h-[calc(100vh-7rem)] lg:space-y-5 lg:overflow-y-auto lg:overscroll-contain lg:pr-1" aria-label="Informasi artikel">
-                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-about-heading">
+            <aside class="insight-sidebar grid w-full grid-cols-1 gap-5 self-start lg:sticky lg:top-24 lg:block lg:space-y-5" aria-label="Informasi artikel">
+                <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-about-heading">
                     <p class="text-[10px] font-black uppercase tracking-[0.24em] text-[#a8660a]">
                         Artikel Editorial
                     </p>
@@ -199,7 +199,7 @@
                     </div>
                 </section>
 
-                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-share-heading">
+                <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-share-heading">
                     <h2 id="article-share-heading" class="text-base font-black text-brand-navy">Bagikan Artikel</h2>
                     <p class="mt-1 text-xs leading-5 text-slate-500">Bagikan bacaan ini melalui kanal pilihan Anda.</p>
 
@@ -213,7 +213,7 @@
                 </section>
 
                 @if ($articleHeadings->isNotEmpty())
-                    <nav class="article-toc hidden rounded-2xl border border-brand-amber/40 bg-[#f8f5ee] p-6 shadow-sm lg:block" aria-labelledby="article-toc-heading">
+                    <nav class="article-toc hidden w-full rounded-2xl border border-brand-amber/40 bg-[#f8f5ee] p-6 shadow-sm lg:block" aria-labelledby="article-toc-heading">
                         <div class="flex items-center gap-3">
                             <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-amber/20 text-brand-navy" aria-hidden="true">
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
