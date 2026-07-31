@@ -20,6 +20,7 @@ use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class InsightCategoryResource extends Resource
@@ -73,13 +74,23 @@ class InsightCategoryResource extends Resource
 
                         Textarea::make('description')
                             ->label('Deskripsi')
-                            ->rows(4)
+                            ->rows(3)
+                            ->maxLength(120)
+                            ->helperText('Maksimal 120 karakter. Akan tampil pada card kategori Editorial.')
                             ->columnSpanFull(),
 
                         TextInput::make('sort_order')
                             ->label('Urutan')
                             ->numeric()
-                            ->default(0),
+                            ->minValue(0)
+                            ->default(0)
+                            ->required()
+                            ->helperText('Angka lebih kecil tampil lebih dahulu.'),
+
+                        Toggle::make('show_on_editorial_index')
+                            ->label('Tampilkan di Halaman Editorial')
+                            ->default(true)
+                            ->helperText('Nonaktifkan untuk menyembunyikan kategori dari section Editorial tanpa menghapusnya.'),
 
                         Toggle::make('is_active')
                             ->label('Aktif')
@@ -106,8 +117,21 @@ class InsightCategoryResource extends Resource
                     ->searchable()
                     ->toggleable(),
 
+                TextColumn::make('description')
+                    ->label('Deskripsi')
+                    ->limit(72)
+                    ->wrap()
+                    ->placeholder('Belum ada deskripsi')
+                    ->toggleable(),
+
                 TextColumn::make('sort_order')
                     ->label('Urutan')
+                    ->numeric()
+                    ->sortable(),
+
+                IconColumn::make('show_on_editorial_index')
+                    ->label('Tampil')
+                    ->boolean()
                     ->sortable(),
 
                 IconColumn::make('is_active')
@@ -115,21 +139,20 @@ class InsightCategoryResource extends Resource
                     ->boolean()
                     ->sortable(),
 
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->dateTime('d M Y, H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
             ])
+            ->defaultSort(fn (Builder $query): Builder => $query
+                ->orderBy('sort_order')
+                ->orderBy('name'))
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
+
+                TernaryFilter::make('show_on_editorial_index')
+                    ->label('Tampil di Halaman Editorial'),
             ])
             ->recordActions([
                 EditAction::make(),

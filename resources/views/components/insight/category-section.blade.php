@@ -3,16 +3,9 @@
 ])
 
 @php
-    $preferredChannels = collect([
-        'Regulatory Update',
-        'Edulaw Insight',
-        'Legal 101',
-        'Law & Governance',
-    ]);
-
     $channels = collect($channels)
-        ->filter(fn (array $channel): bool => $preferredChannels->contains($channel['label'] ?? ''))
-        ->sortBy(fn (array $channel): int => $preferredChannels->search($channel['label'] ?? '') ?: 0)
+        ->filter(fn (array $channel): bool => filled($channel['label'] ?? null))
+        ->take(4)
         ->values();
 @endphp
 

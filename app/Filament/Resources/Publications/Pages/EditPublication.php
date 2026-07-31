@@ -47,10 +47,6 @@ class EditPublication extends EditRecordAndReturn
 
         $data['updated_by'] = $user?->id;
 
-        if (($data['status'] ?? null) === 'published' && blank($data['published_at'] ?? null)) {
-            $data['published_at'] = now();
-        }
-
         return PublicationResource::prepareFormDataForPersistence($data);
     }
 }

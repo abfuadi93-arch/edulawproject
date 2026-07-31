@@ -28,6 +28,14 @@ $staticPages = collect([
         'changefreq' => 'daily',
         'priority' => '0.9',
     ],
+    ...collect(['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'])
+        ->map(fn (string $category): array => [
+            'url' => route('insights.categories.show', $category),
+            'lastmod' => null,
+            'changefreq' => 'weekly',
+            'priority' => '0.8',
+        ])
+        ->all(),
     [
         'url' => url('/riset-publikasi'),
         'lastmod' => null,

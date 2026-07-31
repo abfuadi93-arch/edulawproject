@@ -25,6 +25,7 @@ class Insight extends Model
         'published_at',
         'reading_time',
         'featured',
+        'editor_pick',
         'sort_order',
         'seo_title',
         'seo_description',
@@ -37,6 +38,7 @@ class Insight extends Model
 
     protected $casts = [
         'featured' => 'boolean',
+        'editor_pick' => 'boolean',
         'published_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'reading_time' => 'integer',
@@ -97,6 +99,11 @@ class Insight extends Model
     public function scopeFeatured(Builder $query): Builder
     {
         return $query->where('featured', true);
+    }
+
+    public function scopeEditorPick(Builder $query): Builder
+    {
+        return $query->where('editor_pick', true);
     }
 
     public function scopeOrdered(Builder $query): Builder

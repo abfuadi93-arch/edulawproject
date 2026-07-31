@@ -15,9 +15,11 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'flex flex-wrap items-center gap-2']) }} data-edulaw-share-group>
-    <span class="mr-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
-        {{ $label }}
-    </span>
+    @if (filled($label))
+        <span class="mr-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+            {{ $label }}
+        </span>
+    @endif
 
     <a
         href="https://wa.me/?text={{ rawurlencode($shareMessage) }}"

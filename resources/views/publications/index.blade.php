@@ -3,6 +3,21 @@
 @section('title', 'Riset dan Publikasi Hukum | Edulaw Project')
 @section('meta_description', 'Jelajahi hasil riset, policy brief, laporan, dan publikasi hukum Edulaw Project yang menyajikan analisis berbasis bukti untuk kepentingan publik.')
 
+@push('head')
+    @php
+        $publicationListSchemaItems = collect($publications->items())
+            ->map(fn ($item): array => [
+                'name' => $item->title,
+                'url' => route('publications.show', $item->slug),
+                'image' => $item->cover_image_url,
+            ])
+            ->all();
+    @endphp
+    @if ($publicationListSchemaItems !== [])
+        <x-structured-data :data="\App\Support\StructuredData::itemList($publicationListSchemaItems, 'Riset dan Publikasi Hukum')" />
+    @endif
+@endpush
+
 @section('content')
 @php
     use Illuminate\Support\Str;

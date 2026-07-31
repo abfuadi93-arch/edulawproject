@@ -1,11 +1,20 @@
 @extends('layouts.app')
 
-@section('title', $publication->seo_title ?: $publication->title)
-@section('meta_description', $publication->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($publication->description ?: ($publication->excerpt ?: 'Publikasi Edulaw Project.')), 160))
+@section('title', $publication->share_preview_title)
+@section('meta_description', $publication->share_preview_description)
 @section('canonical_url', route('publications.show', $publication->slug))
 @section('og_type', 'article')
-@section('og_image', edulaw_file_url($publication->og_image ?: $publication->cover_image, 'images/hero/hero-edulaw.jpg'))
+@section('og_image', $publication->share_preview_image_url ?: asset('images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', $publication->title)
+
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::publication($publication)" />
+    <x-structured-data :data="\App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Beranda', 'url' => route('home')],
+        ['name' => 'Riset dan Publikasi', 'url' => route('publications.index')],
+        ['name' => $publication->title, 'url' => route('publications.show', $publication->slug)],
+    ])" />
+@endpush
 
 @section('content')
 @php
@@ -51,7 +60,10 @@
     $documentFormat = $pdfUrl ? 'PDF digital' : 'Dokumen digital';
     $pageOrFormatLabel = $publication->page_count ? 'Jumlah Halaman' : 'Format';
     $pageOrFormatValue = $publication->page_count ? $publication->page_count.' halaman' : $documentFormat;
-    $languageLabel = 'Indonesia';
+    $languageLabel = match ($publication->language) {
+        'en' => 'English',
+        default => 'Indonesia',
+    };
     $statusLabel = match ($publication->status) {
         'published' => 'Terbit',
         'draft' => 'Draf',
@@ -77,9 +89,8 @@
 
     $tags = collect($publication->tags ?? []);
     $relatedCollection = collect($relatedPublications ?? $related ?? collect());
-    $citationAuthor = $creatorValue ?: 'Edulaw Project';
-    $citationYear = $publishedYear ?: now()->format('Y');
-    $citationText = $citationAuthor.'. ('.$citationYear.'). '.$publication->title.'. '.$sourceName.'.';
+    $citationFormats = $publication->citationFormats();
+    $citationText = $citationFormats['apa'];
 
     $metadataRows = collect([
         ['label' => $creatorLabel, 'value' => $creatorValue],
@@ -308,30 +319,68 @@
                         @endif
                     </section>
 
-                    <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
+                    <section
+                        class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
+                        data-publication-citation
+                    >
                         <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
-                            Sitasi &amp; Aksi
+                            Referensi Akademik
+                        </p>
+                        <h2 class="mt-2 text-xl font-black tracking-tight text-brand-navy">
+                            Cara Mengutip
+                        </h2>
+                        <p class="mt-2 text-sm leading-6 text-slate-500">
+                            Pilih format sitasi yang sesuai, lalu salin untuk digunakan dalam tulisan Anda.
                         </p>
 
-                        <div class="mt-5 rounded-2xl border border-slate-200 bg-slate-50 p-4 text-sm font-semibold leading-7 text-slate-700">
+                        <label
+                            for="citation-style-{{ $publication->getKey() }}"
+                            class="mt-5 block text-xs font-black uppercase tracking-[0.16em] text-slate-500"
+                        >
+                            Format Sitasi
+                        </label>
+                        <select
+                            id="citation-style-{{ $publication->getKey() }}"
+                            data-citation-style
+                            class="mt-2 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-brand-navy shadow-sm outline-none transition focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/15"
+                        >
+                            <option value="apa">APA</option>
+                            <option value="chicago">Chicago</option>
+                            <option value="mla">MLA</option>
+                            <option value="ieee">IEEE</option>
+                            <option value="harvard">Harvard</option>
+                        </select>
+
+                        <div
+                            data-citation-text
+                            aria-live="polite"
+                            class="mt-4 break-words rounded-2xl border border-brand-amber/25 bg-[#f8f5ee] p-4 text-sm font-semibold leading-7 text-slate-700"
+                        >
                             {{ $citationText }}
                         </div>
 
+                        <script type="application/json" data-citation-formats>{!! json_encode($citationFormats, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+
                         <button
                             type="button"
-                            onclick="navigator.clipboard?.writeText(@js($citationText))"
-                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-4 py-2.5 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
+                            data-copy-citation
+                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-ink shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-amber-dark focus:outline-none focus:ring-4 focus:ring-brand-amber/25"
                         >
-                            Salin Sitasi
+                            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
+                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
+                            </svg>
+                            <span data-copy-citation-label>Salin Sitasi</span>
                         </button>
 
-                        <x-share-buttons
-                            :title="$publication->title"
-                            :url="route('publications.show', $publication->slug)"
-                            :description="$summaryText"
-                            label="Bagikan Publikasi"
-                            class="mt-5"
-                        />
+                        <div class="mt-6 border-t border-slate-100 pt-5">
+                            <x-share-buttons
+                                :title="$publication->share_preview_title"
+                                :url="$publication->public_url"
+                                :description="$publication->share_preview_description"
+                                label="Bagikan Publikasi"
+                            />
+                        </div>
                     </section>
                 </aside>
             </div>
@@ -349,3 +398,94 @@
     />
 </main>
 @endsection
+
+@once
+    @push('scripts')
+        <script>
+            (() => {
+                if (window.__edulawPublicationCitationReady) {
+                    return;
+                }
+
+                window.__edulawPublicationCitationReady = true;
+
+                const copyText = async (text) => {
+                    if (navigator.clipboard?.writeText && window.isSecureContext) {
+                        await navigator.clipboard.writeText(text);
+
+                        return;
+                    }
+
+                    const input = document.createElement('textarea');
+                    input.value = text;
+                    input.setAttribute('readonly', '');
+                    input.style.position = 'fixed';
+                    input.style.opacity = '0';
+                    document.body.appendChild(input);
+                    input.select();
+
+                    const copied = document.execCommand('copy');
+                    input.remove();
+
+                    if (! copied) {
+                        throw new Error('Clipboard tidak tersedia.');
+                    }
+                };
+
+                const citationData = (root) => {
+                    try {
+                        return JSON.parse(root.querySelector('[data-citation-formats]')?.textContent || '{}');
+                    } catch (error) {
+                        return {};
+                    }
+                };
+
+                document.addEventListener('change', (event) => {
+                    const select = event.target.closest('[data-citation-style]');
+
+                    if (! select) {
+                        return;
+                    }
+
+                    const root = select.closest('[data-publication-citation]');
+                    const output = root?.querySelector('[data-citation-text]');
+                    const citation = root ? citationData(root)[select.value] : null;
+
+                    if (output && citation) {
+                        output.textContent = citation;
+                    }
+                });
+
+                document.addEventListener('click', async (event) => {
+                    const button = event.target.closest('[data-copy-citation]');
+
+                    if (! button) {
+                        return;
+                    }
+
+                    const root = button.closest('[data-publication-citation]');
+                    const citation = root?.querySelector('[data-citation-text]')?.textContent?.trim();
+                    const label = button.querySelector('[data-copy-citation-label]');
+
+                    if (! citation || ! label) {
+                        return;
+                    }
+
+                    try {
+                        await copyText(citation);
+                    } catch (error) {
+                        window.prompt('Salin sitasi berikut:', citation);
+
+                        return;
+                    }
+
+                    label.textContent = 'Sitasi Disalin';
+                    window.clearTimeout(button.__citationResetTimer);
+                    button.__citationResetTimer = window.setTimeout(() => {
+                        label.textContent = 'Salin Sitasi';
+                    }, 2000);
+                });
+            })();
+        </script>
+    @endpush
+@endonce

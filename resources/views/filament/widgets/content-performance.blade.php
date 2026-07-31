@@ -1,12 +1,18 @@
 <x-filament-widgets::widget>
     <section class="edulaw-admin-card">
-        <header class="border-b border-slate-200 p-5">
-            <p class="text-sm font-black text-slate-950">
-                Content Performance
-            </p>
-            <p class="mt-1 text-xs leading-5 edulaw-admin-muted">
-                Snapshot of editorial, publication and program performance.
-            </p>
+        <header class="edulaw-performance-panel-header">
+            <div class="flex items-start gap-3">
+                <span class="edulaw-performance-panel-icon bg-emerald-50 text-emerald-700">
+                    <x-filament::icon icon="heroicon-o-presentation-chart-line" class="h-5 w-5" />
+                </span>
+                <div>
+                    <p class="text-sm font-black text-slate-950">Performa Konten</p>
+                    <p class="mt-1 text-xs leading-5 edulaw-admin-muted">
+                        Konten dengan performa terbaik dan publikasi terbaru.
+                    </p>
+                </div>
+            </div>
+            <span class="edulaw-performance-period">Snapshot</span>
         </header>
 
         <div class="grid gap-3 p-5 sm:grid-cols-2">
@@ -33,7 +39,7 @@
                             <span class="block text-xs font-black uppercase tracking-wide text-slate-500">
                                 {{ $item['label'] }}
                             </span>
-                            <span class="mt-1 block line-clamp-2 text-sm font-black leading-5 text-slate-950">
+                            <span class="mt-1 block line-clamp-3 text-sm font-black leading-5 text-slate-950">
                                 {{ $item['title'] }}
                             </span>
                             <span class="mt-2 block text-xs font-bold text-slate-500">

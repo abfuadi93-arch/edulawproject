@@ -12,7 +12,7 @@ class EditorialQueueWidget extends Widget
 
     protected int|string|array $columnSpan = [
         'md' => 6,
-        'xl' => 6,
+        'xl' => 8,
     ];
 
     protected static ?int $sort = -10;
@@ -48,9 +48,9 @@ class EditorialQueueWidget extends Widget
                     default => 'Draft',
                 },
                 'statusTone' => match ($insight->status) {
-                    'submitted', 'reviewed' => 'green',
-                    'published' => 'blue',
-                    default => 'slate',
+                    'submitted', 'reviewed' => 'amber',
+                    'published' => 'green',
+                    default => 'blue',
                 },
                 'updated' => $insight->updated_at?->diffForHumans(),
                 'url' => InsightResource::getUrl('edit', ['record' => $insight->getKey()]),

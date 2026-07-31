@@ -59,7 +59,7 @@ test('admin dashboard renders traffic widget', function () {
         ->actingAs($user)
         ->get('/admin')
         ->assertOk()
-        ->assertSee('Traffic Analytics')
-        ->assertSee('Top five pages')
+        ->assertSee('Traffic Website')
+        ->assertSee('Halaman Teratas')
         ->assertSee('Beranda');
 });

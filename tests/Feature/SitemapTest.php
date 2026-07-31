@@ -16,5 +16,9 @@ test('sitemap remains available when open opportunities exist without public det
         ->assertOk()
         ->assertHeader('content-type', 'application/xml; charset=UTF-8')
         ->assertSee(route('opportunities.index'), false)
+        ->assertSee(route('insights.categories.show', 'law-governance'), false)
+        ->assertSee(route('insights.categories.show', 'legal-101'), false)
+        ->assertSee(route('insights.categories.show', 'regulatory-update'), false)
+        ->assertSee(route('insights.categories.show', 'edulaw-insight'), false)
         ->assertDontSee('/opportunities/'.$opportunity->slug, false);
 });

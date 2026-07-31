@@ -7,6 +7,7 @@ use App\Models\PageVisit;
 use App\Models\Program;
 use App\Models\Publication;
 use Filament\Widgets\Widget;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
@@ -36,20 +37,41 @@ class ContentPerformanceWidget extends Widget
 
     protected function getViewData(): array
     {
-        return Cache::remember('dashboard.content-performance', now()->addMinutes(5), fn (): array => [
-            'items' => [
-                $this->topEditorial(),
-                $this->topPublication(),
-                $this->topProgram(),
-                $this->latestPublishedInsight(),
-            ],
+        $user = auth()->user();
+        $scope = collect([
+            'insights' => $user?->can('view insights') ?? false,
+            'publications' => $user?->can('view publications') ?? false,
+            'programs' => $user?->can('view programs') ?? false,
         ]);
+        $cacheKey = 'dashboard.content-performance.v3.'.sha1($scope->toJson());
+
+        return Cache::remember($cacheKey, now()->addMinutes(5), function () use ($scope): array {
+            $items = collect();
+
+            if ($scope['insights']) {
+                $items->push($this->topEditorial());
+            }
+
+            if ($scope['publications']) {
+                $items->push($this->topPublication());
+            }
+
+            if ($scope['programs']) {
+                $items->push($this->topProgram());
+            }
+
+            if ($scope['insights']) {
+                $items->push($this->latestPublishedInsight());
+            }
+
+            return ['items' => $items->values()->all()];
+        });
     }
 
     private function topEditorial(): array
     {
         return $this->topVisitedContent(
-            label: 'Most viewed editorial',
+            label: 'Editorial terpopuler',
             routeName: 'insights.show',
             model: Insight::class,
             titleColumn: 'title',
@@ -62,21 +84,21 @@ class ContentPerformanceWidget extends Widget
     private function topPublication(): array
     {
         return $this->topVisitedContent(
-            label: 'Most downloaded publication',
-            routeName: 'publications.show',
+            label: 'Publikasi paling banyak diunduh',
+            routeName: 'publications.download',
             model: Publication::class,
             titleColumn: 'title',
             tone: 'green',
             icon: 'heroicon-o-document-text',
             urlResolver: fn (Publication $publication): string => route('publications.show', $publication->slug),
-            metricLabel: 'detail views',
+            metricLabel: 'unduhan',
         );
     }
 
     private function topProgram(): array
     {
         return $this->topVisitedContent(
-            label: 'Most viewed program',
+            label: 'Program terpopuler',
             routeName: 'programs.show',
             model: Program::class,
             titleColumn: 'name',
@@ -87,7 +109,7 @@ class ContentPerformanceWidget extends Widget
     }
 
     /**
-     * @param  class-string<\Illuminate\Database\Eloquent\Model>  $model
+     * @param  class-string<Model>  $model
      */
     private function topVisitedContent(
         string $label,
@@ -111,7 +133,19 @@ class ContentPerformanceWidget extends Widget
             return $this->emptyItem($label, $tone, $icon);
         }
 
-        $slug = Str::afterLast($visit->path, '/');
+        $segments = Str::of($visit->path)
+            ->trim('/')
+            ->explode('/')
+            ->filter()
+            ->values();
+        $slug = $routeName === 'publications.download'
+            ? $segments->get($segments->count() - 2)
+            : $segments->last();
+
+        if (blank($slug)) {
+            return $this->emptyItem($label, $tone, $icon);
+        }
+
         $record = $model::query()
             ->where('slug', $slug)
             ->first();
@@ -139,13 +173,13 @@ class ContentPerformanceWidget extends Widget
             ->first();
 
         if (! $insight) {
-            return $this->emptyItem('Latest published insight', 'blue', 'heroicon-o-clock');
+            return $this->emptyItem('Editorial terbaru', 'blue', 'heroicon-o-clock');
         }
 
         return [
-            'label' => 'Latest published insight',
+            'label' => 'Editorial terbaru',
             'title' => $insight->title,
-            'metric' => $insight->published_at?->diffForHumans() ?? 'Published',
+            'metric' => $insight->published_at?->diffForHumans() ?? 'Sudah terbit',
             'tone' => 'blue',
             'icon' => 'heroicon-o-clock',
             'url' => route('insights.show', $insight->slug),
@@ -157,8 +191,8 @@ class ContentPerformanceWidget extends Widget
     {
         return [
             'label' => $label,
-            'title' => 'No data yet.',
-            'metric' => 'Waiting for traffic',
+            'title' => 'No data yet',
+            'metric' => 'Menunggu data yang valid',
             'tone' => $tone,
             'icon' => $icon,
             'url' => null,

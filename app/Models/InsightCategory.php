@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\HasMany;
@@ -15,11 +16,13 @@ class InsightCategory extends Model
         'slug',
         'description',
         'is_active',
+        'show_on_editorial_index',
         'sort_order',
     ];
 
     protected $casts = [
         'is_active' => 'boolean',
+        'show_on_editorial_index' => 'boolean',
         'sort_order' => 'integer',
     ];
 
@@ -48,5 +51,12 @@ class InsightCategory extends Model
     public function insights(): HasMany
     {
         return $this->hasMany(Insight::class);
+    }
+
+    public function scopeVisibleOnEditorialIndex(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('show_on_editorial_index', true);
     }
 }

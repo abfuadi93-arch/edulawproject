@@ -15,16 +15,65 @@ use Illuminate\View\View;
 
 class InsightController extends Controller
 {
+    private const CATEGORY_PAGES = [
+        'law-governance' => [
+            'name' => 'Law & Governance',
+            'title' => 'Law & Governance: Hukum, Negara, dan Tata Kelola',
+            'seo_title' => 'Law & Governance: Hukum dan Tata Kelola',
+            'seo_description' => 'Analisis hukum, konstitusi, kebijakan publik, demokrasi, dan tata kelola pemerintahan untuk memahami hubungan negara dengan masyarakat.',
+            'introduction' => 'Kanal Law & Governance membahas hubungan antara hukum, kekuasaan, institusi negara, dan kepentingan publik. Di sini, pembaca dapat mengikuti analisis mengenai konstitusi, demokrasi, kebijakan publik, administrasi pemerintahan, pembentukan regulasi, serta akuntabilitas lembaga negara. Setiap tulisan disusun untuk membantu pembaca memahami bukan hanya bunyi aturan, tetapi juga alasan kebijakan dibuat, cara kewenangan dijalankan, dan dampaknya terhadap kehidupan masyarakat. Kanal ini relevan bagi mahasiswa, akademisi, praktisi, pengelola organisasi, maupun warga yang ingin membaca persoalan hukum tata negara dan tata kelola secara lebih kontekstual. Artikel-artikel di dalamnya menghubungkan perkembangan regulasi dengan prinsip negara hukum, perlindungan hak, partisipasi publik, dan kualitas pengambilan keputusan. Dengan pendekatan yang jernih dan berbasis sumber, Law & Governance menjadi ruang untuk menilai bagaimana hukum bekerja dalam praktik serta bagaimana tata kelola dapat diperkuat agar lebih terbuka, adil, dan bertanggung jawab.',
+            'aliases' => ['law governance', 'law and governance', 'constitution governance', 'constitution and governance', 'kebijakan publik'],
+        ],
+        'legal-101' => [
+            'name' => 'Legal 101',
+            'title' => 'Legal 101: Memahami Dasar-Dasar Hukum',
+            'seo_title' => 'Legal 101: Panduan Dasar-Dasar Hukum',
+            'seo_description' => 'Panduan dasar hukum dengan bahasa yang mudah dipahami, mulai dari konsep, hak, prosedur, hingga istilah penting dalam kehidupan sehari-hari.',
+            'introduction' => 'Legal 101 adalah kanal pengantar untuk memahami konsep dan mekanisme hukum yang sering dijumpai dalam kehidupan sehari-hari. Pembahasannya dirancang dengan bahasa yang mudah diikuti tanpa menghilangkan ketepatan istilah dan konteks hukumnya. Pembaca dapat mempelajari dasar negara hukum, hierarki peraturan, hak dan kewajiban warga, proses peradilan, kontrak, perlindungan konsumen, hingga cara membaca dokumen atau persoalan hukum secara lebih sistematis. Kanal ini cocok bagi pelajar, mahasiswa lintas disiplin, komunitas, pelaku usaha, dan masyarakat umum yang ingin membangun fondasi literasi hukum sebelum mendalami isu yang lebih kompleks. Setiap artikel berusaha menjawab pertanyaan mendasar: aturan apa yang berlaku, siapa yang berwenang, hak apa yang dilindungi, dan langkah apa yang dapat dipertimbangkan. Legal 101 tidak menggantikan nasihat hukum profesional, tetapi menyediakan pengetahuan awal yang membantu pembaca mengenali masalah, memahami istilah, dan mengambil keputusan secara lebih sadar.',
+            'aliases' => ['legal 101', 'law 101', 'dasar hukum', 'hukum dasar', 'literasi hukum dasar'],
+        ],
+        'regulatory-update' => [
+            'name' => 'Regulatory Update',
+            'title' => 'Regulatory Update: Perkembangan Regulasi Terkini',
+            'seo_title' => 'Regulatory Update: Perkembangan Regulasi',
+            'seo_description' => 'Ikuti perkembangan regulasi terbaru beserta konteks, perubahan utama, dan dampaknya bagi masyarakat, institusi, serta praktik hukum.',
+            'introduction' => 'Regulatory Update menyajikan perkembangan peraturan dan kebijakan terbaru dengan penjelasan mengenai konteks, perubahan utama, serta konsekuensinya. Kanal ini membantu pembaca mengikuti regulasi tanpa harus berhenti pada nomor, tanggal, atau judul peraturan. Setiap tulisan menyoroti persoalan yang hendak dijawab, ruang lingkup pengaturan, pihak yang terdampak, hubungan dengan aturan sebelumnya, dan hal-hal yang perlu diperhatikan dalam penerapannya. Pembahasan mencakup peraturan perundang-undangan, kebijakan pemerintah, putusan penting, pedoman lembaga, serta perubahan tata kelola yang relevan bagi publik. Kanal ini ditujukan bagi praktisi, peneliti, mahasiswa, organisasi masyarakat, pelaku usaha, dan warga yang membutuhkan pemahaman awal secara cepat namun tetap bertanggung jawab. Dengan menghubungkan teks regulasi dan dampak praktisnya, Regulatory Update membantu pembaca menilai apakah suatu perubahan memperluas perlindungan, menambah kewajiban, mengubah prosedur, atau memunculkan persoalan implementasi yang perlu diawasi.',
+            'aliases' => ['regulatory update', 'regulation update', 'regulasi', 'pembaruan regulasi'],
+        ],
+        'edulaw-insight' => [
+            'name' => 'Edulaw Insight',
+            'title' => 'Edulaw Insight: Analisis Hukum untuk Publik',
+            'seo_title' => 'Edulaw Insight: Analisis Hukum untuk Publik',
+            'seo_description' => 'Baca analisis hukum Edulaw Project mengenai isu aktual, putusan, kebijakan, dan persoalan publik berdasarkan riset serta argumentasi yang jernih.',
+            'introduction' => 'Edulaw Insight merupakan ruang analisis utama Edulaw Project untuk membaca persoalan hukum yang berkembang di tengah masyarakat. Kanal ini memadukan riset, penalaran hukum, konteks kebijakan, dan perhatian terhadap dampak sosial agar isu yang kompleks dapat dipahami secara lebih utuh. Tulisan dapat membahas putusan pengadilan, perdebatan konstitusional, perubahan kebijakan, hak warga, perkembangan institusi, maupun hubungan hukum dengan teknologi, ekonomi, dan kehidupan publik. Setiap artikel diarahkan untuk menghadirkan argumentasi yang jelas, sumber yang dapat ditelusuri, serta sudut pandang yang berguna bagi pembaca. Kanal ini ditujukan bagi siapa pun yang membutuhkan pemahaman lebih mendalam daripada ringkasan berita, termasuk mahasiswa, peneliti, praktisi, organisasi, dan masyarakat umum. Melalui Edulaw Insight, pembaca diajak melihat apa masalah hukumnya, mengapa isu tersebut penting, bagaimana aturan dan putusan dapat ditafsirkan, serta konsekuensi yang mungkin muncul bagi kebijakan dan perlindungan hak.',
+            'aliases' => ['edulaw insight', 'insight', 'editorial', 'legal insight', 'legal editorial', 'opini hukum', 'riset hukum'],
+        ],
+    ];
+
     private const LEGACY_SLUG_REDIRECTS = [
         'worklife-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental' => 'work-life-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental',
     ];
 
-    public function index(Request $request): View
+    public function index(Request $request): View|RedirectResponse
     {
         $category = $request->query('category');
         $author = $request->query('author');
         $search = trim((string) $request->query('q', ''));
         $featuredOnly = $request->boolean('featured');
+
+        if ($category && blank($author) && $search === '' && ! $featuredOnly) {
+            $categoryPageSlug = $this->categoryPageSlug((string) $category);
+
+            if ($categoryPageSlug) {
+                $parameters = ['categorySlug' => $categoryPageSlug];
+
+                if ((int) $request->query('page', 1) > 1) {
+                    $parameters['page'] = (int) $request->query('page');
+                }
+
+                return redirect()->route('insights.categories.show', $parameters, 301);
+            }
+        }
 
         $query = Insight::query()
             ->with(['categoryRelation', 'authors.user'])
@@ -42,7 +91,7 @@ class InsightController extends Controller
             });
 
         $insightCategories = InsightCategory::query()
-            ->where('is_active', true)
+            ->visibleOnEditorialIndex()
             ->withCount([
                 'insights as published_insights_count' => fn ($query) => $query->published(),
             ])
@@ -126,6 +175,65 @@ class InsightController extends Controller
         ]);
     }
 
+    public function category(Request $request, string $categorySlug): View
+    {
+        $definition = self::CATEGORY_PAGES[$categorySlug] ?? abort(404);
+        $categories = InsightCategory::query()
+            ->where('is_active', true)
+            ->withCount([
+                'insights as published_insights_count' => fn ($query) => $query->published(),
+            ])
+            ->orderBy('sort_order')
+            ->orderBy('name')
+            ->get();
+        $category = $this->resolveInsightCategory($categories, $definition['aliases']);
+
+        $insights = Insight::query()
+            ->with(['categoryRelation', 'authors.user'])
+            ->published()
+            ->when(
+                $category,
+                fn ($query) => $query->where('insight_category_id', $category->id),
+                fn ($query) => $query->whereRaw('1 = 0'),
+            )
+            ->orderByDesc('published_at')
+            ->latest('id')
+            ->paginate(9);
+
+        abort_if($insights->currentPage() > $insights->lastPage(), 404);
+
+        $currentPage = $insights->currentPage();
+        $categoryUrl = route('insights.categories.show', $categorySlug);
+        $canonicalUrl = $categoryUrl
+            .($currentPage > 1 ? '?page='.$currentPage : '');
+        $previousPageUrl = $currentPage > 1
+            ? $categoryUrl.($currentPage > 2 ? '?page='.($currentPage - 1) : '')
+            : null;
+        $nextPageUrl = $currentPage < $insights->lastPage()
+            ? $categoryUrl.'?page='.($currentPage + 1)
+            : null;
+        $relatedCategories = collect(self::CATEGORY_PAGES)
+            ->except($categorySlug)
+            ->map(fn (array $related, string $slug): array => [
+                ...$related,
+                'slug' => $slug,
+                'url' => route('insights.categories.show', $slug),
+                'article_count' => (int) ($this->resolveInsightCategory($categories, $related['aliases'])?->published_insights_count ?? 0),
+            ])
+            ->values();
+
+        return view('insights.category', [
+            'definition' => $definition,
+            'category' => $category,
+            'categorySlug' => $categorySlug,
+            'insights' => $insights,
+            'canonicalUrl' => $canonicalUrl,
+            'previousPageUrl' => $previousPageUrl,
+            'nextPageUrl' => $nextPageUrl,
+            'relatedCategories' => $relatedCategories,
+        ]);
+    }
+
     public function show(string $slug): View|RedirectResponse
     {
         if (array_key_exists($slug, self::LEGACY_SLUG_REDIRECTS)) {
@@ -185,9 +293,9 @@ class InsightController extends Controller
         return Insight::query()
             ->with(['categoryRelation', 'authors.user'])
             ->published()
-            ->featured()
+            ->editorPick()
             ->whereNotIn('id', $excludedIds)
-            ->orderByDesc('updated_at')
+            ->orderBy('sort_order')
             ->orderByDesc('published_at')
             ->latest('id')
             ->take(4)
@@ -267,12 +375,11 @@ class InsightController extends Controller
     private function editorialContributors(): Collection
     {
         return Author::query()
-            ->where('is_active', true)
+            ->visibleInContributorSection()
             ->whereNotNull('slug')
             ->withCount([
                 'insights as published_insights_count' => fn ($query) => $query->published(),
             ])
-            ->orderByDesc('published_insights_count')
             ->orderBy('sort_order')
             ->orderBy('name')
             ->take(10)
@@ -326,15 +433,11 @@ class InsightController extends Controller
             ],
         ]);
 
-        $resolvedCategories = $definitions
-            ->map(fn (array $definition): ?InsightCategory => $this->resolveInsightCategory($categories, $definition['aliases']))
-            ->filter();
-
-        $articlesByCategory = $resolvedCategories->isNotEmpty()
+        $articlesByCategory = $categories->isNotEmpty()
             ? Insight::query()
                 ->with(['categoryRelation', 'authors.user'])
                 ->published()
-                ->whereIn('insight_category_id', $resolvedCategories->pluck('id')->all())
+                ->whereIn('insight_category_id', $categories->pluck('id')->all())
                 ->orderByDesc('published_at')
                 ->latest('id')
                 ->get()
@@ -342,32 +445,38 @@ class InsightController extends Controller
                 ->map(fn (Collection $items): Collection => $items->take(8)->values())
             : collect();
 
-        return $definitions->map(function (array $definition) use ($categories, $articlesByCategory): array {
-            $category = $this->resolveInsightCategory($categories, $definition['aliases']);
+        return $categories->map(function (InsightCategory $category) use ($definitions, $articlesByCategory): array {
+            $normalizedCategory = collect([$category->name, $category->slug])
+                ->map(fn (string $value): string => $this->normalizeCategoryName($value));
+            $definition = $definitions->first(function (array $candidate) use ($normalizedCategory): bool {
+                $aliases = collect([$candidate['label'], ...$candidate['aliases']])
+                    ->map(fn (string $alias): string => $this->normalizeCategoryName($alias));
 
-            $articles = $category
-                ? $articlesByCategory->get($category->id, collect())
-                : collect();
+                return $normalizedCategory->contains(fn (string $value): bool => $aliases->contains($value));
+            });
+            $label = $definition['label'] ?? $category->name;
+            $pageSlug = $this->categoryPageSlug($category->slug)
+                ?? $this->categoryPageSlug($category->name);
 
             return [
-                ...$definition,
+                'label' => $label,
+                'icon' => $definition['icon'] ?? 'column',
+                'description' => $category->description ?: ($definition['description'] ?? 'Kumpulan editorial pilihan Edulaw Project.'),
+                'aliases' => $definition['aliases'] ?? [$category->slug],
                 'category' => $category,
-                'article_count' => (int) ($category?->published_insights_count ?? 0),
-                'articles' => $articles,
-                'url' => $category
-                    ? route('insights.index', ['category' => $category->slug])
-                    : route('insights.index', ['q' => $definition['label']]),
+                'article_count' => (int) ($category->published_insights_count ?? 0),
+                'articles' => $articlesByCategory->get($category->id, collect()),
+                'url' => $pageSlug
+                    ? route('insights.categories.show', $pageSlug)
+                    : route('insights.index', ['category' => $category->slug]),
             ];
-        });
+        })->values();
     }
 
     private function categorySections(Collection $channels, Collection $shownIds): Collection
     {
-        $labels = collect(['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance']);
-
-        return $labels
-            ->map(fn (string $label): ?array => $channels->firstWhere('label', $label))
-            ->filter()
+        return $channels
+            ->take(4)
             ->map(function (array $channel) use ($shownIds): array {
                 $allArticles = collect($channel['articles'] ?? [])->unique('id')->values();
                 $articles = $allArticles
@@ -409,6 +518,22 @@ class InsightController extends Controller
                 || $normalizedAliases->contains($slug)
                 || $normalizedAliases->contains(fn (string $alias): bool => Str::contains($name, $alias) || Str::contains($slug, $alias));
         });
+    }
+
+    private function categoryPageSlug(string $category): ?string
+    {
+        $normalizedCategory = $this->normalizeCategoryName($category);
+
+        foreach (self::CATEGORY_PAGES as $slug => $definition) {
+            $aliases = collect([$slug, $definition['name'], ...$definition['aliases']])
+                ->map(fn (string $value): string => $this->normalizeCategoryName($value));
+
+            if ($aliases->contains($normalizedCategory)) {
+                return $slug;
+            }
+        }
+
+        return null;
     }
 
     private function normalizeCategoryName(?string $value): string

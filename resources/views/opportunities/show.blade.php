@@ -78,6 +78,14 @@
 @section('og_image', $ogImage)
 @section('og_image_alt', $opportunity->title)
 
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Beranda', 'url' => route('home')],
+        ['name' => 'Peluang', 'url' => route('opportunities.index')],
+        ['name' => $opportunity->title, 'url' => $detailUrl],
+    ])" />
+@endpush
+
 @section('content')
 <main class="bg-[#f7f8fa]">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">

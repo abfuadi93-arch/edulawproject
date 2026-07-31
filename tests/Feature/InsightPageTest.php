@@ -40,7 +40,10 @@ test('published insight index and detail pages render', function () {
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Artikel Editorial')
-        ->assertSee('Bagikan Insight')
+        ->assertSee('Tentang Artikel')
+        ->assertSee('Bagikan Artikel')
+        ->assertSee('insight-sidebar grid gap-5 self-start md:grid-cols-2', false)
+        ->assertSee('lg:sticky lg:top-24', false)
         ->assertSee('WhatsApp')
         ->assertSee('Telegram')
         ->assertSee('X/Twitter')
@@ -50,14 +53,123 @@ test('published insight index and detail pages render', function () {
         ->assertSee('Instagram')
         ->assertSee('Salin Link')
         ->assertSee(asset('images/hero/hero-edulaw.jpg'), false)
-        ->assertSee('edulaw-readable insight-article-body', false)
+        ->assertSee('article-content edulaw-readable insight-article-body prose prose-slate max-w-none', false)
+        ->assertDontSee('Editorial Terkait')
         ->getContent();
 
     expect($html)
         ->toContain('property="og:title" content="Membaca Hukum Secara Publik | Edulaw Project"')
         ->toContain('property="og:type" content="article"')
         ->toContain('property="og:url" content="'.route('insights.show', $insight->slug).'"')
-        ->toContain('name="twitter:card" content="summary_large_image"');
+        ->toContain('name="twitter:card" content="summary_large_image"')
+        ->and(substr_count($html, 'Bagikan Artikel'))->toBe(1)
+        ->and(substr_count($html, now()->translatedFormat('d F Y')))->toBe(1);
+});
+
+test('insight detail normalizes body headings and renders a useful article outline', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Legal 101',
+        'slug' => 'legal-101',
+        'is_active' => true,
+    ]);
+
+    $insight = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Memahami Hierarki Peraturan',
+        'slug' => 'memahami-hierarki-peraturan',
+        'excerpt' => 'Panduan ringkas untuk membaca hubungan antartingkat peraturan perundang-undangan.',
+        'content' => <<<'HTML'
+            <p>Hierarki membantu pembaca memahami kedudukan setiap peraturan.</p>
+            <h1>Dasar Hierarki</h1>
+            <p>Bagian pertama.</p>
+            <h2>Jenis Peraturan</h2>
+            <h3>Peraturan Pelaksana</h3>
+            <ul><li>Undang-undang</li><li>Peraturan pemerintah</li></ul>
+            <ol><li>Identifikasi aturan</li><li>Bandingkan kedudukan</li></ol>
+            HTML,
+        'status' => 'published',
+        'published_at' => now(),
+        'reading_time' => 6,
+    ]);
+
+    $html = $this->get(route('insights.show', $insight->slug))
+        ->assertOk()
+        ->assertSee('Daftar Isi')
+        ->assertSee('href="#dasar-hierarki"', false)
+        ->assertSee('href="#jenis-peraturan"', false)
+        ->assertDontSee('href="#peraturan-pelaksana"', false)
+        ->assertSee('<h2 id="dasar-hierarki">Dasar Hierarki</h2>', false)
+        ->assertSee('<h2 id="jenis-peraturan">Jenis Peraturan</h2>', false)
+        ->assertSee('<h3 id="peraturan-pelaksana">Peraturan Pelaksana</h3>', false)
+        ->getContent();
+
+    expect(substr_count($html, '<h1'))
+        ->toBe(1)
+        ->and($html)
+        ->not->toContain('<h1 id="dasar-hierarki">')
+        ->and(strpos($html, 'Tentang Artikel'))
+        ->toBeLessThan(strpos($html, 'Bagikan Artikel'))
+        ->and(strpos($html, 'Bagikan Artikel'))
+        ->toBeLessThan(strpos($html, 'Daftar Isi'));
+});
+
+test('insight detail hides the table of contents when the body has no h2', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    $insight = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Artikel Tanpa Subbagian',
+        'slug' => 'artikel-tanpa-subbagian',
+        'content' => '<p>Artikel singkat tanpa subbagian tidak membutuhkan daftar isi.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    $this->get(route('insights.show', $insight->slug))
+        ->assertOk()
+        ->assertDontSee('id="article-toc-heading"', false)
+        ->assertDontSee('class="article-toc', false);
+});
+
+test('insight detail renders safe fallbacks when all optional article data is empty', function () {
+    $insight = Insight::query()->create([
+        'title' => 'Editorial dengan Data Minimal',
+        'slug' => 'editorial-dengan-data-minimal',
+        'excerpt' => null,
+        'content' => null,
+        'cover_image' => null,
+        'status' => 'draft',
+        'published_at' => null,
+        'reading_time' => null,
+    ]);
+
+    $insight->load(['categoryRelation', 'authors.user', 'tags', 'creator', 'reviewer']);
+
+    $html = view('insights.show', [
+        'insight' => $insight,
+        'relatedInsights' => collect(),
+    ])->render();
+
+    expect($html)
+        ->toContain('Editorial dengan Data Minimal')
+        ->toContain('Belum dijadwalkan')
+        ->toContain('1 menit baca')
+        ->toContain('Editorial Edulaw Project menyajikan analisis hukum yang relevan, jernih, dan mudah dipahami.')
+        ->toContain(asset('images/hero/hero-edulaw.jpg'))
+        ->toContain('Tentang Artikel')
+        ->toContain('Bagikan Artikel')
+        ->toContain('Edulaw Project')
+        ->not->toContain('id="article-toc-heading"')
+        ->not->toContain('Editorial Terkait')
+        ->and(substr_count($html, '<h1'))
+        ->toBe(1);
+
+    $this->get(route('insights.show', $insight->slug))
+        ->assertNotFound();
 });
 
 test('legacy insight slug redirects permanently to canonical slug', function () {
@@ -98,6 +210,7 @@ test('latest featured insight is excluded from editorial picks once it is alread
         'status' => 'published',
         'published_at' => now(),
         'featured' => true,
+        'editor_pick' => true,
     ]);
 
     foreach (range(1, 5) as $position) {
@@ -118,7 +231,8 @@ test('latest featured insight is excluded from editorial picks once it is alread
         'content' => '<p>Editorial pilihan berikutnya.</p>',
         'status' => 'published',
         'published_at' => now()->subDays(10),
-        'featured' => true,
+        'editor_pick' => true,
+        'sort_order' => 1,
     ]);
 
     $this->get(route('insights.index'))
@@ -431,6 +545,10 @@ test('editorial index excludes drafts and keeps category and search filters', fu
     ]);
 
     $this->get(route('insights.index', ['category' => $firstCategory->slug]))
+        ->assertMovedPermanently()
+        ->assertRedirect(route('insights.categories.show', 'legal-101'));
+
+    $this->get(route('insights.categories.show', 'legal-101'))
         ->assertOk()
         ->assertViewHas('insights', fn ($insights) => $insights->pluck('id')->all() === [$matching->id]);
 
@@ -483,6 +601,7 @@ test('active editorial contributor links to public profile with published count'
         'position' => 'Peneliti Hukum',
         'photo' => 'authors/foto-yang-tidak-tersedia.jpg',
         'is_active' => true,
+        'show_in_contributor_section' => true,
     ]);
     $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
 
@@ -493,7 +612,7 @@ test('active editorial contributor links to public profile with published count'
         ->assertSee('1 tulisan terbit')
         ->assertSee('Lihat Semua Kontributor')
         ->assertSee('onerror="this.remove()"', false)
-        ->assertSee('aria-hidden="true">N</span>', false)
+        ->assertSee('aria-hidden="true">NP</span>', false)
         ->assertSee(route('profiles.show', $author->slug), false);
 });
 
@@ -525,6 +644,7 @@ test('editorial contributor labels use public author position instead of auth ro
             'title' => $authorData['title'] ?? null,
             'position' => $authorData['position'] ?? null,
             'is_active' => true,
+            'show_in_contributor_section' => true,
         ]);
 
         $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'admin']);
@@ -569,6 +689,7 @@ test('editorial contributor grid is capped to ten profiles in five desktop colum
             'position' => 'Penulis Hukum',
             'sort_order' => $position,
             'is_active' => true,
+            'show_in_contributor_section' => true,
         ]);
 
         $author->insights()->attach($insight->id, ['author_order' => $position, 'role' => 'Penulis']);

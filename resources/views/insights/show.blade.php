@@ -1,57 +1,19 @@
 @extends('layouts.app')
 
 @section('title', $insight->seo_title ?: $insight->title)
-@section('meta_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160))
+@section('meta_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160) ?: 'Editorial Edulaw Project menyajikan analisis hukum yang relevan, jernih, dan mudah dipahami.')
 @section('canonical_url', route('insights.show', $insight->slug))
 @section('og_type', 'article')
 @section('og_image', edulaw_file_url($insight->og_image ?: $insight->cover_image, 'images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', $insight->title)
 
-@push('styles')
-    <style>
-        .insight-article-body > p:first-of-type {
-            margin-top: 0;
-        }
-
-        .insight-article-body,
-        .insight-article-body * {
-            max-width: 100%;
-            overflow-wrap: anywhere;
-        }
-
-        .insight-article-body > p:first-of-type::first-letter {
-            float: left;
-            margin: 0.08em 0.14em 0 0;
-            color: #1f3c69;
-            font-family: var(--font-display);
-            font-size: 3.65rem;
-            font-weight: 900;
-            letter-spacing: 0;
-            line-height: 0.88;
-        }
-
-        @supports (-webkit-initial-letter: 2) or (initial-letter: 2) {
-            .insight-article-body > p:first-of-type::first-letter {
-                -webkit-initial-letter: 2;
-                initial-letter: 2;
-                float: none;
-                margin: 0 0.16em 0 0;
-                font-size: inherit;
-                line-height: inherit;
-            }
-        }
-
-        .insight-article-body img {
-            border-radius: 1rem;
-            box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
-        }
-
-        @media (max-width: 640px) {
-            .insight-article-body > p:first-of-type::first-letter {
-                font-size: 3.2rem;
-            }
-        }
-    </style>
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::article($insight)" />
+    <x-structured-data :data="\App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Beranda', 'url' => route('home')],
+        ['name' => 'Insight', 'url' => route('insights.index')],
+        ['name' => $insight->title, 'url' => route('insights.show', $insight->slug)],
+    ])" />
 @endpush
 
 @section('content')
@@ -69,14 +31,15 @@
     $coverImage = $insight->cover_image_url;
     $categoryName = $insight->display_category;
     $publishedDate = optional($insight->published_at)->translatedFormat('d F Y') ?? 'Belum dijadwalkan';
-    $description = $insight->excerpt ?: \Illuminate\Support\Str::limit(strip_tags($insight->content ?? ''), 180);
+    $description = $insight->excerpt
+        ?: \Illuminate\Support\Str::limit(strip_tags($insight->content ?? ''), 180)
+        ?: 'Editorial Edulaw Project menyajikan analisis hukum yang relevan, jernih, dan mudah dipahami.';
     $primaryAuthor = $insight->authors
         ->filter(fn ($author) => $author->is_active !== false)
         ->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)
         ->first();
     $authorName = $primaryAuthor?->name ?: $insight->creator?->name ?: $insight->reviewer?->name ?: 'Edulaw Project';
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
-    $authorBio = $primaryAuthor?->bio;
     $authorPhoto = $primaryAuthor?->photo_url;
     $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
     $additionalAuthorsCount = max($insight->authors->count() - 1, 0);
@@ -86,7 +49,16 @@
         ->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))
         ->take(2)
         ->implode('');
+    $preparedArticle = \App\Support\ArticleContent::prepare($insight->content);
+    $articleHeadings = collect($preparedArticle['headings'])
+        ->where('level', 2)
+        ->values();
     $relatedInsights = $relatedInsights ?? collect();
+    $displayRelatedInsights = $relatedInsights
+        ->filter(fn ($item) => filled($item?->title) && filled($item?->slug))
+        ->unique('id')
+        ->take(3)
+        ->values();
 @endphp
 
 <main class="bg-white">
@@ -96,6 +68,7 @@
                 src="{{ $coverImage }}"
                 alt="{{ $insight->title }}"
                 class="absolute inset-0 z-0 h-full w-full object-cover"
+                onerror="this.onerror=null;this.src='{{ asset('images/hero/hero-edulaw.jpg') }}';"
             >
         @else
             <div class="absolute inset-0 z-0 bg-linear-to-br from-brand-navy via-slate-900 to-brand-navy"></div>
@@ -134,31 +107,22 @@
         </div>
     </section>
 
-    <section class="border-b border-slate-200 bg-white py-10 lg:py-14">
-        <div class="mx-auto grid max-w-6xl gap-10 px-6 lg:grid-cols-[minmax(0,760px)_280px] lg:px-8">
+    <section class="border-b border-slate-200 bg-brand-paper/40 py-10 lg:py-16">
+        <div class="mx-auto grid max-w-7xl gap-10 px-5 sm:px-6 lg:grid-cols-[minmax(0,780px)_minmax(280px,320px)] lg:items-start lg:justify-center lg:gap-10 lg:px-8 xl:gap-12">
             <article class="min-w-0 overflow-hidden">
-                <div class="mb-8 flex flex-col gap-4 border-b border-slate-200 pb-5 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
-                    <div class="flex flex-wrap items-center gap-3 text-xs font-bold text-slate-500">
-                        <span class="edulaw-badge edulaw-badge-navy normal-case tracking-normal">
-                            Artikel Editorial
-                        </span>
-                        <span>{{ $publishedDate }}</span>
-                        <span class="hidden h-1 w-1 rounded-full bg-slate-300 sm:block"></span>
-                        <span>{{ $readingTime($insight) }}</span>
-                    </div>
+                @if ($insight->excerpt)
+                    <p class="article-lead">
+                        {{ $insight->excerpt }}
+                    </p>
+                @endif
 
-                    <x-share-buttons
-                        :title="$insight->title"
-                        :url="request()->fullUrl()"
-                        :description="$description"
-                        label="Bagikan Insight"
-                        class="w-full justify-start sm:w-auto sm:justify-end"
-                    />
-                </div>
-
-                <div class="edulaw-readable insight-article-body prose prose-slate max-w-none prose-headings:font-black prose-headings:tracking-tight prose-headings:text-brand-navy prose-h2:mt-12 prose-h2:text-3xl prose-h3:text-2xl prose-p:text-[17px] prose-p:text-slate-700 prose-a:font-semibold prose-a:text-brand-navy prose-strong:text-brand-navy prose-em:text-slate-700 prose-blockquote:border-l-4 prose-blockquote:border-brand-amber prose-blockquote:bg-slate-50 prose-blockquote:px-5 prose-blockquote:py-3 prose-blockquote:not-italic">
-                    @if ($insight->content)
-                        {!! $insight->content !!}
+                <div class="article-content edulaw-readable insight-article-body prose prose-slate max-w-none
+                    prose-headings:text-[#0f2a4a]
+                    prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-l-4 prose-h2:border-[#d99a21] prose-h2:pl-4 prose-h2:text-2xl prose-h2:font-extrabold
+                    prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl prose-h3:font-bold
+                    prose-strong:text-[#0f2a4a]">
+                    @if ($preparedArticle['html'])
+                        {!! $preparedArticle['html'] !!}
                     @else
                         <p>{{ $description }}</p>
                     @endif
@@ -181,81 +145,102 @@
                 @endif
             </article>
 
-            <aside class="space-y-5 self-start lg:sticky lg:top-28">
-                <div class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
-                    <p class="text-[10px] font-black uppercase tracking-[0.24em] text-brand-teal">
-                        Penulis
+            <aside class="insight-sidebar grid gap-5 self-start md:grid-cols-2 lg:sticky lg:top-24 lg:block lg:max-h-[calc(100vh-7rem)] lg:space-y-5 lg:overflow-y-auto lg:overscroll-contain lg:pr-1" aria-label="Informasi artikel">
+                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-about-heading">
+                    <p class="text-[10px] font-black uppercase tracking-[0.24em] text-[#a8660a]">
+                        Artikel Editorial
                     </p>
+                    <h2 id="article-about-heading" class="mt-2 text-lg font-black text-brand-navy">Tentang Artikel</h2>
 
-                    <div class="mt-5 flex items-center gap-4">
-                        @if ($authorPhoto)
-                            <img
-                                src="{{ $authorPhoto }}"
-                                alt="Foto profil {{ $authorName }}"
-                                class="h-14 w-14 shrink-0 rounded-2xl object-cover ring-1 ring-slate-200"
-                                loading="lazy"
-                            >
-                        @else
-                            <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-navy text-sm font-black text-white">
-                                {{ $authorInitials }}
-                            </div>
-                        @endif
+                    <div class="mt-4">
+                        <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
+                            {{ $categoryName }}
+                        </span>
+                    </div>
 
-                        <div class="min-w-0">
-                            <h3 class="font-black leading-snug text-brand-navy">
-                                @if ($authorProfileUrl)
-                                    <a href="{{ $authorProfileUrl }}" class="underline-offset-4 hover:underline">
-                                        {{ $authorName }}
-                                    </a>
-                                @else
-                                    {{ $authorName }}
-                                @endif
-                            </h3>
-                            <p class="mt-1 text-xs leading-5 text-slate-500">
-                                {{ $authorInstitution }}
-                            </p>
+                    <div class="mt-5 border-t border-slate-100 pt-5">
+                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Penulis</p>
 
-                            @if ($additionalAuthorsCount > 0)
-                                <p class="mt-1 text-xs font-semibold text-slate-400">
-                                    dan {{ $additionalAuthorsCount }} penulis lainnya
-                                </p>
+                        <div class="mt-3 flex items-center gap-4">
+                            @if ($authorPhoto)
+                                <img
+                                    src="{{ $authorPhoto }}"
+                                    alt="Foto profil {{ $authorName }}"
+                                    class="h-14 w-14 shrink-0 rounded-2xl object-cover ring-1 ring-slate-200"
+                                    loading="lazy"
+                                >
+                            @else
+                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-navy text-sm font-black text-white">
+                                    {{ $authorInitials }}
+                                </div>
                             @endif
+
+                            <div class="min-w-0">
+                                <h3 class="font-black leading-snug text-brand-navy">
+                                    @if ($authorProfileUrl)
+                                        <a href="{{ $authorProfileUrl }}" class="underline-offset-4 hover:underline">
+                                            {{ $authorName }}
+                                        </a>
+                                    @else
+                                        {{ $authorName }}
+                                    @endif
+                                </h3>
+                                <p class="mt-1 text-xs leading-5 text-slate-500">
+                                    {{ $authorInstitution }}
+                                </p>
+
+                                @if ($additionalAuthorsCount > 0)
+                                    <p class="mt-1 text-xs font-semibold text-slate-400">
+                                        dan {{ $additionalAuthorsCount }} penulis lainnya
+                                    </p>
+                                @endif
+                            </div>
                         </div>
                     </div>
+                </section>
 
-                    @if ($authorBio)
-                        <p class="mt-4 text-sm leading-relaxed text-slate-500">
-                            {{ \Illuminate\Support\Str::limit(strip_tags($authorBio), 130) }}
-                        </p>
-                    @else
-                        <p class="mt-4 text-sm leading-relaxed text-slate-500">
-                            Editorial ini disusun untuk memperkuat literasi hukum yang mudah dipahami, relevan, dan bertanggung jawab.
-                        </p>
-                    @endif
-                </div>
+                <section class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-share-heading">
+                    <h2 id="article-share-heading" class="text-base font-black text-brand-navy">Bagikan Artikel</h2>
+                    <p class="mt-1 text-xs leading-5 text-slate-500">Bagikan bacaan ini melalui kanal pilihan Anda.</p>
 
-                @if ($relatedInsights->isNotEmpty())
-                    <div class="rounded-[1.5rem] border border-slate-200 bg-white p-6 shadow-sm">
-                        <p class="text-[10px] font-black uppercase tracking-[0.24em] text-brand-navy/60">
-                            Baca Juga
-                        </p>
+                    <x-share-buttons
+                        :title="$insight->title"
+                        :url="request()->fullUrl()"
+                        :description="$description"
+                        label=""
+                        class="mt-4 justify-start"
+                    />
+                </section>
 
-                        <div class="mt-5 space-y-4">
-                            @foreach ($relatedInsights->take(3) as $relatedInsight)
-                                <a href="{{ route('insights.show', $relatedInsight->slug) }}" class="group block border-b border-slate-100 pb-4 last:border-b-0 last:pb-0">
-                                    <p class="line-clamp-2 text-sm font-black leading-snug text-brand-navy transition group-hover:text-brand-teal">
-                                        {{ $relatedInsight->title }}
-                                    </p>
-                                    <p class="mt-2 text-[11px] font-semibold text-slate-400">
-                                        {{ optional($relatedInsight->published_at)->translatedFormat('d M Y') }}
-                                        <span class="mx-1">&middot;</span>
-                                        {{ $readingTime($relatedInsight) }}
-                                    </p>
-                                </a>
+                @if ($articleHeadings->isNotEmpty())
+                    <nav class="article-toc hidden rounded-2xl border border-brand-amber/40 bg-[#f8f5ee] p-6 shadow-sm lg:block" aria-labelledby="article-toc-heading">
+                        <div class="flex items-center gap-3">
+                            <span class="flex h-9 w-9 items-center justify-center rounded-xl bg-brand-amber/20 text-brand-navy" aria-hidden="true">
+                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none">
+                                    <path d="M9 6h11M9 12h11M9 18h11M4 6h.01M4 12h.01M4 18h.01" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-[#a8660a]">Navigasi</p>
+                                <h2 id="article-toc-heading" class="mt-1 text-lg font-black text-brand-navy">Daftar Isi</h2>
+                            </div>
+                        </div>
+
+                        <ol class="mt-5 space-y-1 border-l border-brand-amber/50">
+                            @foreach ($articleHeadings as $heading)
+                                <li class="pl-4">
+                                    <a
+                                        href="#{{ $heading['id'] }}"
+                                        class="block rounded-r-lg py-2 pr-2 text-sm font-semibold leading-5 text-slate-600 transition hover:bg-white/80 hover:text-brand-navy"
+                                    >
+                                        {{ $heading['title'] }}
+                                    </a>
+                                </li>
                             @endforeach
-                        </div>
-                    </div>
+                        </ol>
+                    </nav>
                 @endif
+
             </aside>
         </div>
     </section>
@@ -270,23 +255,26 @@
         secondary-label="Lihat Editorial Lainnya"
     />
 
-    @if ($relatedInsights->isNotEmpty())
-        <section class="bg-white py-12 lg:py-14">
+    @if ($displayRelatedInsights->isNotEmpty())
+        <section class="border-t border-slate-200 bg-white py-14 lg:py-16" aria-labelledby="related-editorials-heading">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                        <p class="text-xs font-black uppercase tracking-[0.2em] text-[#a8660a]">
                             Baca Juga
                         </p>
 
-                        <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-brand-ink sm:text-4xl">
+                        <h2 id="related-editorials-heading" class="mt-3 border-l-4 border-brand-amber pl-4 text-3xl font-black tracking-tight text-brand-navy sm:text-4xl">
                             Editorial Terkait
                         </h2>
+                        <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
+                            Lanjutkan membaca perspektif dan analisis hukum yang masih berkaitan dengan topik ini.
+                        </p>
                     </div>
 
                     <a
                         href="{{ route('insights.index') }}"
-                        class="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-brand-ink shadow-sm transition hover:border-brand-silver hover:bg-brand-paper"
+                        class="inline-flex w-fit items-center gap-2 rounded-full border border-slate-200 bg-white px-4 py-2 text-sm font-bold text-brand-navy shadow-sm transition hover:border-brand-amber hover:bg-[#f8f5ee]"
                     >
                         Lihat Semua Editorial
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -295,24 +283,25 @@
                     </a>
                 </div>
 
-                <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-                    @foreach ($relatedInsights as $item)
-                        <article class="group flex h-full flex-col overflow-hidden rounded-[1.5rem] border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-xl hover:shadow-slate-900/10">
-                            <a href="{{ route('insights.show', $item->slug) }}" class="block overflow-hidden bg-slate-100">
+                <div class="mt-10 grid items-stretch gap-6 md:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($displayRelatedInsights as $item)
+                        <article class="group flex h-full min-h-[25rem] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-amber/60 hover:shadow-lg hover:shadow-slate-900/10">
+                            <a href="{{ route('insights.show', $item->slug) }}" class="relative block aspect-[16/10] shrink-0 overflow-hidden bg-slate-100">
                                 <img
                                     src="{{ $item->cover_image_url }}"
                                     alt="{{ $item->title }}"
-                                    class="aspect-[16/10] w-full object-cover transition duration-500 group-hover:scale-105"
+                                    class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                     loading="lazy"
+                                    onerror="this.onerror=null;this.src='{{ asset('images/hero/hero-edulaw.jpg') }}';"
                                 >
                             </a>
 
-                            <div class="flex flex-1 flex-col p-5">
-                                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+                            <div class="flex flex-1 flex-col p-5 sm:p-6">
+                                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">
                                     {{ $item->display_category }}
                                 </p>
 
-                                <h3 class="mt-3 line-clamp-2 text-base font-black leading-snug text-brand-navy">
+                                <h3 class="mt-3 line-clamp-2 min-h-[2.75rem] text-base font-black leading-snug text-brand-navy">
                                     <a href="{{ route('insights.show', $item->slug) }}">
                                         {{ $item->title }}
                                     </a>
@@ -324,8 +313,10 @@
                                     </p>
                                 @endif
 
-                                <div class="mt-auto pt-5 text-xs font-semibold text-slate-400">
-                                    {{ optional($item->published_at)->translatedFormat('d M Y') }}
+                                <div class="mt-auto flex items-center gap-1.5 border-t border-slate-100 pt-5 text-xs font-semibold text-slate-400">
+                                    <time datetime="{{ optional($item->published_at)?->toDateString() }}">
+                                        {{ optional($item->published_at)->translatedFormat('d M Y') }}
+                                    </time>
                                     <span class="mx-1">&middot;</span>
                                     {{ $readingTime($item) }}
                                 </div>

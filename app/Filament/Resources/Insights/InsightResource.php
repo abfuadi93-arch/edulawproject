@@ -31,6 +31,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 
 class InsightResource extends Resource
 {
@@ -113,6 +114,23 @@ class InsightResource extends Resource
                                         RichEditor::make('content')
                                             ->label('Isi Artikel')
                                             ->required()
+                                            ->disableToolbarButtons(['h1'])
+                                            ->rule(static function (): \Closure {
+                                                return static function (string $attribute, mixed $value, \Closure $fail): void {
+                                                    if (static::contentContainsH1(is_string($value) ? $value : null)) {
+                                                        $fail('Isi artikel tidak boleh menggunakan H1. Gunakan H2 untuk bagian utama dan H3 untuk subbagian.');
+                                                    }
+                                                };
+                                            })
+                                            ->helperText('Gunakan H2 untuk bagian utama dan H3 untuk subbagian. H1 hanya untuk judul editorial.')
+                                            ->columnSpanFull(),
+
+                                        Textarea::make('excerpt')
+                                            ->label('Ringkasan / Excerpt')
+                                            ->rows(4)
+                                            ->maxLength(500)
+                                            ->required(fn ($get): bool => $get('status') === 'published')
+                                            ->helperText('Wajib sebelum Published. Tulis ringkasan mandiri yang menjelaskan manfaat artikel.')
                                             ->columnSpanFull(),
 
                                         FileUpload::make('cover_image')
@@ -127,7 +145,8 @@ class InsightResource extends Resource
                                             ->openable()
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(4096)
-                                            ->helperText('Rekomendasi rasio 16:9. Maks. 4 MB.')
+                                            ->required(fn ($get): bool => $get('status') === 'published')
+                                            ->helperText('Wajib sebelum Published. Rekomendasi rasio 16:9. Maks. 4 MB.')
                                             ->columnSpanFull(),
                                     ]),
 
@@ -186,6 +205,7 @@ class InsightResource extends Resource
                                             ->label('Status')
                                             ->options(fn (): array => static::statusOptionsForCurrentUser())
                                             ->default('draft')
+                                            ->live()
                                             ->disabled(fn (string $operation): bool => $operation === 'create' && ! static::canManageEditorialWorkflow())
                                             ->required(),
 
@@ -194,19 +214,15 @@ class InsightResource extends Resource
                                             ->seconds(false)
                                             ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
 
-                                        Toggle::make('featured')
-                                            ->label('Artikel Unggulan')
-                                            ->default(false)
-                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
-
                                         Select::make('authors')
-                                            ->label('Profil Terkait')
+                                            ->label('Penulis')
                                             ->relationship('authors', 'name')
                                             ->multiple()
                                             ->searchable()
                                             ->preload()
-                                            ->required()
-                                            ->placeholder('Pilih profil'),
+                                            ->required(fn ($get): bool => $get('status') === 'published')
+                                            ->placeholder('Pilih penulis')
+                                            ->helperText('Wajib sebelum Published. Draft dapat disimpan tanpa penulis.'),
 
                                         Placeholder::make('reading_time_preview')
                                             ->label('Estimasi Baca')
@@ -230,6 +246,33 @@ class InsightResource extends Resource
                                             }),
                                     ])
                                     ->columns(1),
+
+                                Section::make('Penempatan Editorial')
+                                    ->icon('heroicon-o-squares-2x2')
+                                    ->description('Atur posisi artikel pada halaman Editorial. Angka lebih kecil mendapat prioritas lebih tinggi.')
+                                    ->schema([
+                                        Toggle::make('editor_pick')
+                                            ->label('Pilihan Editor')
+                                            ->helperText('Tampilkan pada bagian Pilihan Editor.')
+                                            ->default(false)
+                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
+
+                                        Toggle::make('featured')
+                                            ->label('Artikel Unggulan')
+                                            ->helperText('Prioritaskan sebagai artikel utama atau hero editorial.')
+                                            ->default(false)
+                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
+
+                                        TextInput::make('sort_order')
+                                            ->label('Urutan Tampil')
+                                            ->numeric()
+                                            ->minValue(0)
+                                            ->default(0)
+                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow())
+                                            ->helperText('Gunakan 0 untuk prioritas tertinggi.'),
+                                    ])
+                                    ->columns(1)
+                                    ->collapsible(),
                             ])
                             ->columnSpan(['xl' => 4])
                             ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
@@ -241,6 +284,28 @@ class InsightResource extends Resource
 
     public static function prepareFormDataForPersistence(array $data): array
     {
+        if (static::contentContainsH1($data['content'] ?? null)) {
+            throw ValidationException::withMessages([
+                'content' => 'Isi artikel tidak boleh menggunakan H1. Gunakan H2 untuk bagian utama dan H3 untuk subbagian.',
+            ]);
+        }
+
+        if (($data['status'] ?? null) === 'published') {
+            $messages = [];
+
+            if (blank($data['cover_image'] ?? null)) {
+                $messages['cover_image'] = 'Gambar utama wajib diisi sebelum artikel diterbitkan.';
+            }
+
+            if (blank($data['excerpt'] ?? null)) {
+                $messages['excerpt'] = 'Ringkasan wajib diisi sebelum artikel diterbitkan.';
+            }
+
+            if ($messages !== []) {
+                throw ValidationException::withMessages($messages);
+            }
+        }
+
         if (blank($data['slug'] ?? null) && filled($data['title'] ?? null)) {
             $data['slug'] = Str::slug((string) $data['title']);
         }
@@ -250,7 +315,12 @@ class InsightResource extends Resource
         }
 
         $data['reading_time'] = static::estimateReadingTime($data['content'] ?? null);
-        $data['excerpt'] = static::excerptFromContent($data['content'] ?? null);
+
+        if (blank($data['excerpt'] ?? null)) {
+            $data['excerpt'] = static::excerptFromContent($data['content'] ?? null);
+        } else {
+            $data['excerpt'] = trim((string) $data['excerpt']);
+        }
 
         if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
             $data['seo_title'] = (string) $data['title'];
@@ -265,6 +335,30 @@ class InsightResource extends Resource
         }
 
         return $data;
+    }
+
+    public static function contentContainsH1(?string $html): bool
+    {
+        return preg_match('/<h1\b[^>]*>/i', (string) $html) === 1;
+    }
+
+    public static function publishReadinessIssues(Insight $insight): array
+    {
+        $authorsCount = array_key_exists('authors_count', $insight->getAttributes())
+            ? (int) $insight->getAttribute('authors_count')
+            : $insight->authors()->count();
+
+        return collect([
+            blank($insight->cover_image) ? 'gambar utama' : null,
+            blank($insight->excerpt) ? 'ringkasan' : null,
+            $authorsCount < 1 ? 'penulis' : null,
+            static::contentContainsH1($insight->content) ? 'hapus H1 dari isi artikel' : null,
+        ])->filter()->values()->all();
+    }
+
+    public static function isPublishReady(Insight $insight): bool
+    {
+        return static::publishReadinessIssues($insight) === [];
     }
 
     public static function excerptFromContent(?string $html, int $limit = 220): ?string
@@ -304,7 +398,7 @@ class InsightResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->withCount('authors');
         $user = Auth::user();
 
         if (! $user) {
@@ -413,10 +507,35 @@ class InsightResource extends Resource
                     ->color(fn (?string $state): string => static::statusColor($state))
                     ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
 
+                IconColumn::make('publish_ready')
+                    ->label('Siap')
+                    ->state(fn (Insight $record): bool => static::isPublishReady($record))
+                    ->boolean()
+                    ->tooltip(function (Insight $record): string {
+                        $issues = static::publishReadinessIssues($record);
+
+                        return $issues === []
+                            ? 'Siap diterbitkan'
+                            : 'Lengkapi: '.implode(', ', $issues);
+                    }),
+
                 IconColumn::make('featured')
                     ->label('Unggulan')
                     ->boolean()
                     ->sortable()
+                    ->toggleable(),
+
+                IconColumn::make('editor_pick')
+                    ->label('Pilihan')
+                    ->boolean()
+                    ->sortable()
+                    ->toggleable(),
+
+                TextColumn::make('sort_order')
+                    ->label('Urutan')
+                    ->numeric()
+                    ->sortable()
+                    ->alignCenter()
                     ->toggleable(),
 
                 TextColumn::make('published_at')
@@ -466,6 +585,13 @@ class InsightResource extends Resource
                     ->options([
                         '1' => 'Unggulan',
                         '0' => 'Bukan Unggulan',
+                    ]),
+
+                SelectFilter::make('editor_pick')
+                    ->label('Pilihan Editor')
+                    ->options([
+                        '1' => 'Pilihan Editor',
+                        '0' => 'Bukan Pilihan Editor',
                     ]),
             ])
             ->recordActions([

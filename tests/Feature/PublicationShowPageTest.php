@@ -60,6 +60,54 @@ test('publication detail hero contains eyebrow and title without body metadata',
         ->toContain('name="twitter:card" content="summary_large_image"');
 });
 
+test('publication detail uses custom citation and share metadata with safe image fallback', function () {
+    $type = PublicationType::query()->create([
+        'name' => 'Research Report',
+        'slug' => 'research-report-share',
+        'is_active' => true,
+    ]);
+
+    $publication = Publication::query()->create([
+        'publication_type_id' => $type->id,
+        'title' => 'Laporan Penelitian Hukum',
+        'slug' => 'laporan-penelitian-hukum-share',
+        'excerpt' => 'Ringkasan laporan penelitian.',
+        'citation_text' => 'Edulaw Project. (2026). Laporan Penelitian Hukum.',
+        'share_title' => 'Bagikan Laporan Penelitian Hukum',
+        'share_description' => 'Temukan hasil penelitian hukum terbaru dari Edulaw Project.',
+        'cover_image' => 'publications/covers/laporan.webp',
+        'external_url' => 'https://example.test/laporan',
+        'published_at' => now(),
+        'status' => 'published',
+    ]);
+
+    $html = $this->get(route('publications.show', $publication->slug))
+        ->assertOk()
+        ->getContent();
+
+    expect($html)
+        ->toContain('<meta property="og:title" content="Bagikan Laporan Penelitian Hukum | Edulaw Project">')
+        ->toContain('<meta property="og:description" content="Temukan hasil penelitian hukum terbaru dari Edulaw Project.">')
+        ->toContain('publications/covers/laporan.webp')
+        ->toContain('Edulaw Project. (2026). Laporan Penelitian Hukum.')
+        ->toContain('Cara Mengutip')
+        ->toContain('data-citation-style')
+        ->toContain('data-citation-formats')
+        ->toContain('data-copy-citation')
+        ->toContain('Sitasi Disalin')
+        ->toContain('<option value="apa">APA</option>')
+        ->toContain('<option value="chicago">Chicago</option>')
+        ->toContain('<option value="mla">MLA</option>')
+        ->toContain('<option value="ieee">IEEE</option>')
+        ->toContain('<option value="harvard">Harvard</option>')
+        ->toContain(rawurlencode('Bagikan Laporan Penelitian Hukum'));
+
+    expect($html)
+        ->not->toContain('Unduh RIS')
+        ->not->toContain('Unduh BibTeX')
+        ->not->toContain('Download Citation');
+});
+
 test('publication detail shows download action only in pdf preview card', function () {
     Storage::fake('public');
 

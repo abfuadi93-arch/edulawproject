@@ -3,6 +3,36 @@
 @section('title', 'Multimedia Edukasi Hukum | Edulaw Project')
 @section('meta_description', 'Tonton video, dokumentasi, dan konten visual Edulaw Project yang membahas hukum, kebijakan publik, riset, serta edukasi untuk masyarakat.')
 
+@push('head')
+    @php
+        $multimediaSchemaItems = collect($youtubeVideos)
+            ->concat($shortsReels)
+            ->concat($photoAlbums)
+            ->unique('id')
+            ->map(function ($item): ?array {
+                $itemUrl = \App\Support\EdulawSite::resolveUrl($item->media_url)
+                    ?: \App\Support\EdulawSite::resolveUrl($item->embed_url);
+
+                return $itemUrl ? [
+                    'name' => $item->title,
+                    'url' => $itemUrl,
+                    'image' => $item->thumbnail_url,
+                ] : null;
+            })
+            ->filter()
+            ->values()
+            ->all();
+    @endphp
+    @if ($multimediaSchemaItems !== [])
+        <x-structured-data :data="\App\Support\StructuredData::itemList($multimediaSchemaItems, 'Multimedia Edukasi Hukum')" />
+    @endif
+    @foreach ($youtubeVideos as $youtubeVideo)
+        @if ($videoSchema = \App\Support\StructuredData::video($youtubeVideo))
+            <x-structured-data :data="$videoSchema" />
+        @endif
+    @endforeach
+@endpush
+
 @section('content')
 @php
     use App\Models\Multimedia;

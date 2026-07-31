@@ -3,6 +3,26 @@
 @section('title', 'Program Edukasi Hukum | Edulaw Project')
 @section('meta_description', 'Temukan program edukasi, diskusi, pelatihan, dan kegiatan hukum Edulaw Project untuk memperluas pengetahuan serta partisipasi publik.')
 
+@push('head')
+    @php
+        $programListSchemaItems = collect([$featuredProgram])
+            ->concat($activePrograms)
+            ->concat($archivePrograms)
+            ->filter()
+            ->unique('id')
+            ->map(fn ($item): array => [
+                'name' => $item->display_title,
+                'url' => route('programs.show', $item->slug),
+                'image' => $item->hero_image_url,
+            ])
+            ->values()
+            ->all();
+    @endphp
+    @if ($programListSchemaItems !== [])
+        <x-structured-data :data="\App\Support\StructuredData::itemList($programListSchemaItems, 'Program Edukasi Hukum')" />
+    @endif
+@endpush
+
 @section('content')
 @php
     $heroImage = 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1800&q=85';

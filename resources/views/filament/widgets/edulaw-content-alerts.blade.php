@@ -1,12 +1,18 @@
 <x-filament-widgets::widget>
     <section class="edulaw-admin-card">
-        <header class="border-b border-slate-200 p-5">
-            <p class="text-sm font-black text-slate-950">
-                Pemeriksaan Panel Admin
-            </p>
-            <p class="mt-1 text-xs leading-5 edulaw-admin-muted">
-                Pantau konfigurasi dan konten yang perlu perhatian sebelum tampil di website.
-            </p>
+        <header class="edulaw-performance-panel-header">
+            <div class="flex items-start gap-3">
+                <span class="edulaw-performance-panel-icon bg-rose-50 text-rose-700">
+                    <x-filament::icon icon="heroicon-o-shield-exclamation" class="h-5 w-5" />
+                </span>
+                <div>
+                    <p class="text-sm font-black text-slate-950">Pemeriksaan Panel Admin</p>
+                    <p class="mt-1 text-xs leading-5 edulaw-admin-muted">
+                        Konfigurasi dan konten yang perlu perhatian sebelum tampil di website.
+                    </p>
+                </div>
+            </div>
+            <span class="edulaw-performance-period">Admin Check</span>
         </header>
 
         <div class="grid gap-3 p-5 sm:grid-cols-3">
@@ -34,13 +40,13 @@
             @forelse ($alerts as $alert)
                 @php
                     $alertClass = match ($alert['severity']) {
-                        'critical' => 'border-rose-200 bg-white text-rose-700',
-                        'high' => 'border-amber-200 bg-white text-amber-700',
-                        default => 'border-slate-200 bg-white text-slate-700',
+                        'critical' => 'border-rose-200 bg-rose-50 text-rose-700',
+                        'high' => 'border-amber-200 bg-amber-50 text-amber-700',
+                        default => 'border-blue-200 bg-blue-50 text-blue-700',
                     };
                 @endphp
 
-                <article class="rounded-lg border p-4 {{ $alertClass }}">
+                <article class="rounded-xl border p-3.5 {{ $alertClass }}">
                     <div class="flex items-start justify-between gap-4">
                         <div>
                             <p class="text-sm font-black text-slate-950">

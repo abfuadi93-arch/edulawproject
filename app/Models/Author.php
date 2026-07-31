@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\EdulawSite;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -13,6 +14,11 @@ use Illuminate\Support\Str;
 class Author extends Model
 {
     use HasFactory;
+
+    protected $attributes = [
+        'sort_order' => 0,
+        'show_in_contributor_section' => false,
+    ];
 
     public const PROFILE_TYPES = [
         'founder' => 'Founder',
@@ -48,12 +54,14 @@ class Author extends Model
         'meta_description',
         'is_active',
         'show_in_organization',
+        'show_in_contributor_section',
     ];
 
     protected $casts = [
         'social_links' => 'array',
         'is_active' => 'boolean',
         'show_in_organization' => 'boolean',
+        'show_in_contributor_section' => 'boolean',
         'sort_order' => 'integer',
     ];
 
@@ -116,6 +124,26 @@ class Author extends Model
     public function getPhotoUrlAttribute(): ?string
     {
         return EdulawSite::assetUrl($this->attributes['photo'] ?? null);
+    }
+
+    public function getInitialsAttribute(): string
+    {
+        $initials = Str::of($this->name)
+            ->squish()
+            ->explode(' ')
+            ->filter()
+            ->take(2)
+            ->map(fn (string $part): string => Str::upper(Str::substr($part, 0, 1)))
+            ->implode('');
+
+        return $initials !== '' ? $initials : 'EP';
+    }
+
+    public function scopeVisibleInContributorSection(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->where('show_in_contributor_section', true);
     }
 
     protected function interests(): Attribute

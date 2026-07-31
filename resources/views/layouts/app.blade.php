@@ -63,6 +63,7 @@
         :type="$ogType"
         :robots="$robots"
     />
+    <x-structured-data :data="\App\Support\StructuredData::organization()" />
 
     <meta name="theme-color" content="#1f3c69">
 

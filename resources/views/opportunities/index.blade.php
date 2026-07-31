@@ -3,6 +3,23 @@
 @section('title', 'Peluang dan Kesempatan Hukum | Edulaw Project')
 @section('meta_description', 'Temukan beasiswa, fellowship, magang, kompetisi, call for paper, dan peluang kolaborasi hukum yang telah dikurasi oleh Edulaw Project.')
 
+@push('head')
+    @php
+        $opportunityListSchemaItems = collect($opportunities->items())
+            ->filter(fn ($item): bool => filled($item->application_link))
+            ->map(fn ($item): array => [
+                'name' => $item->title,
+                'url' => $item->application_link,
+                'image' => $item->poster_url,
+            ])
+            ->values()
+            ->all();
+    @endphp
+    @if ($opportunityListSchemaItems !== [])
+        <x-structured-data :data="\App\Support\StructuredData::itemList($opportunityListSchemaItems, 'Peluang dan Kesempatan Hukum')" />
+    @endif
+@endpush
+
 @section('content')
 @php
     use Illuminate\Support\Arr;

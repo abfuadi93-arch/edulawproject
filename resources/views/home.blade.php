@@ -17,20 +17,5 @@
 @endsection
 
 @push('head')
-    @php
-        $organizationSameAs = collect([
-            \App\Support\EdulawSite::resolveUrl(config('edulaw.social.instagram_url')),
-            \App\Support\EdulawSite::resolveUrl(config('edulaw.social.linkedin_url')),
-        ])->filter()->values()->all();
-
-        $organizationSchema = array_filter([
-            '@context' => 'https://schema.org',
-            '@type' => 'Organization',
-            'name' => config('edulaw.site.name'),
-            'url' => route('home'),
-            'logo' => \App\Support\EdulawSite::assetUrl(config('edulaw.site.logo')),
-            'sameAs' => $organizationSameAs ?: null,
-        ]);
-    @endphp
-    <script type="application/ld+json">{!! json_encode($organizationSchema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
+    <x-structured-data :data="\App\Support\StructuredData::website()" />
 @endpush

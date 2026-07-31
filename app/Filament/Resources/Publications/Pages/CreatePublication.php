@@ -16,10 +16,6 @@ class CreatePublication extends CreateRecordAndReturn
         $data['created_by'] = $user?->id;
         $data['updated_by'] = $user?->id;
 
-        if (($data['status'] ?? null) === 'published' && blank($data['published_at'] ?? null)) {
-            $data['published_at'] = now();
-        }
-
         return PublicationResource::prepareFormDataForPersistence($data);
     }
 }

@@ -28,6 +28,9 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::view('/syarat-ketentuan', 'pages.terms')->name('terms');
 
     Route::get('/insight', [InsightController::class, 'index'])->name('insights.index');
+    Route::get('/insight/kategori/{categorySlug}', [InsightController::class, 'category'])
+        ->where('categorySlug', 'law-governance|legal-101|regulatory-update|edulaw-insight')
+        ->name('insights.categories.show');
     Route::get('/insight/{slug}', [InsightController::class, 'show'])->name('insights.show');
 
     Route::get('/riset-publikasi', [PublicationController::class, 'index'])->name('publications.index');

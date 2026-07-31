@@ -53,6 +53,15 @@
 @section('og_image', $photoUrl ?: asset('images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', 'Foto profil ' . $author->name)
 
+@push('head')
+    <x-structured-data :data="\App\Support\StructuredData::person($author)" />
+    <x-structured-data :data="\App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Beranda', 'url' => route('home')],
+        ['name' => 'Tentang dan Tim', 'url' => route('about').'#tim'],
+        ['name' => $author->name, 'url' => route('profiles.show', $author->slug)],
+    ])" />
+@endpush
+
 @push('styles')
 <style>
     .profile-page {

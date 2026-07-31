@@ -3,6 +3,21 @@
 @section('title', 'Insight dan Analisis Hukum | Edulaw Project')
 @section('meta_description', 'Baca insight dan analisis hukum mengenai regulasi, kebijakan publik, tata kelola, teknologi hukum, serta isu aktual yang relevan bagi masyarakat.')
 
+@push('head')
+    @php
+        $insightListSchemaItems = collect($insights->items())
+            ->map(fn ($item): array => [
+                'name' => $item->title,
+                'url' => route('insights.show', $item->slug),
+                'image' => filled($item->cover_image) ? $item->cover_image_url : null,
+            ])
+            ->all();
+    @endphp
+    @if ($insightListSchemaItems !== [])
+        <x-structured-data :data="\App\Support\StructuredData::itemList($insightListSchemaItems, 'Insight dan Analisis Hukum')" />
+    @endif
+@endpush
+
 @section('content')
 @php
     use Illuminate\Pagination\AbstractPaginator;
@@ -16,7 +31,7 @@
     $popularEditorials = collect($popularEditorials ?? []);
     $recentSidebarEditorials = collect($recentSidebarEditorials ?? []);
     $contributors = collect($editorialContributors ?? []);
-    $orderedChannels = collect($insightChannels ?? [])->filter(fn (array $channel): bool => in_array($channel['label'] ?? '', ['Regulatory Update', 'Edulaw Insight', 'Legal 101', 'Law & Governance'], true))->values();
+    $orderedChannels = collect($insightChannels ?? [])->values();
     $archiveItems = $insights instanceof AbstractPaginator ? $insights->getCollection() : collect($insights ?? []);
     $selectedCategory = $selectedCategory ?? request('category');
     $search = $search ?? request('q', '');
@@ -125,6 +140,8 @@
                 </div>
             </div>
         </section>
+    @else
+        <x-insight.category-section :channels="$orderedChannels" />
     @endif
 
     <x-insight.editorial-latest-list

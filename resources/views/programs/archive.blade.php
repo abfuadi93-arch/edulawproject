@@ -3,6 +3,21 @@
 @section('title', 'Arsip Program Hukum | Edulaw Project')
 @section('meta_description', 'Telusuri dokumentasi program, diskusi, pelatihan, dan kegiatan hukum yang telah diselenggarakan Edulaw Project untuk publik.')
 
+@push('head')
+    @php
+        $archiveListSchemaItems = collect($archivePrograms->items())
+            ->map(fn ($item): array => [
+                'name' => $item->display_title,
+                'url' => route('programs.show', $item->slug),
+                'image' => $item->hero_image_url,
+            ])
+            ->all();
+    @endphp
+    @if ($archiveListSchemaItems !== [])
+        <x-structured-data :data="\App\Support\StructuredData::itemList($archiveListSchemaItems, 'Arsip Program Hukum')" />
+    @endif
+@endpush
+
 @section('content')
 @php
     $programUrl = \Illuminate\Support\Facades\Route::has('programs.index') ? route('programs.index') : url('/program');

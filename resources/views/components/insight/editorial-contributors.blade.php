@@ -49,7 +49,7 @@
                 @foreach ($contributors as $author)
                     <a href="{{ route('profiles.show', $author->slug) }}" class="group flex min-w-0 items-center gap-3 rounded-xl border border-slate-200 bg-white p-3 shadow-sm shadow-brand-ink/5 transition duration-200 hover:border-brand-amber/50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber" data-editorial-contributor="{{ $author->id }}">
                         <span class="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-navy text-base font-bold text-white ring-1 ring-slate-200">
-                            <span aria-hidden="true">{{ Illuminate\Support\Str::upper(Illuminate\Support\Str::substr($author->name, 0, 1)) }}</span>
+                            <span aria-hidden="true">{{ $author->initials }}</span>
                             @if ($author->photo_url)
                                 <img src="{{ $author->photo_url }}" alt="Foto profil {{ $author->name }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
                             @endif

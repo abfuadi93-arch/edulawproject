@@ -16,6 +16,8 @@ class EdulawQuickActions extends Widget
 
     protected static ?int $sort = -30;
 
+    protected static bool $isLazy = false;
+
     public static function canView(): bool
     {
         return auth()->check();
@@ -31,6 +33,8 @@ class EdulawQuickActions extends Widget
 
         return [
             'displayName' => $displayName,
+            'dateLabel' => now()->translatedFormat('l, d F Y'),
+            'websiteUrl' => url('/'),
             'canCreateInsight' => (bool) $user?->can('create insights'),
             'canCreatePublication' => (bool) $user?->can('create publications'),
             'canCreateProgram' => (bool) $user?->can('create programs'),

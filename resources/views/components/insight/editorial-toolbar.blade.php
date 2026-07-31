@@ -34,7 +34,9 @@
                         $params['q'] = $label;
                     }
 
-                    $url = route('insights.index', $params).'#insight-archive';
+                    $url = $category && blank($search) && filled($channel['url'] ?? null)
+                        ? $channel['url'].'#insight-archive'
+                        : route('insights.index', $params).'#insight-archive';
                     $active = $category
                         ? $selectedCategory === $category->slug
                         : blank($selectedCategory) && Illuminate\Support\Str::lower($search) === Illuminate\Support\Str::lower($label);

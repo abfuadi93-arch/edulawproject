@@ -51,7 +51,7 @@ class RecentActivityWidget extends Widget
             ->merge($this->mapMessages())
             ->merge($this->mapCollaborations())
             ->sortByDesc('date')
-            ->take(6)
+            ->take(5)
             ->values();
 
         return [
@@ -77,7 +77,7 @@ class RecentActivityWidget extends Widget
             ->get()
             ->map(fn (Insight $insight): array => $this->activity(
                 userName: $this->actorName($insight->updater?->name, $insight->creator?->name),
-                action: 'updated Editorial',
+                action: 'memperbarui Editorial',
                 title: $insight->title,
                 date: $insight->updated_at,
                 tone: 'blue',
@@ -98,7 +98,7 @@ class RecentActivityWidget extends Widget
             ->get()
             ->map(fn (Publication $publication): array => $this->activity(
                 userName: $this->actorName($publication->updater?->name, $publication->creator?->name),
-                action: 'updated Publication',
+                action: 'memperbarui Publikasi',
                 title: $publication->title,
                 date: $publication->updated_at,
                 tone: 'green',
@@ -119,7 +119,7 @@ class RecentActivityWidget extends Widget
             ->get()
             ->map(fn (Program $program): array => $this->activity(
                 userName: $this->actorName($program->updater?->name, $program->creator?->name),
-                action: 'updated Program',
+                action: 'memperbarui Program',
                 title: $program->name,
                 date: $program->updated_at,
                 tone: 'orange',
@@ -138,8 +138,8 @@ class RecentActivityWidget extends Widget
             ->take(2)
             ->get()
             ->map(fn (ContactMessage $message): array => $this->activity(
-                userName: $message->name ?: 'Website Visitor',
-                action: 'sent Contact Message',
+                userName: $message->name ?: 'Pengunjung Website',
+                action: 'mengirim pesan kontak',
                 title: $message->subject ?: $message->name,
                 date: $message->updated_at,
                 tone: 'red',
@@ -158,8 +158,8 @@ class RecentActivityWidget extends Widget
             ->take(2)
             ->get()
             ->map(fn (CollaborationSubmission $submission): array => $this->activity(
-                userName: $submission->name ?: 'Website Visitor',
-                action: 'submitted Collaboration Request',
+                userName: $submission->name ?: 'Pengunjung Website',
+                action: 'mengirim permintaan kolaborasi',
                 title: $submission->subject ?: $submission->name,
                 date: $submission->updated_at,
                 tone: 'purple',
@@ -173,7 +173,7 @@ class RecentActivityWidget extends Widget
             'userName' => $userName,
             'initials' => $this->initials($userName),
             'action' => $action,
-            'title' => $title ?: 'Untitled',
+            'title' => $title ?: 'Tanpa judul',
             'date' => $date,
             'time' => $date?->diffForHumans(),
             'tone' => $tone,

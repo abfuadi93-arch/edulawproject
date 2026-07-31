@@ -3,6 +3,8 @@
 return [
     'site' => [
         'name' => 'Edulaw Project',
+        'legal_name' => 'Edulaw Project',
+        'url' => 'https://edulawproject.id',
         'tagline' => 'Equal. Educative. Embrace.',
         'nav_subtitle' => 'Legal Education · Research · Policy',
         'short_description' => 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.',
@@ -17,6 +19,8 @@ return [
         'whatsapp_label' => '0815-2992-7677',
         'whatsapp_url' => 'https://wa.me/6281529927677',
         'location' => 'Jakarta, Indonesia',
+        'address_locality' => 'Jakarta',
+        'address_country' => 'ID',
     ],
 
     'social' => [

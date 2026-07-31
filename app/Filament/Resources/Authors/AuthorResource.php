@@ -20,12 +20,12 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
 class AuthorResource extends Resource
@@ -116,6 +116,11 @@ class AuthorResource extends Resource
                                                     ->default(true)
                                                     ->helperText('Matikan untuk profil publik yang tidak masuk struktur organisasi.'),
 
+                                                Toggle::make('show_in_contributor_section')
+                                                    ->label('Tampilkan di Kontributor Editorial')
+                                                    ->default(false)
+                                                    ->helperText('Hanya profil aktif dengan toggle ini yang tampil pada bagian Kontributor Editorial.'),
+
                                                 Toggle::make('is_active')
                                                     ->label('Status Aktif')
                                                     ->default(true),
@@ -164,6 +169,8 @@ class AuthorResource extends Resource
                                         TextInput::make('sort_order')
                                             ->label('Urutan Tampil')
                                             ->numeric()
+                                            ->default(0)
+                                            ->required()
                                             ->minValue(0)
                                             ->placeholder('Contoh: 10')
                                             ->helperText('Angka kecil tampil lebih dulu.')
@@ -198,7 +205,7 @@ class AuthorResource extends Resource
                                             ->maxSize(4096)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->imagePreviewHeight('180')
-                                            ->helperText('JPG, PNG, WebP. Crop persegi, maks. 4 MB.')
+                                            ->helperText('Gunakan foto rasio 1:1, minimal 400 × 400 px. Jika kosong, frontend akan memakai avatar inisial.')
                                             ->columnSpanFull(),
                                     ]),
 
@@ -269,14 +276,12 @@ class AuthorResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('photo')
-                    ->label('Photo Profil')
-                    ->disk('public')
-                    ->circular()
-                    ->size(44)
+                TextColumn::make('photo')
+                    ->label('Foto / Avatar')
+                    ->state(fn (Author $record): HtmlString => static::avatarHtml($record))
+                    ->html()
                     ->width(64)
-                    ->grow(false)
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
+                    ->grow(false),
 
                 TextColumn::make('name')
                     ->label('Nama')
@@ -286,12 +291,19 @@ class AuthorResource extends Resource
                     ->wrap()
                     ->description(fn (Author $record): ?string => $record->profile_type_label),
 
-                TextColumn::make('affiliation_label')
-                    ->label('Afiliasi / Jabatan')
-                    ->state(fn (Author $record): string => $record->affiliation_label)
-                    ->searchable(['position', 'institution'])
-                    ->limit(48)
-                    ->wrap(),
+                TextColumn::make('position')
+                    ->label('Jabatan')
+                    ->searchable()
+                    ->limit(36)
+                    ->wrap()
+                    ->placeholder('-'),
+
+                TextColumn::make('institution')
+                    ->label('Institusi')
+                    ->searchable()
+                    ->limit(36)
+                    ->wrap()
+                    ->placeholder('-'),
 
                 TextColumn::make('sort_order')
                     ->label('Urutan')
@@ -299,15 +311,13 @@ class AuthorResource extends Resource
                     ->placeholder('-')
                     ->toggleable(),
 
-                TextColumn::make('interests')
-                    ->label('Minat')
-                    ->searchable()
-                    ->limit(54)
-                    ->wrap()
-                    ->placeholder('-'),
-
                 IconColumn::make('is_active')
-                    ->label('Status')
+                    ->label('Aktif')
+                    ->boolean()
+                    ->sortable(),
+
+                IconColumn::make('show_in_contributor_section')
+                    ->label('Kontributor Editorial')
                     ->boolean()
                     ->sortable(),
 
@@ -315,13 +325,12 @@ class AuthorResource extends Resource
                     ->label('Struktur')
                     ->boolean()
                     ->sortable()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->dateTime('d M Y, H:i')
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->sortable(),
 
                 TextColumn::make('user.name')
                     ->label('Akun Admin')
@@ -340,10 +349,53 @@ class AuthorResource extends Resource
 
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
+
+                TernaryFilter::make('show_in_contributor_section')
+                    ->label('Tampil di Kontributor Editorial'),
+
+                TernaryFilter::make('without_photo')
+                    ->label('Foto Profil')
+                    ->placeholder('Semua profil')
+                    ->trueLabel('Tanpa foto')
+                    ->falseLabel('Dengan foto')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->where(
+                            fn (Builder $photoQuery): Builder => $photoQuery
+                                ->whereNull('photo')
+                                ->orWhere('photo', '')
+                        ),
+                        false: fn (Builder $query): Builder => $query
+                            ->whereNotNull('photo')
+                            ->where('photo', '!=', ''),
+                    ),
             ])
+            ->defaultSort(fn (Builder $query): Builder => $query
+                ->orderBy('sort_order')
+                ->orderBy('name'))
             ->recordActions([
                 EditAction::make(),
             ]);
+    }
+
+    public static function avatarHtml(Author $author): HtmlString
+    {
+        $name = e($author->name);
+        $initials = e($author->initials);
+        $photo = $author->photo_url;
+        $image = filled($photo)
+            ? sprintf(
+                '<img src="%s" alt="Foto profil %s" style="position:absolute;inset:0;width:100%%;height:100%%;object-fit:cover" onerror="this.remove()">',
+                e((string) $photo),
+                $name,
+            )
+            : '';
+
+        return new HtmlString(sprintf(
+            '<span aria-label="Avatar %s" style="position:relative;display:inline-flex;width:2.75rem;height:2.75rem;flex:none;align-items:center;justify-content:center;overflow:hidden;border-radius:9999px;background:#0f2a4a;color:#fff;font-size:.75rem;font-weight:800;letter-spacing:.04em;box-shadow:0 0 0 1px rgba(15,42,74,.12)">%s%s</span>',
+            $name,
+            $initials,
+            $image,
+        ));
     }
 
     public static function prepareFormDataForPersistence(array $data, ?int $ignoreId = null): array
@@ -355,6 +407,8 @@ class AuthorResource extends Resource
         if (filled($data['slug'] ?? null)) {
             $data['slug'] = Str::slug((string) $data['slug']);
         }
+
+        $data['sort_order'] = max(0, (int) ($data['sort_order'] ?? 0));
 
         if (isset($data['social_links']) && is_array($data['social_links'])) {
             $data['social_links'] = (new Author(['social_links' => $data['social_links']]))->socialLinksMap();

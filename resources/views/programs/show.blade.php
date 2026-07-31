@@ -7,6 +7,17 @@
 @section('og_image', edulaw_file_url($program->og_image ?: ($program->hero_image ?: $program->image), 'images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', $program->display_title)
 
+@push('head')
+    @if ($eventSchema = \App\Support\StructuredData::event($program))
+        <x-structured-data :data="$eventSchema" />
+    @endif
+    <x-structured-data :data="\App\Support\StructuredData::breadcrumbs([
+        ['name' => 'Beranda', 'url' => route('home')],
+        ['name' => 'Program', 'url' => route('programs.index')],
+        ['name' => $program->display_title, 'url' => route('programs.show', $program->slug)],
+    ])" />
+@endpush
+
 @section('content')
 @php
     use Illuminate\Support\Facades\Route;

@@ -21,6 +21,8 @@ class CreateInsight extends CreateRecordAndReturn
             $data['status'] = 'draft';
             $data['published_at'] = null;
             $data['featured'] = false;
+            $data['editor_pick'] = false;
+            $data['sort_order'] = 0;
             $data['reviewed_by'] = null;
             $data['reviewed_at'] = null;
         }

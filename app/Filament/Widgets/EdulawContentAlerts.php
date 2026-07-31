@@ -19,17 +19,15 @@ class EdulawContentAlerts extends Widget
 
     protected static ?int $sort = 40;
 
+    protected static bool $isLazy = false;
+
     public static function canView(): bool
     {
         if (! auth()->user()?->hasRole('super_admin')) {
             return false;
         }
 
-        return (bool) config('app.debug')
-            || Publication::where('status', 'draft')->exists()
-            || Insight::whereIn('status', ['draft', 'submitted', 'reviewed'])->exists()
-            || Program::whereNull('program_category_id')->exists()
-            || User::whereNull('email_verified_at')->exists();
+        return true;
     }
 
     protected function getViewData(): array
@@ -40,17 +38,17 @@ class EdulawContentAlerts extends Widget
         return [
             'summary' => [
                 [
-                    'label' => 'Critical',
+                    'label' => 'Kritis',
                     'count' => $debugActive ? 1 : 0,
                     'tone' => 'danger',
                 ],
                 [
-                    'label' => 'High',
+                    'label' => 'Prioritas Tinggi',
                     'count' => Publication::where('status', 'draft')->count(),
                     'tone' => 'warning',
                 ],
                 [
-                    'label' => 'Medium',
+                    'label' => 'Perlu Ditinjau',
                     'count' => $unverifiedUsers,
                     'tone' => 'primary',
                 ],
