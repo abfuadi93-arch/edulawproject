@@ -5,7 +5,7 @@
     $heroAlt = $hero?->image_alt ?? 'Kegiatan literasi hukum Edulaw Project';
     $heroEyebrow = $hero?->eyebrow ?? 'Equal · Educative · Embrace';
     $heroTitle = $hero?->title ?? 'Membangun Literasi Hukum yang Mudah Diakses, Relevan, dan Berdampak';
-    $heroDescription = $hero?->body ?? 'Edulaw Project menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum dalam satu platform digital yang terintegrasi.';
+    $heroDescription = $hero?->body ?? 'Platform literasi hukum di ruang digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.';
     $primaryUrl = route('insights.index');
     $primaryLabel = 'Baca Insight';
     $secondaryUrl = route('publications.index');

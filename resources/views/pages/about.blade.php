@@ -270,7 +270,7 @@
                         <p>{{ $paragraph }}</p>
                     @empty
                         <p>
-                            Edulaw Project adalah platform literasi hukum digital yang berfokus pada penyajian edukasi hukum, riset kebijakan, publikasi, program pengembangan kapasitas, dan kanal pengembangan hukum yang aplikatif.
+                            Edulaw Project adalah platform literasi hukum di ruang digital yang berfokus pada penyajian edukasi hukum, riset kebijakan, publikasi, program pengembangan kapasitas, dan kanal pengembangan hukum yang aplikatif.
                         </p>
 
                         <p>

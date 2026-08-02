@@ -44,6 +44,11 @@
             'url' => route('multimedia.index'),
             'active' => request()->routeIs('multimedia.*'),
         ],
+        [
+            'label' => 'Tentang',
+            'url' => route('about'),
+            'active' => request()->routeIs('about'),
+        ],
     ];
 @endphp
 

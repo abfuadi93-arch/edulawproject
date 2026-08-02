@@ -33,7 +33,7 @@
         [
             'title' => '2. Tujuan Website',
             'content' => [
-                'Website Edulaw Project dikembangkan sebagai platform literasi hukum digital yang menghadirkan edukasi hukum, kajian kebijakan, publikasi, program pengembangan kapasitas, multimedia, opportunities, dan ruang kolaborasi.',
+                'Website Edulaw Project dikembangkan sebagai platform literasi hukum di ruang digital yang menghadirkan edukasi hukum, kajian kebijakan, publikasi, program pengembangan kapasitas, multimedia, opportunities, dan ruang kolaborasi.',
                 'Informasi yang tersedia pada website ini ditujukan untuk tujuan edukasi, pembelajaran, diseminasi pengetahuan, dan pengembangan literasi hukum publik.',
             ],
         ],

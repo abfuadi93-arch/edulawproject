@@ -7,7 +7,7 @@ return [
         'url' => 'https://edulawproject.id',
         'tagline' => 'Equal. Educative. Embrace.',
         'nav_subtitle' => 'Legal Education · Research · Policy',
-        'short_description' => 'Platform literasi hukum digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.',
+        'short_description' => 'Platform literasi hukum di ruang digital yang menghadirkan edukasi, riset, program, multimedia, dan kanal pengembangan hukum.',
         'meta_title' => 'Literasi, Riset, dan Edukasi Hukum | Edulaw Project',
         'meta_description' => 'Temukan edukasi, riset, publikasi, program, dan analisis hukum yang membantu masyarakat memahami isu hukum secara jernih dan tepercaya.',
         'logo' => 'images/logo/edulaw-icon.png',

@@ -34,6 +34,26 @@ it('opens the homepage without leaking template expressions or invalid links', f
         ->each->not->toStartWith('javascript:');
 });
 
+it('places Tentang after Multimedia in the primary navigation', function () {
+    $response = $this->get(route('home'));
+    $document = new DOMDocument;
+    $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
+    $items = collect($xpath->query('//nav[@aria-label="Navigasi utama"]/a'))
+        ->map(fn (DOMNode $node): string => trim($node->textContent))
+        ->values()
+        ->all();
+
+    expect($items)->toBe([
+        'Program',
+        'Editorial',
+        'Riset & Publikasi',
+        'Opportunities',
+        'Multimedia',
+        'Tentang',
+    ]);
+});
+
 it('shows compact empty states and omits unavailable publication statistics', function () {
     $this->get(route('home'))
         ->assertOk()
