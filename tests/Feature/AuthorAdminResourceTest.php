@@ -15,6 +15,20 @@ test('author admin resource derives slug from name when slug is empty', function
     expect($data['slug'])->toBe('nabila-rahma');
 });
 
+test('author public roles use three organizational levels and normalize legacy founder values', function () {
+    expect(Author::PROFILE_TYPES)->toBe([
+        'director' => 'Director',
+        'manager' => 'Manager',
+        'team' => 'Officer, Writer, Designer',
+    ])
+        ->and(Author::canonicalProfileType('founder'))->toBe('director')
+        ->and(Author::canonicalProfileType('co_founder'))->toBe('director')
+        ->and(AuthorResource::prepareFormDataForPersistence([
+            'name' => 'Profil Lama',
+            'profile_type' => 'co_founder',
+        ])['profile_type'])->toBe('director');
+});
+
 test('author bio supports one thousand characters', function () {
     $bio = str_repeat('a', 1000);
 
@@ -136,6 +150,11 @@ test('super admin can open create and edit author forms with contributor control
     $this->actingAs($user)
         ->get(AuthorResource::getUrl('create'))
         ->assertOk()
+        ->assertSee('Peran Publik')
+        ->assertSee('Director')
+        ->assertSee('Manager')
+        ->assertSee('Officer, Writer, Designer')
+        ->assertSee('Founder dan Co-Founder ditetapkan secara statis pada halaman Tentang.')
         ->assertSee('Tampilkan di Kontributor Editorial');
 
     $this->actingAs($user)

@@ -13,10 +13,9 @@ class PageController extends Controller
     public function about(): View
     {
         $profilePriority = [
-            'founder' => 1,
-            'co_founder' => 2,
-            'manager' => 3,
-            'team' => 4,
+            'director' => 1,
+            'manager' => 2,
+            'team' => 3,
         ];
 
         $technicalProfile = function (Author $author): bool {

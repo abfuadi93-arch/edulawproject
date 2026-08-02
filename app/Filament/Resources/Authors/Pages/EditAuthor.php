@@ -31,6 +31,7 @@ class EditAuthor extends EditRecordAndReturn
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['social_links'] = $this->record->socialLinksMap();
+        $data['profile_type'] = Author::canonicalProfileType($data['profile_type'] ?? null) ?? 'team';
 
         return $data;
     }

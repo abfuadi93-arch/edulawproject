@@ -57,7 +57,7 @@ class InitialDataSeeder extends Seeder
             'email' => 'admin@edulaw.test',
             'institution' => 'Edulaw Project',
             'position' => 'Founder',
-            'profile_type' => 'founder',
+            'profile_type' => 'director',
             'interests' => 'Hukum tata negara, demokrasi, kebijakan publik, literasi hukum.',
             'is_active' => true,
         ])->save();

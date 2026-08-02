@@ -1091,11 +1091,11 @@ class RelevantDataSeeder extends Seeder
         $position = Str::of((string) $position)->lower()->squish()->toString();
 
         if (Str::contains($position, ['co-founder', 'co founder', 'cofounder'])) {
-            return 'co_founder';
+            return 'director';
         }
 
         if (Str::contains($position, 'founder')) {
-            return 'founder';
+            return 'director';
         }
 
         if (Str::contains($position, 'manager')) {

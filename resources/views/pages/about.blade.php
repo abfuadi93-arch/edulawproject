@@ -24,8 +24,6 @@
         'Memperluas jaringan keilmuan melalui program kolaboratif.',
     ];
 
-    $founders = [];
-    $coFounders = [];
     $leaders = [];
     $directors = [];
     $managers = [];
@@ -66,7 +64,6 @@
 
     $statsBlocks = collect($aboutStats ?? []);
     $profileMap = collect($aboutProfiles ?? []);
-    $profileGroups = collect($aboutProfilesByRole ?? []);
     $organizationProfileGroups = collect($aboutOrganizationProfilesByRole ?? $aboutProfilesByRole ?? []);
     $focusBlocks = collect($aboutFocusAreas ?? []);
     $timelineBlocks = collect($aboutTimeline ?? []);
@@ -98,11 +95,11 @@
         'fadlah nur' => 'Junior Researcher',
     ];
     $profileFor = fn (array $person) => $person['profile'] ?? $profileMap->get($profileLookupKey($person['name'] ?? null));
-    $organizationPositionFor = fn (array $person, ?string $fallback = null): string => $person['job_title']
-        ?: ($organizationPositions[$profileLookupKey($person['name'] ?? null)]
-            ?? $fallback
-            ?? $person['profile_role']
-            ?? '-');
+    $organizationPositionFor = fn (array $person, ?string $fallback = null): string => $organizationPositions[$profileLookupKey($person['name'] ?? null)]
+        ?? ($person['job_title']
+            ?: ($fallback
+                ?? $person['profile_role']
+                ?? '-'));
     $withOrganizationPosition = fn (array $person, ?string $fallback = null): array => array_merge($person, [
         'organization_position' => $organizationPositionFor($person, $fallback),
     ]);
@@ -146,23 +143,40 @@
         ])->all();
     }
 
-    $roleProfiles = fn (string $role) => collect($profileGroups->get($role, []));
     $organizationRoleProfiles = fn (string $role) => collect($organizationProfileGroups->get($role, []));
-    $founders = $roleProfiles('founder')
-        ->map(fn ($profile): array => $profilePerson($profile, 'Founder'))
+    $leaderDefinitions = [
+        ['name' => 'Abdul Basid Fuadi', 'role' => 'Founder'],
+        ['name' => 'Azmi Fathu Rohman', 'role' => 'Co-Founder'],
+        ['name' => 'Faraz Almira Arelia', 'role' => 'Co-Founder'],
+        ['name' => 'Umi Zakia Azzahro', 'role' => 'Co-Founder'],
+    ];
+    $leaders = collect($leaderDefinitions)
+        ->map(function (array $definition) use ($profileMap, $profileLookupKey, $profilePerson): array {
+            $profile = $profileMap->get($profileLookupKey($definition['name']));
+
+            if ($profile) {
+                return array_merge($profilePerson($profile, $definition['role']), [
+                    'profile_role' => $definition['role'],
+                ]);
+            }
+
+            return [
+                'name' => $definition['name'],
+                'position' => $definition['role'],
+                'job_title' => null,
+                'profile_role' => $definition['role'],
+                'interests' => [],
+                'interest_text' => '',
+                'photo' => asset('images/logo/icon-bg.png'),
+                'profile' => null,
+            ];
+        })
         ->values()
         ->all();
-    $coFounders = $roleProfiles('co_founder')
-        ->map(fn ($profile): array => $profilePerson($profile, 'Co-Founder'))
-        ->values()
-        ->all();
-    $directors = $organizationRoleProfiles('co_founder')
-        ->map(fn ($profile): array => $profilePerson($profile, 'Co-Founder'))
+    $directors = $organizationRoleProfiles('director')
+        ->reject(fn ($profile): bool => $profileLookupKey($profile->name) === 'abdul basid fuadi')
+        ->map(fn ($profile): array => $profilePerson($profile, 'Director'))
         ->map(fn (array $person): array => $withOrganizationPosition($person, 'Director'))
-        ->values()
-        ->all();
-    $leaders = collect($founders)
-        ->concat($coFounders)
         ->values()
         ->all();
     $leaderKeys = collect($leaders)
@@ -180,8 +194,8 @@
         ->all();
     $teamMembers = $organizationRoleProfiles('team')
         ->reject(fn ($profile): bool => in_array($profileLookupKey($profile->name), array_merge($leaderKeys, $managerKeys), true))
-        ->map(fn ($profile): array => $profilePerson($profile, 'Officer, Writer, & Designer'))
-        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['job_title'] ?: 'Officer, Writer, & Designer'))
+        ->map(fn ($profile): array => $profilePerson($profile, 'Officer, Writer, Designer'))
+        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['job_title'] ?: 'Officer, Writer, Designer'))
         ->values()
         ->all();
     $isResearchMember = fn (array $person): bool => Str::contains(
@@ -556,7 +570,7 @@
                 @if (count($researchMembers) > 0 || count($otherTeamMembers) > 0)
                     <div class="border-t border-slate-200 pt-7">
                         <h3 class="text-sm font-black uppercase tracking-[0.2em] text-brand-navy">
-                            Officer, Writer, &amp; Designer
+                            Officer, Writer, Designer
                         </h3>
 
                         @if (count($researchMembers) > 0)

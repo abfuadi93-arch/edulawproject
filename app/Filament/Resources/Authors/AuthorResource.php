@@ -97,7 +97,7 @@ class AuthorResource extends Resource
                                                 TextInput::make('position')
                                                     ->label('Jabatan')
                                                     ->maxLength(255)
-                                                    ->placeholder('Founder / Manager Editorial / Writer'),
+                                                    ->placeholder('Director / Manager Editorial / Writer'),
 
                                                 TextInput::make('institution')
                                                     ->label('Afiliasi')
@@ -110,12 +110,13 @@ class AuthorResource extends Resource
                                                     ->placeholder('Jakarta, Indonesia'),
 
                                                 Select::make('profile_type')
-                                                    ->label('Peran Profil')
+                                                    ->label('Peran Publik')
                                                     ->options(Author::PROFILE_TYPES)
                                                     ->searchable()
                                                     ->default('team')
                                                     ->required()
-                                                    ->placeholder('Pilih peran profil'),
+                                                    ->placeholder('Pilih tingkat peran')
+                                                    ->helperText('Founder dan Co-Founder ditetapkan secara statis pada halaman Tentang.'),
 
                                                 Toggle::make('show_in_organization')
                                                     ->label('Tampilkan di Struktur Organisasi')
@@ -475,6 +476,10 @@ class AuthorResource extends Resource
 
     public static function prepareFormDataForPersistence(array $data, ?int $ignoreId = null): array
     {
+        if (array_key_exists('profile_type', $data)) {
+            $data['profile_type'] = Author::canonicalProfileType($data['profile_type']) ?? 'team';
+        }
+
         if (blank($data['slug'] ?? null) && filled($data['name'] ?? null)) {
             $data['slug'] = Author::uniqueSlugFor((string) $data['name'], $ignoreId);
         }

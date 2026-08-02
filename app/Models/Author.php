@@ -21,10 +21,9 @@ class Author extends Model
     ];
 
     public const PROFILE_TYPES = [
-        'founder' => 'Founder',
-        'co_founder' => 'Co-Founder',
+        'director' => 'Director',
         'manager' => 'Manager',
-        'team' => 'Officer, Writer, & Designer',
+        'team' => 'Officer, Writer, Designer',
     ];
 
     public const LEGACY_PROFILE_TYPE_MAP = [
@@ -33,6 +32,8 @@ class Author extends Model
         'speaker' => 'team',
         'moderator' => 'team',
         'contributor' => 'team',
+        'founder' => 'director',
+        'co_founder' => 'director',
     ];
 
     protected $fillable = [
