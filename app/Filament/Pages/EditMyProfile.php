@@ -40,7 +40,7 @@ class EditMyProfile extends Page
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-circle';
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Account';
+    protected static string|\UnitEnum|null $navigationGroup = 'Akun';
 
     protected static ?int $navigationSort = -9;
 
@@ -56,6 +56,11 @@ class EditMyProfile extends Page
     public static function canAccess(): bool
     {
         return Auth::check();
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Kelola profil publik kontributor yang terhubung dengan akun Anda.';
     }
 
     public function mount(): void

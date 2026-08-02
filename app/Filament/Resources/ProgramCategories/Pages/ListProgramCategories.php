@@ -2,18 +2,23 @@
 
 namespace App\Filament\Resources\ProgramCategories\Pages;
 
+use App\Filament\Resources\Concerns\HasEdulawResourceList;
 use App\Filament\Resources\ProgramCategories\ProgramCategoryResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListProgramCategories extends ListRecords
 {
+    use HasEdulawResourceList;
+
     protected static string $resource = ProgramCategoryResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getListDescription(): string
     {
-        return [
-            CreateAction::make(),
-        ];
+        return 'Kelola klasifikasi program dan urutan tampil.';
+    }
+
+    protected function getCreateButtonLabel(): string
+    {
+        return 'Tambah Kategori';
     }
 }

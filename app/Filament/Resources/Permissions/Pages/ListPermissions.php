@@ -2,18 +2,23 @@
 
 namespace App\Filament\Resources\Permissions\Pages;
 
+use App\Filament\Resources\Concerns\HasEdulawResourceList;
 use App\Filament\Resources\Permissions\PermissionResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPermissions extends ListRecords
 {
+    use HasEdulawResourceList;
+
     protected static string $resource = PermissionResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getListDescription(): string
     {
-        return [
-            CreateAction::make(),
-        ];
+        return 'Kelola izin teknis yang digunakan oleh role admin.';
+    }
+
+    protected function getCreateButtonLabel(): string
+    {
+        return 'Tambah Permission';
     }
 }

@@ -6,10 +6,13 @@ use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
 use BackedEnum;
 use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
@@ -27,10 +30,16 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 
@@ -577,97 +586,99 @@ class ProgramResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('image')
-                    ->label('Poster')
-                    ->disk('public')
-                    ->square()
-                    ->size(44)
-                    ->width(64)
-                    ->grow(false)
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
-
-                TextColumn::make('name')
-                    ->label('Kegiatan')
-                    ->searchable()
-                    ->sortable()
-                    ->limit(56)
-                    ->wrap()
-                    ->description(fn (Program $record): ?string => filled($record->subtitle)
-                        ? $record->subtitle
-                        : Str::limit((string) $record->short_description, 90)),
+                ViewColumn::make('program')
+                    ->label('Program')
+                    ->view('filament.tables.columns.resource-content', fn (Program $record): array => [
+                        'imageUrl' => edulaw_file_url($record->image),
+                        'title' => $record->name,
+                        'metadata' => [
+                            $record->display_format,
+                            $record->display_level ?: $record->audience,
+                        ],
+                    ])
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query
+                        ->where(function (Builder $query) use ($search): void {
+                            $query
+                                ->where('name', 'like', "%{$search}%")
+                                ->orWhere('speakers', 'like', "%{$search}%")
+                                ->orWhere('location', 'like', "%{$search}%")
+                                ->orWhereHas('programCategory', fn (Builder $query): Builder => $query->where('name', 'like', "%{$search}%"));
+                        }))
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('name', $direction))
+                    ->url(fn (Program $record): ?string => static::canEdit($record) ? static::getUrl('edit', ['record' => $record]) : null)
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-primary-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-primary-cell']),
 
                 TextColumn::make('programCategory.name')
                     ->label('Kategori')
                     ->badge()
                     ->color('warning')
-                    ->sortable(),
+                    ->limit(24)
+                    ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 24 ? $state : null)
+                    ->sortable()
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-classification-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-classification-cell']),
 
-                TextColumn::make('type')
-                    ->label('Jenis')
+                TextColumn::make('status')
+                    ->label('Status')
                     ->badge()
-                    ->color('primary')
-                    ->formatStateUsing(fn (?string $state): string => $state ?: '-')
-                    ->toggleable(),
+                    ->color(fn (?string $state): string => static::statusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state))
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-status-cell']),
+
+                TextColumn::make('event_date')
+                    ->label('Jadwal')
+                    ->formatStateUsing(fn (Program $record): string => static::scheduleLabel($record))
+                    ->sortable()
+                    ->toggleable()
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-time-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-time-cell']),
+
+                TextColumn::make('location')
+                    ->label('Lokasi')
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('format')
                     ->label('Format')
-                    ->badge()
-                    ->color(fn (?string $state): string => match ($state) {
-                        'online' => 'success',
-                        'offline' => 'gray',
-                        'hybrid' => 'info',
-                        default => 'gray',
-                    })
-                    ->formatStateUsing(fn (?string $state): string => $state ? Str::headline($state) : '-')
-                    ->sortable(),
-
-                TextColumn::make('event_date')
-                    ->label('Tanggal')
-                    ->date('d M Y')
-                    ->sortable(),
-
-                TextColumn::make('status')
-                    ->label('Status Kegiatan')
-                    ->badge()
-                    ->color(fn (?string $state): string => static::statusColor($state))
-                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
-
-                TextColumn::make('publication_status')
-                    ->label('Publikasi')
-                    ->badge()
-                    ->color(fn (?string $state): string => static::publicationStatusColor($state))
-                    ->formatStateUsing(fn (?string $state): string => static::publicationStatusLabel($state)),
+                    ->formatStateUsing(fn (?string $state): string => $state ? Str::headline($state) : '—')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 IconColumn::make('featured')
                     ->label('Featured')
                     ->boolean()
-                    ->sortable(),
-
-                IconColumn::make('show_on_homepage')
-                    ->label('Beranda')
-                    ->boolean()
-                    ->sortable(),
-
-                TextColumn::make('sort_order')
-                    ->label('Urutan')
                     ->sortable()
-                    ->alignCenter()
-                    ->toggleable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('publication_status')
+                    ->label('Status Publikasi')
+                    ->badge()
+                    ->color(fn (?string $state): string => static::publicationStatusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => static::publicationStatusLabel($state))
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->formatStateUsing(fn ($state): string => $state->locale('id')->diffForHumans())
+                    ->tooltip(fn (Program $record): string => $record->updated_at->locale('id')->translatedFormat('d M Y, H:i'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('sort_order')
-            ->searchPlaceholder('Cari program...')
+            ->searchPlaceholder('Cari program, kategori, atau narasumber...')
+            ->searchDebounce('500ms')
             ->paginationPageOptions([10, 25, 50])
             ->emptyStateHeading('Belum ada program')
             ->emptyStateDescription('Program yang dibuat dari panel admin akan tampil di sini.')
             ->filters([
                 SelectFilter::make('program_category_id')
                     ->label('Kategori')
-                    ->relationship('programCategory', 'name'),
+                    ->relationship('programCategory', 'name')
+                    ->searchable()
+                    ->preload(),
 
                 SelectFilter::make('format')
                     ->label('Format')
@@ -686,73 +697,148 @@ class ProgramResource extends Resource
                         };
                     }),
 
-                SelectFilter::make('publication_status')
-                    ->label('Status Publikasi')
-                    ->options(static::publicationStatusOptions())
-                    ->query(function ($query, array $data): void {
-                        $status = $data['value'] ?? null;
+                SelectFilter::make('level')
+                    ->label('Level')
+                    ->options(static::levelOptions()),
 
-                        match ($status) {
-                            'draft' => $query->whereIn('publication_status', ['draft', 'archived']),
-                            'reviewed', 'published' => $query->where('publication_status', $status),
-                            default => null,
-                        };
-                    }),
-
-                SelectFilter::make('featured')
+                TernaryFilter::make('featured')
                     ->label('Featured')
-                    ->options([
-                        '1' => 'Featured',
-                        '0' => 'Tidak Featured',
-                    ]),
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak'),
 
-                SelectFilter::make('show_on_homepage')
-                    ->label('Beranda')
-                    ->options([
-                        '1' => 'Tampil di Beranda',
-                        '0' => 'Tidak Tampil',
-                    ]),
+                Filter::make('event_date')
+                    ->label('Rentang Tanggal Acara')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari tanggal')->native(false),
+                        DatePicker::make('until')->label('Sampai tanggal')->native(false),
+                    ])
+                    ->columns(2)
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('event_date', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('event_date', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => static::dateRangeIndicators($data, 'Acara')),
             ])
             ->recordActions([
-                Action::make('viewPublic')
-                    ->label('Lihat Halaman Publik')
-                    ->icon('heroicon-o-arrow-top-right-on-square')
-                    ->url(fn (Program $record): string => route('programs.show', $record->slug))
-                    ->openUrlInNewTab()
-                    ->iconButton()
-                    ->visible(fn (Program $record): bool => filled($record->slug)),
-
-                EditAction::make()
-                    ->iconButton(),
-
-                DeleteAction::make()
-                    ->iconButton()
-                    ->visible(fn (): bool => (bool) auth()->user()?->hasRole('super_admin')),
+                ActionGroup::make([
+                    Action::make('view')
+                        ->label('Lihat')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn (Program $record): string => route('programs.show', $record->slug))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Program $record): bool => filled($record->slug)
+                            && $record->publication_status === 'published'
+                            && in_array($record->status, ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived'], true)),
+                    EditAction::make()->label('Edit'),
+                    ReplicateAction::make()
+                        ->label('Duplikasi')
+                        ->visible(fn (): bool => static::canCreate())
+                        ->mutateRecordDataUsing(fn (array $data, Program $record): array => [
+                            ...$data,
+                            'name' => Str::limit($record->name.' (Salinan)', 255, ''),
+                            'slug' => static::uniqueDuplicateSlug($record),
+                            'status' => 'upcoming',
+                            'publication_status' => 'draft',
+                            'featured' => false,
+                            'show_on_homepage' => false,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ]),
+                    Action::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn (Program $record): bool => ! in_array($record->status, ['archived', 'completed', 'portfolio'], true)
+                            && (Auth::user()?->can('archive programs') ?? false))
+                        ->action(fn (Program $record) => $record->update(['status' => 'archived', 'updated_by' => Auth::id()])),
+                    DeleteAction::make()->label('Hapus')->requiresConfirmation(),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make()
-                        ->visible(fn (): bool => (bool) auth()->user()?->hasRole('super_admin')),
+                    BulkAction::make('upcoming')
+                        ->label('Ubah ke Akan Datang')
+                        ->icon('heroicon-o-calendar')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('publish programs') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'upcoming', 'updated_by' => Auth::id()])),
+                    BulkAction::make('ongoing')
+                        ->label('Ubah ke Berlangsung')
+                        ->icon('heroicon-o-play')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('publish programs') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'ongoing', 'updated_by' => Auth::id()])),
+                    BulkAction::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('archive programs') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'archived', 'updated_by' => Auth::id()])),
+                    DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('programCategory:id,name');
+    }
+
+    public static function scheduleLabel(Program $record): string
+    {
+        if (! $record->event_date) {
+            return 'Belum dijadwalkan';
+        }
+
+        $start = $record->event_date->locale('id')->translatedFormat('d M Y');
+        $end = $record->end_date?->locale('id')->translatedFormat('d M Y');
+
+        return $end && $end !== $start ? $start.' – '.$end : $start;
+    }
+
+    private static function dateRangeIndicators(array $data, string $label): array
+    {
+        return collect([
+            ($data['from'] ?? null) ? Indicator::make($label.' mulai '.Carbon::parse($data['from'])->locale('id')->translatedFormat('d M Y'))->removeField('from') : null,
+            ($data['until'] ?? null) ? Indicator::make($label.' sampai '.Carbon::parse($data['until'])->locale('id')->translatedFormat('d M Y'))->removeField('until') : null,
+        ])->filter()->all();
+    }
+
+    public static function uniqueDuplicateSlug(Program $record): string
+    {
+        $base = Str::limit(Str::slug($record->slug ?: $record->name).'-salinan', 240, '');
+        $slug = $base;
+        $suffix = 2;
+
+        while (Program::query()->where('slug', $slug)->exists()) {
+            $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix++;
+        }
+
+        return $slug;
     }
 
     public static function statusOptions(): array
     {
         return [
-            'upcoming' => 'Upcoming',
-            'ongoing' => 'Ongoing',
-            'archived' => 'Archived',
+            'upcoming' => 'Akan Datang',
+            'ongoing' => 'Berlangsung',
+            'archived' => 'Diarsipkan',
         ];
     }
 
     public static function statusLabel(?string $status): string
     {
         return match ($status) {
-            'upcoming' => 'Upcoming',
-            'ongoing' => 'Ongoing',
-            'archived', 'completed', 'portfolio' => 'Archived',
-            default => ucfirst((string) ($status ?: 'Upcoming')),
+            'upcoming' => 'Akan Datang',
+            'ongoing' => 'Berlangsung',
+            'archived', 'completed', 'portfolio' => 'Diarsipkan',
+            default => 'Akan Datang',
         };
     }
 

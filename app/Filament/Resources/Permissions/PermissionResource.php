@@ -6,8 +6,8 @@ use App\Filament\Resources\Permissions\Pages\CreatePermission;
 use App\Filament\Resources\Permissions\Pages\EditPermission;
 use App\Filament\Resources\Permissions\Pages\ListPermissions;
 use BackedEnum;
-use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
@@ -15,7 +15,11 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 use Spatie\Permission\Models\Permission;
 
 class PermissionResource extends Resource
@@ -46,13 +50,15 @@ class PermissionResource extends Resource
                             ->label('Nama Permission')
                             ->required()
                             ->maxLength(255)
-                            ->unique(ignoreRecord: true),
+                            ->unique(ignoreRecord: true)
+                            ->helperText('Mengubah nama permission dapat memengaruhi pengecekan izin di aplikasi.'),
 
                         TextInput::make('guard_name')
                             ->label('Guard')
                             ->required()
                             ->default('web')
-                            ->maxLength(255),
+                            ->maxLength(255)
+                            ->disabledOn('edit'),
                     ])
                     ->columns(2),
 
@@ -71,38 +77,109 @@ class PermissionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->extraAttributes(['class' => 'edulaw-access-table'])
             ->columns([
                 TextColumn::make('name')
                     ->label('Permission')
                     ->searchable()
                     ->sortable(),
 
+                TextColumn::make('group')
+                    ->label('Kelompok')
+                    ->state(fn (Permission $record): string => static::groupLabel($record->name))
+                    ->badge()
+                    ->color('info')
+                    ->visibleFrom('md'),
+
+                TextColumn::make('roles_count')
+                    ->label('Digunakan oleh Role')
+                    ->numeric()
+                    ->sortable()
+                    ->visibleFrom('lg'),
+
                 TextColumn::make('guard_name')
                     ->label('Guard')
                     ->badge()
-                    ->sortable(),
-
-                TextColumn::make('roles.name')
-                    ->label('Role')
-                    ->badge()
-                    ->separator(',')
-                    ->limitList(6),
-
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y, H:i')
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->visibleFrom('md'),
+
             ])
             ->defaultSort('name')
-            ->recordActions([
-                EditAction::make(),
+            ->searchPlaceholder('Cari permission...')
+            ->emptyStateIcon('heroicon-o-key')
+            ->emptyStateHeading('Belum ada permission')
+            ->emptyStateDescription('Buat permission teknis untuk digunakan oleh role admin.')
+            ->filters([
+                SelectFilter::make('group')
+                    ->label('Kelompok Resource')
+                    ->options(static::groupOptions())
+                    ->query(function (Builder $query, array $data): Builder {
+                        $needle = $data['value'] ?? null;
+
+                        return $query->when($needle, fn (Builder $query): Builder => $query->where('name', 'like', "%{$needle}%"));
+                    }),
+
+                TernaryFilter::make('used')
+                    ->label('Penggunaan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Digunakan')
+                    ->falseLabel('Belum digunakan')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->has('roles'),
+                        false: fn (Builder $query): Builder => $query->doesntHave('roles'),
+                    ),
+
+                SelectFilter::make('guard_name')
+                    ->label('Guard')
+                    ->options(fn (): array => Permission::query()->distinct()->orderBy('guard_name')->pluck('guard_name', 'guard_name')->all()),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
+            ->recordActions([
+                ActionGroup::make([
+                    EditAction::make()->label('Edit'),
+                    DeleteAction::make()
+                        ->label('Hapus')
+                        ->requiresConfirmation()
+                        ->visible(fn (Permission $record): bool => $record->roles_count === 0),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ]);
+    }
+
+    public static function groupLabel(string $permission): string
+    {
+        $name = Str::lower(str_replace('_', ' ', $permission));
+
+        return match (true) {
+            Str::contains($name, 'insight') => 'Editorial',
+            Str::contains($name, 'publication') => 'Publikasi',
+            Str::contains($name, 'program') => 'Program',
+            Str::contains($name, 'opportunit') => 'Peluang',
+            Str::contains($name, 'multimedia') => 'Multimedia',
+            Str::contains($name, 'collaboration') => 'Kolaborasi',
+            Str::contains($name, 'contact message') => 'Pesan',
+            Str::contains($name, ['author', 'tag', 'categor', 'type']) => 'Referensi',
+            Str::contains($name, ['user', 'role', 'permission']) => 'Akun dan Akses',
+            default => 'Lainnya',
+        };
+    }
+
+    public static function groupOptions(): array
+    {
+        return [
+            'insight' => 'Editorial',
+            'publication' => 'Publikasi',
+            'program' => 'Program',
+            'opportunit' => 'Peluang',
+            'multimedia' => 'Multimedia',
+            'collaboration' => 'Kolaborasi',
+            'contact message' => 'Pesan',
+            'author' => 'Referensi',
+            'user' => 'Akun dan Akses',
+        ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withCount('roles');
     }
 
     public static function getPages(): array

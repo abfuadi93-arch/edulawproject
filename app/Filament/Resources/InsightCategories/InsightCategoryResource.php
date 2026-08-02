@@ -7,8 +7,11 @@ use App\Filament\Resources\InsightCategories\Pages\EditInsightCategory;
 use App\Filament\Resources\InsightCategories\Pages\ListInsightCategories;
 use App\Models\InsightCategory;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -18,6 +21,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -27,7 +31,7 @@ class InsightCategoryResource extends Resource
 {
     protected static ?string $model = InsightCategory::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
+    protected static string|\UnitEnum|null $navigationGroup = 'Referensi';
 
     protected static ?string $navigationLabel = 'Kategori Editorial';
 
@@ -106,62 +110,111 @@ class InsightCategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->extraAttributes(['class' => 'edulaw-reference-table'])
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nama')
-                    ->searchable()
+                ViewColumn::make('category')
+                    ->label('Kategori')
+                    ->view('filament.tables.columns.reference-name', fn (InsightCategory $record): array => [
+                        'name' => $record->name,
+                        'slug' => $record->slug,
+                        'description' => $record->description,
+                    ])
+                    ->searchable(['name', 'slug', 'description'])
                     ->sortable(),
 
-                TextColumn::make('slug')
-                    ->label('Slug')
-                    ->searchable()
-                    ->toggleable(),
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
+                    ->sortable(),
 
-                TextColumn::make('description')
-                    ->label('Deskripsi')
-                    ->limit(72)
-                    ->wrap()
-                    ->placeholder('Belum ada deskripsi')
-                    ->toggleable(),
+                IconColumn::make('show_on_editorial_index')
+                    ->label('Tampil di Indeks')
+                    ->boolean()
+                    ->sortable()
+                    ->visibleFrom('lg'),
 
                 TextColumn::make('sort_order')
                     ->label('Urutan')
                     ->numeric()
-                    ->sortable(),
+                    ->sortable()
+                    ->visibleFrom('lg'),
 
-                IconColumn::make('show_on_editorial_index')
-                    ->label('Tampil')
-                    ->boolean()
-                    ->sortable(),
-
-                IconColumn::make('is_active')
-                    ->label('Aktif')
-                    ->boolean()
-                    ->sortable(),
+                TextColumn::make('insights_count')
+                    ->label('Jumlah Artikel')
+                    ->numeric()
+                    ->sortable()
+                    ->visibleFrom('md'),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort(fn (Builder $query): Builder => $query
                 ->orderBy('sort_order')
                 ->orderBy('name'))
+            ->searchPlaceholder('Cari kategori...')
+            ->emptyStateIcon('heroicon-o-rectangle-stack')
+            ->emptyStateHeading('Belum ada kategori editorial')
+            ->emptyStateDescription('Buat kategori untuk mengelompokkan artikel Edulaw.')
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
 
                 TernaryFilter::make('show_on_editorial_index')
                     ->label('Tampil di Halaman Editorial'),
+
+                TernaryFilter::make('used')
+                    ->label('Penggunaan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Digunakan')
+                    ->falseLabel('Belum digunakan')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->has('insights'),
+                        false: fn (Builder $query): Builder => $query->doesntHave('insights'),
+                    ),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make()->label('Edit'),
+                    Action::make('toggle_active')
+                        ->label(fn (InsightCategory $record): string => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
+                        ->icon(fn (InsightCategory $record): string => $record->is_active ? 'heroicon-o-no-symbol' : 'heroicon-o-check-circle')
+                        ->color(fn (InsightCategory $record): string => $record->is_active ? 'warning' : 'success')
+                        ->authorize('update')
+                        ->requiresConfirmation()
+                        ->action(fn (InsightCategory $record) => $record->update(['is_active' => ! $record->is_active])),
+                    DeleteAction::make()
+                        ->label('Hapus')
+                        ->requiresConfirmation()
+                        ->visible(fn (InsightCategory $record): bool => $record->insights_count === 0),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('activate')
+                        ->label('Aktifkan')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->authorizeIndividualRecords('update')
+                        ->action(fn ($records) => $records->each->update(['is_active' => true])),
+                    BulkAction::make('deactivate')
+                        ->label('Nonaktifkan')
+                        ->icon('heroicon-o-no-symbol')
+                        ->color('warning')
+                        ->authorizeIndividualRecords('update')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['is_active' => false])),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withCount('insights');
     }
 
     public static function getRelations(): array

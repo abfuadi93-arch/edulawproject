@@ -70,7 +70,10 @@ test('user updates their author profile without changing account credentials or 
     $otherUser = makePanelUser('other@example.test');
     $author = $user->ensureProfile();
     $otherAuthor = $otherUser->ensureProfile();
+    Role::findOrCreate('writer');
+    $user->assignRole('writer');
     $accountSnapshot = $user->only(['name', 'email', 'password', 'is_active']);
+    $roleSnapshot = $user->roles()->pluck('name')->all();
 
     Livewire::actingAs($user)
         ->test(EditMyProfile::class)
@@ -102,6 +105,7 @@ test('user updates their author profile without changing account credentials or 
         ->and($author->socialLinksMap()['linkedin'])->toBe('https://linkedin.com/in/penulis-edulaw')
         ->and($author->show_in_organization)->toBeTrue()
         ->and($user->only(['name', 'email', 'password', 'is_active']))->toBe($accountSnapshot)
+        ->and($user->roles()->pluck('name')->all())->toBe($roleSnapshot)
         ->and($otherAuthor->name)->toBe('Panel User');
 });
 

@@ -13,7 +13,17 @@ class EditUser extends EditRecordAndReturn
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->visible(fn (): bool => UserResource::canSafelyDelete($this->getRecord())),
         ];
+    }
+
+    protected function mutateFormDataBeforeSave(array $data): array
+    {
+        if (UserResource::isLastActiveSuperAdmin($this->getRecord())) {
+            $data['is_active'] = true;
+        }
+
+        return $data;
     }
 }

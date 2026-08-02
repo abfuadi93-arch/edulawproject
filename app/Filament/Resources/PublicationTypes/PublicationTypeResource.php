@@ -7,8 +7,11 @@ use App\Filament\Resources\PublicationTypes\Pages\EditPublicationType;
 use App\Filament\Resources\PublicationTypes\Pages\ListPublicationTypes;
 use App\Models\PublicationType;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
-use Filament\Actions\DeleteBulkAction;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -16,17 +19,18 @@ use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
-use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Str;
 
 class PublicationTypeResource extends Resource
 {
     protected static ?string $model = PublicationType::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
+    protected static string|\UnitEnum|null $navigationGroup = 'Referensi';
 
     protected static ?string $navigationLabel = 'Tipe Publikasi';
 
@@ -95,25 +99,35 @@ class PublicationTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->extraAttributes(['class' => 'edulaw-reference-table'])
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nama')
-                    ->searchable()
+                ViewColumn::make('type')
+                    ->label('Tipe Publikasi')
+                    ->view('filament.tables.columns.reference-name', fn (PublicationType $record): array => [
+                        'name' => $record->name,
+                        'slug' => $record->slug,
+                        'description' => $record->description,
+                    ])
+                    ->searchable(['name', 'slug', 'description'])
                     ->sortable(),
 
-                TextColumn::make('slug')
-                    ->label('Slug')
-                    ->searchable()
-                    ->toggleable(),
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
+                    ->sortable(),
 
                 TextColumn::make('sort_order')
                     ->label('Urutan')
-                    ->sortable(),
+                    ->sortable()
+                    ->visibleFrom('lg'),
 
-                IconColumn::make('is_active')
-                    ->label('Aktif')
-                    ->boolean()
-                    ->sortable(),
+                TextColumn::make('publications_count')
+                    ->label('Jumlah Publikasi')
+                    ->numeric()
+                    ->sortable()
+                    ->visibleFrom('md'),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')
@@ -127,18 +141,61 @@ class PublicationTypeResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->searchPlaceholder('Cari tipe publikasi...')
+            ->emptyStateIcon('heroicon-o-document-duplicate')
+            ->emptyStateHeading('Belum ada tipe publikasi')
+            ->emptyStateDescription('Buat tipe untuk mengelompokkan riset dan publikasi.')
             ->filters([
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
+                TernaryFilter::make('used')
+                    ->label('Penggunaan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Digunakan')
+                    ->falseLabel('Belum digunakan')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->has('publications'),
+                        false: fn (Builder $query): Builder => $query->doesntHave('publications'),
+                    ),
             ])
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make()->label('Edit'),
+                    Action::make('toggle_active')
+                        ->label(fn (PublicationType $record): string => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
+                        ->icon(fn (PublicationType $record): string => $record->is_active ? 'heroicon-o-no-symbol' : 'heroicon-o-check-circle')
+                        ->color(fn (PublicationType $record): string => $record->is_active ? 'warning' : 'success')
+                        ->authorize('update')
+                        ->requiresConfirmation()
+                        ->action(fn (PublicationType $record) => $record->update(['is_active' => ! $record->is_active])),
+                    DeleteAction::make()
+                        ->label('Hapus')
+                        ->requiresConfirmation()
+                        ->visible(fn (PublicationType $record): bool => $record->publications_count === 0),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    DeleteBulkAction::make(),
+                    BulkAction::make('activate')
+                        ->label('Aktifkan')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->authorizeIndividualRecords('update')
+                        ->action(fn ($records) => $records->each->update(['is_active' => true])),
+                    BulkAction::make('deactivate')
+                        ->label('Nonaktifkan')
+                        ->icon('heroicon-o-no-symbol')
+                        ->color('warning')
+                        ->authorizeIndividualRecords('update')
+                        ->requiresConfirmation()
+                        ->action(fn ($records) => $records->each->update(['is_active' => false])),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->withCount('publications');
     }
 
     public static function getRelations(): array

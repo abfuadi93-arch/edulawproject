@@ -130,7 +130,7 @@ test('super admin can open create and edit author forms with contributor control
     $this->actingAs($user)
         ->get(AuthorResource::getUrl('index'))
         ->assertOk()
-        ->assertSee('Foto / Avatar')
+        ->assertSee('Profil')
         ->assertSee('>PU</span>', false);
 
     $this->actingAs($user)

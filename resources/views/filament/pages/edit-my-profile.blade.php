@@ -4,7 +4,7 @@
 
         <div class="flex justify-end">
             <x-filament::button type="submit" icon="heroicon-o-check" size="lg">
-                Simpan Profil
+                Simpan Perubahan
             </x-filament::button>
         </div>
     </form>

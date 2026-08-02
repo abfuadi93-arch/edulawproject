@@ -118,3 +118,58 @@ test('insight admin resource reports publication readiness issues', function () 
 
     expect(InsightResource::isPublishReady($insight->fresh()))->toBeTrue();
 });
+
+test('insight admin readiness filters match the placement badge rules', function () {
+    $author = Author::query()->create([
+        'name' => 'Penulis Filter',
+        'slug' => 'penulis-filter',
+        'is_active' => true,
+    ]);
+
+    $ready = Insight::query()->create([
+        'title' => 'Artikel Siap Tayang',
+        'slug' => 'artikel-siap-tayang',
+        'cover_image' => 'insights/siap.webp',
+        'excerpt' => 'Ringkasan artikel siap tayang.',
+        'content' => '<h2>Bagian Utama</h2><p>Isi.</p>',
+    ]);
+    $ready->authors()->attach($author, ['author_order' => 1, 'role' => 'Penulis']);
+
+    $withoutCover = Insight::query()->create([
+        'title' => 'Artikel Tanpa Cover',
+        'slug' => 'artikel-tanpa-cover',
+        'excerpt' => 'Ringkasan tersedia.',
+        'content' => '<h2>Bagian Utama</h2><p>Isi.</p>',
+    ]);
+    $withoutCover->authors()->attach($author, ['author_order' => 1, 'role' => 'Penulis']);
+
+    $withInvalidHeading = Insight::query()->create([
+        'title' => 'Artikel dengan H1',
+        'slug' => 'artikel-dengan-h1',
+        'cover_image' => 'insights/h1.webp',
+        'excerpt' => 'Ringkasan tersedia.',
+        'content' => '<h1>Heading Tidak Valid</h1><p>Isi.</p>',
+    ]);
+    $withInvalidHeading->authors()->attach($author, ['author_order' => 1, 'role' => 'Penulis']);
+
+    expect(InsightResource::applyPublishReadyFilter(Insight::query())->pluck('id')->all())
+        ->toBe([$ready->id])
+        ->and(InsightResource::applyNotPublishReadyFilter(Insight::query())->pluck('id')->sort()->values()->all())
+        ->toBe(collect([$withoutCover->id, $withInvalidHeading->id])->sort()->values()->all());
+});
+
+test('insight duplication generates a unique draft slug', function () {
+    $insight = Insight::query()->create([
+        'title' => 'Editorial untuk Duplikasi',
+        'slug' => 'editorial-untuk-duplikasi',
+    ]);
+
+    expect(InsightResource::uniqueDuplicateSlug($insight))->toBe('editorial-untuk-duplikasi-salinan');
+
+    Insight::query()->create([
+        'title' => 'Editorial Salinan',
+        'slug' => 'editorial-untuk-duplikasi-salinan',
+    ]);
+
+    expect(InsightResource::uniqueDuplicateSlug($insight))->toBe('editorial-untuk-duplikasi-salinan-2');
+});

@@ -17,7 +17,9 @@ class EditAuthor extends EditRecordAndReturn
         return [
             DeleteAction::make()
                 ->label('Hapus Profil')
-                ->hidden(fn (Author $record): bool => filled($record->user_id)),
+                ->hidden(fn (Author $record): bool => filled($record->user_id)
+                    || $record->insights()->exists()
+                    || $record->publications()->exists()),
         ];
     }
 

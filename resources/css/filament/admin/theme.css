@@ -258,6 +258,891 @@
     min-width: 0;
 }
 
+/* Editorial listing only. Its fixed layout keeps the primary five-column view
+   inside the content area without changing tables in other resources. */
+.fi-main:has(.fi-resource-insights.fi-resource-list-records-page) {
+    padding-inline: clamp(1.5rem, 2vw, 2rem);
+}
+
+.fi-resource-insights.fi-resource-list-records-page {
+    width: 100%;
+    max-width: none;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-content {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-header-cell,
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-cell,
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-col {
+    min-width: 0;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-row {
+    vertical-align: middle;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-cell {
+    padding-block: 0.6rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-header,
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-cell {
+    width: calc(62% - 6rem);
+    min-width: 0;
+    overflow: hidden;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-category-header,
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-category-cell {
+    width: 15%;
+    min-width: 0;
+    overflow: hidden;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-header,
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-cell {
+    width: 11%;
+    white-space: nowrap;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-published-header,
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-published-cell {
+    width: 12%;
+    white-space: nowrap;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-selection-cell {
+    width: 2.5rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-actions-header-cell,
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-cell:has(> .fi-ta-actions) {
+    width: 3.5rem;
+    padding-inline: 0.5rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-category-cell .fi-badge {
+    max-width: 100%;
+    padding-inline: 0.4rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-category-cell .fi-badge-label,
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-meta {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-cell .fi-badge {
+    padding-inline: 0.4rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-header-toolbar {
+    min-width: 0;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-header-toolbar > :nth-child(2) {
+    min-width: 0;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-search-field {
+    width: min(18rem, 100%);
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-sc-tabs > .fi-tabs {
+    max-width: 100%;
+    gap: 0.25rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-page-content {
+    gap: 1.4rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-ctn {
+    border-color: var(--edulaw-admin-border-navy);
+    border-radius: var(--card-radius);
+    box-shadow: 0 10px 28px -28px rgba(15, 23, 42, 0.6);
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-sc-tabs > .fi-tabs {
+    width: fit-content;
+    margin-inline: auto;
+    padding: 0.25rem;
+    border: 1px solid var(--edulaw-admin-border);
+    border-radius: 0.8rem;
+    background: var(--edulaw-admin-panel);
+    overflow-x: auto;
+}
+
+.edulaw-insight-article {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.8rem;
+}
+
+.edulaw-insight-thumbnail {
+    display: flex;
+    width: 3.5rem;
+    min-width: 3.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--edulaw-admin-border);
+    border-radius: 0.5rem;
+    background: var(--edulaw-admin-soft);
+    color: var(--edulaw-admin-muted);
+}
+
+.edulaw-insight-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.edulaw-insight-thumbnail svg {
+    width: 1.15rem;
+    height: 1.15rem;
+}
+
+.edulaw-insight-article-copy {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.edulaw-insight-title {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--edulaw-admin-heading);
+    font-size: 0.875rem;
+    font-weight: 650;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    word-break: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.edulaw-insight-meta {
+    display: block;
+    min-width: 0;
+    margin-top: 0.3rem;
+    color: var(--edulaw-admin-muted);
+    font-size: 0.75rem;
+    line-height: 1.25;
+}
+
+.edulaw-insight-inline-placement {
+    display: flex;
+    min-width: 0;
+    max-width: 100%;
+    align-items: center;
+    gap: 0.25rem;
+    overflow: hidden;
+    margin-top: 0.35rem;
+    white-space: nowrap;
+}
+
+.edulaw-insight-inline-placement .fi-badge {
+    flex: 0 0 auto;
+    padding-inline: 0.35rem;
+    padding-block: 0.1rem;
+    font-size: 0.625rem;
+}
+
+.edulaw-insight-placement-cell {
+    max-width: 12.5rem;
+}
+
+.edulaw-insight-placement-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.3rem;
+}
+
+.edulaw-insight-placement-empty {
+    color: var(--edulaw-admin-muted);
+}
+
+@media (max-width: 79.999rem) {
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-cell {
+        width: calc(74% - 6rem);
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-category-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-category-cell {
+        width: 16%;
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-cell {
+        width: 10%;
+    }
+}
+
+@media (max-width: 63.999rem) {
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-cell {
+        width: calc(88% - 6rem);
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-cell {
+        width: 12%;
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .fi-main:has(.fi-resource-insights.fi-resource-list-records-page) {
+        padding-inline: 1rem;
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .fi-ta-header-toolbar > :nth-child(2),
+    .fi-resource-insights.fi-resource-list-records-page .fi-ta-search-field {
+        width: 100%;
+        max-width: none;
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article-cell {
+        width: calc(82% - 6rem);
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-header,
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-status-cell {
+        width: 18%;
+    }
+
+    .edulaw-insight-article {
+        gap: 0.55rem;
+    }
+
+    .edulaw-insight-thumbnail {
+        width: 3rem;
+        min-width: 3rem;
+        height: 2.2rem;
+    }
+
+    .edulaw-insight-meta {
+        font-size: 0.6875rem;
+    }
+}
+
+/* Scoped visual system for inbox, reference, contributor profile, and access tables. */
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) {
+    width: 100%;
+    min-width: 0;
+    overflow: hidden;
+    border: 1px solid rgb(226 232 240 / 0.9);
+    border-radius: 1rem;
+    background: white;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+}
+
+:is(.dark .edulaw-inbox-table, .dark .edulaw-reference-table, .dark .edulaw-profile-table, .dark .edulaw-access-table) {
+    border-color: rgb(51 65 85 / 0.9);
+    background: rgb(15 23 42);
+}
+
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) .fi-ta-content {
+    min-width: 0;
+    overflow-x: clip;
+}
+
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) table {
+    width: 100%;
+    table-layout: fixed;
+}
+
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) :is(th, td, .fi-ta-col-wrp) {
+    min-width: 0;
+}
+
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) :is(.fi-ta-text, .fi-badge) {
+    max-width: 100%;
+}
+
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) .fi-ta-header-toolbar {
+    gap: 0.75rem;
+    padding: 1rem 1.25rem;
+}
+
+:is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) .fi-ta-search-field {
+    width: min(20rem, 100%);
+}
+
+.edulaw-table-identity {
+    display: flex;
+    min-width: 0;
+    flex-direction: column;
+    gap: 0.18rem;
+}
+
+.edulaw-table-identity__title {
+    overflow: hidden;
+    color: rgb(15 23 42);
+    font-size: 0.875rem;
+    font-weight: 700;
+    line-height: 1.3;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dark .edulaw-table-identity__title {
+    color: rgb(241 245 249);
+}
+
+.edulaw-table-identity__meta,
+.edulaw-table-identity__slug {
+    overflow: hidden;
+    color: rgb(100 116 139);
+    font-size: 0.75rem;
+    line-height: 1.25;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dark :is(.edulaw-table-identity__meta, .edulaw-table-identity__slug) {
+    color: rgb(148 163 184);
+}
+
+.edulaw-table-identity__slug {
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+}
+
+.edulaw-line-clamp-1 {
+    display: -webkit-box;
+    white-space: normal;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 1;
+}
+
+.edulaw-profile-identity {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.edulaw-user-initials {
+    display: inline-flex;
+    width: 2.75rem;
+    height: 2.75rem;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    border-radius: 9999px;
+    background: #0f2a4a;
+    color: white;
+    font-size: 0.75rem;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+}
+
+@media (max-width: 47.999rem) {
+    :is(
+        .fi-resource-collaboration-submissions,
+        .fi-resource-contact-messages,
+        .fi-resource-insight-categories,
+        .fi-resource-program-categories,
+        .fi-resource-publication-types,
+        .fi-resource-tags,
+        .fi-resource-authors,
+        .fi-resource-users,
+        .fi-resource-roles,
+        .fi-resource-permissions
+    ).fi-page :is(.fi-header-actions, .fi-header-actions .fi-btn) {
+        width: 100%;
+    }
+
+    :is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) .fi-ta-header-toolbar {
+        align-items: stretch;
+        padding: 0.875rem;
+    }
+
+    :is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) :is(.fi-ta-search-field, .fi-ta-header-toolbar > *) {
+        width: 100%;
+        max-width: none;
+    }
+
+    :is(.edulaw-inbox-table, .edulaw-reference-table, .edulaw-profile-table, .edulaw-access-table) :is(th, td) {
+        padding-inline: 0.625rem;
+    }
+}
+
+/* Shared list-page system for the five primary content resources. */
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page {
+    width: 100%;
+    max-width: none;
+}
+
+.fi-main:has(
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page
+) {
+    padding-inline: clamp(1.5rem, 2vw, 2rem);
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-page-content {
+    gap: 1.4rem;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-ctn {
+    border-color: var(--edulaw-admin-border-navy);
+    border-radius: var(--card-radius);
+    box-shadow: 0 10px 28px -28px rgba(15, 23, 42, 0.6);
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-content {
+    max-width: 100%;
+    overflow-x: hidden;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page :is(.fi-ta-header-cell, .fi-ta-cell, .fi-ta-col) {
+    min-width: 0;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-row {
+    vertical-align: middle;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-cell {
+    padding-block: 0.6rem;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities
+).fi-resource-list-records-page :is(.edulaw-resource-primary-header, .edulaw-resource-primary-cell) {
+    width: calc(62% - 6rem);
+    overflow: hidden;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities
+).fi-resource-list-records-page :is(.edulaw-resource-classification-header, .edulaw-resource-classification-cell) {
+    width: 16%;
+    overflow: hidden;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities
+).fi-resource-list-records-page :is(.edulaw-resource-status-header, .edulaw-resource-status-cell) {
+    width: 10%;
+    white-space: nowrap;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities
+).fi-resource-list-records-page :is(.edulaw-resource-time-header, .edulaw-resource-time-cell) {
+    width: 12%;
+    white-space: nowrap;
+}
+
+.fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-primary-header, .edulaw-resource-primary-cell) {
+    width: calc(52% - 6rem);
+    overflow: hidden;
+}
+
+.fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-classification-header, .edulaw-resource-classification-cell) {
+    width: 13%;
+    overflow: hidden;
+}
+
+.fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-platform-header, .edulaw-resource-platform-cell) {
+    width: 13%;
+    overflow: hidden;
+}
+
+.fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-status-header, .edulaw-resource-status-cell) {
+    width: 10%;
+    white-space: nowrap;
+}
+
+.fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-time-header, .edulaw-resource-time-cell) {
+    width: 12%;
+    white-space: nowrap;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-selection-cell {
+    width: 2.5rem;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page :is(.fi-ta-actions-header-cell, .fi-ta-cell:has(> .fi-ta-actions)) {
+    width: 3.5rem;
+    padding-inline: 0.5rem;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page :is(.edulaw-resource-classification-cell, .edulaw-resource-platform-cell) .fi-badge {
+    max-width: 100%;
+    padding-inline: 0.4rem;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page :is(.edulaw-resource-classification-cell, .edulaw-resource-platform-cell) .fi-badge-label {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-header-toolbar {
+    min-width: 0;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-header-toolbar > :nth-child(2) {
+    min-width: 0;
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-ta-search-field {
+    width: min(19rem, 100%);
+}
+
+:is(
+    .fi-resource-publications,
+    .fi-resource-programs,
+    .fi-resource-opportunities,
+    .fi-resource-multimedia
+).fi-resource-list-records-page .fi-sc-tabs > .fi-tabs {
+    width: fit-content;
+    max-width: 100%;
+    margin-inline: auto;
+    padding: 0.25rem;
+    border: 1px solid var(--edulaw-admin-border);
+    border-radius: 0.8rem;
+    background: var(--edulaw-admin-panel);
+    gap: 0.25rem;
+    overflow-x: auto;
+}
+
+.edulaw-resource-content {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.75rem;
+    overflow: hidden;
+}
+
+.edulaw-resource-thumbnail {
+    display: flex;
+    width: 3.5rem;
+    min-width: 3.5rem;
+    height: 2.5rem;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    border: 1px solid var(--edulaw-admin-border);
+    border-radius: 0.5rem;
+    background: var(--edulaw-admin-soft);
+    color: var(--edulaw-admin-muted);
+}
+
+.edulaw-resource-content-portrait .edulaw-resource-thumbnail {
+    width: 2.5rem;
+    min-width: 2.5rem;
+    height: 3.5rem;
+}
+
+.edulaw-resource-thumbnail img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.edulaw-resource-thumbnail svg {
+    width: 1.1rem;
+    height: 1.1rem;
+}
+
+.edulaw-resource-content-copy {
+    min-width: 0;
+    overflow: hidden;
+}
+
+.edulaw-resource-content-title {
+    display: -webkit-box;
+    overflow: hidden;
+    color: var(--edulaw-admin-heading);
+    font-size: 0.875rem;
+    font-weight: 650;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+}
+
+.edulaw-resource-content-meta {
+    display: flex;
+    min-width: 0;
+    align-items: center;
+    gap: 0.25rem;
+    margin-top: 0.3rem;
+    color: var(--edulaw-admin-muted);
+    font-size: 0.75rem;
+    line-height: 1.25;
+}
+
+.edulaw-resource-content-meta span {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edulaw-resource-content-meta svg {
+    width: 0.9rem;
+    min-width: 0.9rem;
+    height: 0.9rem;
+}
+
+@media (max-width: 79.999rem) {
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities
+    ).fi-resource-list-records-page :is(.edulaw-resource-primary-header, .edulaw-resource-primary-cell) {
+        width: calc(74% - 6rem);
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities
+    ).fi-resource-list-records-page :is(.edulaw-resource-classification-header, .edulaw-resource-classification-cell) {
+        width: 16%;
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities
+    ).fi-resource-list-records-page :is(.edulaw-resource-status-header, .edulaw-resource-status-cell) {
+        width: 10%;
+    }
+
+    .fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-primary-header, .edulaw-resource-primary-cell) {
+        width: calc(62% - 6rem);
+    }
+
+    .fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-classification-header, .edulaw-resource-classification-cell),
+    .fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-platform-header, .edulaw-resource-platform-cell) {
+        width: 14%;
+    }
+
+    .fi-resource-multimedia.fi-resource-list-records-page :is(.edulaw-resource-status-header, .edulaw-resource-status-cell) {
+        width: 10%;
+    }
+}
+
+@media (max-width: 63.999rem) {
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page :is(.edulaw-resource-primary-header, .edulaw-resource-primary-cell) {
+        width: calc(88% - 6rem);
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page :is(.edulaw-resource-status-header, .edulaw-resource-status-cell) {
+        width: 12%;
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .fi-resource-insights.fi-page .fi-header-actions,
+    .fi-resource-insights.fi-page .fi-header-actions .fi-btn {
+        width: 100%;
+    }
+
+    .fi-resource-insights.fi-page .fi-sc-tabs > .fi-tabs {
+        margin-inline: 0;
+        width: 100%;
+    }
+
+    .fi-main:has(
+        :is(
+            .fi-resource-publications,
+            .fi-resource-programs,
+            .fi-resource-opportunities,
+            .fi-resource-multimedia
+        ).fi-resource-list-records-page
+    ) {
+        padding-inline: 1rem;
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page .fi-header-actions {
+        width: 100%;
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page .fi-header-actions .fi-btn {
+        width: 100%;
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page :is(.fi-ta-header-toolbar > :nth-child(2), .fi-ta-search-field) {
+        width: 100%;
+        max-width: none;
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page :is(.edulaw-resource-primary-header, .edulaw-resource-primary-cell) {
+        width: calc(82% - 6rem);
+    }
+
+    :is(
+        .fi-resource-publications,
+        .fi-resource-programs,
+        .fi-resource-opportunities,
+        .fi-resource-multimedia
+    ).fi-resource-list-records-page :is(.edulaw-resource-status-header, .edulaw-resource-status-cell) {
+        width: 18%;
+    }
+
+    .edulaw-resource-content {
+        gap: 0.55rem;
+    }
+
+    .edulaw-resource-thumbnail {
+        width: 3rem;
+        min-width: 3rem;
+        height: 2.2rem;
+    }
+
+    .edulaw-resource-content-portrait .edulaw-resource-thumbnail {
+        width: 2.2rem;
+        min-width: 2.2rem;
+        height: 3rem;
+    }
+
+    .edulaw-resource-content-meta {
+        font-size: 0.6875rem;
+    }
+}
+
 .fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview .fi-section.fi-section-not-contained {
     gap: 0;
     padding: 0;

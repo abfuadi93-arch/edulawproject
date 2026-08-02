@@ -28,13 +28,20 @@ test('opportunity admin resource derives excerpt seo and og image from content',
 
 test('opportunity admin resource exposes only open closed and archived statuses', function () {
     expect(OpportunityResource::statusOptions())->toBe([
-        'open' => 'Open',
-        'closed' => 'Closed',
-        'archived' => 'Archived',
+        'open' => 'Dibuka',
+        'closed' => 'Ditutup',
+        'archived' => 'Diarsipkan',
     ])
-        ->and(OpportunityResource::statusLabel('open'))->toBe('Open')
-        ->and(OpportunityResource::statusLabel('closed'))->toBe('Closed')
-        ->and(OpportunityResource::statusLabel('archived'))->toBe('Archived')
-        ->and(OpportunityResource::statusLabel('draft'))->toBe('Archived')
+        ->and(OpportunityResource::statusLabel('open'))->toBe('Dibuka')
+        ->and(OpportunityResource::statusLabel('closed'))->toBe('Ditutup')
+        ->and(OpportunityResource::statusLabel('archived'))->toBe('Diarsipkan')
+        ->and(OpportunityResource::statusLabel('draft'))->toBe('Diarsipkan')
         ->and(OpportunityResource::normalizeStatusForForm('draft'))->toBe('open');
+});
+
+test('opportunity deadline labels are localized and null safe', function () {
+    expect(OpportunityResource::deadlineRelativeLabel(null))->toBeNull()
+        ->and(OpportunityResource::deadlineRelativeLabel(today()))->toBe('Berakhir hari ini')
+        ->and(OpportunityResource::deadlineRelativeLabel(today()->addDays(3)))->toBe('3 hari lagi')
+        ->and(OpportunityResource::deadlineRelativeLabel(today()->subDays(2)))->toBe('Lewat 2 hari');
 });

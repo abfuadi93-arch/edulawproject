@@ -2,18 +2,23 @@
 
 namespace App\Filament\Resources\PublicationTypes\Pages;
 
+use App\Filament\Resources\Concerns\HasEdulawResourceList;
 use App\Filament\Resources\PublicationTypes\PublicationTypeResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListPublicationTypes extends ListRecords
 {
+    use HasEdulawResourceList;
+
     protected static string $resource = PublicationTypeResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getListDescription(): string
     {
-        return [
-            CreateAction::make(),
-        ];
+        return 'Kelola klasifikasi riset dan publikasi.';
+    }
+
+    protected function getCreateButtonLabel(): string
+    {
+        return 'Tambah Tipe Publikasi';
     }
 }

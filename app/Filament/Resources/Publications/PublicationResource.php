@@ -8,10 +8,14 @@ use App\Filament\Resources\Publications\Pages\ListPublications;
 use App\Models\Publication;
 use App\Support\EdulawSite;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
@@ -26,12 +30,16 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -42,7 +50,7 @@ class PublicationResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?string $navigationLabel = 'Publications';
+    protected static ?string $navigationLabel = 'Publikasi';
 
     protected static ?string $modelLabel = 'Publikasi';
 
@@ -476,148 +484,243 @@ class PublicationResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('cover_image')
-                    ->label('Cover')
-                    ->disk('public')
-                    ->imageSize(48)
-                    ->square()
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
-
-                TextColumn::make('title')
-                    ->label('Judul')
-                    ->searchable()
-                    ->sortable()
-                    ->limit(60)
-                    ->wrap()
-                    ->description(fn (Publication $record): ?string => $record->excerpt),
+                ViewColumn::make('publication')
+                    ->label('Publikasi')
+                    ->view('filament.tables.columns.resource-content', fn (Publication $record): array => [
+                        'imageUrl' => $record->cover_image_url,
+                        'isPortrait' => true,
+                        'title' => $record->title,
+                        'metadata' => [
+                            $record->authors->pluck('name')->filter()->join(', ') ?: 'Edulaw Project',
+                            $record->page_count ? $record->page_count.' halaman' : $record->source_name,
+                        ],
+                        'hasDocument' => filled($record->pdf_file),
+                    ])
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query
+                        ->where(function (Builder $query) use ($search): void {
+                            $query
+                                ->where('title', 'like', "%{$search}%")
+                                ->orWhere('source_name', 'like', "%{$search}%")
+                                ->orWhereHas('authors', fn (Builder $query): Builder => $query->where('name', 'like', "%{$search}%"))
+                                ->orWhereHas('type', fn (Builder $query): Builder => $query->where('name', 'like', "%{$search}%"));
+                        }))
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('title', $direction))
+                    ->url(fn (Publication $record): ?string => static::canEdit($record) ? static::getUrl('edit', ['record' => $record]) : null)
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-primary-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-primary-cell']),
 
                 TextColumn::make('type.name')
-                    ->label('Tipe')
+                    ->label('Jenis')
                     ->badge()
                     ->color('primary')
+                    ->limit(24)
+                    ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 24 ? $state : null)
                     ->sortable()
-                    ->placeholder('-'),
-
-                TextColumn::make('authors.name')
-                    ->label('Penulis')
-                    ->badge()
-                    ->color('gray')
-                    ->separator(',')
-                    ->limitList(2)
-                    ->placeholder('-'),
+                    ->placeholder('—')
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-classification-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-classification-cell']),
 
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
                     ->sortable()
                     ->color(fn (?string $state): string => static::statusColor($state))
-                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
+                    ->formatStateUsing(fn (?string $state): string => $state === 'reviewed' ? 'Draft' : static::statusLabel($state))
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-status-cell']),
+
+                TextColumn::make('published_at')
+                    ->label('Terbit')
+                    ->formatStateUsing(fn ($state): string => $state?->locale('id')->translatedFormat('d M Y') ?? '—')
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable()
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-time-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-time-cell']),
+
+                IconColumn::make('pdf_file')
+                    ->label('File PDF')
+                    ->state(fn (Publication $record): bool => filled($record->pdf_file))
+                    ->boolean()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('source_name')
+                    ->label('Sumber')
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 IconColumn::make('featured')
                     ->label('Unggulan')
                     ->boolean()
-                    ->sortable(),
-
-                TextColumn::make('published_at')
-                    ->label('Tanggal Terbit')
-                    ->date('d M Y')
                     ->sortable()
-                    ->placeholder('-'),
-
-                TextColumn::make('page_count')
-                    ->label('Halaman')
-                    ->suffix(' hlm')
-                    ->sortable()
-                    ->placeholder('-'),
-
-                IconColumn::make('has_pdf')
-                    ->label('PDF')
-                    ->state(fn (Publication $record): bool => filled($record->pdf_file))
-                    ->boolean(),
-
-                IconColumn::make('has_external_url')
-                    ->label('URL Eksternal')
-                    ->state(fn (Publication $record): bool => filled($record->external_url))
-                    ->boolean(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->formatStateUsing(fn ($state): string => $state->locale('id')->diffForHumans())
+                    ->tooltip(fn (Publication $record): string => $record->updated_at->locale('id')->translatedFormat('d M Y, H:i'))
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort(fn (Builder $query): Builder => $query
                 ->orderByDesc('published_at')
                 ->orderByDesc('updated_at'))
-            ->searchPlaceholder('Cari publikasi...')
+            ->searchPlaceholder('Cari judul, penulis, atau jenis publikasi...')
+            ->searchDebounce('500ms')
             ->paginationPageOptions([10, 25, 50])
             ->emptyStateHeading('Belum ada publikasi')
             ->emptyStateDescription('Publikasi riset dan dokumen yang diunggah akan tampil di sini.')
             ->filters([
                 SelectFilter::make('publication_type_id')
-                    ->label('Tipe Publikasi')
-                    ->relationship('type', 'name'),
+                    ->label('Jenis Publikasi')
+                    ->relationship('type', 'name')
+                    ->searchable()
+                    ->preload(),
 
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->options(static::statusOptions()),
+                    ->options([
+                        'draft' => 'Draft',
+                        'published' => 'Published',
+                        'archived' => 'Diarsipkan',
+                    ])
+                    ->query(function (Builder $query, array $data): void {
+                        match ($data['value'] ?? null) {
+                            'draft' => $query->whereIn('status', ['draft', 'reviewed']),
+                            'published' => $query->where('status', 'published'),
+                            'archived' => $query->where('status', 'archived'),
+                            default => null,
+                        };
+                    }),
+
+                SelectFilter::make('authors')
+                    ->label('Penulis')
+                    ->relationship('authors', 'name')
+                    ->searchable()
+                    ->preload(),
 
                 TernaryFilter::make('featured')
-                    ->label('Publikasi Unggulan'),
+                    ->label('Unggulan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak'),
 
-                TernaryFilter::make('without_pdf')
-                    ->label('Ketersediaan PDF')
-                    ->trueLabel('Tanpa PDF')
-                    ->falseLabel('Dengan PDF')
+                TernaryFilter::make('has_pdf')
+                    ->label('Ada PDF')
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak')
                     ->queries(
-                        true: fn (Builder $query): Builder => static::whereBlank($query, 'pdf_file'),
-                        false: fn (Builder $query): Builder => static::whereFilled($query, 'pdf_file'),
+                        true: fn (Builder $query): Builder => static::whereFilled($query, 'pdf_file'),
+                        false: fn (Builder $query): Builder => static::whereBlank($query, 'pdf_file'),
                     ),
 
-                TernaryFilter::make('without_cover')
-                    ->label('Ketersediaan Cover')
-                    ->trueLabel('Tanpa cover')
-                    ->falseLabel('Dengan cover')
-                    ->queries(
-                        true: fn (Builder $query): Builder => static::whereBlank($query, 'cover_image'),
-                        false: fn (Builder $query): Builder => static::whereFilled($query, 'cover_image'),
-                    ),
-
-                TernaryFilter::make('without_excerpt')
-                    ->label('Ketersediaan Ringkasan')
-                    ->trueLabel('Tanpa ringkasan')
-                    ->falseLabel('Dengan ringkasan')
-                    ->queries(
-                        true: fn (Builder $query): Builder => static::whereBlank($query, 'excerpt'),
-                        false: fn (Builder $query): Builder => static::whereFilled($query, 'excerpt'),
-                    ),
-
-                TernaryFilter::make('without_author')
-                    ->label('Ketersediaan Penulis')
-                    ->trueLabel('Tanpa penulis')
-                    ->falseLabel('Dengan penulis')
-                    ->queries(
-                        true: fn (Builder $query): Builder => $query->whereDoesntHave('authors'),
-                        false: fn (Builder $query): Builder => $query->whereHas('authors'),
-                    ),
-
-                TernaryFilter::make('with_external_url')
-                    ->label('External URL')
-                    ->trueLabel('Dengan External URL')
-                    ->falseLabel('Tanpa External URL')
-                    ->queries(
-                        true: fn (Builder $query): Builder => static::whereFilled($query, 'external_url'),
-                        false: fn (Builder $query): Builder => static::whereBlank($query, 'external_url'),
-                    ),
+                Filter::make('published_at')
+                    ->label('Rentang Tanggal Terbit')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari tanggal')->native(false),
+                        DatePicker::make('until')->label('Sampai tanggal')->native(false),
+                    ])
+                    ->columns(2)
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('published_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('published_at', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => static::dateRangeIndicators($data, 'Terbit')),
             ])
             ->recordActions([
-                EditAction::make()->iconButton(),
-                DeleteAction::make()->iconButton(),
+                ActionGroup::make([
+                    Action::make('view')
+                        ->label('Lihat')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn (Publication $record): string => route('publications.show', $record->slug))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Publication $record): bool => filled($record->slug)
+                            && $record->status === 'published'
+                            && (! $record->published_at || $record->published_at->isPast())),
+                    EditAction::make()->label('Edit'),
+                    ReplicateAction::make()
+                        ->label('Duplikasi')
+                        ->visible(fn (): bool => static::canCreate())
+                        ->mutateRecordDataUsing(fn (array $data, Publication $record): array => [
+                            ...$data,
+                            'title' => Str::limit($record->title.' (Salinan)', 255, ''),
+                            'slug' => static::uniqueDuplicateSlug($record),
+                            'status' => 'draft',
+                            'published_at' => null,
+                            'featured' => false,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ])
+                        ->after(function (Publication $record, Publication $replica): void {
+                            $record->loadMissing(['authors', 'tags']);
+                            $replica->authors()->sync($record->authors->mapWithKeys(fn ($author): array => [
+                                $author->getKey() => [
+                                    'author_order' => $author->pivot->author_order,
+                                    'role' => $author->pivot->role,
+                                ],
+                            ])->all());
+                            $replica->tags()->sync($record->tags->modelKeys());
+                        }),
+                    Action::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn (Publication $record): bool => $record->status !== 'archived'
+                            && (Auth::user()?->can('archive publications') ?? false))
+                        ->action(fn (Publication $record) => $record->update(['status' => 'archived', 'updated_by' => Auth::id()])),
+                    DeleteAction::make()->label('Hapus')->requiresConfirmation(),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
+                    BulkAction::make('publish')
+                        ->label('Publikasikan')
+                        ->icon('heroicon-o-check-circle')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('publish publications') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'published', 'published_at' => now(), 'updated_by' => Auth::id()])),
+                    BulkAction::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('archive publications') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'archived', 'updated_by' => Auth::id()])),
                     DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with(['authors:id,name', 'type:id,name']);
+    }
+
+    private static function dateRangeIndicators(array $data, string $label): array
+    {
+        return collect([
+            ($data['from'] ?? null) ? Indicator::make($label.' mulai '.Carbon::parse($data['from'])->locale('id')->translatedFormat('d M Y'))->removeField('from') : null,
+            ($data['until'] ?? null) ? Indicator::make($label.' sampai '.Carbon::parse($data['until'])->locale('id')->translatedFormat('d M Y'))->removeField('until') : null,
+        ])->filter()->all();
+    }
+
+    public static function uniqueDuplicateSlug(Publication $record): string
+    {
+        $base = Str::limit(Str::slug($record->slug ?: $record->title).'-salinan', 240, '');
+        $slug = $base;
+        $suffix = 2;
+
+        while (Publication::query()->where('slug', $slug)->exists()) {
+            $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix++;
+        }
+
+        return $slug;
     }
 
     private static function whereBlank(Builder $query, string $column): Builder

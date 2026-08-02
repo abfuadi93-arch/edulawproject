@@ -2,18 +2,23 @@
 
 namespace App\Filament\Resources\InsightCategories\Pages;
 
+use App\Filament\Resources\Concerns\HasEdulawResourceList;
 use App\Filament\Resources\InsightCategories\InsightCategoryResource;
-use Filament\Actions\CreateAction;
 use Filament\Resources\Pages\ListRecords;
 
 class ListInsightCategories extends ListRecords
 {
+    use HasEdulawResourceList;
+
     protected static string $resource = InsightCategoryResource::class;
 
-    protected function getHeaderActions(): array
+    protected function getListDescription(): string
     {
-        return [
-            CreateAction::make(),
-        ];
+        return 'Kelola klasifikasi artikel dan urutan tampil pada halaman editorial.';
+    }
+
+    protected function getCreateButtonLabel(): string
+    {
+        return 'Tambah Kategori';
     }
 }

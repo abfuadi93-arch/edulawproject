@@ -44,13 +44,13 @@ test('program admin resource exposes simplified statuses with archived fallback 
         'published' => 'Published',
     ])
         ->and(ProgramResource::statusOptions())->toBe([
-            'upcoming' => 'Upcoming',
-            'ongoing' => 'Ongoing',
-            'archived' => 'Archived',
+            'upcoming' => 'Akan Datang',
+            'ongoing' => 'Berlangsung',
+            'archived' => 'Diarsipkan',
         ])
         ->and(ProgramResource::publicationStatusLabel('archived'))->toBe('Archived')
-        ->and(ProgramResource::statusLabel('archived'))->toBe('Archived')
-        ->and(ProgramResource::statusLabel('completed'))->toBe('Archived')
+        ->and(ProgramResource::statusLabel('archived'))->toBe('Diarsipkan')
+        ->and(ProgramResource::statusLabel('completed'))->toBe('Diarsipkan')
         ->and(ProgramResource::normalizePublicationStatusForForm('archived'))->toBe('draft')
         ->and(ProgramResource::normalizeStatusForForm('completed'))->toBe('archived')
         ->and(ProgramResource::normalizeStatusForForm('portfolio'))->toBe('archived');

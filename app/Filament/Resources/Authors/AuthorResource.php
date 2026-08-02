@@ -5,8 +5,13 @@ namespace App\Filament\Resources\Authors;
 use App\Filament\Resources\Authors\Pages\CreateAuthor;
 use App\Filament\Resources\Authors\Pages\EditAuthor;
 use App\Filament\Resources\Authors\Pages\ListAuthors;
+use App\Filament\Resources\Insights\InsightResource;
+use App\Filament\Resources\Publications\PublicationResource;
 use App\Models\Author;
 use BackedEnum;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
@@ -21,6 +26,7 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
@@ -32,13 +38,13 @@ class AuthorResource extends Resource
 {
     protected static ?string $model = Author::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Reference';
+    protected static string|\UnitEnum|null $navigationGroup = 'Referensi';
 
-    protected static ?string $navigationLabel = 'Profil';
+    protected static ?string $navigationLabel = 'Profil Kontributor';
 
-    protected static ?string $modelLabel = 'Profil';
+    protected static ?string $modelLabel = 'Profil Kontributor';
 
-    protected static ?string $pluralModelLabel = 'Profil';
+    protected static ?string $pluralModelLabel = 'Profil Kontributor';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-user-group';
 
@@ -275,105 +281,151 @@ class AuthorResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->extraAttributes(['class' => 'edulaw-profile-table'])
             ->columns([
-                TextColumn::make('photo')
-                    ->label('Foto / Avatar')
-                    ->state(fn (Author $record): HtmlString => static::avatarHtml($record))
-                    ->html()
-                    ->width(64)
-                    ->grow(false),
-
-                TextColumn::make('name')
-                    ->label('Nama')
-                    ->searchable()
+                ViewColumn::make('profile')
+                    ->label('Profil')
+                    ->view('filament.tables.columns.profile-identity', fn (Author $record): array => [
+                        'avatar' => static::avatarHtml($record),
+                        'name' => $record->name,
+                        'position' => $record->position,
+                        'email' => $record->email,
+                    ])
+                    ->searchable(['name', 'email', 'institution', 'position'])
                     ->sortable()
-                    ->limit(42)
-                    ->wrap()
-                    ->description(fn (Author $record): ?string => $record->profile_type_label),
-
-                TextColumn::make('position')
-                    ->label('Jabatan')
-                    ->searchable()
-                    ->limit(36)
-                    ->wrap()
-                    ->placeholder('-'),
+                    ->extraHeaderAttributes(['class' => 'edulaw-profile-primary-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-profile-primary-cell']),
 
                 TextColumn::make('institution')
                     ->label('Institusi')
-                    ->searchable()
-                    ->limit(36)
-                    ->wrap()
-                    ->placeholder('-'),
+                    ->limit(32)
+                    ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 32 ? $state : null)
+                    ->placeholder('—')
+                    ->visibleFrom('lg'),
 
-                TextColumn::make('sort_order')
-                    ->label('Urutan')
-                    ->sortable()
-                    ->placeholder('-')
-                    ->toggleable(),
-
-                IconColumn::make('is_active')
-                    ->label('Aktif')
-                    ->boolean()
+                TextColumn::make('is_active')
+                    ->label('Status')
+                    ->badge()
+                    ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
+                    ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->sortable(),
 
-                IconColumn::make('show_in_contributor_section')
-                    ->label('Kontributor Editorial')
-                    ->boolean()
-                    ->sortable(),
-
-                IconColumn::make('show_in_organization')
-                    ->label('Struktur')
-                    ->boolean()
+                TextColumn::make('insights_count')
+                    ->label('Artikel')
+                    ->numeric()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->visibleFrom('md'),
+
+                TextColumn::make('publications_count')
+                    ->label('Publikasi')
+                    ->numeric()
+                    ->sortable()
+                    ->visibleFrom('md'),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable(),
-
-                TextColumn::make('user.name')
-                    ->label('Akun Admin')
-                    ->searchable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                    ->date('d M Y')
+                    ->sortable()
+                    ->visibleFrom('xl'),
 
                 TextColumn::make('email')
                     ->label('Email')
-                    ->searchable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('user.name')
+                    ->label('User Terhubung')
+                    ->placeholder('—')
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('sort_order')
+                    ->label('Urutan Kontributor')
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                IconColumn::make('show_in_contributor_section')
+                    ->label('Tampil di Contributor Section')
+                    ->boolean()
+                    ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
+            ->searchPlaceholder('Cari nama, institusi, atau jabatan...')
+            ->emptyStateIcon('heroicon-o-user-group')
+            ->emptyStateHeading('Belum ada profil kontributor')
+            ->emptyStateDescription('Tambahkan profil penulis atau kontributor internal dan eksternal.')
             ->filters([
-                SelectFilter::make('profile_type')
-                    ->label('Peran Profil')
-                    ->options(Author::PROFILE_TYPES),
-
                 TernaryFilter::make('is_active')
                     ->label('Status Aktif'),
+
+                SelectFilter::make('institution')
+                    ->label('Institusi')
+                    ->options(fn (): array => Author::query()->whereNotNull('institution')->where('institution', '!=', '')->distinct()->orderBy('institution')->pluck('institution', 'institution')->all())
+                    ->searchable(),
+
+                TernaryFilter::make('has_user')
+                    ->label('Akun User')
+                    ->placeholder('Semua')
+                    ->trueLabel('Memiliki akun user')
+                    ->falseLabel('Tanpa akun user')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->whereNotNull('user_id'),
+                        false: fn (Builder $query): Builder => $query->whereNull('user_id'),
+                    ),
 
                 TernaryFilter::make('show_in_contributor_section')
                     ->label('Tampil di Kontributor Editorial'),
 
-                TernaryFilter::make('without_photo')
-                    ->label('Foto Profil')
-                    ->placeholder('Semua profil')
-                    ->trueLabel('Tanpa foto')
-                    ->falseLabel('Dengan foto')
+                TernaryFilter::make('has_insights')
+                    ->label('Artikel')
+                    ->trueLabel('Memiliki artikel')
+                    ->falseLabel('Tanpa artikel')
                     ->queries(
-                        true: fn (Builder $query): Builder => $query->where(
-                            fn (Builder $photoQuery): Builder => $photoQuery
-                                ->whereNull('photo')
-                                ->orWhere('photo', '')
-                        ),
-                        false: fn (Builder $query): Builder => $query
-                            ->whereNotNull('photo')
-                            ->where('photo', '!=', ''),
+                        true: fn (Builder $query): Builder => $query->has('insights'),
+                        false: fn (Builder $query): Builder => $query->doesntHave('insights'),
+                    ),
+
+                TernaryFilter::make('has_publications')
+                    ->label('Publikasi')
+                    ->trueLabel('Memiliki publikasi')
+                    ->falseLabel('Tanpa publikasi')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->has('publications'),
+                        false: fn (Builder $query): Builder => $query->doesntHave('publications'),
                     ),
             ])
             ->defaultSort(fn (Builder $query): Builder => $query
                 ->orderBy('sort_order')
                 ->orderBy('name'))
             ->recordActions([
-                EditAction::make(),
+                ActionGroup::make([
+                    Action::make('view_public')
+                        ->label('Lihat profil publik')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn (Author $record): string => route('profiles.show', $record->slug))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Author $record): bool => $record->is_active && filled($record->slug)),
+                    EditAction::make()->label('Edit'),
+                    Action::make('view_insights')
+                        ->label('Lihat artikel')
+                        ->icon('heroicon-o-newspaper')
+                        ->url(fn (Author $record): string => InsightResource::getUrl('index', ['tableSearch' => $record->name]))
+                        ->visible(fn (Author $record): bool => $record->insights_count > 0),
+                    Action::make('view_publications')
+                        ->label('Lihat publikasi')
+                        ->icon('heroicon-o-book-open')
+                        ->url(fn (Author $record): string => PublicationResource::getUrl('index', ['tableSearch' => $record->name]))
+                        ->visible(fn (Author $record): bool => $record->publications_count > 0),
+                    Action::make('toggle_active')
+                        ->label(fn (Author $record): string => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
+                        ->icon(fn (Author $record): string => $record->is_active ? 'heroicon-o-no-symbol' : 'heroicon-o-check-circle')
+                        ->color(fn (Author $record): string => $record->is_active ? 'warning' : 'success')
+                        ->authorize('update')
+                        ->requiresConfirmation()
+                        ->action(fn (Author $record) => $record->update(['is_active' => ! $record->is_active])),
+                    DeleteAction::make()
+                        ->label('Hapus')
+                        ->requiresConfirmation()
+                        ->visible(fn (Author $record): bool => blank($record->user_id) && $record->insights_count === 0 && $record->publications_count === 0),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ]);
     }
 
@@ -419,7 +471,7 @@ class AuthorResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery();
+        $query = parent::getEloquentQuery()->with('user:id,name')->withCount(['insights', 'publications']);
         $user = auth()->user();
 
         if (! $user || $user->can('update authors')) {

@@ -22,10 +22,16 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class OpportunityResource extends Resource
@@ -34,11 +40,11 @@ class OpportunityResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Content';
 
-    protected static ?string $navigationLabel = 'Opportunities';
+    protected static ?string $navigationLabel = 'Peluang';
 
-    protected static ?string $modelLabel = 'Opportunity';
+    protected static ?string $modelLabel = 'Peluang';
 
-    protected static ?string $pluralModelLabel = 'Opportunities';
+    protected static ?string $pluralModelLabel = 'Peluang';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-sparkles';
 
@@ -272,9 +278,9 @@ class OpportunityResource extends Resource
     public static function statusOptions(): array
     {
         return [
-            'open' => 'Open',
-            'closed' => 'Closed',
-            'archived' => 'Archived',
+            'open' => 'Dibuka',
+            'closed' => 'Ditutup',
+            'archived' => 'Diarsipkan',
         ];
     }
 
@@ -325,25 +331,19 @@ class OpportunityResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('poster')
-                    ->label('Poster')
-                    ->disk('public')
-                    ->square()
-                    ->size(44)
-                    ->width(64)
-                    ->grow(false)
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
-
-                TextColumn::make('title')
-                    ->label('Judul')
-                    ->searchable()
-                    ->sortable()
-                    ->limit(44)
-                    ->wrap()
-                    ->width('22rem')
-                    ->description(fn (Opportunity $record): ?string => filled($record->excerpt)
-                        ? Str::limit($record->excerpt, 82)
-                        : null),
+                ViewColumn::make('opportunity')
+                    ->label('Peluang')
+                    ->view('filament.tables.columns.resource-content', fn (Opportunity $record): array => [
+                        'imageUrl' => $record->poster_url,
+                        'isPortrait' => true,
+                        'title' => $record->title,
+                        'metadata' => [$record->format, $record->location],
+                    ])
+                    ->searchable(['title', 'type', 'location', 'excerpt'])
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('title', $direction))
+                    ->url(fn (Opportunity $record): ?string => static::canEdit($record) ? static::getUrl('edit', ['record' => $record]) : null)
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-primary-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-primary-cell']),
 
                 TextColumn::make('type')
                     ->label('Jenis')
@@ -358,31 +358,36 @@ class OpportunityResource extends Resource
                         'open_collaboration' => 'primary',
                         default => 'gray',
                     })
-                    ->wrap()
-                    ->formatStateUsing(fn (?string $state): string => static::typeOptions()[$state] ?? ($state ? Str::headline(str_replace('_', ' ', $state)) : '-')),
+                    ->limit(24)
+                    ->tooltip(fn (?string $state): ?string => filled($state) ? (static::typeOptions()[$state] ?? Str::headline($state)) : null)
+                    ->formatStateUsing(fn (?string $state): string => static::typeOptions()[$state] ?? ($state ? Str::headline(str_replace('_', ' ', $state)) : '—'))
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-classification-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-classification-cell']),
+
+                TextColumn::make('status')
+                    ->label('Status')
+                    ->badge()
+                    ->color(fn (?string $state): string => static::statusColor($state))
+                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state))
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-status-cell']),
 
                 TextColumn::make('deadline')
-                    ->label('Deadline')
-                    ->date('d M Y')
+                    ->label('Tenggat')
+                    ->formatStateUsing(fn ($state): string => $state?->locale('id')->translatedFormat('d M Y') ?? '—')
+                    ->description(fn (Opportunity $record): ?string => static::deadlineRelativeLabel($record->deadline))
+                    ->color(fn ($state): string => static::deadlineColor($state))
                     ->sortable()
-                    ->grow(false),
+                    ->placeholder('—')
+                    ->toggleable()
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-time-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-time-cell']),
 
                 TextColumn::make('format')
                     ->label('Format')
                     ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('location')
-                    ->label('Lokasi')
-                    ->limit(36)
-                    ->wrap()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('status')
-                    ->label('Status Peluang')
-                    ->badge()
-                    ->color(fn (?string $state): string => static::statusColor($state))
-                    ->grow(false)
-                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state)),
 
                 IconColumn::make('featured')
                     ->label('Featured')
@@ -390,20 +395,21 @@ class OpportunityResource extends Resource
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable()
+                TextColumn::make('application_link')
+                    ->label('Tautan Aplikasi')
+                    ->limit(40)
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
-                    ->dateTime('d M Y, H:i')
+                    ->formatStateUsing(fn ($state): string => $state->locale('id')->diffForHumans())
+                    ->tooltip(fn (Opportunity $record): string => $record->updated_at->locale('id')->translatedFormat('d M Y, H:i'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('deadline')
-            ->searchPlaceholder('Cari opportunities...')
+            ->searchPlaceholder('Cari peluang, jenis, atau lokasi...')
+            ->searchDebounce('500ms')
             ->paginationPageOptions([10, 25, 50])
             ->filters([
                 SelectFilter::make('type')
@@ -411,17 +417,148 @@ class OpportunityResource extends Resource
                     ->options(static::typeOptions()),
 
                 SelectFilter::make('status')
-                    ->label('Status Peluang')
+                    ->label('Status')
                     ->options(static::statusOptions()),
+
+                SelectFilter::make('format')
+                    ->label('Format')
+                    ->options(fn (): array => Opportunity::query()
+                        ->whereNotNull('format')
+                        ->where('format', '!=', '')
+                        ->distinct()
+                        ->orderBy('format')
+                        ->pluck('format', 'format')
+                        ->all()),
+
+                TernaryFilter::make('featured')
+                    ->label('Featured')
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak'),
+
+                Filter::make('deadline')
+                    ->label('Rentang Tenggat')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari tanggal')->native(false),
+                        DatePicker::make('until')->label('Sampai tanggal')->native(false),
+                    ])
+                    ->columns(2)
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('deadline', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('deadline', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => static::dateRangeIndicators($data, 'Tenggat')),
+
+                TernaryFilter::make('without_deadline')
+                    ->label('Tanpa Tenggat')
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->whereNull('deadline'),
+                        false: fn (Builder $query): Builder => $query->whereNotNull('deadline'),
+                    ),
             ])
             ->recordActions([
-                Actions\EditAction::make(),
+                Actions\ActionGroup::make([
+                    Actions\EditAction::make()->label('Edit'),
+                    Actions\ReplicateAction::make()
+                        ->label('Duplikasi')
+                        ->visible(fn (): bool => static::canCreate())
+                        ->mutateRecordDataUsing(fn (array $data, Opportunity $record): array => [
+                            ...$data,
+                            'title' => Str::limit($record->title.' (Salinan)', 255, ''),
+                            'slug' => static::uniqueDuplicateSlug($record),
+                            'status' => 'open',
+                            'featured' => false,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ]),
+                    Actions\Action::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn (Opportunity $record): bool => $record->status !== 'archived'
+                            && (Auth::user()?->can('archive opportunities') ?? false))
+                        ->action(fn (Opportunity $record) => $record->update(['status' => 'archived', 'updated_by' => Auth::id()])),
+                    Actions\DeleteAction::make()->label('Hapus')->requiresConfirmation(),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
+                    Actions\BulkAction::make('open')
+                        ->label('Buka')
+                        ->icon('heroicon-o-lock-open')
+                        ->color('success')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('publish opportunities') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'open', 'updated_by' => Auth::id()])),
+                    Actions\BulkAction::make('close')
+                        ->label('Tutup')
+                        ->icon('heroicon-o-lock-closed')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('close opportunities') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'closed', 'updated_by' => Auth::id()])),
+                    Actions\BulkAction::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('archive opportunities') ?? false)
+                        ->action(fn ($records) => $records->each->update(['status' => 'archived', 'updated_by' => Auth::id()])),
                     Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    public static function deadlineRelativeLabel(?Carbon $deadline): ?string
+    {
+        if (! $deadline) {
+            return null;
+        }
+
+        $days = (int) today()->diffInDays($deadline->copy()->startOfDay(), false);
+
+        return match (true) {
+            $days === 0 => 'Berakhir hari ini',
+            $days > 0 => $days.' hari lagi',
+            default => 'Lewat '.abs($days).' hari',
+        };
+    }
+
+    public static function deadlineColor(?Carbon $deadline): string
+    {
+        if (! $deadline) {
+            return 'gray';
+        }
+
+        $days = (int) today()->diffInDays($deadline->copy()->startOfDay(), false);
+
+        return $days >= 0 && $days <= 7 ? 'warning' : 'gray';
+    }
+
+    private static function dateRangeIndicators(array $data, string $label): array
+    {
+        return collect([
+            ($data['from'] ?? null) ? Indicator::make($label.' mulai '.Carbon::parse($data['from'])->locale('id')->translatedFormat('d M Y'))->removeField('from') : null,
+            ($data['until'] ?? null) ? Indicator::make($label.' sampai '.Carbon::parse($data['until'])->locale('id')->translatedFormat('d M Y'))->removeField('until') : null,
+        ])->filter()->all();
+    }
+
+    public static function uniqueDuplicateSlug(Opportunity $record): string
+    {
+        $base = Str::limit(Str::slug($record->slug ?: $record->title).'-salinan', 240, '');
+        $slug = $base;
+        $suffix = 2;
+
+        while (Opportunity::query()->where('slug', $slug)->exists()) {
+            $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix++;
+        }
+
+        return $slug;
     }
 
     protected static function listRepeater(string $field, string $label, string $addActionLabel): Repeater

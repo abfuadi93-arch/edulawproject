@@ -65,9 +65,9 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([
                 'Content',
-                'Interaction',
-                'Reference',
-                'Account',
+                'Interaksi',
+                'Referensi',
+                'Akun',
                 'Akses Admin',
             ])
             ->userMenuItems([

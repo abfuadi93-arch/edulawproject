@@ -13,7 +13,8 @@ class EditTag extends EditRecordAndReturn
     protected function getHeaderActions(): array
     {
         return [
-            DeleteAction::make(),
+            DeleteAction::make()
+                ->visible(fn (): bool => ! $this->getRecord()->insights()->exists() && ! $this->getRecord()->publications()->exists()),
         ];
     }
 }

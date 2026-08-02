@@ -22,11 +22,16 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Utilities\Set;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
-use Filament\Tables\Columns\ImageColumn;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Filters\Filter;
+use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class MultimediaResource extends Resource
@@ -337,25 +342,22 @@ class MultimediaResource extends Resource
     {
         return $table
             ->columns([
-                ImageColumn::make('thumbnail')
-                    ->label('Thumbnail')
-                    ->disk('public')
-                    ->square()
-                    ->size(44)
-                    ->width(64)
-                    ->grow(false)
-                    ->defaultImageUrl(asset('images/logo/icon-bg.png')),
-
-                TextColumn::make('title')
-                    ->label('Judul')
-                    ->searchable(['title', 'description', 'media_url'])
-                    ->sortable()
-                    ->limit(44)
-                    ->wrap()
-                    ->width('22rem')
-                    ->description(fn (Multimedia $record): ?string => filled($record->description)
-                        ? Str::limit($record->description, 82)
-                        : null),
+                ViewColumn::make('content')
+                    ->label('Konten')
+                    ->view('filament.tables.columns.resource-content', fn (Multimedia $record): array => [
+                        'imageUrl' => $record->thumbnail_url,
+                        'title' => $record->title,
+                        'metadata' => [
+                            $record->duration,
+                            $record->display_platform,
+                            $record->published_at?->locale('id')->translatedFormat('d M Y'),
+                        ],
+                    ])
+                    ->searchable(['title', 'description', 'platform', 'type'])
+                    ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('title', $direction))
+                    ->url(fn (Multimedia $record): ?string => static::canEdit($record) ? static::getUrl('edit', ['record' => $record]) : null)
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-primary-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-primary-cell']),
 
                 TextColumn::make('type')
                     ->label('Tipe')
@@ -371,8 +373,11 @@ class MultimediaResource extends Resource
                         'webinar' => 'primary',
                         default => 'gray',
                     })
-                    ->wrap()
-                    ->formatStateUsing(fn (?string $state): string => static::tableTypeOptions()[Multimedia::normalizeType($state)] ?? ($state ? Str::headline($state) : '-')),
+                    ->limit(20)
+                    ->formatStateUsing(fn (?string $state): string => static::tableTypeOptions()[Multimedia::normalizeType($state)] ?? ($state ? Str::headline($state) : '—'))
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-classification-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-classification-cell']),
 
                 TextColumn::make('platform')
                     ->label('Platform')
@@ -387,13 +392,10 @@ class MultimediaResource extends Resource
                         'other' => 'gray',
                         default => 'gray',
                     })
-                    ->grow(false)
-                    ->formatStateUsing(fn (?string $state): string => Multimedia::PLATFORM_OPTIONS[$state] ?? ($state ? Str::headline($state) : '-')),
-
-                TextColumn::make('published_at')
-                    ->label('Tanggal Publikasi')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->formatStateUsing(fn (?string $state): string => Multimedia::PLATFORM_OPTIONS[$state] ?? ($state ? Str::headline($state) : '—'))
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-platform-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-platform-cell']),
 
                 TextColumn::make('status')
                     ->label('Status')
@@ -403,18 +405,30 @@ class MultimediaResource extends Resource
                         'archived' => 'gray',
                         default => 'warning',
                     })
-                    ->grow(false)
                     ->formatStateUsing(fn (?string $state): string => match ($state) {
                         'draft' => 'Draft',
                         'published', 'terbit' => 'Published',
-                        'archived' => 'Archived',
-                        default => $state ? Str::headline($state) : '-',
-                    }),
+                        'archived' => 'Diarsipkan',
+                        default => $state ? Str::headline($state) : '—',
+                    })
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-status-cell']),
+
+                TextColumn::make('published_at')
+                    ->label('Terbit')
+                    ->formatStateUsing(fn ($state): string => $state?->locale('id')->translatedFormat('d M Y') ?? '—')
+                    ->sortable()
+                    ->placeholder('—')
+                    ->toggleable()
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-resource-time-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-resource-time-cell']),
 
                 IconColumn::make('featured')
                     ->label('Featured')
                     ->boolean()
-                    ->sortable(),
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('media_url')
                     ->label('URL')
@@ -422,21 +436,18 @@ class MultimediaResource extends Resource
                     ->limit(36)
                     ->toggleable(isToggledHiddenByDefault: true),
 
-                TextColumn::make('created_at')
-                    ->label('Dibuat')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable(),
-
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
-                    ->dateTime('d M Y, H:i')
+                    ->formatStateUsing(fn ($state): string => $state->locale('id')->diffForHumans())
+                    ->tooltip(fn (Multimedia $record): string => $record->updated_at->locale('id')->translatedFormat('d M Y, H:i'))
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort(fn (Builder $query): Builder => $query
                 ->orderByDesc('published_at')
                 ->orderByDesc('created_at'))
-            ->searchPlaceholder('Cari multimedia...')
+            ->searchPlaceholder('Cari judul, jenis, atau platform...')
+            ->searchDebounce('500ms')
             ->paginationPageOptions([10, 25, 50])
             ->filters([
                 SelectFilter::make('type')
@@ -452,26 +463,63 @@ class MultimediaResource extends Resource
                     ->options([
                         'draft' => 'Draft',
                         'published' => 'Published',
-                        'archived' => 'Archived',
+                        'archived' => 'Diarsipkan',
                     ]),
 
-                SelectFilter::make('featured')
+                TernaryFilter::make('featured')
                     ->label('Featured')
-                    ->options([
-                        '1' => 'Featured',
-                        '0' => 'Bukan Featured',
-                    ]),
+                    ->placeholder('Semua')
+                    ->trueLabel('Ya')
+                    ->falseLabel('Tidak'),
+
+                Filter::make('published_at')
+                    ->label('Rentang Tanggal Terbit')
+                    ->schema([
+                        DateTimePicker::make('from')->label('Dari tanggal')->native(false)->seconds(false),
+                        DateTimePicker::make('until')->label('Sampai tanggal')->native(false)->seconds(false),
+                    ])
+                    ->columns(2)
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->where('published_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->where('published_at', '<=', $date)))
+                    ->indicateUsing(fn (array $data): array => static::dateRangeIndicators($data, 'Terbit')),
             ])
             ->recordActions([
-                Actions\EditAction::make(),
+                Actions\ActionGroup::make([
+                    Actions\EditAction::make()->label('Edit'),
+                    Actions\ReplicateAction::make()
+                        ->label('Duplikasi')
+                        ->visible(fn (): bool => static::canCreate())
+                        ->mutateRecordDataUsing(fn (array $data, Multimedia $record): array => [
+                            ...$data,
+                            'title' => Str::limit($record->title.' (Salinan)', 255, ''),
+                            'slug' => static::uniqueDuplicateSlug($record),
+                            'status' => 'draft',
+                            'published_at' => null,
+                            'featured' => false,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ]),
+                    Actions\Action::make('archive')
+                        ->label('Arsipkan')
+                        ->icon('heroicon-o-archive-box')
+                        ->color('warning')
+                        ->requiresConfirmation()
+                        ->visible(fn (Multimedia $record): bool => $record->status !== 'archived'
+                            && (Auth::user()?->can('archive multimedia') ?? false))
+                        ->action(fn (Multimedia $record) => $record->update(['status' => 'archived', 'updated_by' => Auth::id()])),
+                    Actions\DeleteAction::make()->label('Hapus')->requiresConfirmation(),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 Actions\BulkActionGroup::make([
                     Actions\BulkAction::make('publish')
-                        ->label('Publish')
+                        ->label('Publikasikan')
                         ->icon('heroicon-o-check-circle')
                         ->color('success')
                         ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('publish multimedia') ?? false)
                         ->action(function ($records): void {
                             $records->each(function (Multimedia $record): void {
                                 $record->update([
@@ -482,10 +530,12 @@ class MultimediaResource extends Resource
                         }),
 
                     Actions\BulkAction::make('archive')
-                        ->label('Archive')
+                        ->label('Arsipkan')
                         ->icon('heroicon-o-archive-box')
-                        ->color('gray')
+                        ->color('warning')
                         ->requiresConfirmation()
+                        ->authorizeIndividualRecords('update')
+                        ->visible(fn (): bool => Auth::user()?->can('archive multimedia') ?? false)
                         ->action(function ($records): void {
                             $records->each(function (Multimedia $record): void {
                                 $record->update([
@@ -497,6 +547,27 @@ class MultimediaResource extends Resource
                     Actions\DeleteBulkAction::make(),
                 ]),
             ]);
+    }
+
+    private static function dateRangeIndicators(array $data, string $label): array
+    {
+        return collect([
+            ($data['from'] ?? null) ? Indicator::make($label.' mulai '.Carbon::parse($data['from'])->locale('id')->translatedFormat('d M Y'))->removeField('from') : null,
+            ($data['until'] ?? null) ? Indicator::make($label.' sampai '.Carbon::parse($data['until'])->locale('id')->translatedFormat('d M Y'))->removeField('until') : null,
+        ])->filter()->all();
+    }
+
+    public static function uniqueDuplicateSlug(Multimedia $record): string
+    {
+        $base = Str::limit(Str::slug($record->slug ?: $record->title).'-salinan', 240, '');
+        $slug = $base;
+        $suffix = 2;
+
+        while (Multimedia::query()->where('slug', $slug)->exists()) {
+            $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix++;
+        }
+
+        return $slug;
     }
 
     public static function getRelations(): array

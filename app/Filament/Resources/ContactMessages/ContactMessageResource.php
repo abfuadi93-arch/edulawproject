@@ -6,8 +6,12 @@ use App\Filament\Resources\ContactMessages\Pages\CreateContactMessage;
 use App\Filament\Resources\ContactMessages\Pages\EditContactMessage;
 use App\Filament\Resources\ContactMessages\Pages\ListContactMessages;
 use App\Models\ContactMessage;
+use App\Models\User;
 use BackedEnum;
-use Filament\Actions;
+use Filament\Actions\Action;
+use Filament\Actions\ActionGroup;
+use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -18,20 +22,25 @@ use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\SelectFilter;
+use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Facades\Auth;
 
 class ContactMessageResource extends Resource
 {
     protected static ?string $model = ContactMessage::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Interaction';
+    protected static string|\UnitEnum|null $navigationGroup = 'Interaksi';
 
-    protected static ?string $navigationLabel = 'Messages';
+    protected static ?string $navigationLabel = 'Pesan';
 
-    protected static ?string $modelLabel = 'Pesan Kontak';
+    protected static ?string $modelLabel = 'Pesan';
 
-    protected static ?string $pluralModelLabel = 'Pesan Kontak';
+    protected static ?string $pluralModelLabel = 'Pesan';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-envelope';
 
@@ -137,48 +146,56 @@ class ContactMessageResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->extraAttributes(['class' => 'edulaw-inbox-table'])
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nama')
-                    ->searchable()
+                ViewColumn::make('sender')
+                    ->label('Pengirim')
+                    ->view('filament.tables.columns.inbox-sender', fn (ContactMessage $record): array => [
+                        'name' => $record->name,
+                        'email' => $record->email,
+                        'phone' => $record->phone,
+                    ])
+                    ->searchable(query: fn (Builder $query, string $search): Builder => $query->where(function (Builder $query) use ($search): void {
+                        $query->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('subject', 'like', "%{$search}%")
+                            ->orWhere('message', 'like', "%{$search}%");
+                    }))
                     ->sortable(),
-
-                TextColumn::make('email')
-                    ->label('Email')
-                    ->searchable()
-                    ->copyable()
-                    ->toggleable(),
 
                 TextColumn::make('subject')
                     ->label('Subjek')
-                    ->searchable()
-                    ->limit(45),
+                    ->description(fn (ContactMessage $record): string => str($record->message)->squish()->limit(72))
+                    ->limit(44)
+                    ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 44 ? $state : null),
 
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->formatStateUsing(fn (?string $state): string => match ($state) {
-                        'new' => 'Baru',
-                        'read' => 'Dibaca',
-                        'replied' => 'Dibalas',
-                        'archived' => 'Diarsipkan',
-                        default => $state ? ucfirst($state) : '-',
-                    }),
+                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state))
+                    ->color(fn (?string $state): string => static::statusColor($state)),
+
+                TextColumn::make('created_at')
+                    ->label('Diterima')
+                    ->date('d M Y')
+                    ->tooltip(fn (ContactMessage $record): ?string => $record->created_at?->translatedFormat('d F Y, H:i'))
+                    ->sortable()
+                    ->visibleFrom('md'),
 
                 TextColumn::make('handler.name')
-                    ->label('Handler')
-                    ->toggleable(),
+                    ->label('Penanggung Jawab')
+                    ->placeholder('Belum ditugaskan')
+                    ->visibleFrom('lg'),
+
+                TextColumn::make('phone')
+                    ->label('Nomor Telepon')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('handled_at')
                     ->label('Ditangani')
                     ->dateTime('d M Y, H:i')
                     ->sortable()
-                    ->toggleable(),
-
-                TextColumn::make('created_at')
-                    ->label('Masuk')
-                    ->dateTime('d M Y, H:i')
-                    ->sortable(),
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
@@ -187,25 +204,112 @@ class ContactMessageResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->defaultSort('created_at', 'desc')
+            ->searchPlaceholder('Cari pengirim, subjek, atau isi pesan...')
+            ->emptyStateIcon('heroicon-o-envelope')
+            ->emptyStateHeading('Belum ada pesan masuk')
+            ->emptyStateDescription('Pesan dari halaman kontak akan muncul di sini.')
             ->filters([
                 SelectFilter::make('status')
                     ->label('Status')
-                    ->options([
-                        'new' => 'Baru',
-                        'read' => 'Dibaca',
-                        'replied' => 'Dibalas',
-                        'archived' => 'Diarsipkan',
-                    ]),
+                    ->options(static::statusOptions()),
+
+                SelectFilter::make('handled_by')
+                    ->label('Penanggung Jawab')
+                    ->relationship('handler', 'name')
+                    ->searchable()
+                    ->preload(),
+
+                Filter::make('created_at')
+                    ->label('Rentang Tanggal')
+                    ->schema([
+                        DatePicker::make('from')->label('Dari tanggal')->native(false),
+                        DatePicker::make('until')->label('Sampai tanggal')->native(false),
+                    ])
+                    ->columns(2)
+                    ->query(fn (Builder $query, array $data): Builder => $query
+                        ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('created_at', '>=', $date))
+                        ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('created_at', '<=', $date))),
+
+                TernaryFilter::make('unassigned')
+                    ->label('Penugasan')
+                    ->placeholder('Semua')
+                    ->trueLabel('Belum ditugaskan')
+                    ->falseLabel('Sudah ditugaskan')
+                    ->queries(
+                        true: fn (Builder $query): Builder => $query->whereNull('handled_by'),
+                        false: fn (Builder $query): Builder => $query->whereNotNull('handled_by'),
+                    ),
             ])
             ->recordActions([
-                Actions\ViewAction::make(),
-                Actions\EditAction::make(),
-            ])
-            ->toolbarActions([
-                Actions\BulkActionGroup::make([
-                    Actions\DeleteBulkAction::make(),
-                ]),
+                ActionGroup::make([
+                    EditAction::make()->label('Lihat')->icon('heroicon-o-eye'),
+                    static::statusAction('read', 'Tandai Dibaca', 'heroicon-o-eye'),
+                    static::statusAction('replied', 'Tandai Dibalas', 'heroicon-o-paper-airplane', 'success'),
+                    Action::make('assign')
+                        ->label('Tugaskan')
+                        ->icon('heroicon-o-user-plus')
+                        ->authorize('update')
+                        ->schema([
+                            Select::make('handled_by')
+                                ->label('Penanggung Jawab')
+                                ->options(fn (): array => User::query()->where('is_active', true)->orderBy('name')->pluck('name', 'id')->all())
+                                ->searchable()
+                                ->required(),
+                        ])
+                        ->fillForm(fn (ContactMessage $record): array => ['handled_by' => $record->handled_by])
+                        ->action(fn (ContactMessage $record, array $data) => $record->update([
+                            'handled_by' => $data['handled_by'],
+                            'handled_at' => $record->handled_at ?? now(),
+                        ])),
+                    static::statusAction('archived', 'Arsipkan', 'heroicon-o-archive-box', 'warning'),
+                ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ]);
+    }
+
+    public static function statusOptions(): array
+    {
+        return [
+            'new' => 'Baru',
+            'read' => 'Dibaca',
+            'replied' => 'Dibalas',
+            'archived' => 'Diarsipkan',
+        ];
+    }
+
+    public static function statusLabel(?string $status): string
+    {
+        return static::statusOptions()[$status] ?? ($status ? ucfirst($status) : '—');
+    }
+
+    public static function statusColor(?string $status): string
+    {
+        return match ($status) {
+            'new' => 'primary',
+            'read' => 'warning',
+            'replied' => 'success',
+            default => 'gray',
+        };
+    }
+
+    protected static function statusAction(string $status, string $label, string $icon, string $color = 'gray'): Action
+    {
+        return Action::make("set_{$status}")
+            ->label($label)
+            ->icon($icon)
+            ->color($color)
+            ->authorize('update')
+            ->visible(fn (ContactMessage $record): bool => $record->status !== $status)
+            ->requiresConfirmation(fn (): bool => $status === 'archived')
+            ->action(fn (ContactMessage $record) => $record->update([
+                'status' => $status,
+                'handled_by' => $record->handled_by ?? Auth::id(),
+                'handled_at' => $record->handled_at ?? now(),
+            ]));
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->with('handler:id,name');
     }
 
     public static function getRelations(): array
