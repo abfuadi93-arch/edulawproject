@@ -281,7 +281,7 @@ class AuthorResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-profile-table'])
+            ->extraAttributes(['class' => 'edulaw-profile-table edulaw-author-table'])
             ->columns([
                 ViewColumn::make('profile')
                     ->label('Profil')
@@ -290,6 +290,9 @@ class AuthorResource extends Resource
                         'name' => $record->name,
                         'position' => $record->position,
                         'email' => $record->email,
+                        'institution' => $record->institution,
+                        'insightsCount' => (int) $record->insights_count,
+                        'publicationsCount' => (int) $record->publications_count,
                     ])
                     ->searchable(['name', 'email', 'institution', 'position'])
                     ->sortable()
@@ -298,35 +301,47 @@ class AuthorResource extends Resource
 
                 TextColumn::make('institution')
                     ->label('Institusi')
-                    ->limit(32)
-                    ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 32 ? $state : null)
+                    ->tooltip(fn (?string $state): ?string => filled($state) ? $state : null)
                     ->placeholder('—')
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-author-institution-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-author-institution-cell']),
 
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
-                    ->sortable(),
+                    ->sortable()
+                    ->extraHeaderAttributes(['class' => 'edulaw-author-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-author-status-cell']),
 
                 TextColumn::make('insights_count')
                     ->label('Artikel')
                     ->numeric()
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->alignment('center')
+                    ->extraHeaderAttributes(['class' => 'edulaw-author-count-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-author-count-cell']),
 
                 TextColumn::make('publications_count')
                     ->label('Publikasi')
                     ->numeric()
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->alignment('center')
+                    ->extraHeaderAttributes(['class' => 'edulaw-author-count-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-author-count-cell']),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
                     ->date('d M Y')
                     ->sortable()
-                    ->visibleFrom('xl'),
+                    ->visibleFrom('xl')
+                    ->tooltip(fn (Author $record): string => $record->updated_at->format('d M Y, H:i'))
+                    ->extraHeaderAttributes(['class' => 'edulaw-author-updated-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-author-updated-cell']),
 
                 TextColumn::make('email')
                     ->label('Email')
@@ -338,17 +353,25 @@ class AuthorResource extends Resource
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('sort_order')
-                    ->label('Urutan Kontributor')
+                    ->label('Urutan')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 IconColumn::make('show_in_contributor_section')
-                    ->label('Tampil di Contributor Section')
+                    ->label('Tampil di Kontributor')
                     ->boolean()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+
+                TextColumn::make('created_at')
+                    ->label('Dibuat')
+                    ->date('d M Y')
                     ->sortable()
                     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->searchPlaceholder('Cari nama, institusi, atau jabatan...')
+            ->paginationPageOptions([10, 25, 50])
+            ->defaultPaginationPageOption(10)
             ->emptyStateIcon('heroicon-o-user-group')
             ->emptyStateHeading('Belum ada profil kontributor')
             ->emptyStateDescription('Tambahkan profil penulis atau kontributor internal dan eksternal.')
@@ -398,22 +421,20 @@ class AuthorResource extends Resource
             ->recordActions([
                 ActionGroup::make([
                     Action::make('view_public')
-                        ->label('Lihat profil publik')
+                        ->label('Lihat Profil Publik')
                         ->icon('heroicon-o-eye')
                         ->url(fn (Author $record): string => route('profiles.show', $record->slug))
                         ->openUrlInNewTab()
                         ->visible(fn (Author $record): bool => $record->is_active && filled($record->slug)),
                     EditAction::make()->label('Edit'),
                     Action::make('view_insights')
-                        ->label('Lihat artikel')
+                        ->label('Lihat Artikel')
                         ->icon('heroicon-o-newspaper')
-                        ->url(fn (Author $record): string => InsightResource::getUrl('index', ['tableSearch' => $record->name]))
-                        ->visible(fn (Author $record): bool => $record->insights_count > 0),
+                        ->url(fn (Author $record): string => InsightResource::getUrl('index', ['tableSearch' => $record->name])),
                     Action::make('view_publications')
-                        ->label('Lihat publikasi')
+                        ->label('Lihat Publikasi')
                         ->icon('heroicon-o-book-open')
-                        ->url(fn (Author $record): string => PublicationResource::getUrl('index', ['tableSearch' => $record->name]))
-                        ->visible(fn (Author $record): bool => $record->publications_count > 0),
+                        ->url(fn (Author $record): string => PublicationResource::getUrl('index', ['tableSearch' => $record->name])),
                     Action::make('toggle_active')
                         ->label(fn (Author $record): string => $record->is_active ? 'Nonaktifkan' : 'Aktifkan')
                         ->icon(fn (Author $record): string => $record->is_active ? 'heroicon-o-no-symbol' : 'heroicon-o-check-circle')
@@ -426,7 +447,9 @@ class AuthorResource extends Resource
                         ->requiresConfirmation()
                         ->visible(fn (Author $record): bool => blank($record->user_id) && $record->insights_count === 0 && $record->publications_count === 0),
                 ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
-            ]);
+            ])
+            ->recordActionsAlignment('center')
+            ->recordActionsColumnLabel('');
     }
 
     public static function avatarHtml(Author $author): HtmlString

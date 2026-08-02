@@ -650,6 +650,170 @@
     letter-spacing: 0.04em;
 }
 
+/* AuthorResource table: identity remains primary while compact columns stay bounded. */
+.edulaw-author-table :is(.fi-ta-content, .fi-ta-content-ctn) {
+    max-width: 100%;
+    overflow-x: clip;
+}
+
+.edulaw-author-table .fi-ta-table {
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+}
+
+.edulaw-author-table :is(.fi-ta-header-cell, .fi-ta-cell, .fi-ta-col, .fi-ta-col-wrp) {
+    min-width: 0;
+}
+
+.edulaw-author-table .fi-ta-row {
+    height: 3.75rem;
+    border-color: rgb(226 232 240 / 0.7);
+    vertical-align: middle;
+}
+
+.edulaw-author-table .fi-ta-cell {
+    padding-block: 0.5rem;
+}
+
+.edulaw-author-table .fi-ta-text:not(.fi-inline) {
+    padding-block: 0;
+}
+
+.edulaw-author-table :is(.edulaw-profile-primary-header, .edulaw-profile-primary-cell) {
+    width: 38%;
+    overflow: hidden;
+}
+
+.edulaw-author-table :is(.edulaw-author-institution-header, .edulaw-author-institution-cell) {
+    width: 20%;
+    overflow: hidden;
+}
+
+.edulaw-author-table .edulaw-author-institution-cell .fi-ta-text-item-label {
+    display: block;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edulaw-author-table :is(.edulaw-author-status-header, .edulaw-author-status-cell) {
+    width: 10%;
+}
+
+.edulaw-author-table :is(.edulaw-author-count-header, .edulaw-author-count-cell) {
+    width: 8%;
+    padding-inline: 0.35rem;
+    text-align: center;
+}
+
+.edulaw-author-table .edulaw-author-count-cell .fi-ta-text {
+    padding-inline: 0;
+}
+
+.edulaw-author-table .edulaw-author-count-cell {
+    font-variant-numeric: tabular-nums;
+}
+
+.edulaw-author-table :is(.edulaw-author-updated-header, .edulaw-author-updated-cell) {
+    width: 16%;
+}
+
+.edulaw-author-table .edulaw-author-updated-cell .fi-ta-text-item-label,
+.edulaw-author-table .edulaw-author-status-cell .fi-badge {
+    white-space: nowrap;
+}
+
+.edulaw-author-table .fi-ta-selection-cell {
+    width: 2.5rem;
+    padding-inline: 0.625rem;
+}
+
+.edulaw-author-table :is(.fi-ta-actions-header-cell, .fi-ta-cell:has(> .fi-ta-actions)) {
+    width: 3rem;
+    padding-inline: 0.375rem;
+    text-align: center;
+}
+
+.edulaw-author-table .fi-ta-header-toolbar {
+    min-width: 0;
+    flex-wrap: wrap;
+}
+
+.edulaw-author-table .fi-ta-header-toolbar > :nth-child(2) {
+    min-width: 0;
+}
+
+.edulaw-author-table .fi-ta-search-field {
+    width: min(19rem, 100%);
+    min-width: min(17.5rem, 100%);
+    flex-basis: 19rem;
+}
+
+.edulaw-author-table .fi-ta-footer {
+    width: 100%;
+    min-width: 0;
+}
+
+.edulaw-author-profile__institution,
+.edulaw-author-profile__counts {
+    display: none;
+    overflow: hidden;
+    color: rgb(100 116 139);
+    font-size: 0.6875rem;
+    line-height: 1.2;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.dark :is(.edulaw-author-profile__institution, .edulaw-author-profile__counts) {
+    color: rgb(148 163 184);
+}
+
+@media (min-width: 48rem) and (max-width: 79.999rem) {
+    .edulaw-author-table .fi-ta-cell {
+        padding-block: 0.25rem;
+    }
+
+    .edulaw-author-table :is(.edulaw-profile-primary-header, .edulaw-profile-primary-cell) {
+        width: 66%;
+    }
+
+    .edulaw-author-table :is(.edulaw-author-status-header, .edulaw-author-status-cell) {
+        width: 14%;
+    }
+
+    .edulaw-author-table :is(.edulaw-author-count-header, .edulaw-author-count-cell) {
+        width: 10%;
+    }
+
+    .edulaw-author-profile__institution {
+        display: block;
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .edulaw-author-table .fi-ta-cell {
+        padding-block: 0.25rem;
+    }
+
+    .edulaw-author-table :is(.edulaw-profile-primary-header, .edulaw-profile-primary-cell) {
+        width: calc(74% - 3rem);
+    }
+
+    .edulaw-author-table :is(.edulaw-author-status-header, .edulaw-author-status-cell) {
+        width: 26%;
+    }
+
+    .edulaw-author-table .edulaw-profile-identity {
+        gap: 0.625rem;
+    }
+
+    .edulaw-author-profile__counts {
+        display: block;
+    }
+}
+
 @media (max-width: 47.999rem) {
     :is(
         .fi-resource-collaboration-submissions,
