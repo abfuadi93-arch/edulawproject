@@ -16,7 +16,6 @@ class Author extends Model
     use HasFactory;
 
     protected $attributes = [
-        'sort_order' => 0,
         'show_in_contributor_section' => false,
     ];
 

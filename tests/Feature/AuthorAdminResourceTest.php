@@ -55,7 +55,16 @@ test('author schema exposes editorial contributor curation fields with safe defa
     ])->fresh();
 
     expect($author->show_in_contributor_section)->toBeFalse()
-        ->and($author->sort_order)->toBe(0);
+        ->and($author->sort_order)->toBeNull();
+});
+
+test('author display order remains nullable when left empty', function () {
+    $data = AuthorResource::prepareFormDataForPersistence([
+        'name' => 'Kontributor Tanpa Urutan',
+        'sort_order' => '',
+    ]);
+
+    expect($data['sort_order'])->toBeNull();
 });
 
 test('visible contributor scope requires active and selected authors and supports editorial ordering', function () {
@@ -155,6 +164,7 @@ test('super admin can open create and edit author forms with contributor control
         ->assertSee('Manager')
         ->assertSee('Officer, Writer, Designer')
         ->assertSee('Founder dan Co-Founder ditetapkan secara statis pada halaman Tentang.')
+        ->assertSee('Opsional. Kontributor Editorial diurutkan otomatis berdasarkan jumlah tulisan; angka ini hanya digunakan saat jumlahnya sama.')
         ->assertSee('Tampilkan di Kontributor Editorial');
 
     $this->actingAs($user)

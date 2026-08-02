@@ -176,11 +176,9 @@ class AuthorResource extends Resource
                                         TextInput::make('sort_order')
                                             ->label('Urutan Tampil')
                                             ->numeric()
-                                            ->default(0)
-                                            ->required()
                                             ->minValue(0)
-                                            ->placeholder('Contoh: 10')
-                                            ->helperText('Angka kecil tampil lebih dulu.')
+                                            ->placeholder('Opsional, contoh: 10')
+                                            ->helperText('Opsional. Kontributor Editorial diurutkan otomatis berdasarkan jumlah tulisan; angka ini hanya digunakan saat jumlahnya sama.')
                                             ->columnSpanFull(),
                                     ])
                                     ->columns(1)
@@ -488,7 +486,11 @@ class AuthorResource extends Resource
             $data['slug'] = Str::slug((string) $data['slug']);
         }
 
-        $data['sort_order'] = max(0, (int) ($data['sort_order'] ?? 0));
+        if (array_key_exists('sort_order', $data)) {
+            $data['sort_order'] = filled($data['sort_order'])
+                ? max(0, (int) $data['sort_order'])
+                : null;
+        }
 
         if (isset($data['social_links']) && is_array($data['social_links'])) {
             $data['social_links'] = (new Author(['social_links' => $data['social_links']]))->socialLinksMap();

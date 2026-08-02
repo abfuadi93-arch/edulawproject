@@ -380,6 +380,8 @@ class InsightController extends Controller
             ->withCount([
                 'insights as published_insights_count' => fn ($query) => $query->published(),
             ])
+            ->orderByDesc('published_insights_count')
+            ->orderByRaw('CASE WHEN sort_order IS NULL THEN 1 ELSE 0 END')
             ->orderBy('sort_order')
             ->orderBy('name')
             ->take(10)

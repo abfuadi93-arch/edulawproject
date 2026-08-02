@@ -668,6 +668,63 @@ test('editorial contributor labels use public author position instead of auth ro
     $authors->each(fn (Author $author) => $response->assertSee(route('profiles.show', $author->slug), false));
 });
 
+test('editorial contributors prioritize published writing count before optional display order', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Urutan Kontributor',
+        'slug' => 'urutan-kontributor',
+        'is_active' => true,
+    ]);
+
+    $popular = Author::query()->create([
+        'name' => 'Kontributor Terproduktif',
+        'slug' => 'kontributor-terproduktif',
+        'sort_order' => 99,
+        'is_active' => true,
+        'show_in_contributor_section' => true,
+    ]);
+    $manualFirst = Author::query()->create([
+        'name' => 'Kontributor Urutan Satu',
+        'slug' => 'kontributor-urutan-satu',
+        'sort_order' => 1,
+        'is_active' => true,
+        'show_in_contributor_section' => true,
+    ]);
+    $manualSecond = Author::query()->create([
+        'name' => 'Kontributor Urutan Dua',
+        'slug' => 'kontributor-urutan-dua',
+        'sort_order' => 20,
+        'is_active' => true,
+        'show_in_contributor_section' => true,
+    ]);
+
+    foreach ([
+        [$popular, 'Tulisan Populer 1', 'published'],
+        [$popular, 'Tulisan Populer 2', 'published'],
+        [$manualFirst, 'Tulisan Urutan Satu', 'published'],
+        [$manualFirst, 'Draf Urutan Satu', 'draft'],
+        [$manualSecond, 'Tulisan Urutan Dua', 'published'],
+    ] as $index => [$author, $title, $status]) {
+        $insight = Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => $title,
+            'slug' => 'urutan-kontributor-'.$index,
+            'content' => '<p>Konten.</p>',
+            'status' => $status,
+            'published_at' => $status === 'published' ? now()->subMinutes($index) : null,
+        ]);
+        $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
+    }
+
+    $html = $this->get(route('insights.index'))
+        ->assertOk()
+        ->getContent();
+
+    expect(strpos($html, 'data-editorial-contributor="'.$popular->id.'"'))
+        ->toBeLessThan(strpos($html, 'data-editorial-contributor="'.$manualFirst->id.'"'))
+        ->and(strpos($html, 'data-editorial-contributor="'.$manualFirst->id.'"'))
+        ->toBeLessThan(strpos($html, 'data-editorial-contributor="'.$manualSecond->id.'"'));
+});
+
 test('editorial contributor grid is capped to ten profiles in five desktop columns', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
