@@ -191,7 +191,7 @@ class MultimediaResource extends Resource
                                             ->maxSize(2048)
                                             ->required(fn (Get $get): bool => $get('type') === 'gallery')
                                             ->helperText(fn (Get $get): string => match ($get('type')) {
-                                                'reels' => 'Opsional. Jika digunakan, pilih thumbnail vertikal rasio 4:5 atau 9:16.',
+                                                'reels' => 'Opsional. Jika kosong, thumbnail Shorts/Reels akan diambil otomatis dari platform.',
                                                 'gallery' => 'Gunakan cover album landscape rasio 16:9 atau 4:3.',
                                                 default => 'Gunakan thumbnail landscape rasio 16:9. Jika kosong, thumbnail YouTube digunakan otomatis.',
                                             })

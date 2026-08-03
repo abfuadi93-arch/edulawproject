@@ -7,6 +7,7 @@ use App\Models\Multimedia;
 use App\Models\User;
 use Filament\Facades\Filament;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
@@ -85,6 +86,18 @@ test('youtube video can be saved without an exposed slug or thumbnail', function
 });
 
 test('shorts and reels can be saved without a thumbnail', function () {
+    Storage::fake('public');
+    Http::fake([
+        'https://www.instagram.com/reel/no-thumbnail/' => Http::response(
+            '<html><head><meta property="og:image" content="https://scontent.cdninstagram.com/reel-cover.jpg"></head></html>'
+        ),
+        'https://scontent.cdninstagram.com/reel-cover.jpg' => Http::response(
+            'fake-jpeg-content',
+            200,
+            ['Content-Type' => 'image/jpeg']
+        ),
+    ]);
+
     $user = multimediaAdmin();
 
     Livewire::actingAs($user)
@@ -102,9 +115,11 @@ test('shorts and reels can be saved without a thumbnail', function () {
 
     $record = Multimedia::query()->where('title', 'Reel Tanpa Thumbnail')->firstOrFail();
 
-    expect($record->thumbnail)->toBeNull()
+    expect($record->thumbnail)->toStartWith('multimedia/thumbnails/short-'.$record->getKey().'-')
         ->and($record->type)->toBe('reels')
         ->and($record->platform)->toBe('instagram');
+
+    Storage::disk('public')->assertExists($record->thumbnail);
 });
 
 test('media URL is required and lightly validated for its selected platform', function () {

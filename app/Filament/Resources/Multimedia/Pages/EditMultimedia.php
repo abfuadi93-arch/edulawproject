@@ -4,12 +4,18 @@ namespace App\Filament\Resources\Multimedia\Pages;
 
 use App\Filament\Resources\Multimedia\MultimediaResource;
 use App\Filament\Resources\Pages\EditRecordAndReturn;
+use App\Support\MultimediaThumbnail;
 use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 
 class EditMultimedia extends EditRecordAndReturn
 {
     protected static string $resource = MultimediaResource::class;
+
+    protected function afterSave(): void
+    {
+        MultimediaThumbnail::importFromSource($this->record);
+    }
 
     protected function getHeaderActions(): array
     {
