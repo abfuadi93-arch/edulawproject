@@ -64,6 +64,7 @@ class HomeController extends Controller
             ->published()
             ->youtubeVideos()
             ->whereNotNull('media_url')
+            ->where('media_url', '!=', '')
             ->orderByDesc('featured')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
@@ -79,6 +80,7 @@ class HomeController extends Controller
             ->published()
             ->shortsReels()
             ->whereNotNull('media_url')
+            ->where('media_url', '!=', '')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
             ->first();
@@ -87,6 +89,7 @@ class HomeController extends Controller
             ->published()
             ->photoAlbums()
             ->whereNotNull('media_url')
+            ->where('media_url', '!=', '')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
             ->first();

@@ -11,9 +11,9 @@
 @endphp
 
 @if ($isHome)
-    <article data-home-multimedia data-home-multimedia-featured {{ $attributes->class('group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-brand-navy shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-navy/10') }}>
-        <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Tonton {{ $item->title }} di YouTube (membuka tab baru)" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
-            <div class="relative h-72 overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] lg:h-[300px]">
+    <article data-home-multimedia data-home-multimedia-featured {{ $attributes->class('group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-brand-navy shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-brand-navy/10') }}>
+        <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Tonton {{ $item->title }} di YouTube (membuka tab baru)" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
+            <div class="relative min-h-[390px] h-full overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] sm:min-h-[410px] lg:min-h-[360px]">
                 <div class="absolute inset-0 grid place-items-center text-white/55" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
                 </div>
@@ -28,17 +28,24 @@
                     >
                 @endif
 
-                <div class="absolute inset-x-0 bottom-0 h-4/5 bg-linear-to-t from-brand-navy/95 via-brand-navy/35 to-transparent"></div>
+                <div class="absolute inset-0 bg-slate-950/10"></div>
+                <div class="absolute inset-0 bg-linear-to-t from-slate-950/95 via-slate-900/65 via-55% to-transparent"></div>
                 <x-multimedia.platform-badge platform="youtube" :dark="true" class="absolute left-4 top-4" />
 
+                <span role="img" aria-label="Putar video {{ $item->title }}" class="absolute left-1/2 top-[34%] flex h-14 w-14 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full border border-white/30 bg-white/92 text-brand-navy shadow-xl backdrop-blur transition group-hover:scale-105 group-hover:bg-brand-amber">
+                    <svg class="ml-0.5 h-6 w-6" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7L8 5Z"/></svg>
+                </span>
+
                 <div class="absolute inset-x-0 bottom-0 p-5 sm:p-6">
-                    <p class="text-xs font-bold text-white/70">{{ $date }}</p>
-                    <h3 class="line-clamp-2 mt-2 text-xl font-black leading-tight text-white sm:text-2xl">{{ $item->title }}</h3>
-                    <p class="mt-2 hidden line-clamp-2 text-sm leading-6 text-white/75 lg:block">{{ $summary }}</p>
-                    <span class="mt-4 inline-flex items-center gap-2 text-sm font-black text-brand-amber">
+                    <div class="rounded-2xl border border-white/10 bg-slate-950/55 p-4 shadow-lg shadow-slate-950/20 backdrop-blur-[2px] sm:p-5">
+                        <p class="text-xs font-bold text-white/75">{{ $date }}</p>
+                        <h3 class="mt-2 line-clamp-2 text-xl font-black leading-[1.25] text-white drop-shadow-sm sm:text-2xl">{{ $item->title }}</h3>
+                        <p class="mt-2 line-clamp-2 text-sm leading-6 text-white/80">{{ $summary }}</p>
+                        <span class="mt-4 inline-flex min-h-9 items-center gap-2 rounded-full bg-brand-amber px-4 py-2 text-xs font-black text-brand-ink shadow-sm transition group-hover:bg-white">
                         Tonton Video
                         <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </span>
+                        </span>
+                    </div>
                 </div>
             </div>
         </a>

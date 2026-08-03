@@ -20,14 +20,14 @@
             </div>
 
             <div @class([
-                'mt-7 grid items-stretch gap-5',
+                'mt-7 grid items-stretch gap-6',
                 'mx-auto max-w-3xl' => $items->isEmpty(),
-                'lg:grid-cols-[minmax(0,3fr)_minmax(360px,2fr)]' => $items->isNotEmpty(),
+                'lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]' => $items->isNotEmpty(),
             ])>
                 <x-multimedia.featured-card :item="$featured" variant="home" />
 
                 @if ($items->isNotEmpty())
-                    <div class="grid content-stretch gap-3">
+                    <div class="grid auto-rows-fr content-stretch gap-3">
                         @foreach ($items->take(3) as $item)
                             <x-multimedia.media-card :item="$item" variant="horizontal" />
                         @endforeach

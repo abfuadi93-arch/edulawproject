@@ -539,6 +539,16 @@ it('shows one featured and at most three secondary multimedia teasers', function
         'status' => 'draft',
     ]);
 
+    $withoutLink = Multimedia::query()->create([
+        'title' => 'Multimedia Tanpa Tautan',
+        'slug' => 'multimedia-tanpa-tautan',
+        'type' => 'video',
+        'media_url' => '',
+        'platform' => 'youtube',
+        'published_at' => now(),
+        'status' => 'published',
+    ]);
+
     $response = $this->get(route('home'));
     $html = $response->getContent();
 
@@ -546,6 +556,7 @@ it('shows one featured and at most three secondary multimedia teasers', function
         ->assertOk()
         ->assertSeeInOrder($items->pluck('title')->all())
         ->assertDontSee($draft->title)
+        ->assertDontSee($withoutLink->title)
         ->assertSee(route('multimedia.index'), false)
         ->assertSee('Belajar Hukum Melalui Beragam Format')
         ->assertSee('Lihat Semua Multimedia')
@@ -561,6 +572,9 @@ it('shows one featured and at most three secondary multimedia teasers', function
     expect(substr_count($html, 'data-home-multimedia '))->toBe(4)
         ->and(substr_count($html, 'data-home-multimedia-featured'))->toBe(1)
         ->and(substr_count($html, 'data-home-multimedia-secondary'))->toBe(3)
+        ->and($multimediaSection)->toContain('from-slate-950/95')
+        ->and($multimediaSection)->toContain('bg-slate-950/55')
+        ->and($multimediaSection)->toContain('h-20 w-28')
         ->and($multimediaSection)->not->toContain('home-empty-state');
 });
 
