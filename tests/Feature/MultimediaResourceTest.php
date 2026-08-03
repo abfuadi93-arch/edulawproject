@@ -229,6 +229,9 @@ test('public multimedia page uses explicit type and platform mappings', function
         ->assertSee('href="'.$video->media_url.'"', false)
         ->assertSee('href="'.$reel->media_url.'"', false)
         ->assertSee('href="'.$album->media_url.'"', false)
+        ->assertSee('href="'.$video->media_url.'" target="_blank" rel="noopener noreferrer"', false)
+        ->assertSee('href="'.$reel->media_url.'" target="_blank" rel="noopener noreferrer"', false)
+        ->assertSee('href="'.$album->media_url.'" target="_blank" rel="noopener noreferrer"', false)
         ->assertDontSee('Video Draft Tersembunyi')
         ->assertDontSee('Podcast Lama Tidak Dipetakan')
         ->assertDontSee('iframe', false);
@@ -243,6 +246,94 @@ test('youtube thumbnail falls back to the official remote thumbnail URL', functi
     ]);
 
     expect($record->thumbnail_url)->toBe('https://i.ytimg.com/vi/abc123XYZ_9/hqdefault.jpg');
+});
+
+test('public layout adapts a single nullable video without repeated placeholders', function () {
+    Multimedia::query()->create([
+        'title' => 'Video Tunggal Tanpa Metadata',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=single1234',
+        'description' => null,
+        'thumbnail' => null,
+        'published_at' => null,
+        'status' => 'published',
+    ]);
+
+    $response = $this->get(route('multimedia.index'));
+    $html = $response->getContent();
+
+    $response->assertOk()
+        ->assertSee('Video Pilihan Edulaw')
+        ->assertSee('Video terbaru lainnya akan segera tersedia.')
+        ->assertSee('Konten pendek segera hadir')
+        ->assertSee('Dokumentasi kegiatan akan segera tersedia')
+        ->assertSee('href="#video"', false)
+        ->assertSee('href="#shorts-reels"', false)
+        ->assertSee('href="#album-foto"', false)
+        ->assertSee('Ajukan Kolaborasi');
+
+    expect(substr_count($html, 'data-featured-media'))->toBe(1)
+        ->and(substr_count($html, 'data-secondary-media'))->toBe(0)
+        ->and(substr_count($html, 'data-video-info'))->toBe(1)
+        ->and(substr_count($html, 'Konten pendek segera hadir'))->toBe(1)
+        ->and(substr_count($html, 'Dokumentasi kegiatan akan segera tersedia'))->toBe(1)
+        ->and($html)->toContain('overflow-x-clip');
+});
+
+test('two youtube videos render one featured and one secondary external card', function () {
+    $secondary = Multimedia::query()->create([
+        'title' => 'Video Sekunder Edulaw',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=secondary12',
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+    $featured = Multimedia::query()->create([
+        'title' => 'Video Featured Edulaw',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=featured123',
+        'status' => 'published',
+        'published_at' => now(),
+        'featured' => true,
+    ]);
+
+    $html = $this->get(route('multimedia.index'))->assertOk()->getContent();
+    $videoSection = Str::between($html, '<section id="video"', '<section id="shorts-reels"');
+
+    expect(substr_count($videoSection, 'data-featured-media'))->toBe(1)
+        ->and(substr_count($videoSection, 'data-secondary-media'))->toBe(1)
+        ->and($videoSection)->toContain('href="'.$featured->media_url.'" target="_blank" rel="noopener noreferrer"')
+        ->and($videoSection)->toContain('href="'.$secondary->media_url.'" target="_blank" rel="noopener noreferrer"')
+        ->and(strpos($videoSection, $featured->title))->toBeLessThan(strpos($videoSection, $secondary->title));
+});
+
+test('first ordered youtube item becomes featured when none is explicitly featured', function () {
+    Multimedia::query()->create([
+        'title' => 'Video Lebih Lama',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=older12345',
+        'status' => 'published',
+        'published_at' => now()->subDays(2),
+    ]);
+    $newest = Multimedia::query()->create([
+        'title' => 'Video Paling Baru',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=newest1234',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+
+    $html = $this->get(route('multimedia.index'))->assertOk()->getContent();
+    $featuredCard = Str::between($html, '<article data-featured-media', '</article>');
+
+    expect($featuredCard)->toContain($newest->title)
+        ->and($featuredCard)->toContain('target="_blank"')
+        ->and($featuredCard)->toContain('rel="noopener noreferrer"');
 });
 
 test('multimedia database keeps legacy fields and has no sort order column', function () {

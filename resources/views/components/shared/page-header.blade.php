@@ -13,6 +13,7 @@
     'contentClass' => null,
     'descriptionClass' => null,
     'accentLine' => false,
+    'overlayOpacity' => 0.72,
 ])
 
 @php
@@ -59,7 +60,7 @@
             alt="{{ $backgroundAlt ?: $title }}"
             class="absolute inset-0 z-0 h-full w-full object-cover object-center"
         >
-        <div class="absolute inset-0 z-0" style="background-color: rgba(6, 19, 42, 0.72);"></div>
+        <div class="absolute inset-0 z-0" style="background-color: rgba(6, 19, 42, {{ $overlayOpacity }});"></div>
     @endif
     <div class="absolute bottom-0 left-0 right-0 z-0 h-px bg-white/12"></div>
 
