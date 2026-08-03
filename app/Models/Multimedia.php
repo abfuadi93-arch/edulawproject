@@ -33,6 +33,7 @@ class Multimedia extends Model
     public const PLATFORM_OPTIONS = [
         'youtube' => 'YouTube',
         'instagram' => 'Instagram',
+        'google_photos' => 'Google Photos',
         'tiktok' => 'TikTok',
         'spotify' => 'Spotify',
         'website' => 'Website / Google Photos',
@@ -104,6 +105,48 @@ class Multimedia extends Model
         'photo_count' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Multimedia $multimedia): void {
+            if (blank($multimedia->slug) || $multimedia->isDirty('title')) {
+                $multimedia->slug = static::uniqueSlug($multimedia->title, $multimedia->getKey());
+            }
+
+            if ($multimedia->status === 'published' && blank($multimedia->published_at)) {
+                $multimedia->published_at = now();
+            }
+
+            if ($multimedia->type !== 'video' || $multimedia->platform !== 'youtube') {
+                $multimedia->featured = false;
+            }
+        });
+
+        static::saved(function (Multimedia $multimedia): void {
+            if ($multimedia->featured && $multimedia->type === 'video' && $multimedia->platform === 'youtube') {
+                static::query()
+                    ->whereKeyNot($multimedia->getKey())
+                    ->where('featured', true)
+                    ->update(['featured' => false]);
+            }
+        });
+    }
+
+    public static function uniqueSlug(string $title, int|string|null $ignoreId = null): string
+    {
+        $base = Str::limit(Str::slug($title) ?: 'multimedia', 240, '');
+        $slug = $base;
+        $suffix = 2;
+
+        while (static::query()
+            ->when($ignoreId, fn (Builder $query) => $query->whereKeyNot($ignoreId))
+            ->where('slug', $slug)
+            ->exists()) {
+            $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix++;
+        }
+
+        return $slug;
+    }
+
     public static function normalizeType(?string $type): ?string
     {
         if (blank($type)) {
@@ -147,7 +190,7 @@ class Multimedia extends Model
     public function scopePublished(Builder $query): Builder
     {
         return $query
-            ->whereIn('status', ['published', 'terbit'])
+            ->where('status', 'published')
             ->where(function (Builder $query): void {
                 $query
                     ->whereNull('published_at')
@@ -162,59 +205,21 @@ class Multimedia extends Model
 
     public function scopeYoutubeVideos(Builder $query): Builder
     {
-        return $query
-            ->where(function (Builder $query): void {
-                $query
-                    ->where('platform', 'youtube')
-                    ->orWhereIn('type', self::typeVariants('video'))
-                    ->orWhere('media_url', 'like', '%youtube.com%')
-                    ->orWhere('media_url', 'like', '%youtu.be%')
-                    ->orWhere('embed_url', 'like', '%youtube.com%')
-                    ->orWhere('embed_url', 'like', '%youtu.be%');
-            })
-            ->where(function (Builder $query): void {
-                $query
-                    ->whereNull('type')
-                    ->orWhereNotIn('type', self::typeVariants('shorts'));
-            })
-            ->where(function (Builder $query): void {
-                $query
-                    ->whereNull('media_url')
-                    ->orWhere('media_url', 'not like', '%/shorts/%');
-            })
-            ->where(function (Builder $query): void {
-                $query
-                    ->whereNull('embed_url')
-                    ->orWhere('embed_url', 'not like', '%/shorts/%');
-            });
+        return $query->where('type', 'video')->where('platform', 'youtube');
     }
 
     public function scopeShortsReels(Builder $query): Builder
     {
-        return $query->where(function (Builder $query): void {
-            $query
-                ->whereIn('type', self::typeVariants('shorts'))
-                ->orWhereIn('platform', ['instagram', 'tiktok'])
-                ->orWhere('media_url', 'like', '%/shorts/%')
-                ->orWhere('embed_url', 'like', '%/shorts/%')
-                ->orWhere('media_url', 'like', '%instagram.com/reel%')
-                ->orWhere('embed_url', 'like', '%instagram.com/reel%')
-                ->orWhere('media_url', 'like', '%tiktok.com%')
-                ->orWhere('embed_url', 'like', '%tiktok.com%');
-        });
+        return $query
+            ->whereIn('type', ['shorts', 'reels'])
+            ->whereIn('platform', ['instagram', 'youtube']);
     }
 
     public function scopePhotoAlbums(Builder $query): Builder
     {
-        return $query->where(function (Builder $query): void {
-            $query
-                ->whereIn('type', array_merge(self::typeVariants('gallery'), self::typeVariants('documentation')))
-                ->orWhere('platform', 'google_photos')
-                ->orWhere('media_url', 'like', '%photos.app.goo.gl%')
-                ->orWhere('media_url', 'like', '%photos.google.com%')
-                ->orWhere('embed_url', 'like', '%photos.app.goo.gl%')
-                ->orWhere('embed_url', 'like', '%photos.google.com%');
-        });
+        return $query
+            ->whereIn('type', ['gallery', 'documentation'])
+            ->whereIn('platform', ['google_photos', 'website', 'other']);
     }
 
     public function creator(): BelongsTo
@@ -229,14 +234,33 @@ class Multimedia extends Model
 
     public function getThumbnailUrlAttribute(): ?string
     {
-        return EdulawSite::assetUrl($this->attributes['thumbnail'] ?? null);
+        $thumbnail = EdulawSite::assetUrl($this->attributes['thumbnail'] ?? null);
+
+        if ($thumbnail || $this->platform !== 'youtube') {
+            return $thumbnail;
+        }
+
+        $url = (string) ($this->attributes['media_url'] ?? '');
+
+        if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~', $url, $matches)
+            || preg_match('~youtube\.com/(?:shorts/|embed/)([A-Za-z0-9_-]{6,})~', $url, $matches)
+            || preg_match('~[?&]v=([A-Za-z0-9_-]{6,})~', $url, $matches)) {
+            return "https://i.ytimg.com/vi/{$matches[1]}/hqdefault.jpg";
+        }
+
+        return null;
     }
 
     public function getDisplayTypeAttribute(): string
     {
         $type = self::normalizeType($this->attributes['type'] ?? null);
 
-        return self::TYPE_OPTIONS[$type] ?? Str::headline((string) ($type ?: 'Multimedia'));
+        return match ($type) {
+            'video' => 'YouTube Video',
+            'shorts', 'reels' => 'Shorts / Reels',
+            'gallery', 'documentation' => 'Photo Album',
+            default => 'Lainnya',
+        };
     }
 
     public function getDisplayPlatformAttribute(): string

@@ -15,6 +15,7 @@ class MultimediaController extends Controller
         $youtubeVideos = Multimedia::query()
             ->published()
             ->youtubeVideos()
+            ->whereNotNull('media_url')
             ->when($search, function ($q) use ($search) {
                 $q->where(function ($inner) use ($search) {
                     $inner
@@ -24,8 +25,8 @@ class MultimediaController extends Controller
             })
             ->orderByDesc('featured')
             ->orderByDesc('published_at')
-            ->latest()
-            ->limit(12)
+            ->orderByDesc('id')
+            ->limit(4)
             ->get();
 
         $featuredYoutubeVideo = $youtubeVideos->firstWhere('featured', true)
@@ -34,23 +35,25 @@ class MultimediaController extends Controller
         $shortsReels = Multimedia::query()
             ->published()
             ->shortsReels()
+            ->whereNotNull('media_url')
             ->orderByDesc('published_at')
-            ->latest()
+            ->orderByDesc('id')
             ->limit(12)
             ->get();
 
         $photoAlbums = Multimedia::query()
             ->published()
             ->photoAlbums()
+            ->whereNotNull('media_url')
             ->orderByDesc('published_at')
-            ->latest()
+            ->orderByDesc('id')
             ->limit(12)
             ->get();
 
         $counts = [
-            'youtubeVideos' => Multimedia::query()->published()->youtubeVideos()->count(),
-            'shortsReels' => Multimedia::query()->published()->shortsReels()->count(),
-            'photoAlbums' => Multimedia::query()->published()->photoAlbums()->count(),
+            'youtubeVideos' => Multimedia::query()->published()->youtubeVideos()->whereNotNull('media_url')->count(),
+            'shortsReels' => Multimedia::query()->published()->shortsReels()->whereNotNull('media_url')->count(),
+            'photoAlbums' => Multimedia::query()->published()->photoAlbums()->whereNotNull('media_url')->count(),
         ];
 
         return view('multimedia.index', [

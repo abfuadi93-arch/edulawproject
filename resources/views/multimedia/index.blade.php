@@ -10,8 +10,7 @@
             ->concat($photoAlbums)
             ->unique('id')
             ->map(function ($item): ?array {
-                $itemUrl = \App\Support\EdulawSite::resolveUrl($item->media_url)
-                    ?: \App\Support\EdulawSite::resolveUrl($item->embed_url);
+                $itemUrl = \App\Support\EdulawSite::resolveUrl($item->media_url);
 
                 return $itemUrl ? [
                     'name' => $item->title,
@@ -48,7 +47,7 @@
     $contactUrl = route('contact.index');
     $collaborationUrl = route('collaboration.index');
 
-    $externalUrl = fn ($item) => $item?->embed_url ?: $item?->media_url ?: $indexUrl;
+    $externalUrl = fn ($item) => $item?->media_url ?: $indexUrl;
     $isExternalUrl = fn ($url) => filled($url) && Str::startsWith($url, ['http://', 'https://']);
     $itemDate = fn ($item) => optional($item?->published_at)->translatedFormat('d M Y') ?: 'Belum terjadwal';
     $itemDescription = fn ($item, int $limit = 150) => Str::limit(
@@ -57,7 +56,7 @@
     );
     $isGooglePhotos = fn ($item) => $item?->platform === 'google_photos'
         || Str::contains((string) $item?->media_url, ['photos.app.goo.gl', 'photos.google.com'])
-        || Str::contains((string) $item?->embed_url, ['photos.app.goo.gl', 'photos.google.com']);
+        || in_array($item?->platform, ['website', 'other'], true);
     $shortBadge = fn ($item) => match ($item?->platform) {
         'instagram' => 'INSTAGRAM',
         'tiktok' => 'TIKTOK',
@@ -67,11 +66,11 @@
 
     $youtubeSideItems = $youtubeItems
         ->reject(fn ($item) => $featuredVideo && $item?->id === $featuredVideo?->id)
-        ->take(4)
+        ->take(3)
         ->values();
     $youtubeMoreItems = $youtubeItems
         ->reject(fn ($item) => $featuredVideo && $item?->id === $featuredVideo?->id)
-        ->skip(4)
+        ->skip(3)
         ->values();
 
     $statPills = collect([
@@ -217,8 +216,9 @@
                                         {{ $itemDescription($featuredVideo, 170) }}
                                     </p>
 
-                                    <span class="mt-5 inline-flex min-h-11 items-center rounded-full bg-white px-5 text-sm font-black text-brand-navy transition group-hover:bg-brand-amber">
+                                    <span class="mt-5 inline-flex min-h-11 items-center gap-2 rounded-full bg-white px-5 text-sm font-black text-brand-navy transition group-hover:bg-brand-amber">
                                         Tonton Video
+                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                     </span>
                                 </div>
                             </div>
@@ -278,13 +278,13 @@
                             </article>
                         @endforeach
 
-                        @for ($placeholder = $youtubeSideItems->count(); $placeholder < 4; $placeholder++)
+                        @if ($youtubeSideItems->count() < 3)
                             <div class="grid min-h-40 place-items-center rounded-2xl border border-dashed border-slate-300 bg-white/70 p-4 text-center">
                                 <p class="text-sm font-bold leading-6 text-slate-500">
                                     Video berikutnya sedang disiapkan.
                                 </p>
                             </div>
-                        @endfor
+                        @endif
                     </div>
                 </div>
 
@@ -333,7 +333,7 @@
                         </div>
 
                         <div>
-                            <h3 class="text-base font-black text-brand-ink">Video YouTube belum tersedia.</h3>
+                            <h3 class="text-base font-black text-brand-ink">Video berikutnya sedang disiapkan.</h3>
                             <p class="mt-1 text-sm leading-6 text-slate-600">Konten diskusi dan dokumentasi akan ditampilkan di bagian ini.</p>
                         </div>
                     </div>
@@ -405,6 +405,10 @@
                                         <h3 class="line-clamp-2 mt-2 text-base font-black leading-snug text-white">
                                             {{ $item->title }}
                                         </h3>
+                                        <span class="mt-3 inline-flex items-center gap-1 text-xs font-black text-brand-amber">
+                                            Lihat Konten
+                                            <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                                        </span>
                                     </div>
                                 </div>
                             </a>

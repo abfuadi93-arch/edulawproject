@@ -32,8 +32,8 @@ class ListMultimedia extends ListRecords
                 'query' => fn (Builder $query): Builder => $query->where('status', 'draft'),
             ],
             'published' => [
-                'label' => 'Published',
-                'query' => fn (Builder $query): Builder => $query->whereIn('status', ['published', 'terbit']),
+                'label' => 'Dipublikasikan',
+                'query' => fn (Builder $query): Builder => $query->where('status', 'published'),
             ],
             'archived' => [
                 'label' => 'Diarsipkan',

@@ -7,7 +7,6 @@ use App\Models\Insight;
 use App\Models\Multimedia;
 use App\Models\Program;
 use App\Models\Publication;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Str;
 
 class StructuredData
@@ -261,7 +260,7 @@ class StructuredData
 
     public static function video(Multimedia $media): ?array
     {
-        $youtubeId = self::youtubeId($media->embed_url ?: $media->media_url);
+        $youtubeId = self::youtubeId($media->media_url);
 
         if (! $youtubeId || ! $media->published_at) {
             return null;
