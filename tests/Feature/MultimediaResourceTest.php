@@ -84,6 +84,29 @@ test('youtube video can be saved without an exposed slug or thumbnail', function
         ->and($record->featured)->toBeTrue();
 });
 
+test('shorts and reels can be saved without a thumbnail', function () {
+    $user = multimediaAdmin();
+
+    Livewire::actingAs($user)
+        ->test(CreateMultimedia::class)
+        ->fillForm([
+            'title' => 'Reel Tanpa Thumbnail',
+            'description' => 'Konten singkat dari Instagram.',
+            'type' => 'reels',
+            'platform' => 'instagram',
+            'media_url' => 'https://www.instagram.com/reel/no-thumbnail/',
+            'status' => 'draft',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $record = Multimedia::query()->where('title', 'Reel Tanpa Thumbnail')->firstOrFail();
+
+    expect($record->thumbnail)->toBeNull()
+        ->and($record->type)->toBe('reels')
+        ->and($record->platform)->toBe('instagram');
+});
+
 test('media URL is required and lightly validated for its selected platform', function () {
     $user = multimediaAdmin();
 

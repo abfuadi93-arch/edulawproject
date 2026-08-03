@@ -189,9 +189,9 @@ class MultimediaResource extends Resource
                                             ->openable()
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(2048)
-                                            ->required(fn (Get $get): bool => $get('platform') !== 'youtube')
+                                            ->required(fn (Get $get): bool => $get('type') === 'gallery')
                                             ->helperText(fn (Get $get): string => match ($get('type')) {
-                                                'reels' => 'Gunakan thumbnail vertikal rasio 4:5 atau 9:16.',
+                                                'reels' => 'Opsional. Jika digunakan, pilih thumbnail vertikal rasio 4:5 atau 9:16.',
                                                 'gallery' => 'Gunakan cover album landscape rasio 16:9 atau 4:3.',
                                                 default => 'Gunakan thumbnail landscape rasio 16:9. Jika kosong, thumbnail YouTube digunakan otomatis.',
                                             })
