@@ -57,11 +57,11 @@ it('places Tentang after Multimedia in the primary navigation', function () {
 it('shows compact empty states and omits unavailable publication statistics', function () {
     $this->get(route('home'))
         ->assertOk()
-        ->assertSee('Belum ada Insight yang ditampilkan. Nantikan analisis hukum terbaru dari Edulaw Project.')
+        ->assertSee('Insight terbaru sedang disiapkan.')
         ->assertSee('Lihat Semua Insight')
-        ->assertSee('Belum ada publikasi yang tersedia. Nantikan riset dan publikasi terbaru dari Edulaw Project.')
-        ->assertSee('Belum ada program yang ditampilkan. Nantikan program terbaru dari Edulaw Project.')
-        ->assertSee('Belum ada peluang aktif saat ini.')
+        ->assertSee('Publikasi sedang disiapkan.')
+        ->assertSee('Program terbaru sedang disiapkan.')
+        ->assertDontSee('Peluang aktif dengan tenggat terdekat')
         ->assertDontSee('Belajar Hukum Melalui Beragam Format')
         ->assertDontSee('Total Unduhan')
         ->assertDontSee('Dokumen Tersedia')
@@ -257,7 +257,6 @@ it('renders the about section followed by the active collaboration call to actio
             'Program Edulaw',
             'Edulaw Insight Terbaru',
             'Riset &amp; Publikasi Pilihan',
-            'Opportunities',
             'Tentang Edulaw',
             'Bangun ruang literasi hukum bersama Edulaw Project.',
         ], false)
@@ -354,9 +353,9 @@ it('shows only verified non-zero credibility statistics from the correct record 
     $response = $this->get(route('home'))->assertOk();
     $html = $response->getContent();
 
-    expect(substr_count($html, 'data-home-stat='))->toBe(4);
+    expect(substr_count($html, 'data-home-stat='))->toBe(3);
 
-    foreach (['Insight Terbit', 'Publikasi', 'Program Terlaksana', 'Kontributor Aktif'] as $label) {
+    foreach (['Insight Terbit', 'Program Edulaw', 'Kontributor Aktif'] as $label) {
         $response->assertSee('data-home-stat="'.$label.'"', false);
     }
 });
@@ -446,7 +445,7 @@ it('shows the four intended audience groups in the final homepage order', functi
     expect(substr_count($html, 'data-home-audience-card'))->toBe(4);
 });
 
-it('shows at most four active opportunities by nearest deadline with direct external links', function () {
+it('shows at most three open opportunities by nearest deadline with direct external links', function () {
     $opportunities = collect(range(1, 5))->map(fn (int $position) => Opportunity::query()->create([
         'title' => "Peluang Aktif {$position}",
         'slug' => "peluang-aktif-{$position}",
@@ -486,7 +485,8 @@ it('shows at most four active opportunities by nearest deadline with direct exte
 
     $response
         ->assertOk()
-        ->assertSeeInOrder($opportunities->take(4)->pluck('title')->all())
+        ->assertSeeInOrder($opportunities->take(3)->pluck('title')->all())
+        ->assertDontSee($opportunities[3]->title)
         ->assertDontSee($opportunities[4]->title)
         ->assertDontSee($expired->title)
         ->assertDontSee($closed->title)
@@ -495,8 +495,27 @@ it('shows at most four active opportunities by nearest deadline with direct exte
         ->assertSee('target="_blank"', false)
         ->assertSee('rel="noopener noreferrer"', false);
 
-    expect(substr_count($html, 'data-home-opportunity>'))->toBe(4)
-        ->and(substr_count($html, 'data-home-opportunity-fallback'))->toBe(4);
+    expect(substr_count($html, 'data-home-opportunity>'))->toBe(3)
+        ->and(substr_count($html, 'data-home-opportunity-fallback'))->toBe(3);
+});
+
+it('keeps a single expired open opportunity compact and deprioritizes it behind current deadlines', function () {
+    $expired = Opportunity::query()->create([
+        'title' => 'Peluang Open Lewat Tenggat',
+        'slug' => 'peluang-open-lewat-tenggat',
+        'type' => 'fellowship',
+        'deadline' => now()->subDay()->toDateString(),
+        'application_link' => 'https://example.test/expired-open',
+        'status' => 'open',
+    ]);
+
+    $response = $this->get(route('home'));
+
+    $response
+        ->assertOk()
+        ->assertSee($expired->title)
+        ->assertSee('Tenggat telah lewat')
+        ->assertSee('max-w-4xl', false);
 });
 
 it('shows one featured and at most three secondary multimedia teasers', function () {

@@ -57,7 +57,7 @@
     {{-- Overlay --}}
     <div class="absolute inset-0 z-0" style="background-color: rgba(6, 19, 42, 0.72);"></div>
 
-     <div class="relative z-10 mx-auto flex min-h-[34rem] max-w-7xl flex-col justify-end px-5 pb-7 pt-24 sm:min-h-152 sm:px-6 sm:pb-8 sm:pt-28 lg:min-h-164 lg:px-8 lg:pt-32">
+     <div class="relative z-10 mx-auto flex min-h-[31rem] max-w-7xl flex-col justify-end px-5 pb-6 pt-22 sm:min-h-140 sm:px-6 sm:pb-7 sm:pt-24 lg:min-h-152 lg:px-8 lg:pt-28">
         <div class="max-w-188">
             <div class="inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/10 px-4 py-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-white/95 backdrop-blur-md">
                 <span class="h-1.5 w-1.5 rounded-full bg-brand-amber"></span>
@@ -96,13 +96,13 @@
         </div>
 
 {{-- Value cards --}}
-<div class="mt-8 grid w-full grid-cols-3 gap-2 sm:mt-10 sm:gap-4 lg:mt-11">
+<div class="mt-7 flex w-full snap-x snap-mandatory gap-2 overflow-x-auto pb-2 sm:mt-8 sm:grid sm:grid-cols-3 sm:gap-4 sm:overflow-visible sm:pb-0 lg:mt-9">
     @foreach ($valueCards as $value)
         <div
-            class="group flex min-h-28 w-full flex-col items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/14 px-2 py-3 text-center shadow-lg shadow-black/15 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/18 sm:min-h-30 sm:flex-row sm:justify-start sm:gap-4 sm:rounded-2xl sm:px-5 sm:py-5 sm:text-left lg:px-6"
+            class="group flex min-h-24 w-40 shrink-0 snap-start flex-col items-center justify-center gap-2 rounded-xl border border-white/18 bg-white/14 px-2 py-3 text-center shadow-lg shadow-black/15 backdrop-blur-md transition-all duration-300 hover:-translate-y-0.5 hover:border-white/40 hover:bg-white/18 sm:min-h-26 sm:w-full sm:flex-row sm:justify-start sm:gap-3 sm:rounded-2xl sm:px-4 sm:py-4 sm:text-left lg:px-5"
         >
             <div
-                class="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg ring-1 ring-white/10 sm:h-14 sm:w-14 sm:rounded-xl {{ $value['accent'] }}"
+                class="flex h-9 w-9 shrink-0 items-center justify-center rounded-lg ring-1 ring-white/10 sm:h-12 sm:w-12 sm:rounded-xl {{ $value['accent'] }}"
             >
                 @if ($value['icon'] === 'book-open')
                     <svg class="h-5 w-5 sm:h-8 sm:w-8" viewBox="0 0 24 24" fill="none" aria-hidden="true">

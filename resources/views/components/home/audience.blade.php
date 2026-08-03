@@ -47,7 +47,7 @@
             </div>
         </div>
 
-        <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-7 grid auto-rows-fr gap-6 sm:grid-cols-2 lg:grid-cols-4">
             @foreach ($audiences as $audience)
                 <article class="home-card flex h-full flex-col p-5" data-home-audience-card>
                     <span class="flex h-11 w-11 items-center justify-center rounded-xl {{ $audience['accent'] }}" aria-hidden="true">
@@ -70,7 +70,7 @@
                         @endif
                     </span>
                     <h3 class="mt-4 text-base font-extrabold leading-snug text-brand-ink">{{ $audience['title'] }}</h3>
-                    <p class="mt-2 text-sm leading-6 text-slate-600">{{ $audience['description'] }}</p>
+                    <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ $audience['description'] }}</p>
                     <a href="{{ $audience['link_url'] }}" class="home-card-link mt-auto inline-flex min-h-11 items-center gap-2 pt-4 text-sm font-extrabold text-brand-navy">
                         {{ $audience['link_label'] }}
                         <span aria-hidden="true">↓</span>

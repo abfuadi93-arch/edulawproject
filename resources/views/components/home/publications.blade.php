@@ -1,262 +1,97 @@
-@props([
-    'publications' => collect(),
-])
+@props(['publications' => collect()])
 
 @php
+    $publicationCollection = collect($publications)->take(4)->values();
     $hasPublicationIndex = \Illuminate\Support\Facades\Route::has('publications.index');
     $hasPublicationShow = \Illuminate\Support\Facades\Route::has('publications.show');
-
-    $coverPalettes = [
-        [
-            'name' => 'Jelly Mint',
-            'bg' => 'bg-[#C7EFE4]',
-            'soft' => 'bg-[#DDF7F0]',
-            'accent' => 'bg-[#16A085]',
-            'accentText' => 'text-[#0D6F60]',
-            'text' => 'text-[#123B36]',
-            'muted' => 'text-[#245D55]',
-            'border' => 'border-[#8DD8C9]',
-            'ring' => 'ring-[#8DD8C9]/60',
-        ],
-        [
-            'name' => 'Cloud Dancer',
-            'bg' => 'bg-[#F4F1EA]',
-            'soft' => 'bg-[#FBF8F1]',
-            'accent' => 'bg-[#C9A45C]',
-            'accentText' => 'text-[#8A6B2F]',
-            'text' => 'text-[#1E293B]',
-            'muted' => 'text-[#64748B]',
-            'border' => 'border-[#DED7C8]',
-            'ring' => 'ring-[#DED7C8]/70',
-        ],
-        [
-            'name' => 'Blue Aura',
-            'bg' => 'bg-[#D8E6F3]',
-            'soft' => 'bg-[#EDF5FB]',
-            'accent' => 'bg-[#315D7C]',
-            'accentText' => 'text-[#315D7C]',
-            'text' => 'text-[#102A43]',
-            'muted' => 'text-[#49667D]',
-            'border' => 'border-[#AFC8DC]',
-            'ring' => 'ring-[#AFC8DC]/70',
-        ],
-        [
-            'name' => 'Digital Lavender',
-            'bg' => 'bg-[#E7DDF7]',
-            'soft' => 'bg-[#F4EEFF]',
-            'accent' => 'bg-[#7B61A8]',
-            'accentText' => 'text-[#674D93]',
-            'text' => 'text-[#2D2142]',
-            'muted' => 'text-[#63517D]',
-            'border' => 'border-[#C9B6EA]',
-            'ring' => 'ring-[#C9B6EA]/70',
-        ],
-    ];
-
-    $authorInitials = function (string $name): string {
-        return \Illuminate\Support\Str::of($name)
-            ->explode(' ')
-            ->filter()
-            ->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))
-            ->take(2)
-            ->implode('') ?: 'E';
-    };
 @endphp
 
 <section id="riset-publikasi" class="home-section scroll-mt-24 bg-white" aria-labelledby="home-publications-title">
     <div class="section-shell">
-        {{-- Header --}}
         <div class="home-section-header">
             <div class="home-section-copy">
-                <p class="home-section-eyebrow text-[#8A6B2F]">
-                    Publikasi Edulaw
-                </p>
-
-                <h2 id="home-publications-title" class="home-section-title">
-                    Riset &amp; Publikasi Pilihan
-                </h2>
-
-                <p class="home-section-description">
-                    Repositori kajian, policy brief, naskah akademik, dan buku digital.
-                </p>
+                <p class="home-section-eyebrow text-[#8A6B2F]">Publikasi Edulaw</p>
+                <h2 id="home-publications-title" class="home-section-title">Riset &amp; Publikasi Pilihan</h2>
+                <p class="home-section-description">Repositori kajian, policy brief, naskah akademik, dan buku digital.</p>
             </div>
 
-                @if ($hasPublicationIndex)
-                    <a
-                        href="{{ route('publications.index') }}"
-                        class="section-link w-fit shrink-0"
-                    >
-                        Lihat Semua Publikasi
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
-                    </a>
-                @endif
+            @if ($hasPublicationIndex)
+                <a href="{{ route('publications.index') }}" class="section-link w-fit shrink-0">
+                    Lihat Semua Publikasi
+                    <span aria-hidden="true">→</span>
+                </a>
+            @endif
         </div>
 
-        <div class="mt-8 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
-            @forelse ($hasPublicationShow ? $publications : collect() as $publication)
-                @php
-                    $typeName = $publication->type?->name;
-                    $palette = $coverPalettes[$loop->index % count($coverPalettes)];
-                    $publishedAt = optional($publication->published_at)->translatedFormat('M Y');
-                    $authorName = $publication->display_author
-                        ?? $publication->display_authors
-                        ?? $publication->authors?->pluck('name')->filter()->join(', ')
-                        ?? null;
-                    $primaryAuthor = $publication->relationLoaded('authors')
-                        ? $publication->authors->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)->first()
-                        : null;
-                @endphp
+        @if ($hasPublicationShow && $publicationCollection->isNotEmpty())
+            <div @class([
+                'mt-7 grid auto-rows-fr gap-6',
+                'md:grid-cols-2 lg:grid-cols-3' => $publicationCollection->count() <= 3,
+                'md:grid-cols-2 xl:grid-cols-4' => $publicationCollection->count() >= 4,
+            ])>
+                @foreach ($publicationCollection as $publication)
+                    @php
+                        $typeName = $publication->type?->name ?: 'Dokumen';
+                        $year = optional($publication->published_at)->format('Y');
+                        $documentMeta = filled($publication->page_count)
+                            ? number_format((int) $publication->page_count, 0, ',', '.').' halaman'
+                            : 'Dokumen digital';
+                    @endphp
 
-                <article data-home-publication class="home-card home-card-interactive group h-full">
-                    <a href="{{ route('publications.show', $publication->slug) }}" class="home-card-link flex h-full flex-col p-3">
-                            {{-- Cover A4 --}}
-                            <div class="relative mx-auto w-full max-w-72 overflow-hidden rounded-lg bg-slate-100 shadow-sm">
-                                <div class="relative mx-auto aspect-210/297 w-full overflow-hidden border {{ $palette['bg'] }} {{ $palette['border'] }}">
-                                    @if ($publication->cover_image_url)
-                                        <img
-                                            src="{{ $publication->cover_image_url }}"
-                                            alt="Sampul {{ $publication->title }}"
-                                            width="900"
-                                            height="1200"
-                                            class="h-full w-full bg-white object-contain p-2 transition duration-500 group-hover:scale-[1.015]"
-                                            loading="lazy"
-                                            decoding="async"
-                                        >
-                                    @else
-                                        <div class="relative flex h-full w-full flex-col p-5">
-                                            {{-- Decorative layer --}}
-                                            <div class="pointer-events-none absolute inset-0 overflow-hidden">
-                                                <div class="absolute -right-12 -top-12 h-36 w-36 rounded-full border border-white/70"></div>
-                                                <div class="absolute right-6 top-20 h-12 w-12 rounded-full border border-white/70"></div>
-                                                <div class="absolute -bottom-10 -left-10 h-32 w-32 rounded-full border border-white/80"></div>
-                                                <div class="absolute bottom-16 left-5 h-10 w-10 rounded-full border border-white/60"></div>
-
-                                                <svg class="absolute bottom-6 right-5 h-20 w-20 {{ $palette['muted'] }} opacity-25" viewBox="0 0 64 64" fill="none" aria-hidden="true">
-                                                    <path d="M32 8v48M16 18h32M20 18 12 38h16L20 18Zm24 0-8 20h16l-8-20Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                                </svg>
-                                            </div>
-
-                                            <div class="relative flex h-full flex-col">
-                                                <div class="flex items-start justify-between gap-3">
-                                                    <p class="text-xs font-bold {{ $palette['muted'] }}">
-                                                        Edulaw Project
-                                                    </p>
-
-                                                    <span class="h-2.5 w-2.5 shrink-0 rounded-full {{ $palette['accent'] }}"></span>
-                                                </div>
-
-                                                @if ($typeName)
-                                                <div class="mt-7">
-                                                    <span class="inline-flex items-center rounded-md bg-white/60 px-2.5 py-1 text-xs font-bold {{ $palette['text'] }} shadow-sm ring-1 ring-white/70">
-                                                        {{ $typeName }}
-                                                    </span>
-                                                </div>
-                                                @endif
-
-                                                <h3 class="mt-4 line-clamp-6 text-lg font-black leading-tight tracking-tight {{ $palette['text'] }}">
-                                                    {{ $publication->title }}
-                                                </h3>
-
-                                                @if ($authorName)
-                                                    <p class="mt-3 line-clamp-2 text-xs font-bold leading-5 {{ $palette['muted'] }}">
-                                                        {{ $authorName }}
-                                                    </p>
-                                                @endif
-
-                                                <div class="mt-auto">
-                                                    <span class="block h-1 w-12 rounded-full {{ $palette['accent'] }}"></span>
-
-                                                    @if ($publishedAt)
-                                                        <p class="mt-2 text-xs font-bold {{ $palette['muted'] }}">
-                                                            {{ $publishedAt }}
-                                                        </p>
-                                                    @endif
-                                                </div>
-                                            </div>
-                                        </div>
-                                    @endif
-                                </div>
-                            </div>
-
-                            {{-- Info bawah untuk cover aktual; fallback sudah memuat informasi inti. --}}
-                            <div class="flex flex-1 flex-col px-1 pt-4">
+                    <article data-home-publication class="home-card home-card-interactive group flex h-full flex-col">
+                        <a href="{{ route('publications.show', $publication->slug) }}" class="home-card-link flex h-full flex-col">
+                            <div class="relative aspect-[16/10] overflow-hidden bg-linear-to-br from-[#edf3f7] via-[#f7f3e9] to-[#dceeea]">
                                 @if ($publication->cover_image_url)
-                                <div class="flex items-start justify-between gap-3">
-                                    <div class="min-w-0">
-                                        <h3 class="line-clamp-2 text-lg font-black leading-snug tracking-tight text-brand-ink">
-                                            {{ $publication->title }}
-                                        </h3>
-
-                                        @if ($typeName)
-                                            <p class="mt-2 text-xs font-bold text-brand-navy">
-                                                {{ $typeName }}
-                                            </p>
-                                        @endif
-
-                                        @if ($publication->published_at || ! empty($publication->page_count) || $authorName)
-                                            <div class="home-meta mt-2 flex flex-wrap items-center gap-x-2 gap-y-1">
-                                            @if ($publication->published_at)
-                                                <span>{{ $publication->published_at->translatedFormat('M Y') }}</span>
-                                            @endif
-
-                                            @if (! empty($publication->page_count))
-                                                @if ($publication->published_at)
-                                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                                @endif
-                                                <span>{{ $publication->page_count }} hlm</span>
-                                            @endif
-
-                                            @if ($authorName)
-                                                @if ($publication->published_at || ! empty($publication->page_count))
-                                                    <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                                @endif
-                                                <span class="inline-flex max-w-full items-center gap-1.5">
-                                                    @if ($primaryAuthor?->photo_url)
-                                                        <img
-                                                            src="{{ $primaryAuthor->photo_url }}"
-                                                            alt="Foto profil {{ $primaryAuthor->name }}"
-                                                            width="20"
-                                                            height="20"
-                                                            class="h-5 w-5 shrink-0 rounded-full object-cover ring-1 ring-slate-200"
-                                                            loading="lazy"
-                                                            decoding="async"
-                                                        >
-                                                    @else
-                                                        <span class="grid h-5 w-5 shrink-0 place-items-center rounded-full bg-brand-navy text-[8px] font-black text-white">
-                                                            {{ $authorInitials($primaryAuthor?->name ?: $authorName) }}
-                                                        </span>
-                                                    @endif
-
-                                                    <span class="line-clamp-1 min-w-0">{{ $authorName }}</span>
-                                                </span>
-                                            @endif
+                                    <img
+                                        src="{{ $publication->cover_image_url }}"
+                                        alt="Sampul {{ $publication->title }}"
+                                        width="800"
+                                        height="500"
+                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                                        loading="lazy"
+                                        decoding="async"
+                                        onerror="this.remove()"
+                                    >
+                                @else
+                                    <div class="flex h-full items-center justify-center" data-publication-fallback>
+                                        <div class="grid h-20 w-16 place-items-center rounded-lg border border-brand-navy/15 bg-white text-brand-navy shadow-md shadow-brand-navy/10">
+                                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                                <path d="M7 3h7l4 4v14H7V3Zm7 0v5h4M10 12h5m-5 4h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
+                                            </svg>
                                         </div>
-                                        @endif
                                     </div>
-
-                                    <span class="mt-0.5 inline-flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-slate-50 text-brand-navy ring-1 ring-slate-200 transition group-hover:bg-brand-navy group-hover:text-white">
-                                        <svg class="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                        </svg>
-                                    </span>
-                                </div>
                                 @endif
 
-                                <span class="mt-auto pt-4 text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">
-                                Lihat Publikasi
+                                <span class="absolute left-4 top-4 inline-flex rounded-full bg-white/92 px-3 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-brand-navy shadow-sm backdrop-blur">
+                                    {{ $typeName }}
                                 </span>
                             </div>
-                    </a>
-                </article>
-            @empty
-                <div class="home-empty-state col-span-full">
-                    <p class="text-sm leading-6 text-slate-600">
-                        Belum ada publikasi yang tersedia. Nantikan riset dan publikasi terbaru dari Edulaw Project.
-                    </p>
-                </div>
-            @endforelse
-        </div>
+
+                            <div class="flex flex-1 flex-col p-5">
+                                <h3 class="line-clamp-2 text-lg font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
+                                    {{ $publication->title }}
+                                </h3>
+
+                                <div class="home-meta mt-3 flex flex-wrap items-center gap-2">
+                                    @if ($year)
+                                        <span>{{ $year }}</span>
+                                        <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                    @endif
+                                    <span>{{ $documentMeta }}</span>
+                                </div>
+
+                                <span class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-extrabold text-brand-navy">
+                                    Lihat Publikasi <span aria-hidden="true">→</span>
+                                </span>
+                            </div>
+                        </a>
+                    </article>
+                @endforeach
+            </div>
+        @else
+            <div class="home-empty-state mt-6 py-3.5">
+                <p class="text-sm leading-6 text-slate-600">Publikasi sedang disiapkan.</p>
+            </div>
+        @endif
     </div>
 </section>

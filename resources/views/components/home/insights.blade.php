@@ -63,11 +63,11 @@
         </div>
 
         @if ($featured && $hasInsightShow)
-            <div class="mt-8 grid gap-5 lg:grid-cols-[1.08fr_0.92fr]">
+            <div class="mt-7 grid gap-6 lg:grid-cols-[1.08fr_0.92fr]">
                 {{-- Featured Editorial --}}
                 <article data-home-insight data-home-insight-featured class="home-card home-card-interactive group">
                     <a href="{{ route('insights.show', $featured->slug) }}" class="home-card-link flex h-full flex-col">
-                        <div class="relative aspect-video overflow-hidden bg-slate-100">
+                        <div class="relative aspect-video overflow-hidden bg-linear-to-br from-brand-navy via-brand-charcoal to-brand-teal">
                             @if ($featured->cover_image_url)
                                 <img
                                     src="{{ $featured->cover_image_url }}"
@@ -77,6 +77,7 @@
                                     class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                                     loading="lazy"
                                     decoding="async"
+                                    onerror="this.remove()"
                                 >
                             @else
                                 <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-brand-teal">
@@ -100,7 +101,7 @@
                             </div>
 
                             <div class="absolute bottom-4 left-4 right-4">
-                                <h3 class="max-w-2xl text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl lg:text-[2rem]">
+                                <h3 class="line-clamp-3 max-w-2xl text-2xl font-black leading-tight tracking-tight text-white sm:text-3xl lg:text-[2rem]">
                                     {{ $featured->title }}
                                 </h3>
                             </div>
@@ -164,7 +165,7 @@
                 </article>
 
                 {{-- Right Side: 3 Cards --}}
-                <div class="grid gap-4">
+                <div class="grid gap-4 lg:grid-rows-3">
                     @foreach ($list as $item)
                         @php
                             $thumb = $item->cover_image_url;
@@ -172,9 +173,9 @@
                             $itemAuthorName = $itemAuthor?->name ?: $item->display_author;
                         @endphp
 
-                        <article data-home-insight data-home-insight-compact class="home-card home-card-interactive group">
+                        <article data-home-insight data-home-insight-compact class="home-card home-card-interactive group h-full">
                             <a href="{{ route('insights.show', $item->slug) }}" class="home-card-link grid min-h-40 grid-cols-[120px_1fr] sm:grid-cols-[160px_1fr]">
-                                <div class="relative overflow-hidden bg-slate-100">
+                                <div class="relative overflow-hidden bg-linear-to-br from-brand-navy via-brand-blue to-brand-teal">
                                     @if ($thumb)
                                         <img
                                             src="{{ $thumb }}"
@@ -184,6 +185,7 @@
                                             class="h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                             loading="lazy"
                                             decoding="async"
+                                            onerror="this.remove()"
                                         >
                                     @else
                                         <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-blue to-brand-teal">
@@ -217,10 +219,14 @@
                                             @if ($item->published_at && ($itemAuthorName || $item->reading_time))
                                                 <span class="h-1 w-1 rounded-full bg-slate-300"></span>
                                             @endif
+                                            @if ($item->reading_time)
+                                                <span>{{ $item->reading_time }} min read</span>
+                                            @endif
+                                            @if (($item->published_at || $item->reading_time) && $itemAuthorName)
+                                                <span class="h-1 w-1 rounded-full bg-slate-300"></span>
+                                            @endif
                                             @if ($itemAuthorName)
                                                 <span class="line-clamp-1">{{ $itemAuthorName }}</span>
-                                            @elseif ($item->reading_time)
-                                                <span>{{ $item->reading_time }} min read</span>
                                             @endif
                                         </div>
                                     @endif
@@ -231,10 +237,8 @@
                 </div>
             </div>
         @else
-            <div class="home-empty-state mt-8">
-                <p class="text-sm leading-6 text-slate-600">
-                    Belum ada Insight yang ditampilkan. Nantikan analisis hukum terbaru dari Edulaw Project.
-                </p>
+            <div class="home-empty-state mt-7 py-4">
+                <p class="text-sm leading-6 text-slate-600">Insight terbaru sedang disiapkan.</p>
                 @if ($hasInsightIndex)
                     <a
                         href="{{ route('insights.index') }}"

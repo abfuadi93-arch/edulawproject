@@ -41,6 +41,7 @@ class HomeController extends Controller
         $latestPrograms = Program::with('categoryRelation')
             ->visible()
             ->active()
+            ->orderByDesc('featured')
             ->orderByRaw("CASE status WHEN 'ongoing' THEN 0 WHEN 'upcoming' THEN 1 ELSE 2 END")
             ->orderByRaw('CASE WHEN event_date IS NULL THEN 1 ELSE 0 END')
             ->orderBy('event_date')
@@ -49,12 +50,14 @@ class HomeController extends Controller
             ->get();
 
         $latestOpportunities = Opportunity::query()
-            ->active()
+            ->open()
             ->withExternalLink()
+            ->orderByRaw('CASE WHEN deadline IS NOT NULL AND deadline < ? THEN 1 ELSE 0 END', [today()->toDateString()])
+            ->orderByDesc('featured')
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
             ->orderByDesc('id')
-            ->limit(4)
+            ->limit(3)
             ->get();
 
         $homepageYoutubeVideos = Multimedia::query()
@@ -105,12 +108,8 @@ class HomeController extends Controller
                 'value' => Insight::query()->published()->count(),
             ],
             [
-                'label' => 'Publikasi',
-                'value' => Publication::query()->published()->count(),
-            ],
-            [
-                'label' => 'Program Terlaksana',
-                'value' => Program::query()->visible()->archived()->count(),
+                'label' => 'Program Edulaw',
+                'value' => Program::query()->visible()->count(),
             ],
             [
                 'label' => 'Kontributor Aktif',

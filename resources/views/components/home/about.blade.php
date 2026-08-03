@@ -57,9 +57,14 @@
                     @endif
 
                     @if ($stats->count() >= 2)
-                        <dl class="grid flex-1 gap-3 sm:grid-cols-2 lg:ml-auto lg:grid-cols-4" aria-label="Statistik kredibilitas Edulaw Project">
+                        <dl @class([
+                            'grid flex-1 auto-rows-fr gap-3 sm:grid-cols-2 lg:ml-auto',
+                            'lg:grid-cols-2' => $stats->count() === 2,
+                            'lg:grid-cols-3' => $stats->count() === 3,
+                            'lg:grid-cols-4' => $stats->count() >= 4,
+                        ]) aria-label="Statistik kredibilitas Edulaw Project">
                             @foreach ($stats as $stat)
-                                <div class="flex flex-col rounded-xl bg-brand-paper px-5 py-3" data-home-stat="{{ $stat['label'] }}">
+                                <div class="flex min-h-24 flex-col justify-center rounded-xl bg-brand-paper px-5 py-3" data-home-stat="{{ $stat['label'] }}">
                                     <dt class="order-2 mt-1 text-xs font-bold leading-5 text-slate-600">
                                         {{ $stat['label'] }}
                                     </dt>

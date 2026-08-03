@@ -4,7 +4,7 @@
 ])
 
 @if ($featured)
-    <section id="multimedia" class="home-section scroll-mt-24 bg-white py-14 lg:py-20" aria-labelledby="home-multimedia-title">
+    <section id="multimedia" class="home-section scroll-mt-24 bg-white" aria-labelledby="home-multimedia-title">
         <div class="section-shell">
             <div class="home-section-header">
                 <div class="home-section-copy">

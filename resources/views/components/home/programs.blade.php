@@ -39,7 +39,7 @@
             @endif
         </div>
 
-        <div class="mt-8 grid auto-rows-fr gap-5 md:grid-cols-2 lg:grid-cols-3">
+        <div class="mt-7 grid auto-rows-fr gap-6 md:grid-cols-2 lg:grid-cols-3">
             @forelse ($hasProgramShow ? $programCollection : collect() as $program)
                 @php
                     $image = $program->hero_image_url ?: $program->image_url;
@@ -77,6 +77,7 @@
                                     class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
                                     loading="lazy"
                                     decoding="async"
+                                    onerror="this.remove()"
                                 >
                             @else
                                 <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-[#0b6f6b]">
@@ -174,10 +175,8 @@
                     </a>
                 </article>
             @empty
-                <div class="home-empty-state col-span-full">
-                    <p class="text-sm leading-6 text-slate-600">
-                        Belum ada program yang ditampilkan. Nantikan program terbaru dari Edulaw Project.
-                    </p>
+                <div class="home-empty-state col-span-full py-4">
+                    <p class="text-sm leading-6 text-slate-600">Program terbaru sedang disiapkan.</p>
                 </div>
             @endforelse
         </div>
