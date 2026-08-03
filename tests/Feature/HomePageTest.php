@@ -62,7 +62,7 @@ it('shows compact empty states and omits unavailable publication statistics', fu
         ->assertSee('Belum ada publikasi yang tersedia. Nantikan riset dan publikasi terbaru dari Edulaw Project.')
         ->assertSee('Belum ada program yang ditampilkan. Nantikan program terbaru dari Edulaw Project.')
         ->assertSee('Belum ada peluang aktif saat ini.')
-        ->assertSee('Belum ada konten multimedia yang ditampilkan.')
+        ->assertDontSee('Belajar Hukum Melalui Beragam Format')
         ->assertDontSee('Total Unduhan')
         ->assertDontSee('Dokumen Tersedia')
         ->assertDontSee('Terpopuler (30 hari)')
@@ -258,7 +258,6 @@ it('renders the about section followed by the active collaboration call to actio
             'Edulaw Insight Terbaru',
             'Riset &amp; Publikasi Pilihan',
             'Opportunities',
-            'Multimedia',
             'Tentang Edulaw',
             'Bangun ruang literasi hukum bersama Edulaw Project.',
         ], false)
@@ -272,6 +271,14 @@ it('renders the about section followed by the active collaboration call to actio
 });
 
 it('uses canonical hero calls to action and valid contextual audience anchors', function () {
+    Multimedia::query()->create([
+        'title' => 'Video untuk Anchor Multimedia',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=anchor12345',
+        'status' => 'published',
+    ]);
+
     $response = $this->get(route('home'));
     $html = $response->getContent();
     $document = new DOMDocument;
@@ -492,7 +499,7 @@ it('shows at most four active opportunities by nearest deadline with direct exte
         ->and(substr_count($html, 'data-home-opportunity-fallback'))->toBe(4);
 });
 
-it('shows the three latest published multimedia items as non-embedded 16:9 cards', function () {
+it('shows one featured and at most three secondary multimedia teasers', function () {
     $items = collect(range(1, 4))->map(fn (int $position) => Multimedia::query()->create([
         'title' => "Multimedia Terbaru {$position}",
         'slug' => "multimedia-terbaru-{$position}",
@@ -518,16 +525,39 @@ it('shows the three latest published multimedia items as non-embedded 16:9 cards
 
     $response
         ->assertOk()
-        ->assertSeeInOrder($items->take(3)->pluck('title')->all())
-        ->assertDontSee($items[3]->title)
+        ->assertSeeInOrder($items->pluck('title')->all())
         ->assertDontSee($draft->title)
         ->assertSee(route('multimedia.index'), false)
-        ->assertSee('aspect-video', false)
+        ->assertSee('Belajar Hukum Melalui Beragam Format')
+        ->assertSee('Lihat Semua Multimedia')
         ->assertDontSee('<iframe', false)
         ->assertDontSee('autoplay', false);
 
-    expect(substr_count($html, 'data-home-multimedia>'))->toBe(3)
-        ->and(substr_count($html, 'data-home-multimedia-fallback'))->toBe(3);
+    $multimediaSection = substr(
+        $html,
+        strpos($html, '<section id="multimedia"'),
+        strpos($html, '<section id="tentang-edulaw"') - strpos($html, '<section id="multimedia"'),
+    );
+
+    expect(substr_count($html, 'data-home-multimedia '))->toBe(4)
+        ->and(substr_count($html, 'data-home-multimedia-featured'))->toBe(1)
+        ->and(substr_count($html, 'data-home-multimedia-secondary'))->toBe(3)
+        ->and($multimediaSection)->not->toContain('home-empty-state');
+});
+
+it('hides the homepage multimedia section when there is no published youtube video', function () {
+    Multimedia::query()->create([
+        'title' => 'Multimedia Draft Saja',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=draftonly1',
+        'status' => 'draft',
+    ]);
+
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertDontSee('Belajar Hukum Melalui Beragam Format')
+        ->assertDontSee('data-home-multimedia', false);
 });
 
 it('provides semantic landmarks, a single page heading, and accessible mobile navigation controls', function () {

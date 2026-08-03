@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Multimedia;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
 
 class MultimediaController extends Controller
@@ -12,7 +13,7 @@ class MultimediaController extends Controller
     {
         $search = $request->query('q');
 
-        $youtubeVideos = Multimedia::query()
+        $youtubeQuery = Multimedia::query()
             ->published()
             ->youtubeVideos()
             ->whereNotNull('media_url')
@@ -22,15 +23,25 @@ class MultimediaController extends Controller
                         ->where('title', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%");
                 });
-            })
+            });
+
+        $hasSortOrder = Schema::hasColumn('multimedia', 'sort_order');
+
+        $featuredYoutubeVideo = (clone $youtubeQuery)
             ->orderByDesc('featured')
+            ->when($hasSortOrder, fn ($query) => $query->orderBy('sort_order'))
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit(4)
-            ->get();
+            ->first();
 
-        $featuredYoutubeVideo = $youtubeVideos->firstWhere('featured', true)
-            ?? $youtubeVideos->first();
+        $youtubeVideos = (clone $youtubeQuery)
+            ->when($featuredYoutubeVideo, fn ($query) => $query->whereKeyNot($featuredYoutubeVideo->getKey()))
+            ->when($hasSortOrder, fn ($query) => $query->orderBy('sort_order'))
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->paginate(perPage: 6, pageName: 'video_page')
+            ->withQueryString()
+            ->fragment('video');
 
         $shortsReels = Multimedia::query()
             ->published()
@@ -38,7 +49,7 @@ class MultimediaController extends Controller
             ->whereNotNull('media_url')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit(12)
+            ->limit(6)
             ->get();
 
         $photoAlbums = Multimedia::query()
@@ -47,11 +58,11 @@ class MultimediaController extends Controller
             ->whereNotNull('media_url')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit(12)
+            ->limit(6)
             ->get();
 
         $counts = [
-            'youtubeVideos' => Multimedia::query()->published()->youtubeVideos()->whereNotNull('media_url')->count(),
+            'youtubeVideos' => $youtubeVideos->total() + ($featuredYoutubeVideo ? 1 : 0),
             'shortsReels' => Multimedia::query()->published()->shortsReels()->whereNotNull('media_url')->count(),
             'photoAlbums' => Multimedia::query()->published()->photoAlbums()->whereNotNull('media_url')->count(),
         ];

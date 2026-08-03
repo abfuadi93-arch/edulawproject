@@ -2,6 +2,7 @@
 
 @section('title', 'Multimedia Edukasi Hukum | Edulaw Project')
 @section('meta_description', 'Jelajahi video, Shorts/Reels, dan dokumentasi kegiatan Edulaw Project dari kanal resmi YouTube, Instagram, dan Google Photos kami.')
+@section('canonical_url', route('multimedia.index'))
 
 @push('styles')
     <style>
@@ -24,7 +25,11 @@
 
 @push('head')
     @php
-        $multimediaSchemaItems = collect($youtubeVideos)
+        $youtubeSchemaVideos = collect($youtubeVideos->items())
+            ->when($featuredYoutubeVideo, fn ($items) => $items->prepend($featuredYoutubeVideo))
+            ->unique('id');
+
+        $multimediaSchemaItems = $youtubeSchemaVideos
             ->concat($shortsReels)
             ->concat($photoAlbums)
             ->unique('id')
@@ -46,7 +51,7 @@
         <x-structured-data :data="\App\Support\StructuredData::itemList($multimediaSchemaItems, 'Multimedia Edukasi Hukum')" />
     @endif
 
-    @foreach ($youtubeVideos as $youtubeVideo)
+    @foreach ($youtubeSchemaVideos as $youtubeVideo)
         @if ($videoSchema = \App\Support\StructuredData::video($youtubeVideo))
             <x-structured-data :data="$videoSchema" />
         @endif
@@ -56,26 +61,16 @@
 @section('content')
 @php
     use App\Support\EdulawSite;
-    use Illuminate\Support\Str;
-
-    $youtubeItems = collect($youtubeVideos ?? [])->values();
     $shortItems = collect($shortsReels ?? [])->values();
     $albumItems = collect($photoAlbums ?? [])->values();
-    $featuredVideo = $featuredYoutubeVideo ?? $youtubeItems->first();
-    $secondaryVideos = $youtubeItems
-        ->reject(fn ($item) => $featuredVideo && $item->id === $featuredVideo->id)
-        ->take(3)
-        ->values();
+    $featuredVideo = $featuredYoutubeVideo;
 
     $youtubeUrl = EdulawSite::resolveUrl(EdulawSite::value('social.youtube_url'));
     $instagramUrl = EdulawSite::resolveUrl(EdulawSite::value('social.instagram_url'));
     $collaborationUrl = route('collaboration.index');
     $contactUrl = route('contact.index');
-    $hasMoreYoutubeVideos = (int) data_get($counts, 'youtubeVideos', 0) > 4;
 
     $dateLabel = fn ($item) => $item?->published_at?->locale('id')->translatedFormat('d M Y') ?: 'Kanal resmi Edulaw';
-    $description = fn ($item) => trim(strip_tags((string) $item?->description))
-        ?: 'Pembahasan hukum pilihan dari kanal resmi Edulaw Project.';
     $shortPlatform = fn ($item) => $item?->platform === 'youtube' ? 'youtube' : 'instagram';
 @endphp
 
@@ -139,84 +134,31 @@
                     description="Diskusi, webinar, dan pembahasan hukum dari kanal YouTube Edulaw."
                 />
 
-                @if ($hasMoreYoutubeVideos && $youtubeUrl)
-                    <a href="{{ $youtubeUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat semua video di YouTube Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-black text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
-                        Lihat Semua di YouTube
+                @if ($youtubeUrl)
+                    <a href="{{ $youtubeUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat kanal YouTube Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-black text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
+                        Lihat Kanal YouTube
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
                 @endif
             </div>
 
             @if ($featuredVideo)
-                <div class="mt-7 grid items-start gap-5 xl:grid-cols-[minmax(0,1.32fr)_minmax(390px,0.88fr)]">
-                    <article data-featured-media class="group overflow-hidden rounded-3xl border border-slate-200 bg-[#07111f] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10">
-                        <a href="{{ $featuredVideo->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Tonton {{ $featuredVideo->title }} di YouTube (membuka tab baru)" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
-                            <div class="relative aspect-video overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d]">
-                                @if ($featuredVideo->thumbnail_url)
-                                    <img src="{{ $featuredVideo->thumbnail_url }}" alt="{{ $featuredVideo->title }}" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]">
-                                @else
-                                    <div class="absolute inset-0 grid place-items-center text-white/75">
-                                        <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
-                                    </div>
-                                @endif
+                <x-multimedia.featured-card :item="$featuredVideo" class="mt-7" />
 
-                                <div class="absolute inset-x-0 bottom-0 h-3/4 bg-linear-to-t from-[#07111f]/95 via-[#07111f]/38 to-transparent"></div>
-                                <x-multimedia.platform-badge platform="youtube" :dark="true" class="absolute left-4 top-4 sm:left-5 sm:top-5" />
+                @if ($youtubeVideos->isNotEmpty())
+                    <div class="mt-9 flex items-center justify-between gap-4">
+                        <h3 class="text-lg font-black text-brand-ink">Video Lainnya</h3>
+                        <p class="text-xs font-bold text-slate-500">{{ $youtubeVideos->total() }} video</p>
+                    </div>
 
-                                <div class="absolute inset-x-0 bottom-0 p-5 sm:p-7">
-                                    <p class="text-xs font-bold text-white/72">{{ $dateLabel($featuredVideo) }}</p>
-                                    <h3 class="line-clamp-2 mt-2 max-w-3xl text-xl font-black leading-tight text-white sm:text-2xl lg:text-3xl">{{ $featuredVideo->title }}</h3>
-                                    <p class="line-clamp-2 mt-2 max-w-2xl text-sm leading-6 text-white/78">{{ $description($featuredVideo) }}</p>
-                                    <span class="mt-4 inline-flex min-h-10 items-center gap-2 rounded-full bg-brand-amber px-4 py-2 text-sm font-black text-brand-ink transition group-hover:bg-white">
-                                        Tonton di YouTube
-                                        <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                    </span>
-                                </div>
-                            </div>
-                        </a>
-                    </article>
+                    <div class="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                        @foreach ($youtubeVideos as $item)
+                            <x-multimedia.media-card :item="$item" />
+                        @endforeach
+                    </div>
 
-                    @if ($secondaryVideos->isNotEmpty())
-                        <div @class(['grid gap-4 sm:grid-cols-2', 'xl:grid-cols-1' => $secondaryVideos->count() === 1, 'xl:grid-cols-2' => $secondaryVideos->count() > 1])>
-                            @foreach ($secondaryVideos as $item)
-                                <article data-secondary-media class="group h-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10">
-                                    <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Tonton {{ $item->title }} di YouTube (membuka tab baru)" class="flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
-                                        <div class="relative aspect-video overflow-hidden bg-linear-to-br from-brand-navy to-[#28659d]">
-                                            @if ($item->thumbnail_url)
-                                                <img src="{{ $item->thumbnail_url }}" alt="{{ $item->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]">
-                                            @else
-                                                <div class="grid h-full place-items-center text-white/75"><svg class="h-9 w-9" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg></div>
-                                            @endif
-                                            <x-multimedia.platform-badge platform="youtube" :dark="true" class="absolute left-3 top-3" />
-                                        </div>
-
-                                        <div class="flex flex-1 items-start justify-between gap-3 p-4">
-                                            <div class="min-w-0">
-                                                <h3 class="line-clamp-2 text-sm font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $item->title }}</h3>
-                                                <p class="mt-2 text-xs font-bold text-slate-500">{{ $dateLabel($item) }}</p>
-                                            </div>
-                                            <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-navy transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                        </div>
-                                    </a>
-                                </article>
-                            @endforeach
-                        </div>
-                    @else
-                        <div data-video-info class="flex min-h-40 items-center rounded-2xl border border-slate-200 bg-white p-6 shadow-sm xl:min-h-full">
-                            <div>
-                                <x-multimedia.platform-badge platform="youtube" />
-                                <h3 class="mt-3 text-lg font-black text-brand-ink">Video terbaru lainnya akan segera tersedia.</h3>
-                                <p class="mt-2 text-sm leading-6 text-slate-600">Ikuti kanal YouTube Edulaw untuk pembahasan hukum berikutnya.</p>
-                                @if ($youtubeUrl)
-                                    <a href="{{ $youtubeUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Kunjungi YouTube Edulaw (membuka tab baru)" class="mt-4 inline-flex items-center gap-1.5 text-sm font-black text-brand-navy hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
-                                        Kunjungi YouTube
-                                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                    </a>
-                                @endif
-                            </div>
-                        </div>
-                    @endif
-                </div>
+                    <x-multimedia.pagination :paginator="$youtubeVideos" />
+                @endif
             @else
                 <x-multimedia.empty-state platform="youtube" title="Video pilihan segera hadir" description="Diskusi dan pembahasan hukum Edulaw akan ditampilkan dari kanal YouTube resmi kami." :url="$youtubeUrl" link-label="Kunjungi YouTube" class="mt-7" />
             @endif
@@ -225,10 +167,18 @@
 
     <section id="shorts-reels" class="scroll-mt-24 bg-white py-14 lg:py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
+            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
+                @if ($instagramUrl)
+                    <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat Instagram Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-black text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
+                        Lihat Instagram
+                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </a>
+                @endif
+            </div>
 
             @if ($shortItems->isNotEmpty())
-                <div class="mt-7 grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 lg:gap-5">
+                <div class="mt-7 grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-5">
                     @foreach ($shortItems as $item)
                         @php($platform = $shortPlatform($item))
                         <article data-short-media class="group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-[#07111f] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10">

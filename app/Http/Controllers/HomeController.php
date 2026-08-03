@@ -57,12 +57,47 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
-        $latestMultimedia = Multimedia::query()
+        $homepageYoutubeVideos = Multimedia::query()
             ->published()
+            ->youtubeVideos()
+            ->whereNotNull('media_url')
+            ->orderByDesc('featured')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit(3)
+            ->limit(5)
             ->get();
+
+        $homepageFeaturedMultimedia = $homepageYoutubeVideos->first();
+        $homepageVideoFallbacks = $homepageYoutubeVideos
+            ->when($homepageFeaturedMultimedia, fn ($items) => $items->where('id', '!=', $homepageFeaturedMultimedia->id))
+            ->values();
+
+        $homepageShort = Multimedia::query()
+            ->published()
+            ->shortsReels()
+            ->whereNotNull('media_url')
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $homepageAlbum = Multimedia::query()
+            ->published()
+            ->photoAlbums()
+            ->whereNotNull('media_url')
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $homepageSecondaryMultimedia = collect([
+            $homepageVideoFallbacks->shift(),
+            $homepageShort,
+            $homepageAlbum,
+        ])
+            ->filter()
+            ->concat($homepageVideoFallbacks)
+            ->unique('id')
+            ->take(3)
+            ->values();
 
         $credibilityStats = collect([
             [
@@ -96,7 +131,8 @@ class HomeController extends Controller
             'latestPublications',
             'latestPrograms',
             'latestOpportunities',
-            'latestMultimedia',
+            'homepageFeaturedMultimedia',
+            'homepageSecondaryMultimedia',
             'credibilityStats',
             'homeHero',
             'homeValues',

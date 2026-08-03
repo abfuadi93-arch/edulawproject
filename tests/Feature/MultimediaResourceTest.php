@@ -245,7 +245,8 @@ test('youtube thumbnail falls back to the official remote thumbnail URL', functi
         'media_url' => 'https://www.youtube.com/watch?v=abc123XYZ_9',
     ]);
 
-    expect($record->thumbnail_url)->toBe('https://i.ytimg.com/vi/abc123XYZ_9/hqdefault.jpg');
+    expect($record->thumbnail_url)->toBe('https://i.ytimg.com/vi/abc123XYZ_9/maxresdefault.jpg')
+        ->and($record->youtube_thumbnail_fallback_url)->toBe('https://i.ytimg.com/vi/abc123XYZ_9/hqdefault.jpg');
 });
 
 test('public layout adapts a single nullable video without repeated placeholders', function () {
@@ -265,7 +266,8 @@ test('public layout adapts a single nullable video without repeated placeholders
 
     $response->assertOk()
         ->assertSee('Video Pilihan Edulaw')
-        ->assertSee('Video terbaru lainnya akan segera tersedia.')
+        ->assertDontSee('Video Lainnya')
+        ->assertDontSee('Pagination video YouTube')
         ->assertSee('Konten pendek segera hadir')
         ->assertSee('Dokumentasi kegiatan akan segera tersedia')
         ->assertSee('href="#video"', false)
@@ -275,10 +277,49 @@ test('public layout adapts a single nullable video without repeated placeholders
 
     expect(substr_count($html, 'data-featured-media'))->toBe(1)
         ->and(substr_count($html, 'data-secondary-media'))->toBe(0)
-        ->and(substr_count($html, 'data-video-info'))->toBe(1)
         ->and(substr_count($html, 'Konten pendek segera hadir'))->toBe(1)
         ->and(substr_count($html, 'Dokumentasi kegiatan akan segera tersedia'))->toBe(1)
         ->and($html)->toContain('overflow-x-clip');
+});
+
+test('youtube grid paginates six videos with video_page and keeps the video anchor', function () {
+    $featured = Multimedia::query()->create([
+        'title' => 'Featured Tetap di Atas',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://youtube.com/watch?v=fixed12345',
+        'status' => 'published',
+        'published_at' => now(),
+        'featured' => true,
+    ]);
+
+    $gridVideos = collect(range(1, 7))->map(fn (int $position) => Multimedia::query()->create([
+        'title' => "Video Grid {$position}",
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => "https://youtube.com/watch?v=gridvideo{$position}",
+        'status' => 'published',
+        'published_at' => now()->subMinutes($position),
+    ]));
+
+    $firstPage = $this->get(route('multimedia.index'))->assertOk();
+    $firstSection = Str::between($firstPage->getContent(), '<section id="video"', '<section id="shorts-reels"');
+
+    expect(substr_count($firstSection, 'data-featured-media'))->toBe(1)
+        ->and(substr_count($firstSection, 'data-secondary-media'))->toBe(6)
+        ->and(substr_count($firstSection, 'href="'.$featured->media_url.'"'))->toBe(1)
+        ->and($firstSection)->toContain($gridVideos[0]->title)
+        ->not->toContain($gridVideos[6]->title)
+        ->toContain('video_page=2#video')
+        ->toContain('aria-label="Pagination video YouTube"');
+
+    $secondPage = $this->get(route('multimedia.index', ['video_page' => 2]))->assertOk();
+    $secondSection = Str::between($secondPage->getContent(), '<section id="video"', '<section id="shorts-reels"');
+
+    expect(substr_count($secondSection, 'data-secondary-media'))->toBe(1)
+        ->and($secondSection)->toContain($gridVideos[6]->title)
+        ->not->toContain($gridVideos[0]->title)
+        ->and($secondPage->getContent())->toContain('<link rel="canonical" href="'.route('multimedia.index').'">');
 });
 
 test('two youtube videos render one featured and one secondary external card', function () {

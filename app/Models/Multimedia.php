@@ -240,12 +240,26 @@ class Multimedia extends Model
             return $thumbnail;
         }
 
+        $videoId = $this->youtube_video_id;
+
+        return $videoId ? "https://i.ytimg.com/vi/{$videoId}/maxresdefault.jpg" : null;
+    }
+
+    public function getYoutubeThumbnailFallbackUrlAttribute(): ?string
+    {
+        $videoId = $this->youtube_video_id;
+
+        return $videoId ? "https://i.ytimg.com/vi/{$videoId}/hqdefault.jpg" : null;
+    }
+
+    public function getYoutubeVideoIdAttribute(): ?string
+    {
         $url = (string) ($this->attributes['media_url'] ?? '');
 
         if (preg_match('~youtu\.be/([A-Za-z0-9_-]{6,})~', $url, $matches)
             || preg_match('~youtube\.com/(?:shorts/|embed/)([A-Za-z0-9_-]{6,})~', $url, $matches)
             || preg_match('~[?&]v=([A-Za-z0-9_-]{6,})~', $url, $matches)) {
-            return "https://i.ytimg.com/vi/{$matches[1]}/hqdefault.jpg";
+            return $matches[1];
         }
 
         return null;
