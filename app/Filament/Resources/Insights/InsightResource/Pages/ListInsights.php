@@ -28,15 +28,17 @@ class ListInsights extends ListRecords
         return $this->makeStatusTabs([
             'all' => ['label' => 'Semua'],
             'draft' => [
-                'label' => 'Draft',
-                'query' => fn (Builder $query): Builder => $query->whereIn('status', ['draft', 'archived']),
+                'label' => 'Draf',
+                'query' => fn (Builder $query): Builder => $query->where('status', 'draft'),
             ],
-            'reviewed' => [
-                'label' => 'Reviewed',
-                'query' => fn (Builder $query): Builder => $query->whereIn('status', ['reviewed', 'submitted']),
+            'workflow' => [
+                'label' => 'Dalam Editorial',
+                'query' => fn (Builder $query): Builder => $query->whereIn('status', [
+                    'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved',
+                ]),
             ],
             'published' => [
-                'label' => 'Published',
+                'label' => 'Diterbitkan',
                 'query' => fn (Builder $query): Builder => $query->where('status', 'published'),
             ],
         ]);

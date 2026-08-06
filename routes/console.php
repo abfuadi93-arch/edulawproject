@@ -1,16 +1,44 @@
 <?php
 
+use App\Models\Insight;
 use App\Models\Publication;
 use App\Models\User;
+use App\Services\InsightNotificationService;
 use App\Services\PdfCoverGenerator;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
+use Illuminate\Support\Facades\Schedule;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->purpose('Display an inspiring quote');
+
+Artisan::command('insights:notify-deadlines', function (InsightNotificationService $notifications) {
+    foreach (['editor', 'writer'] as $owner) {
+        $deadlineColumn = "{$owner}_deadline";
+        $completedColumn = "{$owner}_deadline_completed_at";
+
+        Insight::query()
+            ->whereNull($completedColumn)
+            ->whereNotNull($deadlineColumn)
+            ->where($deadlineColumn, '<=', now()->addDay())
+            ->whereNotIn('status', ['approved', 'rejected', 'published', 'archived'])
+            ->with(['creator', 'assignedEditor'])
+            ->each(function (Insight $insight) use ($notifications, $owner, $deadlineColumn): void {
+                if ($insight->getAttribute($deadlineColumn)->isPast()) {
+                    $notifications->notifyDeadlineOverdue($insight, $owner);
+                } else {
+                    $notifications->notifyDeadlineApproaching($insight, $owner);
+                }
+            });
+    }
+
+    $this->info('Notifikasi tenggat editorial telah diproses.');
+})->purpose('Send deduplicated approaching and overdue editorial deadline notifications');
+
+Schedule::command('insights:notify-deadlines')->hourly()->withoutOverlapping();
 
 Artisan::command('publications:generate-covers {--force : Regenerate covers even when a publication already has one}', function () {
     $generator = app(PdfCoverGenerator::class);

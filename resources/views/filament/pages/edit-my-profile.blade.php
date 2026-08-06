@@ -1,8 +1,12 @@
 <x-filament-panels::page>
-    <form wire:submit="save" class="space-y-6">
+    <form wire:submit="save" class="edulaw-self-profile-shell space-y-5">
         {{ $this->form }}
 
-        <div class="flex justify-end">
+        <div class="edulaw-self-profile-actions">
+            <div class="edulaw-self-profile-actions__copy">
+                <p>Siap menyimpan profil?</p>
+                <span>Perubahan akan langsung digunakan pada profil publik dan konten terkait.</span>
+            </div>
             <x-filament::button type="submit" icon="heroicon-o-check" size="lg">
                 Simpan Perubahan
             </x-filament::button>
@@ -13,14 +17,18 @@
         $statistics = $this->getProfileStatistics();
         $latestInsights = $this->getLatestInsights();
         $latestPublications = $this->getLatestPublications();
-        $statusLabel = fn (?string $status): string => match ($status) {
+        $statusValue = fn ($status): ?string => $status instanceof \BackedEnum ? $status->value : $status;
+        $statusLabel = fn ($status): string => match ($statusValue($status)) {
             'published' => 'Published',
-            'reviewed' => 'Reviewed',
+            'approved', 'reviewed' => 'Disetujui',
+            'revision_requested' => 'Perlu Perbaikan',
+            'in_review' => 'Sedang Diperiksa',
+            'submitted' => 'Dikirim',
             default => 'Draft',
         };
-        $statusClass = fn (?string $status): string => match ($status) {
+        $statusClass = fn ($status): string => match ($statusValue($status)) {
             'published' => 'bg-green-100 text-green-800 dark:bg-green-600 dark:text-white',
-            'reviewed' => 'bg-amber-100 text-amber-800 dark:bg-amber-500 dark:text-slate-950',
+            'approved', 'reviewed', 'revision_requested', 'in_review', 'submitted' => 'bg-amber-100 text-amber-800 dark:bg-amber-500 dark:text-slate-950',
             default => 'bg-slate-100 text-slate-700 dark:bg-slate-600 dark:text-white',
         };
     @endphp
@@ -37,16 +45,16 @@
                 ['label' => 'Program', 'value' => $statistics['programs'], 'icon' => 'heroicon-o-calendar-days'],
                 ['label' => 'Total View', 'value' => $statistics['views'], 'icon' => 'heroicon-o-eye'],
             ] as $stat)
-                <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5 dark:border-slate-700 dark:bg-slate-900">
+                <article class="rounded-2xl border border-slate-200 bg-slate-50 p-4 dark:border-slate-700 dark:bg-slate-900">
                     <div class="flex items-center justify-between gap-4">
                         <div>
                             <p class="text-sm font-medium text-slate-500 dark:text-slate-400">{{ $stat['label'] }}</p>
-                            <p class="mt-2 text-3xl font-black text-slate-950 dark:text-slate-50">
+                            <p class="mt-1 text-2xl font-black text-slate-950 dark:text-slate-50">
                                 {{ number_format($stat['value'], 0, ',', '.') }}
                             </p>
                         </div>
-                        <div class="rounded-xl bg-blue-50 p-3 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
-                            <x-filament::icon :icon="$stat['icon']" class="h-6 w-6" />
+                        <div class="rounded-xl bg-blue-50 p-2.5 text-blue-600 dark:bg-blue-500/15 dark:text-blue-400">
+                            <x-filament::icon :icon="$stat['icon']" class="h-5 w-5" />
                         </div>
                     </div>
                 </article>
@@ -61,7 +69,7 @@
             icon="heroicon-o-newspaper"
         >
             @if ($latestInsights->isEmpty())
-                <div class="py-8 text-center">
+                <div class="py-6 text-center">
                     <x-filament::icon icon="heroicon-o-document-text" class="mx-auto h-10 w-10 text-blue-500" />
                     <p class="mt-3 font-semibold text-slate-700 dark:text-slate-300">Belum ada insight terhubung.</p>
                 </div>
@@ -108,7 +116,7 @@
             icon="heroicon-o-book-open"
         >
             @if ($latestPublications->isEmpty())
-                <div class="py-8 text-center">
+                <div class="py-6 text-center">
                     <x-filament::icon icon="heroicon-o-book-open" class="mx-auto h-10 w-10 text-blue-500" />
                     <p class="mt-3 font-semibold text-slate-700 dark:text-slate-300">Belum ada publikasi terhubung.</p>
                 </div>

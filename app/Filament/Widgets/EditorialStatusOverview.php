@@ -31,13 +31,14 @@ class EditorialStatusOverview extends StatsOverviewWidget
     {
         $counts = Insight::query()
             ->selectRaw('status, COUNT(*) as aggregate')
-            ->whereIn('status', ['draft', 'reviewed', 'published'])
+            ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'rejected', 'reviewed', 'published'])
             ->groupBy('status')
             ->pluck('aggregate', 'status');
 
         return [
             'draft' => (int) ($counts['draft'] ?? 0),
-            'reviewed' => (int) ($counts['reviewed'] ?? 0),
+            'reviewed' => collect(['submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'rejected', 'reviewed'])
+                ->sum(fn (string $status): int => (int) ($counts[$status] ?? 0)),
             'published' => (int) ($counts['published'] ?? 0),
         ];
     }
@@ -86,7 +87,9 @@ class EditorialStatusOverview extends StatsOverviewWidget
         $user = auth()->user();
 
         return (bool) $user && (
-            $user->can('update all insights')
+            $user->can('view_all_editorial_insights')
+            || $user->can('view_assigned_editorial_insights')
+            || $user->can('update all insights')
             || $user->can('review insights')
             || $user->can('publish insights')
         );

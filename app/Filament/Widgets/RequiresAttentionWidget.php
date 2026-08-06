@@ -41,11 +41,11 @@ class RequiresAttentionWidget extends Widget
         $counts = Cache::remember('dashboard.requires-attention.v2', now()->addMinutes(3), fn (): array => [
             'draft_editorials' => Insight::query()->where('status', 'draft')->count(),
             'insights_without_cover' => Insight::query()
-                ->whereIn('status', ['draft', 'submitted', 'reviewed', 'published'])
+                ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'reviewed', 'published'])
                 ->where(fn ($query) => $query->whereNull('cover_image')->orWhere('cover_image', ''))
                 ->count(),
             'insights_without_excerpt' => Insight::query()
-                ->whereIn('status', ['draft', 'submitted', 'reviewed', 'published'])
+                ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'reviewed', 'published'])
                 ->where(fn ($query) => $query->whereNull('excerpt')->orWhere('excerpt', ''))
                 ->count(),
             'programs_without_poster' => Program::query()

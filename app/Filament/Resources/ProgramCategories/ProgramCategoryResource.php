@@ -99,35 +99,48 @@ class ProgramCategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-reference-table'])
+            ->extraAttributes(['class' => 'edulaw-reference-table edulaw-program-category-table'])
             ->columns([
                 ViewColumn::make('category')
                     ->label('Kategori')
                     ->view('filament.tables.columns.reference-name', fn (ProgramCategory $record): array => [
                         'name' => $record->name,
                         'slug' => $record->slug,
-                        'description' => $record->description,
                     ])
                     ->searchable(['name', 'slug', 'description'])
-                    ->sortable(),
+                    ->sortable(['name'])
+                    ->extraHeaderAttributes(['class' => 'edulaw-program-category-name-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-program-category-name-cell']),
 
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
-                    ->sortable(),
+                    ->sortable()
+                    ->extraHeaderAttributes(['class' => 'edulaw-program-category-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-program-category-status-cell']),
 
                 TextColumn::make('sort_order')
                     ->label('Urutan')
+                    ->badge()
+                    ->color('gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-program-category-order-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-program-category-order-cell']),
 
                 TextColumn::make('programs_count')
-                    ->label('Jumlah Program')
+                    ->label('Program')
                     ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'primary' : 'gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-program-category-count-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-program-category-count-cell']),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')

@@ -77,31 +77,45 @@ class PermissionResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-access-table'])
+            ->extraAttributes(['class' => 'edulaw-access-table edulaw-permission-table'])
             ->columns([
                 TextColumn::make('name')
                     ->label('Permission')
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('Nama permission disalin')
+                    ->extraHeaderAttributes(['class' => 'edulaw-permission-name-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-permission-name-cell']),
 
                 TextColumn::make('group')
                     ->label('Kelompok')
                     ->state(fn (Permission $record): string => static::groupLabel($record->name))
                     ->badge()
-                    ->color('info')
-                    ->visibleFrom('md'),
+                    ->color(fn (string $state): string => static::groupColor($state))
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-permission-group-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-permission-group-cell']),
 
                 TextColumn::make('roles_count')
-                    ->label('Digunakan oleh Role')
+                    ->label('Dipakai Role')
                     ->numeric()
+                    ->badge()
+                    ->formatStateUsing(fn (int $state): string => "{$state} role")
+                    ->color(fn (int $state): string => $state > 0 ? 'success' : 'gray')
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-permission-role-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-permission-role-cell']),
 
                 TextColumn::make('guard_name')
                     ->label('Guard')
                     ->badge()
+                    ->color('gray')
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-permission-guard-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-permission-guard-cell']),
 
             ])
             ->defaultSort('name')
@@ -149,7 +163,7 @@ class PermissionResource extends Resource
         $name = Str::lower(str_replace('_', ' ', $permission));
 
         return match (true) {
-            Str::contains($name, 'insight') => 'Editorial',
+            Str::contains($name, ['insight', 'editorial', 'editor assignment', 'editor deadline', 'writer deadline']) => 'Editorial',
             Str::contains($name, 'publication') => 'Publikasi',
             Str::contains($name, 'program') => 'Program',
             Str::contains($name, 'opportunit') => 'Peluang',
@@ -159,6 +173,19 @@ class PermissionResource extends Resource
             Str::contains($name, ['author', 'tag', 'categor', 'type']) => 'Referensi',
             Str::contains($name, ['user', 'role', 'permission']) => 'Akun dan Akses',
             default => 'Lainnya',
+        };
+    }
+
+    public static function groupColor(string $group): string
+    {
+        return match ($group) {
+            'Editorial' => 'primary',
+            'Publikasi' => 'success',
+            'Program' => 'info',
+            'Peluang' => 'warning',
+            'Multimedia' => 'danger',
+            'Akun dan Akses' => 'gray',
+            default => 'info',
         };
     }
 

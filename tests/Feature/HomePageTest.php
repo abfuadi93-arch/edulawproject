@@ -286,15 +286,17 @@ it('uses canonical hero calls to action and valid contextual audience anchors', 
 
     $response
         ->assertOk()
-        ->assertSee('Baca Insight')
-        ->assertSee('Lihat Publikasi')
+        ->assertSee('Jelajahi Editorial')
+        ->assertSee('Lihat Program')
+        ->assertSee('Ajukan Kolaborasi')
         ->assertSee('id="program-edulaw"', false)
         ->assertSee('id="edulaw-insight"', false)
         ->assertSee('id="riset-publikasi"', false)
         ->assertSee('id="multimedia"', false);
 
     expect($xpath->query('//*[@data-home-hero]//a[@href="'.route('insights.index').'"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('publications.index').'"]')->length)->toBe(1)
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('programs.index').'"]')->length)->toBe(1)
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('collaboration.index').'"]')->length)->toBe(1)
         ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#program-edulaw"]')->length)->toBe(1)
         ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#riset-publikasi"]')->length)->toBe(1)
         ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#edulaw-insight"]')->length)->toBe(1)

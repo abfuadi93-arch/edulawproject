@@ -1,96 +1,59 @@
 @props(['publications' => collect()])
 
-@php
-    $publicationCollection = collect($publications)->take(4)->values();
-    $hasPublicationIndex = \Illuminate\Support\Facades\Route::has('publications.index');
-    $hasPublicationShow = \Illuminate\Support\Facades\Route::has('publications.show');
-@endphp
+@php($publicationCollection = collect($publications)->take(3)->values())
 
-<section id="riset-publikasi" class="home-section scroll-mt-24 bg-white" aria-labelledby="home-publications-title">
+<section id="riset-publikasi" class="scroll-mt-20 bg-[#f6f8fa] py-9 lg:py-12" aria-labelledby="home-publications-title">
     <div class="section-shell">
-        <div class="home-section-header">
-            <div class="home-section-copy">
-                <p class="home-section-eyebrow text-[#8A6B2F]">Publikasi Edulaw</p>
-                <h2 id="home-publications-title" class="home-section-title">Riset &amp; Publikasi Pilihan</h2>
-                <p class="home-section-description">Repositori kajian, policy brief, naskah akademik, dan buku digital.</p>
+        <div class="flex items-end justify-between gap-5">
+            <div>
+                <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#b18332]">Riset &amp; Publikasi Pilihan</p>
+                <h2 id="home-publications-title" class="mt-2 font-display text-2xl font-extrabold tracking-tight text-[#1f3c69] sm:text-3xl">Pengetahuan yang Dapat Digunakan</h2>
             </div>
-
-            @if ($hasPublicationIndex)
-                <a href="{{ route('publications.index') }}" class="section-link w-fit shrink-0">
-                    Lihat Semua Publikasi
-                    <span aria-hidden="true">→</span>
-                </a>
-            @endif
+            <a href="{{ route('publications.index') }}" class="text-xs font-extrabold text-[#1f3c69]">Semua Publikasi →</a>
         </div>
 
-        @if ($hasPublicationShow && $publicationCollection->isNotEmpty())
-            <div @class([
-                'mt-7 grid auto-rows-fr gap-6',
-                'md:grid-cols-2 lg:grid-cols-3' => $publicationCollection->count() <= 3,
-                'md:grid-cols-2 xl:grid-cols-4' => $publicationCollection->count() >= 4,
-            ])>
+        @if ($publicationCollection->isNotEmpty())
+            <div class="mt-7 grid gap-4 md:grid-cols-3">
                 @foreach ($publicationCollection as $publication)
-                    @php
-                        $typeName = $publication->type?->name ?: 'Dokumen';
-                        $year = optional($publication->published_at)->format('Y');
-                        $documentMeta = filled($publication->page_count)
-                            ? number_format((int) $publication->page_count, 0, ',', '.').' halaman'
-                            : 'Dokumen digital';
-                    @endphp
-
-                    <article data-home-publication class="home-card home-card-interactive group flex h-full flex-col">
-                        <a href="{{ route('publications.show', $publication->slug) }}" class="home-card-link flex h-full flex-col">
-                            <div class="relative aspect-[16/10] overflow-hidden bg-linear-to-br from-[#edf3f7] via-[#f7f3e9] to-[#dceeea]">
+                    <article data-home-publication class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition hover:-translate-y-0.5 hover:shadow-lg">
+                        <a href="{{ route('publications.show', $publication->slug) }}" class="flex h-full flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                            <div class="relative aspect-[16/9] overflow-hidden bg-[linear-gradient(135deg,#173b63,#4a8796)]">
                                 @if ($publication->cover_image_url)
-                                    <img
-                                        src="{{ $publication->cover_image_url }}"
-                                        alt="Sampul {{ $publication->title }}"
-                                        width="800"
-                                        height="500"
-                                        class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
-                                        loading="lazy"
-                                        decoding="async"
-                                        onerror="this.remove()"
-                                    >
-                                @else
-                                    <div class="flex h-full items-center justify-center" data-publication-fallback>
-                                        <div class="grid h-20 w-16 place-items-center rounded-lg border border-brand-navy/15 bg-white text-brand-navy shadow-md shadow-brand-navy/10">
-                                            <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                                <path d="M7 3h7l4 4v14H7V3Zm7 0v5h4M10 12h5m-5 4h5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
-                                            </svg>
-                                        </div>
-                                    </div>
+                                    <img src="{{ $publication->cover_image_url }}" alt="Sampul {{ $publication->title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" decoding="async" onerror="this.remove()">
                                 @endif
-
-                                <span class="absolute left-4 top-4 inline-flex rounded-full bg-white/92 px-3 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-brand-navy shadow-sm backdrop-blur">
-                                    {{ $typeName }}
-                                </span>
+                                <span class="absolute left-3 top-3 rounded bg-white/90 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-[#142f57]">{{ $publication->type?->name ?? 'Dokumen' }}</span>
                             </div>
-
-                            <div class="flex flex-1 flex-col p-5">
-                                <h3 class="line-clamp-2 text-lg font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
-                                    {{ $publication->title }}
-                                </h3>
-
-                                <div class="home-meta mt-3 flex flex-wrap items-center gap-2">
-                                    @if ($year)
-                                        <span>{{ $year }}</span>
-                                        <span class="h-1 w-1 rounded-full bg-slate-300"></span>
-                                    @endif
-                                    <span>{{ $documentMeta }}</span>
-                                </div>
-
-                                <span class="mt-auto inline-flex items-center gap-2 pt-5 text-sm font-extrabold text-brand-navy">
-                                    Lihat Publikasi <span aria-hidden="true">→</span>
-                                </span>
+                            <div class="flex flex-1 flex-col p-4">
+                                <h3 class="line-clamp-2 min-h-11 text-base font-extrabold leading-snug text-[#142f57]">{{ $publication->title }}</h3>
+                                <p class="mt-3 text-xs text-slate-400">{{ $publication->published_at?->format('Y') ?? 'Publikasi Edulaw' }}{{ $publication->page_count ? ' · '.number_format($publication->page_count, 0, ',', '.').' halaman' : '' }}</p>
+                                <span class="mt-auto inline-flex pt-4 text-xs font-extrabold text-[#1f3c69]">Lihat Publikasi →</span>
                             </div>
                         </a>
                     </article>
                 @endforeach
             </div>
         @else
-            <div class="home-empty-state mt-6 py-3.5">
-                <p class="text-sm leading-6 text-slate-600">Publikasi sedang disiapkan.</p>
+            <div class="mt-7 grid overflow-hidden rounded-2xl border border-slate-200 bg-white lg:grid-cols-[1fr_1.2fr]">
+                <div class="bg-[#173b63] p-7 text-white sm:p-9">
+                    <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#f0c55e]">Repositori Edulaw</p>
+                    <h3 class="mt-3 text-2xl font-extrabold text-white">Publikasi sedang disiapkan.</h3>
+                    <p class="mt-4 text-sm leading-6 text-slate-200">Kajian, policy brief, naskah akademik, dan modul akan tampil otomatis setelah diterbitkan melalui sistem editorial.</p>
+                    <a href="{{ route('publications.index') }}" class="mt-6 inline-flex rounded-lg bg-[#f8bd38] px-4 py-2.5 text-xs font-extrabold text-[#142f57]">Buka Repositori →</a>
+                </div>
+                <div class="grid gap-3 p-6 sm:grid-cols-2 sm:p-8">
+                    @foreach ([
+                        ['Policy Brief', 'Rekomendasi ringkas untuk kebijakan.'],
+                        ['Laporan Riset', 'Temuan berbasis data dan regulasi.'],
+                        ['Kajian Hukum', 'Analisis isu, putusan, dan kelembagaan.'],
+                        ['Modul', 'Materi pembelajaran yang dapat digunakan.'],
+                    ] as [$title, $description])
+                        <article class="rounded-xl border border-slate-200 bg-[#f8fafc] p-4">
+                            <span class="text-base font-black text-[#d4a93f]" aria-hidden="true">§</span>
+                            <h4 class="mt-3 text-base font-extrabold text-[#1f3c69]">{{ $title }}</h4>
+                            <p class="mt-1 text-xs leading-5 text-slate-500">{{ $description }}</p>
+                        </article>
+                    @endforeach
+                </div>
             </div>
         @endif
     </div>

@@ -179,6 +179,9 @@ test('relationship counts and protected deletion rules are safe', function () {
     expect(UserResource::isLastSuperAdmin($lastSuperAdmin))->toBeFalse()
         ->and(UserResource::canSafelyDelete($otherSuperAdmin))->toBeTrue()
         ->and(PermissionResource::groupLabel('publish insights'))->toBe('Editorial')
+        ->and(PermissionResource::groupLabel('access_editorial_workspace'))->toBe('Editorial')
+        ->and(PermissionResource::groupLabel('accept_editor_assignment'))->toBe('Editorial')
+        ->and(PermissionResource::groupColor('Editorial'))->toBe('primary')
         ->and(PermissionResource::groupLabel('update contact messages'))->toBe('Pesan');
 });
 

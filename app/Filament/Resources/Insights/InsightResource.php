@@ -2,12 +2,15 @@
 
 namespace App\Filament\Resources\Insights;
 
+use App\Enums\EditorialWorkflowStage;
+use App\Enums\InsightStatus;
+use App\Filament\Resources\Editorial\EditorialResource;
 use App\Filament\Resources\Insights\InsightResource\Pages;
 use App\Models\Insight;
+use App\Services\InsightEditorialWorkflowService;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -22,6 +25,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
+use Filament\Notifications\Notification;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
@@ -139,7 +143,7 @@ class InsightResource extends Resource
                                             ->rows(4)
                                             ->maxLength(500)
                                             ->required(fn ($get): bool => $get('status') === 'published')
-                                            ->helperText('Wajib sebelum Published. Tulis ringkasan mandiri yang menjelaskan manfaat artikel.')
+                                            ->helperText('Wajib sebelum dikirim untuk diperiksa. Tulis ringkasan mandiri yang menjelaskan manfaat artikel.')
                                             ->columnSpanFull(),
 
                                         FileUpload::make('cover_image')
@@ -155,7 +159,7 @@ class InsightResource extends Resource
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(4096)
                                             ->required(fn ($get): bool => $get('status') === 'published')
-                                            ->helperText('Wajib sebelum Published. Rekomendasi rasio 16:9. Maks. 4 MB.')
+                                            ->helperText('Wajib sebelum dikirim untuk diperiksa. Rekomendasi rasio 16:9. Maks. 4 MB.')
                                             ->columnSpanFull(),
                                     ]),
 
@@ -215,7 +219,8 @@ class InsightResource extends Resource
                                             ->options(fn (): array => static::statusOptionsForCurrentUser())
                                             ->default('draft')
                                             ->live()
-                                            ->disabled(fn (string $operation): bool => $operation === 'create' && ! static::canManageEditorialWorkflow())
+                                            ->disabled()
+                                            ->helperText('Status berubah melalui action workflow, bukan dropdown. Untuk draft, gunakan “Simpan & Kirim untuk Review”.')
                                             ->required(),
 
                                         DateTimePicker::make('published_at')
@@ -231,12 +236,41 @@ class InsightResource extends Resource
                                             ->preload()
                                             ->required(fn ($get): bool => $get('status') === 'published')
                                             ->placeholder('Pilih penulis')
-                                            ->helperText('Wajib sebelum Published. Draft dapat disimpan tanpa penulis.'),
+                                            ->helperText('Wajib sebelum dikirim untuk diperiksa. Draft dapat disimpan tanpa penulis.'),
 
                                         Placeholder::make('reading_time_preview')
                                             ->label('Estimasi Baca')
                                             ->content(fn ($get): string => static::estimateReadingTime($get('content')).' menit baca')
                                             ->helperText('Dihitung otomatis saat artikel disimpan.'),
+
+                                        Placeholder::make('editorial_notes_for_writer')
+                                            ->label('Catatan Editor')
+                                            ->content(function (?Insight $record): HtmlString {
+                                                if (! $record || $record->status !== InsightStatus::RevisionRequested) {
+                                                    return new HtmlString('<span class="text-sm text-gray-500">Belum ada catatan perbaikan.</span>');
+                                                }
+
+                                                $items = $record->editorialNotes()
+                                                    ->visibleToWriter()
+                                                    ->whereNull('parent_id')
+                                                    ->with(['user:id,name', 'replies.user:id,name'])
+                                                    ->latest()
+                                                    ->get()
+                                                    ->map(function ($note): string {
+                                                        $replies = $note->replies->map(fn ($reply): string => '<li class="ml-5 mt-2 border-l pl-3"><strong>'.e($reply->user?->name ?? 'User').'</strong>: '.nl2br(e($reply->note)).'</li>')->join('');
+
+                                                        return '<li class="mb-4 rounded-lg border p-3"><strong>'.e($note->user?->name ?? 'Tim Editorial').'</strong> · '.e($note->status->label()).'<br>'.nl2br(e($note->note)).'<ul>'.$replies.'</ul></li>';
+                                                    })
+                                                    ->join('');
+
+                                                return new HtmlString($items !== '' ? '<ul class="text-sm">'.$items.'</ul>' : '<span class="text-sm text-gray-500">Belum ada catatan perbaikan.</span>');
+                                            })
+                                            ->visible(fn (?Insight $record): bool => $record?->status === InsightStatus::RevisionRequested),
+
+                                        Placeholder::make('writer_deadline_display')
+                                            ->label('Tenggat Perbaikan')
+                                            ->content(fn (?Insight $record): string => $record?->writer_deadline?->locale('id')->translatedFormat('d M Y, H:i') ?? 'Belum ditetapkan')
+                                            ->visible(fn (?Insight $record): bool => $record?->status === InsightStatus::RevisionRequested),
 
                                         Placeholder::make('public_preview')
                                             ->label('Pratinjau')
@@ -411,6 +445,7 @@ class InsightResource extends Resource
             ->with([
                 'authors:id,name',
                 'category:id,name',
+                'activeEditorAssignment.editor:id,name',
             ])
             ->withCount('authors');
         $user = Auth::user();
@@ -419,12 +454,14 @@ class InsightResource extends Resource
             return $query->whereRaw('1 = 0');
         }
 
-        if (
-            Gate::forUser($user)->allows('update all insights')
-            || Gate::forUser($user)->allows('review insights')
-            || Gate::forUser($user)->allows('publish insights')
-        ) {
+        if (Gate::forUser($user)->allows('view_all_editorial_submissions')
+            || Gate::forUser($user)->allows('view_all_editorial_insights')) {
             return $query;
+        }
+
+        if (Gate::forUser($user)->allows('view_assigned_editorial_submissions')
+            || Gate::forUser($user)->allows('view_assigned_editorial_insights')) {
+            return $query->whereHas('editorAssignments', fn (Builder $query): Builder => $query->active()->where('editor_id', $user->id));
         }
 
         return $query->where('created_by', $user->id);
@@ -438,55 +475,58 @@ class InsightResource extends Resource
             return false;
         }
 
-        return Gate::forUser($user)->allows('update all insights')
-            || Gate::forUser($user)->allows('review insights')
-            || Gate::forUser($user)->allows('publish insights')
-            || Gate::forUser($user)->allows('archive insights');
+        return Gate::forUser($user)->allows('view_all_editorial_insights')
+            || Gate::forUser($user)->allows('view_assigned_editorial_insights');
     }
 
     public static function statusOptionsForCurrentUser(): array
     {
-        if (! static::canManageEditorialWorkflow()) {
-            return [
-                'draft' => 'Draft',
-                'reviewed' => 'Reviewed',
-            ];
-        }
-
         return static::statusOptions();
     }
 
     public static function statusOptions(): array
     {
-        return [
-            'draft' => 'Draft',
-            'reviewed' => 'Reviewed',
-            'published' => 'Published',
-        ];
+        return InsightStatus::options();
     }
 
-    public static function normalizeStatusForDisplay(?string $status): string
+    public static function canSubmitRecord(Insight $record): bool
     {
+        $user = Auth::user();
+
+        return filled($user)
+            && $record->status === InsightStatus::Draft
+            && $user->can('submit insights')
+            && ($user->hasRole('super_admin') || (int) $record->created_by === (int) $user->id);
+    }
+
+    public static function canResubmitRecord(Insight $record): bool
+    {
+        $user = Auth::user();
+
+        return filled($user)
+            && $record->status === InsightStatus::RevisionRequested
+            && $user->can('resubmit_revision')
+            && (int) $record->created_by === (int) $user->id;
+    }
+
+    public static function normalizeStatusForDisplay(InsightStatus|string|null $status): string
+    {
+        $status = $status instanceof InsightStatus ? $status->value : $status;
+
         return match ($status) {
-            'submitted' => 'reviewed',
-            'archived' => 'draft',
-            'reviewed', 'published' => $status,
-            default => 'draft',
+            'reviewed' => InsightStatus::Approved->value,
+            default => InsightStatus::tryFrom((string) $status)?->value ?? InsightStatus::Draft->value,
         };
     }
 
-    public static function statusLabel(?string $status): string
+    public static function statusLabel(InsightStatus|string|null $status): string
     {
-        return static::statusOptions()[static::normalizeStatusForDisplay($status)] ?? 'Draft';
+        return InsightStatus::from(static::normalizeStatusForDisplay($status))->label();
     }
 
-    public static function statusColor(?string $status): string
+    public static function statusColor(InsightStatus|string|null $status): string
     {
-        return match (static::normalizeStatusForDisplay($status)) {
-            'published' => 'success',
-            'reviewed' => 'warning',
-            default => 'primary',
-        };
+        return InsightStatus::from(static::normalizeStatusForDisplay($status))->color();
     }
 
     public static function table(Table $table): Table
@@ -510,6 +550,7 @@ class InsightResource extends Resource
                     ->limit(24)
                     ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 24 ? $state : null)
                     ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true)
                     ->visibleFrom('lg')
                     ->extraHeaderAttributes(['class' => 'edulaw-insight-category-header'])
                     ->extraCellAttributes(['class' => 'edulaw-insight-category-cell']),
@@ -517,10 +558,25 @@ class InsightResource extends Resource
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (?string $state): string => static::statusColor($state))
-                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state))
+                    ->color(fn ($state): string => static::statusColor($state))
+                    ->formatStateUsing(fn ($state): string => static::statusLabel($state))
                     ->extraHeaderAttributes(['class' => 'edulaw-insight-status-header'])
                     ->extraCellAttributes(['class' => 'edulaw-insight-status-cell']),
+
+                TextColumn::make('workflow_stage')
+                    ->label('Tahap')
+                    ->badge()
+                    ->formatStateUsing(fn (EditorialWorkflowStage $state): string => $state->label())
+                    ->color(fn (EditorialWorkflowStage $state): string => $state->color())
+                    ->toggleable(isToggledHiddenByDefault: true)
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-stage-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-stage-cell']),
+
+                TextColumn::make('activeEditorAssignment.editor.name')
+                    ->label('Editor Aktif')
+                    ->placeholder('Belum ditugaskan')
+                    ->toggleable(isToggledHiddenByDefault: true),
 
                 ViewColumn::make('placement')
                     ->label('Penempatan')
@@ -545,6 +601,7 @@ class InsightResource extends Resource
                         : '—')
                     ->placeholder('—')
                     ->sortable()
+                    ->alignCenter()
                     ->toggleable()
                     ->visibleFrom('xl')
                     ->extraHeaderAttributes(['class' => 'edulaw-insight-published-header'])
@@ -575,17 +632,7 @@ class InsightResource extends Resource
 
                 SelectFilter::make('status')
                     ->label('Status Editorial')
-                    ->options(static::statusOptions())
-                    ->query(function (Builder $query, array $data): void {
-                        $status = $data['value'] ?? null;
-
-                        match ($status) {
-                            'draft' => $query->whereIn('status', ['draft', 'archived']),
-                            'reviewed' => $query->whereIn('status', ['reviewed', 'submitted']),
-                            'published' => $query->where('status', 'published'),
-                            default => null,
-                        };
-                    }),
+                    ->options(static::statusOptions()),
 
                 SelectFilter::make('authors')
                     ->label('Penulis')
@@ -655,12 +702,63 @@ class InsightResource extends Resource
                         ->url(fn (Insight $record): string => route('insights.show', $record->slug))
                         ->openUrlInNewTab()
                         ->visible(fn (Insight $record): bool => filled($record->slug)
-                            && $record->status === 'published'
+                            && $record->status === InsightStatus::Published
                             && ($record->published_at?->isPast() ?? false)),
 
                     EditAction::make()
                         ->label('Edit')
                         ->icon('heroicon-o-pencil-square'),
+
+                    EditorialResource::assignmentAction(),
+                    EditorialResource::reassignmentAction(),
+
+                    Action::make('editorial_workspace')
+                        ->label('Buka Workspace')
+                        ->icon('heroicon-o-rectangle-stack')
+                        ->url(fn (Insight $record): string => EditorialResource::getUrl('workspace', ['record' => $record]))
+                        ->visible(fn (Insight $record): bool => Auth::user()?->can('accessEditorialWorkspace', $record) ?? false),
+
+                    Action::make('submit')
+                        ->label('Kirim untuk Diperiksa')
+                        ->icon('heroicon-o-paper-airplane')
+                        ->color('primary')
+                        ->requiresConfirmation()
+                        ->visible(fn (Insight $record): bool => static::canSubmitRecord($record))
+                        ->action(function (Insight $record): void {
+                            try {
+                                app(InsightEditorialWorkflowService::class)->submit($record, Auth::user());
+
+                                Notification::make()
+                                    ->success()
+                                    ->title('Naskah berhasil dikirim')
+                                    ->body('Naskah sekarang menunggu penugasan Editor.')
+                                    ->send();
+                            } catch (ValidationException $exception) {
+                                Notification::make()
+                                    ->danger()
+                                    ->title('Naskah belum dapat dikirim')
+                                    ->body(collect($exception->errors())->flatten()->implode(' '))
+                                    ->persistent()
+                                    ->send();
+                            }
+                        }),
+
+                    Action::make('resubmit')
+                        ->label('Kirim Perbaikan')
+                        ->icon('heroicon-o-arrow-path')
+                        ->color('primary')
+                        ->schema([
+                            Textarea::make('change_summary')
+                                ->label('Ringkasan Perubahan')
+                                ->required()
+                                ->rows(5),
+                        ])
+                        ->visible(fn (Insight $record): bool => static::canResubmitRecord($record))
+                        ->action(fn (Insight $record, array $data) => app(InsightEditorialWorkflowService::class)->resubmit($record, Auth::user(), $data['change_summary'])),
+
+                    static::revisionHistoryAction(),
+
+                    EditorialResource::historyAction(),
 
                     ReplicateAction::make()
                         ->label('Duplikasi')
@@ -680,6 +778,20 @@ class InsightResource extends Resource
                                 'updated_by' => Auth::id(),
                                 'reviewed_by' => null,
                                 'reviewed_at' => null,
+                                'assigned_editor_id' => null,
+                                'assigned_by' => null,
+                                'submitted_at' => null,
+                                'assigned_at' => null,
+                                'review_started_at' => null,
+                                'revision_requested_at' => null,
+                                'revised_at' => null,
+                                'approved_at' => null,
+                                'approved_by' => null,
+                                'rejected_at' => null,
+                                'rejected_by' => null,
+                                'rejection_reason' => null,
+                                'revision_round' => 0,
+                                'editorial_deadline' => null,
                             ];
                         })
                         ->after(function (Insight $record, Insight $replica): void {
@@ -702,12 +814,9 @@ class InsightResource extends Resource
                         ->modalHeading('Arsipkan artikel?')
                         ->modalDescription('Artikel tidak lagi tampil pada halaman publik dan dapat tetap ditemukan oleh tim editorial.')
                         ->modalSubmitActionLabel('Arsipkan')
-                        ->visible(fn (Insight $record): bool => $record->status !== 'archived'
-                            && (Auth::user()?->can('archive insights') ?? false))
-                        ->action(fn (Insight $record) => $record->update([
-                            'status' => 'archived',
-                            'updated_by' => Auth::id(),
-                        ])),
+                        ->visible(fn (Insight $record): bool => $record->status !== InsightStatus::Archived
+                            && (Auth::user()?->can('archive_insight') ?? false))
+                        ->action(fn (Insight $record) => app(InsightEditorialWorkflowService::class)->archive($record, Auth::user())),
 
                     DeleteAction::make()
                         ->label('Hapus')
@@ -720,59 +829,6 @@ class InsightResource extends Resource
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    BulkAction::make('draft')
-                        ->label('Ubah ke Draft')
-                        ->icon('heroicon-o-pencil')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => static::canManageEditorialWorkflow())
-                        ->action(fn ($records) => $records->each->update([
-                            'status' => 'draft',
-                            'published_at' => null,
-                            'updated_by' => Auth::id(),
-                        ])),
-                    BulkAction::make('reviewed')
-                        ->label('Ubah ke Reviewed')
-                        ->icon('heroicon-o-clipboard-document-check')
-                        ->color('warning')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => Auth::user()?->can('review insights') ?? false)
-                        ->action(fn ($records) => $records->each->update([
-                            'status' => 'reviewed',
-                            'reviewed_by' => Auth::id(),
-                            'reviewed_at' => now(),
-                            'updated_by' => Auth::id(),
-                        ])),
-                    BulkAction::make('publish')
-                        ->label('Publikasikan')
-                        ->icon('heroicon-o-check-circle')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => Auth::user()?->can('publish insights') ?? false)
-                        ->action(function ($records): void {
-                            $records
-                                ->filter(fn (Insight $record): bool => static::isPublishReady($record))
-                                ->each->update([
-                                    'status' => 'published',
-                                    'published_at' => now(),
-                                    'reviewed_by' => Auth::id(),
-                                    'reviewed_at' => now(),
-                                    'updated_by' => Auth::id(),
-                                ]);
-                        }),
-                    BulkAction::make('archive')
-                        ->label('Arsipkan')
-                        ->icon('heroicon-o-archive-box')
-                        ->color('warning')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => Auth::user()?->can('archive insights') ?? false)
-                        ->action(fn ($records) => $records->each->update([
-                            'status' => 'archived',
-                            'updated_by' => Auth::id(),
-                        ])),
                     DeleteBulkAction::make(),
                 ]),
             ]);
@@ -816,6 +872,24 @@ class InsightResource extends Resource
         }
 
         return $slug;
+    }
+
+    protected static function revisionHistoryAction(): Action
+    {
+        return Action::make('revision_history')
+            ->label('Riwayat Versi')
+            ->icon('heroicon-o-document-duplicate')
+            ->modalSubmitAction(false)
+            ->schema([
+                Placeholder::make('revision_history_list')->hiddenLabel()->content(function (Insight $record): HtmlString {
+                    $items = $record->revisions()->latest('revision_number')->get()->map(
+                        fn ($revision): string => '<li class="mb-3"><strong>Versi '.e((string) $revision->revision_number).'</strong><br>'.e($revision->revision_summary ?: 'Tanpa ringkasan').'</li>'
+                    )->join('');
+
+                    return new HtmlString($items !== '' ? '<ol>'.$items.'</ol>' : '<p>Belum ada versi.</p>');
+                }),
+            ])
+            ->visible(fn (Insight $record): bool => (Auth::user()?->can('view_revision_history') ?? false) && (int) $record->created_by === (int) Auth::id());
     }
 
     public static function getPages(): array

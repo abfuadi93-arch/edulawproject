@@ -4,11 +4,16 @@ namespace App\Filament\Resources\Insights\InsightResource\Pages;
 
 use App\Filament\Resources\Insights\InsightResource;
 use App\Filament\Resources\Pages\EditRecordAndReturn;
+use App\Services\InsightEditorialWorkflowService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Notifications\Notification;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\ValidationException;
+use LogicException;
+use Throwable;
 
 class EditInsight extends EditRecordAndReturn
 {
@@ -17,6 +22,50 @@ class EditInsight extends EditRecordAndReturn
     protected function getHeaderActions(): array
     {
         return [
+            Action::make('submit_for_review')
+                ->label('Simpan & Kirim untuk Review')
+                ->icon('heroicon-o-paper-airplane')
+                ->color('primary')
+                ->requiresConfirmation()
+                ->modalHeading('Kirim naskah untuk review?')
+                ->modalDescription('Perubahan akan disimpan, lalu status draft dipindahkan ke Dikirim. Pastikan kategori, penulis, ringkasan, isi, slug, dan gambar utama sudah lengkap.')
+                ->modalSubmitActionLabel('Simpan & Kirim')
+                ->visible(fn (): bool => InsightResource::canSubmitRecord($this->getRecord()))
+                ->action(function (): void {
+                    try {
+                        $this->save(shouldRedirect: false, shouldSendSavedNotification: false);
+                        app(InsightEditorialWorkflowService::class)->submit($this->getRecord()->refresh(), Auth::user());
+
+                        Notification::make()
+                            ->success()
+                            ->title('Naskah berhasil dikirim')
+                            ->body('Status sekarang Dikirim dan naskah siap ditugaskan kepada Editor.')
+                            ->send();
+
+                        $this->redirect(InsightResource::getUrl('index'));
+                    } catch (ValidationException $exception) {
+                        Notification::make()
+                            ->danger()
+                            ->title('Naskah belum dapat dikirim')
+                            ->body(collect($exception->errors())->flatten()->implode(' '))
+                            ->persistent()
+                            ->send();
+                    } catch (Throwable $exception) {
+                        report($exception);
+
+                        $message = $exception instanceof AuthorizationException || $exception instanceof LogicException
+                            ? $exception->getMessage()
+                            : 'Terjadi kesalahan saat mengirim naskah. Muat ulang halaman lalu coba kembali.';
+
+                        Notification::make()
+                            ->danger()
+                            ->title('Naskah gagal dikirim')
+                            ->body($message)
+                            ->persistent()
+                            ->send();
+                    }
+                }),
+
             Action::make('preview')
                 ->label('Pratinjau')
                 ->icon('heroicon-o-eye')
@@ -48,49 +97,8 @@ class EditInsight extends EditRecordAndReturn
         $user = auth()->user();
 
         $data['updated_by'] = $user?->id;
+        $data['status'] = $this->record->status->value;
         $data = InsightResource::prepareFormDataForPersistence($data);
-
-        if (! $user) {
-            throw new AuthorizationException;
-        }
-
-        if (! InsightResource::canManageEditorialWorkflow()) {
-            if ((int) $this->record->created_by !== (int) $user->id || $this->record->status !== 'draft') {
-                throw new AuthorizationException;
-            }
-
-            $nextStatus = $data['status'] ?? $this->record->status;
-
-            if (! in_array($nextStatus, ['draft', 'reviewed'], true)) {
-                throw ValidationException::withMessages([
-                    'status' => 'Writer hanya dapat menyimpan Draft atau Reviewed.',
-                ]);
-            }
-
-            if ($nextStatus === 'reviewed' && ! $user->can('submit insights')) {
-                throw new AuthorizationException;
-            }
-
-            $data['published_at'] = null;
-            $data['featured'] = false;
-            $data['editor_pick'] = false;
-            $data['sort_order'] = 0;
-            $data['reviewed_by'] = null;
-            $data['reviewed_at'] = null;
-
-            return $data;
-        }
-
-        $nextStatus = $data['status'] ?? $this->record->status;
-
-        if (in_array($nextStatus, ['reviewed', 'published'], true) && $nextStatus !== $this->record->status) {
-            $data['reviewed_by'] = $user->id;
-            $data['reviewed_at'] = now();
-        }
-
-        if ($nextStatus === 'published' && blank($data['published_at'] ?? null)) {
-            $data['published_at'] = now();
-        }
 
         return $data;
     }

@@ -99,7 +99,7 @@ class PublicationTypeResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-reference-table'])
+            ->extraAttributes(['class' => 'edulaw-reference-table edulaw-publication-type-table'])
             ->columns([
                 ViewColumn::make('type')
                     ->label('Tipe Publikasi')
@@ -109,25 +109,39 @@ class PublicationTypeResource extends Resource
                         'description' => $record->description,
                     ])
                     ->searchable(['name', 'slug', 'description'])
-                    ->sortable(),
+                    ->sortable(['name'])
+                    ->extraHeaderAttributes(['class' => 'edulaw-publication-type-name-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-publication-type-name-cell']),
 
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
-                    ->sortable(),
+                    ->sortable()
+                    ->extraHeaderAttributes(['class' => 'edulaw-publication-type-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-publication-type-status-cell']),
 
                 TextColumn::make('sort_order')
                     ->label('Urutan')
+                    ->badge()
+                    ->color('gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-publication-type-order-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-publication-type-order-cell']),
 
                 TextColumn::make('publications_count')
-                    ->label('Jumlah Publikasi')
+                    ->label('Publikasi')
                     ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'primary' : 'gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-publication-type-count-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-publication-type-count-cell']),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')

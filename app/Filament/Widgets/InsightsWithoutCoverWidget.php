@@ -2,6 +2,7 @@
 
 namespace App\Filament\Widgets;
 
+use App\Enums\InsightStatus;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Models\Insight;
 use Filament\Widgets\Widget;
@@ -29,7 +30,7 @@ class InsightsWithoutCoverWidget extends Widget
     {
         return Insight::query()
             ->with('category')
-            ->whereIn('status', ['draft', 'submitted', 'reviewed', 'published'])
+            ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'reviewed', 'published'])
             ->where(fn ($query) => $query
                 ->whereNull('cover_image')
                 ->orWhere('cover_image', ''))
@@ -54,7 +55,7 @@ class InsightsWithoutCoverWidget extends Widget
     {
         return [
             'title' => $insight->title ?: 'Editorial tanpa judul',
-            'status' => $insight->status,
+            'status' => $insight->status->value,
             'statusLabel' => static::statusLabel($insight->status),
             'statusTone' => static::statusTone($insight->status),
             'category' => $insight->category?->name ?: 'Tanpa kategori',
@@ -63,21 +64,13 @@ class InsightsWithoutCoverWidget extends Widget
         ];
     }
 
-    private static function statusLabel(?string $status): string
+    private static function statusLabel(InsightStatus $status): string
     {
-        return match ($status) {
-            'submitted', 'reviewed' => 'Reviewed',
-            'published' => 'Published',
-            default => 'Draft',
-        };
+        return $status->label();
     }
 
-    private static function statusTone(?string $status): string
+    private static function statusTone(InsightStatus $status): string
     {
-        return match ($status) {
-            'submitted', 'reviewed' => 'warning',
-            'published' => 'success',
-            default => 'gray',
-        };
+        return $status->color();
     }
 }

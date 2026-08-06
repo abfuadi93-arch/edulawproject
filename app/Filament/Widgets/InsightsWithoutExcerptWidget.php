@@ -29,7 +29,7 @@ class InsightsWithoutExcerptWidget extends Widget
     {
         return Insight::query()
             ->with('category')
-            ->whereIn('status', ['draft', 'submitted', 'reviewed', 'published'])
+            ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'reviewed', 'published'])
             ->where(fn ($query) => $query
                 ->whereNull('excerpt')
                 ->orWhere('excerpt', ''))
@@ -38,17 +38,9 @@ class InsightsWithoutExcerptWidget extends Widget
             ->get()
             ->map(fn (Insight $insight): array => [
                 'title' => $insight->title ?: 'Editorial tanpa judul',
-                'status' => $insight->status,
-                'statusLabel' => match ($insight->status) {
-                    'submitted', 'reviewed' => 'Reviewed',
-                    'published' => 'Published',
-                    default => 'Draft',
-                },
-                'statusTone' => match ($insight->status) {
-                    'submitted', 'reviewed' => 'warning',
-                    'published' => 'success',
-                    default => 'gray',
-                },
+                'status' => $insight->status->value,
+                'statusLabel' => $insight->status->label(),
+                'statusTone' => $insight->status->color(),
                 'category' => $insight->category?->name ?: 'Tanpa kategori',
                 'updated' => $insight->updated_at?->format('d M Y, H:i') ?: '-',
                 'url' => InsightResource::getUrl('edit', ['record' => $insight]),

@@ -164,7 +164,7 @@ class EditMyProfile extends Page
 
                                         Textarea::make('bio')
                                             ->label('Tentang Saya')
-                                            ->rows(9)
+                                            ->rows(6)
                                             ->maxLength(1000)
                                             ->live(debounce: 300)
                                             ->hint(fn (?string $state): string => sprintf('%d/1000 karakter', mb_strlen((string) $state)))
@@ -217,6 +217,9 @@ class EditMyProfile extends Page
                                             ->maxLength(255)
                                             ->helperText('Tidak mengubah email login akun.'),
 
+                                        Checkbox::make('show_in_organization')
+                                            ->label('Tampilkan di halaman Tentang')
+                                            ->helperText('Profil tetap terhubung ke konten meskipun tidak ditampilkan dalam struktur organisasi.'),
                                     ]),
 
                                 Section::make('Tautan Profesional')
@@ -228,7 +231,8 @@ class EditMyProfile extends Page
                                         TextInput::make('social_links.orcid')->label('ORCID')->maxLength(100)->placeholder('0000-0000-0000-0000'),
                                         TextInput::make('social_links.scopus')->label('Scopus ID')->maxLength(100),
                                     ])
-                                    ->collapsible(),
+                                    ->collapsible()
+                                    ->collapsed(),
 
                                 Section::make('Media Sosial')
                                     ->icon('heroicon-o-share')
@@ -240,14 +244,6 @@ class EditMyProfile extends Page
                                     ])
                                     ->collapsible()
                                     ->collapsed(),
-
-                                Section::make('Status Profil')
-                                    ->icon('heroicon-o-eye')
-                                    ->schema([
-                                        Checkbox::make('show_in_organization')
-                                            ->label('Tampilkan di halaman Tentang')
-                                            ->helperText('Profil tetap terhubung ke konten meskipun tidak ditampilkan dalam struktur organisasi.'),
-                                    ]),
 
                                 Section::make('SEO (Opsional)')
                                     ->icon('heroicon-o-magnifying-glass')

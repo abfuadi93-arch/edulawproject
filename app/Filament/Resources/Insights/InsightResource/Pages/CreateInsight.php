@@ -15,17 +15,12 @@ class CreateInsight extends CreateRecordAndReturn
 
         $data['created_by'] = $user?->id;
         $data['updated_by'] = $user?->id;
+        $data['status'] = 'draft';
         $data = InsightResource::prepareFormDataForPersistence($data);
 
-        if (! InsightResource::canManageEditorialWorkflow()) {
-            $data['status'] = 'draft';
-            $data['published_at'] = null;
-            $data['featured'] = false;
-            $data['editor_pick'] = false;
-            $data['sort_order'] = 0;
-            $data['reviewed_by'] = null;
-            $data['reviewed_at'] = null;
-        }
+        $data['published_at'] = null;
+        $data['reviewed_by'] = null;
+        $data['reviewed_at'] = null;
 
         return $data;
     }

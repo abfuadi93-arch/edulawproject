@@ -110,42 +110,58 @@ class InsightCategoryResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-reference-table'])
+            ->extraAttributes(['class' => 'edulaw-reference-table edulaw-insight-category-table'])
             ->columns([
                 ViewColumn::make('category')
                     ->label('Kategori')
                     ->view('filament.tables.columns.reference-name', fn (InsightCategory $record): array => [
                         'name' => $record->name,
                         'slug' => $record->slug,
-                        'description' => $record->description,
                     ])
                     ->searchable(['name', 'slug', 'description'])
-                    ->sortable(),
+                    ->sortable(['name'])
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-category-name-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-category-name-cell']),
 
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
-                    ->sortable(),
+                    ->sortable()
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-category-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-category-status-cell']),
 
                 IconColumn::make('show_on_editorial_index')
-                    ->label('Tampil di Indeks')
+                    ->label('Indeks')
                     ->boolean()
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-category-index-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-category-index-cell']),
 
                 TextColumn::make('sort_order')
                     ->label('Urutan')
                     ->numeric()
+                    ->badge()
+                    ->color('gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-category-order-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-category-order-cell']),
 
                 TextColumn::make('insights_count')
-                    ->label('Jumlah Artikel')
+                    ->label('Artikel')
                     ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'primary' : 'gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-category-count-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-category-count-cell']),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')

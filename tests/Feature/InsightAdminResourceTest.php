@@ -29,15 +29,23 @@ test('insight admin resource derives excerpt and seo fallback from content', fun
         ->and($data['reading_time'])->toBe(1);
 });
 
-test('insight admin resource exposes simplified statuses and maps legacy values', function () {
+test('insight admin resource exposes editorial workflow statuses and maps legacy values', function () {
     expect(InsightResource::statusOptions())->toBe([
-        'draft' => 'Draft',
-        'reviewed' => 'Reviewed',
-        'published' => 'Published',
+        'draft' => 'Draf',
+        'submitted' => 'Dikirim',
+        'editor_assigned' => 'Editor Ditugaskan',
+        'in_review' => 'Sedang Diperiksa',
+        'revision_requested' => 'Perlu Perbaikan',
+        'revised' => 'Perbaikan Dikirim',
+        'approved' => 'Disetujui',
+        'rejected' => 'Tidak Dilanjutkan',
+        'published' => 'Diterbitkan',
+        'archived' => 'Diarsipkan',
     ])
-        ->and(InsightResource::statusLabel('submitted'))->toBe('Reviewed')
-        ->and(InsightResource::statusLabel('archived'))->toBe('Draft')
-        ->and(InsightResource::statusLabel('published'))->toBe('Published');
+        ->and(InsightResource::statusLabel('submitted'))->toBe('Dikirim')
+        ->and(InsightResource::statusLabel('archived'))->toBe('Diarsipkan')
+        ->and(InsightResource::statusLabel('published'))->toBe('Diterbitkan')
+        ->and(InsightResource::statusLabel('reviewed'))->toBe('Disetujui');
 });
 
 test('insight admin resource preserves a manually curated excerpt', function () {

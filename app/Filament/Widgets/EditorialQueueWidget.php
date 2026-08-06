@@ -28,7 +28,7 @@ class EditorialQueueWidget extends Widget
     {
         $query = InsightResource::getEloquentQuery()
             ->with(['authors', 'category'])
-            ->whereIn('status', ['draft', 'submitted', 'reviewed', 'published'])
+            ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'rejected', 'reviewed', 'published'])
             ->latest('updated_at');
 
         if (! InsightResource::canManageEditorialWorkflow()) {
@@ -41,15 +41,11 @@ class EditorialQueueWidget extends Widget
                 'title' => $insight->title,
                 'author' => $insight->display_author ?: 'Edulaw Project',
                 'category' => $insight->display_category ?: 'Editorial',
-                'status' => $insight->status,
-                'statusLabel' => match ($insight->status) {
-                    'submitted', 'reviewed' => 'Reviewed',
-                    'published' => 'Published',
-                    default => 'Draft',
-                },
-                'statusTone' => match ($insight->status) {
-                    'submitted', 'reviewed' => 'amber',
-                    'published' => 'green',
+                'status' => $insight->status->value,
+                'statusLabel' => $insight->status->label(),
+                'statusTone' => match ($insight->status->color()) {
+                    'success' => 'green',
+                    'warning' => 'amber',
                     default => 'blue',
                 },
                 'updated' => $insight->updated_at?->diffForHumans(),

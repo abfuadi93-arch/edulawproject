@@ -58,12 +58,15 @@ class AdminPanelProvider extends PanelProvider
                 'gray' => Color::Slate,
             ])
             ->globalSearch()
+            ->databaseNotifications(fn (): bool => auth()->user()?->can('view_editorial_notifications') ?? false)
+            ->databaseNotificationsPolling('60s')
             ->globalSearchKeyBindings(['command+k', 'ctrl+k'])
             ->globalSearchFieldSuffix('META+K')
             ->sidebarCollapsibleOnDesktop()
             ->maxContentWidth(Width::Full)
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([
+                'Manajemen Editorial',
                 'Content',
                 'Interaksi',
                 'Referensi',

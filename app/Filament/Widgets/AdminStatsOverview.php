@@ -180,7 +180,7 @@ class AdminStatsOverview extends StatsOverviewWidget
                 ->where('published_at', '>=', now()->startOfMonth())
                 ->count(),
             'review_queue' => Insight::query()
-                ->whereIn('status', ['submitted', 'reviewed'])
+                ->whereIn('status', ['submitted', 'editor_assigned', 'in_review', 'revised', 'approved', 'reviewed'])
                 ->count(),
             'editorial_views' => PageVisit::query()
                 ->where('route_name', 'insights.show')

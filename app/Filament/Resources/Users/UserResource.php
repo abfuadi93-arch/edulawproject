@@ -25,6 +25,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Str;
 
 class UserResource extends Resource
 {
@@ -115,7 +116,7 @@ class UserResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-access-table'])
+            ->extraAttributes(['class' => 'edulaw-access-table edulaw-user-table'])
             ->columns([
                 ViewColumn::make('account')
                     ->label('Akun')
@@ -125,36 +126,47 @@ class UserResource extends Resource
                         'affiliation' => collect([$record->position, $record->institution])->filter()->join(' · '),
                     ])
                     ->searchable(['name', 'email', 'institution', 'position'])
-                    ->sortable(),
+                    ->sortable()
+                    ->extraHeaderAttributes(['class' => 'edulaw-user-account-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-user-account-cell']),
 
                 TextColumn::make('roles.name')
                     ->label('Role')
                     ->badge()
+                    ->formatStateUsing(fn (string $state): string => Str::headline($state))
                     ->separator(',')
                     ->limitList(2)
                     ->expandableLimitedList()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-user-role-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-user-role-cell']),
 
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
-                    ->sortable(),
+                    ->sortable()
+                    ->extraHeaderAttributes(['class' => 'edulaw-user-status-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-user-status-cell']),
 
                 TextColumn::make('email_verified_at')
-                    ->label('Terverifikasi')
+                    ->label('Verifikasi')
                     ->badge()
                     ->formatStateUsing(fn ($state): string => $state ? 'Terverifikasi' : 'Belum Terverifikasi')
                     ->color(fn ($state): string => $state ? 'success' : 'warning')
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-user-verification-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-user-verification-cell']),
 
                 TextColumn::make('updated_at')
-                    ->label('Terakhir Diperbarui')
-                    ->dateTime('d M Y, H:i')
-                    ->since()
+                    ->label('Diperbarui')
+                    ->date('d M Y')
+                    ->tooltip(fn (User $record): string => $record->updated_at?->locale('id')->translatedFormat('d M Y, H:i') ?? '—')
                     ->sortable()
-                    ->visibleFrom('xl'),
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-user-updated-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-user-updated-cell']),
 
                 TextColumn::make('institution')->label('Institusi')->toggleable(isToggledHiddenByDefault: true),
                 TextColumn::make('position')->label('Jabatan')->toggleable(isToggledHiddenByDefault: true),

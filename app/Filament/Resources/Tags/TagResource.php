@@ -15,6 +15,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
+use Filament\Tables\Columns\ViewColumn;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
@@ -76,35 +77,50 @@ class TagResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-reference-table'])
+            ->extraAttributes(['class' => 'edulaw-reference-table edulaw-tag-table'])
             ->columns([
-                TextColumn::make('name')
-                    ->label('Nama')
-                    ->searchable()
-                    ->sortable(),
-
-                TextColumn::make('slug')
-                    ->label('Slug')
-                    ->searchable()
-                    ->fontFamily('mono'),
+                ViewColumn::make('tag')
+                    ->label('Tag')
+                    ->view('filament.tables.columns.reference-name', fn (Tag $record): array => [
+                        'name' => $record->name,
+                        'slug' => $record->slug,
+                    ])
+                    ->searchable(['name', 'slug'])
+                    ->sortable(['name'])
+                    ->extraHeaderAttributes(['class' => 'edulaw-tag-name-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-tag-name-cell']),
 
                 TextColumn::make('insights_count')
                     ->label('Artikel')
                     ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'primary' : 'gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-tag-insight-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-tag-insight-cell']),
 
                 TextColumn::make('publications_count')
                     ->label('Publikasi')
                     ->numeric()
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'info' : 'gray')
+                    ->alignCenter()
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-tag-publication-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-tag-publication-cell']),
 
                 TextColumn::make('total_usage')
-                    ->label('Total Penggunaan')
+                    ->label('Total')
                     ->state(fn (Tag $record): int => $record->insights_count + $record->publications_count)
                     ->numeric()
-                    ->visibleFrom('md'),
+                    ->badge()
+                    ->color(fn (int $state): string => $state > 0 ? 'success' : 'gray')
+                    ->alignCenter()
+                    ->extraHeaderAttributes(['class' => 'edulaw-tag-total-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-tag-total-cell']),
 
                 TextColumn::make('created_at')
                     ->label('Dibuat')

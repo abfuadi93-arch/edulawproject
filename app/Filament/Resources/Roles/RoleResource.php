@@ -78,30 +78,49 @@ class RoleResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
-            ->extraAttributes(['class' => 'edulaw-access-table'])
+            ->extraAttributes(['class' => 'edulaw-access-table edulaw-role-table'])
             ->columns([
                 TextColumn::make('name')
                     ->label('Role')
+                    ->formatStateUsing(fn (string $state): string => Str::headline($state))
                     ->searchable()
-                    ->sortable(),
+                    ->sortable()
+                    ->copyable()
+                    ->copyMessage('Nama role disalin')
+                    ->tooltip(fn (Role $record): string => $record->name)
+                    ->extraHeaderAttributes(['class' => 'edulaw-role-name-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-role-name-cell']),
 
                 TextColumn::make('permissions_count')
-                    ->label('Jumlah Permission')
+                    ->label('Permission')
                     ->numeric()
+                    ->badge()
+                    ->formatStateUsing(fn (int $state): string => "{$state} izin")
+                    ->color('primary')
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-role-permission-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-role-permission-cell']),
 
                 TextColumn::make('users_count')
-                    ->label('Jumlah Akun')
+                    ->label('Akun')
                     ->numeric()
+                    ->badge()
+                    ->formatStateUsing(fn (int $state): string => "{$state} akun")
+                    ->color(fn (int $state): string => $state > 0 ? 'success' : 'gray')
                     ->sortable()
-                    ->visibleFrom('md'),
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-role-user-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-role-user-cell']),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
-                    ->dateTime('d M Y, H:i')
+                    ->date('d M Y')
+                    ->tooltip(fn (Role $record): string => $record->updated_at?->locale('id')->translatedFormat('d M Y, H:i') ?? '—')
                     ->sortable()
-                    ->visibleFrom('lg'),
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-role-updated-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-role-updated-cell']),
             ])
             ->defaultSort('name')
             ->searchPlaceholder('Cari role...')

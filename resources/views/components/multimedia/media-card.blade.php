@@ -55,8 +55,8 @@
                 @if ($isHorizontal)
                     <x-multimedia.platform-badge :platform="$platform" :label="$platformLabel" class="mb-1.5" />
                 @endif
-                <h3 class="line-clamp-2 text-[15px] font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $item->title }}</h3>
-                <p class="mt-1.5 text-[11px] font-bold text-slate-500">{{ $date }}</p>
+                <h3 class="line-clamp-2 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $item->title }}</h3>
+                <p class="mt-1.5 text-xs font-bold text-slate-500">{{ $date }}</p>
             </div>
             <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-navy transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>

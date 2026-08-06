@@ -31,6 +31,9 @@
             @if ($updatedAt) title="Diperbarui {{ $updatedAt }} · Urutan {{ $record->sort_order ?? '—' }}" @endif
         >
             {{ $record->display_author }}
+            @if ($record->category)
+                <span aria-hidden="true"> &middot; </span>{{ $record->category->name }}
+            @endif
             @if ($date)
                 <span aria-hidden="true"> &middot; </span>{{ $dateLabel }} {{ $date->locale('id')->translatedFormat('d M Y') }}
             @endif

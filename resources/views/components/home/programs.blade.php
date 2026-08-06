@@ -1,184 +1,87 @@
-@props([
-    'programs' => collect(),
-])
+@props(['programs' => collect(), 'featuredInsight' => null])
 
 @php
     $programCollection = collect($programs)->take(3)->values();
-    $hasProgramIndex = \Illuminate\Support\Facades\Route::has('programs.index');
     $hasProgramShow = \Illuminate\Support\Facades\Route::has('programs.show');
 @endphp
 
-<section id="program-edulaw" class="home-section scroll-mt-24 bg-[#FBF8F1]" aria-labelledby="home-programs-title">
+<section id="program-edulaw" class="scroll-mt-20 bg-[#fbfaf7] py-9 lg:py-12" aria-labelledby="home-programs-title">
     <div class="section-shell">
-        {{-- Header --}}
-        <div class="home-section-header">
-            <div class="home-section-copy">
-                <p class="home-section-eyebrow">
-                    Program Edulaw
-                </p>
+        <div class="grid gap-8 xl:grid-cols-[1.55fr_.75fr]">
+            <div>
+                <div class="flex items-end justify-between gap-4">
+                    <div>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#b18332]">Program Edulaw</p>
+                        <h2 id="home-programs-title" class="mt-2 font-display text-2xl font-extrabold tracking-tight text-[#1f3c69] sm:text-3xl">Belajar Hukum secara Kontekstual</h2>
+                    </div>
+                    <a href="{{ route('programs.index') }}" class="hidden text-xs font-extrabold text-[#1f3c69] sm:inline-flex">Semua Program →</a>
+                </div>
 
-                <h2 id="home-programs-title" class="home-section-title">
-                    Ruang Belajar dan Pengembangan Kapasitas Hukum
-                </h2>
-
-                <p class="home-section-description">
-                    Kelas, diskusi, pelatihan, dan forum pengembangan kapasitas hukum bersama Edulaw Project.
-                </p>
-            </div>
-
-            @if ($hasProgramIndex)
-            <a
-                href="{{ route('programs.index') }}"
-                class="section-link w-fit shrink-0"
-            >
-                Lihat Semua Program
-                <svg class="h-4 w-4 transition" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                    <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-            </a>
-            @endif
-        </div>
-
-        <div class="mt-7 grid auto-rows-fr gap-6 md:grid-cols-2 lg:grid-cols-3">
-            @forelse ($hasProgramShow ? $programCollection : collect() as $program)
-                @php
-                    $image = $program->hero_image_url ?: $program->image_url;
-                    $category = $program->categoryRelation?->name;
-                    $format = $program->display_format;
-                    $eventDate = $program->event_date ?? $program->starts_at ?? null;
-                    $endDate = $program->end_date ?? null;
-                    $statusLabel = $program->status === 'ongoing' ? 'Ongoing' : 'Upcoming';
-                    $dateLabel = $eventDate
-                        ? $eventDate->translatedFormat('d M Y')
-                        : null;
-
-                    if ($eventDate && $endDate) {
-                        $dateLabel = $eventDate->isSameDay($endDate)
-                            ? $eventDate->translatedFormat('d M Y')
-                            : $eventDate->translatedFormat('d M Y').' – '.$endDate->translatedFormat('d M Y');
-                    }
-
-                    $formatLocation = collect([$format, $program->location])
-                        ->filter()
-                        ->unique()
-                        ->join(' · ');
-                @endphp
-
-                <article data-home-program class="home-card home-card-interactive group h-full">
-                    <a href="{{ route('programs.show', $program->slug) }}" class="home-card-link flex h-full flex-col">
-                        {{-- Image --}}
-                        <div class="relative aspect-[16/10] overflow-hidden bg-brand-navy">
-                            @if ($image)
-                                <img
-                                    src="{{ $image }}"
-                                    alt="Poster {{ $program->display_title }}"
-                                    width="1200"
-                                    height="800"
-                                    class="h-full w-full object-cover transition duration-700 group-hover:scale-105"
-                                    loading="lazy"
-                                    decoding="async"
-                                    onerror="this.remove()"
-                                >
-                            @else
-                                <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-[#0b6f6b]">
-                                    <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-center text-white shadow-sm backdrop-blur">
-                                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber">
-                                            Program Edulaw
-                                        </p>
-                                        <p class="mt-2 text-sm font-semibold text-white/80">
-                                            Poster sedang disiapkan
-                                        </p>
+                <div class="mt-7 grid gap-4 md:grid-cols-3">
+                    @forelse ($hasProgramShow ? $programCollection : collect() as $program)
+                        @php
+                            $image = $program->hero_image_url ?: $program->image_url;
+                            $eventDate = $program->event_date ?? $program->starts_at;
+                            $format = $program->display_format ?: $program->location;
+                        @endphp
+                        <article data-home-program class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_16px_36px_-30px_rgba(15,23,42,.7)] transition hover:-translate-y-0.5 hover:shadow-lg">
+                            <a href="{{ route('programs.show', $program->slug) }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                <div class="relative h-40 overflow-hidden bg-[#234777]">
+                                    @if ($image)
+                                        <img src="{{ $image }}" alt="Poster {{ $program->display_title }}" width="640" height="400" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" decoding="async" onerror="this.remove()">
+                                    @endif
+                                    <div class="absolute inset-0 bg-linear-to-t from-[#17375f]/80 to-transparent"></div>
+                                    <div class="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
+                                        <span class="max-w-32 truncate rounded bg-[#17375f]/90 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">{{ $program->categoryRelation?->name ?? 'Program' }}</span>
+                                        <span class="rounded-full bg-[#35c4a0] px-2 py-1 text-[10px] font-extrabold text-[#102b50]">{{ $program->status === 'ongoing' ? 'Berlangsung' : 'Tersedia' }}</span>
                                     </div>
                                 </div>
-                            @endif
-
-                            <div class="absolute inset-0 bg-linear-to-t from-brand-navy/78 via-brand-navy/20 to-transparent"></div>
-                            <div class="absolute inset-0 bg-linear-to-r from-brand-navy/28 via-transparent to-transparent"></div>
-
-                            <div class="absolute left-4 top-4 flex flex-wrap items-center gap-2">
-                                @if ($category)
-                                    <span class="text-xs font-bold text-white drop-shadow">
-                                        {{ $category }}
-                                    </span>
-                                @endif
-
-                                <span class="inline-flex items-center gap-1.5 rounded-md {{ $program->status === 'ongoing' ? 'bg-brand-teal text-brand-black' : 'bg-brand-amber text-brand-black' }} px-2.5 py-1 text-xs font-bold shadow-sm">
-                                    @if ($program->status === 'ongoing')
-                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <path d="m8 5 11 7-11 7V5Z" fill="currentColor"/>
-                                        </svg>
-                                    @else
-                                        <svg class="h-3.5 w-3.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                            <circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="1.8"/>
-                                            <path d="M12 8v4l2.5 1.5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                                        </svg>
-                                    @endif
-                                    {{ $statusLabel }}
-                                </span>
-                            </div>
-
-                            <div class="absolute bottom-4 left-4 right-4">
-                                <h3 class="line-clamp-2 text-[1.55rem] font-black leading-tight tracking-tight text-white">
-                                    {{ $program->display_title }}
-                                </h3>
-                            </div>
-                        </div>
-
-                        {{-- Body --}}
-                        <div class="flex flex-1 flex-col p-5">
-                            @if ($program->display_description)
-                                <p class="line-clamp-3 text-[15px] leading-6 text-slate-600">
-                                    {{ $program->display_description }}
-                                </p>
-                            @endif
-
-                            @if ($dateLabel || $formatLocation)
-                            <div class="mt-4 grid gap-3 border-y border-slate-100 py-3 sm:grid-cols-2">
-                                @if ($dateLabel)
-                                <div>
-                                    <p class="text-xs font-semibold text-slate-500">
-                                        Waktu
-                                    </p>
-
-                                    <p class="home-meta mt-1 font-bold text-brand-ink">
-                                        {{ $dateLabel }}
-                                    </p>
+                                <div class="p-4">
+                                    <h3 class="line-clamp-2 min-h-12 text-base font-extrabold leading-snug text-[#142f57]">{{ $program->display_title }}</h3>
+                                    <div class="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-400">
+                                        @if ($eventDate)<span>{{ $eventDate->translatedFormat('d M Y') }}</span>@endif
+                                        @if ($eventDate && $format)<span>·</span>@endif
+                                        @if ($format)<span>{{ $format }}</span>@endif
+                                    </div>
+                                    <span class="mt-4 inline-flex text-xs font-extrabold text-[#1f3c69]">Lihat Detail →</span>
                                 </div>
-                                @endif
-
-                                @if ($formatLocation)
-                                <div>
-                                    <p class="text-xs font-semibold text-slate-500">
-                                        Format / Lokasi
-                                    </p>
-
-                                    <p class="home-meta mt-1 line-clamp-2 font-bold text-brand-ink">
-                                        {{ $formatLocation }}
-                                    </p>
-                                </div>
-                                @endif
-                            </div>
-                            @endif
-
-                            <div class="mt-auto flex items-center justify-between gap-4 pt-4">
-                                <span class="text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">
-                                    Lihat Program
-                                </span>
-
-                                <span class="inline-flex h-9 w-9 items-center justify-center rounded-lg bg-brand-navy text-white transition group-hover:bg-brand-amber group-hover:text-brand-black">
-                                    <svg class="h-4 w-4 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                        <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </span>
-                            </div>
-                        </div>
-                    </a>
-                </article>
-            @empty
-                <div class="home-empty-state col-span-full py-4">
-                    <p class="text-sm leading-6 text-slate-600">Program terbaru sedang disiapkan.</p>
+                            </a>
+                        </article>
+                    @empty
+                        <div class="home-empty-state col-span-full py-4"><p class="text-sm leading-6 text-slate-600">Program terbaru sedang disiapkan.</p></div>
+                    @endforelse
                 </div>
-            @endforelse
+            </div>
+
+            <div>
+                <div class="flex items-end justify-between gap-4">
+                    <div>
+                        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#e57b66]">Pilihan Editor</p>
+                        <h2 class="mt-2 font-display text-2xl font-extrabold tracking-tight text-[#1f3c69]">Perspektif Utama</h2>
+                    </div>
+                    <a href="{{ route('insights.index') }}" class="text-xs font-extrabold text-[#1f3c69]">Editorial →</a>
+                </div>
+
+                @if ($featuredInsight)
+                    <article class="group relative mt-7 flex min-h-[338px] items-end overflow-hidden rounded-xl bg-[#142f57] p-6 text-white shadow-[0_22px_48px_-34px_rgba(15,23,42,.9)]">
+                        @if ($featuredInsight->cover_image_url)
+                            <img src="{{ $featuredInsight->cover_image_url }}" alt="Sampul {{ $featuredInsight->title }}" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" loading="lazy">
+                        @endif
+                        <div class="absolute inset-0 bg-linear-to-t from-[#07172e]/95 via-[#142f57]/45 to-transparent"></div>
+                        <span class="absolute left-5 top-5 rounded bg-[#f8bd38] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#142f57]">Editor's Pick</span>
+                        <div class="relative">
+                            <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#f0c55e]">{{ $featuredInsight->display_category }}</p>
+                            <h3 class="mt-3 line-clamp-4 text-2xl font-extrabold leading-tight text-white">{{ $featuredInsight->title }}</h3>
+                            <p class="mt-3 text-xs text-slate-300">{{ $featuredInsight->display_author }}{{ $featuredInsight->reading_time ? ' · '.$featuredInsight->reading_time.' menit baca' : '' }}</p>
+                            <a href="{{ route('insights.show', $featuredInsight->slug) }}?source=home-editor-pick" class="mt-5 inline-flex text-xs font-extrabold text-white">Baca Editorial →</a>
+                        </div>
+                    </article>
+                @else
+                    <div class="mt-7 flex min-h-[338px] items-end rounded-xl bg-[#142f57] p-6 text-white">
+                        <div><p class="text-[11px] font-extrabold uppercase tracking-wider text-[#f0c55e]">Editorial Edulaw</p><p class="mt-3 text-xl font-extrabold text-white">Pilihan editor sedang disiapkan.</p></div>
+                    </div>
+                @endif
+            </div>
         </div>
     </div>
 </section>
