@@ -5,7 +5,10 @@ namespace App\Filament\Resources\Publications;
 use App\Filament\Resources\Publications\Pages\CreatePublication;
 use App\Filament\Resources\Publications\Pages\EditPublication;
 use App\Filament\Resources\Publications\Pages\ListPublications;
+use App\Models\Author;
 use App\Models\Publication;
+use App\Models\PublicationType;
+use App\Models\Tag;
 use App\Support\EdulawSite;
 use BackedEnum;
 use Filament\Actions\Action;
@@ -38,6 +41,7 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
@@ -97,6 +101,25 @@ class PublicationResource extends Resource
                                                     ->relationship('type', 'name')
                                                     ->searchable()
                                                     ->preload()
+                                                    ->createOptionForm([
+                                                        TextInput::make('name')
+                                                            ->label('Nama Tipe Publikasi')
+                                                            ->required()
+                                                            ->maxLength(255),
+                                                        Textarea::make('description')
+                                                            ->label('Deskripsi')
+                                                            ->rows(3),
+                                                    ])
+                                                    ->createOptionUsing(function (array $data): int {
+                                                        $type = PublicationType::query()->create([
+                                                            'name' => trim((string) $data['name']),
+                                                            'slug' => static::uniqueReferenceSlug(PublicationType::class, (string) $data['name'], 'tipe-publikasi'),
+                                                            'description' => filled($data['description'] ?? null) ? trim((string) $data['description']) : null,
+                                                            'is_active' => true,
+                                                        ]);
+
+                                                        return $type->getKey();
+                                                    })
                                                     ->required(fn ($get): bool => $get('status') === 'published')
                                                     ->validationMessages([
                                                         'required' => 'Publikasi yang diterbitkan wajib memiliki tipe publikasi.',
@@ -106,10 +129,48 @@ class PublicationResource extends Resource
                                                     ->label('Penulis')
                                                     ->relationship('authors', 'name')
                                                     ->multiple()
+                                                    ->reorderable()
                                                     ->searchable()
                                                     ->preload()
+                                                    ->createOptionForm([
+                                                        TextInput::make('name')
+                                                            ->label('Nama Penulis')
+                                                            ->required()
+                                                            ->maxLength(255),
+                                                        TextInput::make('institution')
+                                                            ->label('Institusi / Afiliasi')
+                                                            ->maxLength(255),
+                                                    ])
+                                                    ->createOptionUsing(function (array $data): int {
+                                                        $author = Author::query()->create([
+                                                            'name' => trim((string) $data['name']),
+                                                            'slug' => Author::uniqueSlugFor((string) $data['name']),
+                                                            'institution' => filled($data['institution'] ?? null) ? trim((string) $data['institution']) : null,
+                                                            'is_active' => true,
+                                                        ]);
+
+                                                        return $author->getKey();
+                                                    })
+                                                    ->saveRelationshipsUsing(function (Select $component): void {
+                                                        $authorIds = collect((array) $component->getState())
+                                                            ->filter()
+                                                            ->unique()
+                                                            ->values();
+
+                                                        $component->getRelationship()->sync(
+                                                            $authorIds->mapWithKeys(fn ($authorId, int $index): array => [
+                                                                $authorId => [
+                                                                    'author_order' => $index + 1,
+                                                                    'role' => 'Penulis',
+                                                                ],
+                                                            ])->all(),
+                                                        );
+
+                                                        $component->getRecord()?->unsetRelation('authors');
+                                                    })
                                                     ->required(fn ($get): bool => $get('status') === 'published')
                                                     ->placeholder('Pilih penulis')
+                                                    ->helperText('Urutkan nama sesuai urutan penulis pada publikasi. Penulis baru dapat dibuat tanpa meninggalkan form ini.')
                                                     ->validationMessages([
                                                         'required' => 'Publikasi yang diterbitkan wajib memiliki minimal satu penulis.',
                                                     ]),
@@ -122,10 +183,25 @@ class PublicationResource extends Resource
                                                     ->required(),
 
                                                 DatePicker::make('published_at')
-                                                    ->label('Tanggal Publikasi')
-                                                    ->required(fn ($get): bool => $get('status') === 'published')
+                                                    ->label('Tanggal Publikasi Eksak')
+                                                    ->native(false)
+                                                    ->displayFormat('d/m/Y')
+                                                    ->live()
+                                                    ->required(fn ($get): bool => $get('status') === 'published' && blank($get('publication_date_text')))
+                                                    ->helperText('Isi jika tanggal lengkap diketahui. Dipakai untuk pengurutan dan penjadwalan publikasi.')
                                                     ->validationMessages([
-                                                        'required' => 'Publikasi yang diterbitkan wajib memiliki tanggal publikasi.',
+                                                        'required' => 'Isi tanggal eksak atau keterangan tahun/tanggal publikasi.',
+                                                    ]),
+
+                                                TextInput::make('publication_date_text')
+                                                    ->label('Tahun / Tanggal Publikasi')
+                                                    ->maxLength(255)
+                                                    ->live(onBlur: true)
+                                                    ->required(fn ($get): bool => $get('status') === 'published' && blank($get('published_at')))
+                                                    ->placeholder('Contoh: Desember 2024')
+                                                    ->helperText('Gunakan untuk tanggal parsial atau keterangan bibliografis, misalnya “2022” atau “2024 / tersedia daring 13 Januari 2025”.')
+                                                    ->validationMessages([
+                                                        'required' => 'Isi tahun/tanggal publikasi atau tanggal eksak.',
                                                     ]),
 
                                                 Toggle::make('featured')
@@ -171,13 +247,15 @@ class PublicationResource extends Resource
                                                     ->numeric()
                                                     ->minValue(1)
                                                     ->nullable()
+                                                    ->placeholder('Contoh: 15')
+                                                    ->helperText('Masukkan jumlah halaman sebagai angka tanpa tanda atau satuan.')
                                                     ->suffix('halaman'),
 
                                                 TextInput::make('source_name')
                                                     ->label('Sumber / Penerbit')
                                                     ->maxLength(255)
-                                                    ->placeholder('Edulaw Project')
-                                                    ->helperText('Jika kosong, frontend memakai “Edulaw Project”.'),
+                                                    ->placeholder('Nama jurnal, prosiding, atau penerbit')
+                                                    ->helperText('Dapat memuat nama jurnal/prosiding beserta volume dan nomor. Jika belum diketahui, biarkan kosong saat menyimpan draft.'),
 
                                                 Select::make('language')
                                                     ->label('Bahasa')
@@ -193,7 +271,22 @@ class PublicationResource extends Resource
                                                     ->relationship('tags', 'name')
                                                     ->multiple()
                                                     ->searchable()
-                                                    ->preload(),
+                                                    ->preload()
+                                                    ->createOptionForm([
+                                                        TextInput::make('name')
+                                                            ->label('Kata Kunci')
+                                                            ->required()
+                                                            ->maxLength(255),
+                                                    ])
+                                                    ->createOptionUsing(function (array $data): int {
+                                                        $tag = Tag::query()->create([
+                                                            'name' => trim((string) $data['name']),
+                                                            'slug' => static::uniqueReferenceSlug(Tag::class, (string) $data['name'], 'kata-kunci'),
+                                                        ]);
+
+                                                        return $tag->getKey();
+                                                    })
+                                                    ->helperText('Pilih beberapa kata kunci atau buat kata kunci baru langsung dari form.'),
                                             ])
                                             ->columnSpanFull(),
                                     ]),
@@ -236,20 +329,6 @@ class PublicationResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
-                                        FileUpload::make('cover_image')
-                                            ->label('Gambar Sampul')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('publications/covers')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->imagePreviewHeight('180')
-                                            ->maxSize(4096)
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->downloadable()
-                                            ->openable()
-                                            ->helperText('Gunakan cover rasio 16:9 atau A4 portrait yang rapi. Cover digunakan untuk card publikasi dan share preview.')
-                                            ->columnSpanFull(),
                                     ]),
                             ])
                             ->columnSpan(['xl' => 8])
@@ -290,7 +369,6 @@ class PublicationResource extends Resource
                                                 'seo_description' => $get('seo_description'),
                                                 'share_description' => $get('share_description'),
                                                 'og_image' => $get('og_image'),
-                                                'cover_image' => $get('cover_image'),
                                                 'slug' => $get('slug'),
                                             ])),
                                     ]),
@@ -325,7 +403,7 @@ class PublicationResource extends Resource
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->downloadable()
                                             ->openable()
-                                            ->helperText('Jika kosong, share preview memakai gambar sampul.'),
+                                            ->helperText('Opsional. Digunakan khusus sebagai gambar pratinjau saat tautan dibagikan.'),
                                     ])
                                     ->columns(1),
                             ])
@@ -354,8 +432,8 @@ class PublicationResource extends Resource
                 $messages['excerpt'] = 'Publikasi yang diterbitkan wajib memiliki ringkasan.';
             }
 
-            if (blank($data['published_at'] ?? null)) {
-                $messages['published_at'] = 'Publikasi yang diterbitkan wajib memiliki tanggal publikasi.';
+            if (blank($data['published_at'] ?? null) && blank($data['publication_date_text'] ?? null)) {
+                $messages['published_at'] = 'Isi tanggal eksak atau keterangan tahun/tanggal publikasi.';
             }
 
             if (blank($data['pdf_file'] ?? null) && blank($data['external_url'] ?? null)) {
@@ -384,6 +462,9 @@ class PublicationResource extends Resource
         $data['source_name'] = filled($data['source_name'] ?? null)
             ? trim((string) $data['source_name'])
             : null;
+        $data['publication_date_text'] = filled($data['publication_date_text'] ?? null)
+            ? trim((string) $data['publication_date_text'])
+            : null;
         $data['language'] = filled($data['language'] ?? null) ? (string) $data['language'] : 'id';
         $data['external_url'] = filled($data['external_url'] ?? null)
             ? trim((string) $data['external_url'])
@@ -403,7 +484,7 @@ class PublicationResource extends Resource
         $description = Str::limit($description, 180);
         $slug = trim((string) ($data['slug'] ?? ''));
         $url = $slug !== '' ? route('publications.show', Str::slug($slug)) : url('/riset-publikasi');
-        $imageState = $data['og_image'] ?: $data['cover_image'];
+        $imageState = $data['og_image'] ?? null;
         $imageUrl = is_string($imageState) ? EdulawSite::assetUrl($imageState) : null;
         $image = $imageUrl
             ? '<img src="'.e($imageUrl).'" alt="" style="display:block;width:100%;height:7rem;object-fit:cover" onerror="this.remove()">'
@@ -532,7 +613,7 @@ class PublicationResource extends Resource
 
                 TextColumn::make('published_at')
                     ->label('Terbit')
-                    ->formatStateUsing(fn ($state): string => $state?->locale('id')->translatedFormat('d M Y') ?? '—')
+                    ->state(fn (Publication $record): string => $record->publication_date_display)
                     ->sortable()
                     ->placeholder('—')
                     ->toggleable()
@@ -649,6 +730,7 @@ class PublicationResource extends Resource
                             'slug' => static::uniqueDuplicateSlug($record),
                             'status' => 'draft',
                             'published_at' => null,
+                            'publication_date_text' => null,
                             'featured' => false,
                             'created_by' => Auth::id(),
                             'updated_by' => Auth::id(),
@@ -718,6 +800,22 @@ class PublicationResource extends Resource
 
         while (Publication::query()->where('slug', $slug)->exists()) {
             $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix++;
+        }
+
+        return $slug;
+    }
+
+    /**
+     * @param  class-string<Model>  $modelClass
+     */
+    public static function uniqueReferenceSlug(string $modelClass, string $value, string $fallback): string
+    {
+        $base = Str::slug($value) ?: $fallback;
+        $slug = $base;
+        $suffix = 2;
+
+        while ($modelClass::query()->where('slug', $slug)->exists()) {
+            $slug = $base.'-'.$suffix++;
         }
 
         return $slug;

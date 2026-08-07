@@ -4,6 +4,7 @@ use App\Filament\Resources\Publications\PublicationResource;
 use App\Models\Author;
 use App\Models\Publication;
 use App\Models\PublicationType;
+use App\Models\Tag;
 use App\Models\User;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
@@ -15,6 +16,7 @@ test('publication schema exposes citation share and language metadata safely', f
         'share_title',
         'share_description',
         'language',
+        'publication_date_text',
     ]))->toBeTrue();
 
     $publication = Publication::query()->create([
@@ -41,6 +43,7 @@ test('draft publication derives a safe excerpt but may remain without a document
         'language' => null,
         'external_url' => null,
         'pdf_file' => null,
+        'publication_date_text' => 'Desember 2024',
     ]);
 
     expect($data['slug'])->toBe('reformasi-hukum-acara')
@@ -49,6 +52,7 @@ test('draft publication derives a safe excerpt but may remain without a document
         ->and($data['source_name'])->toBeNull()
         ->and($data['language'])->toBe('id')
         ->and($data['external_url'])->toBeNull()
+        ->and($data['publication_date_text'])->toBe('Desember 2024')
         ->and($data['pdf_file'])->toBeNull();
 });
 
@@ -78,10 +82,26 @@ test('published publication rejects incomplete required metadata and document', 
             ->and($exception->errors()['excerpt'][0])
             ->toBe('Publikasi yang diterbitkan wajib memiliki ringkasan.')
             ->and($exception->errors()['published_at'][0])
-            ->toBe('Publikasi yang diterbitkan wajib memiliki tanggal publikasi.')
+            ->toBe('Isi tanggal eksak atau keterangan tahun/tanggal publikasi.')
             ->and($exception->errors()['pdf_file'][0])
             ->toBe('Publikasi yang diterbitkan wajib memiliki PDF atau External URL.');
     }
+});
+
+test('published publication accepts a bibliographic date when exact date is unavailable', function () {
+    $data = PublicationResource::prepareFormDataForPersistence([
+        'title' => 'Publikasi Bertanggal Parsial',
+        'status' => 'published',
+        'publication_type_id' => 1,
+        'authors' => [1],
+        'excerpt' => 'Ringkasan publikasi dengan tanggal bibliografis parsial.',
+        'published_at' => null,
+        'publication_date_text' => '2024 / tersedia daring 13 Januari 2025',
+        'pdf_file' => null,
+        'external_url' => 'https://example.test/publikasi-parsial',
+    ]);
+
+    expect($data['publication_date_text'])->toBe('2024 / tersedia daring 13 Januari 2025');
 });
 
 test('published publication accepts an external source when pdf is unavailable', function () {
@@ -144,6 +164,26 @@ test('publication builds citation and share preview from safe fallbacks', functi
         ->and($publication->fresh()->share_preview_description)->toBe('Deskripsi khusus untuk media sosial.');
 });
 
+test('publication exposes flexible date display and extracts citation year', function () {
+    $publication = Publication::query()->create([
+        'title' => 'Publikasi dengan Tanggal Bibliografis',
+        'slug' => 'publikasi-dengan-tanggal-bibliografis',
+        'publication_date_text' => 'Desember 2024',
+        'status' => 'published',
+    ]);
+
+    expect($publication->publication_date_display)->toBe('Desember 2024')
+        ->and($publication->publication_year)->toBe('2024')
+        ->and($publication->citation)->toContain('(2024)');
+});
+
+test('publication reference slugs remain unique', function () {
+    Tag::query()->create(['name' => 'Pemilu', 'slug' => 'pemilu']);
+
+    expect(PublicationResource::uniqueReferenceSlug(Tag::class, 'Pemilu', 'kata-kunci'))->toBe('pemilu-2')
+        ->and(PublicationResource::uniqueReferenceSlug(Tag::class, '', 'kata-kunci'))->toBe('kata-kunci');
+});
+
 test('publication provides five citation formats with safe metadata fallbacks', function () {
     $publication = Publication::query()->create([
         'title' => 'Kajian Hukum Tanpa Metadata Lengkap',
@@ -173,7 +213,6 @@ test('publication admin share preview is never empty', function () {
         'seo_description' => null,
         'share_description' => null,
         'og_image' => null,
-        'cover_image' => null,
         'slug' => null,
     ]);
 
@@ -224,7 +263,8 @@ test('super admin can open publication list create and edit forms', function () 
         ->assertOk()
         ->assertSee('Sitasi dan Share Preview')
         ->assertSee('SEO Publikasi')
-        ->assertSee('Isi jika ingin menggunakan sitasi khusus');
+        ->assertSee('Isi jika ingin menggunakan sitasi khusus')
+        ->assertDontSee('Gambar Sampul');
 
     $this->actingAs($user)
         ->get(PublicationResource::getUrl('edit', ['record' => $publication]))

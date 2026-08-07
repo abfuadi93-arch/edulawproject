@@ -212,8 +212,8 @@ it('shows at most four published insights without duplicating the featured artic
         ->and(substr_count($html, $featuredHref))->toBe(1);
 });
 
-it('limits publications to three published records and excludes non-published records', function () {
-    $published = collect(range(1, 4))->map(fn (int $position) => Publication::query()->create([
+it('limits publications to four published records and excludes non-published records', function () {
+    $published = collect(range(1, 5))->map(fn (int $position) => Publication::query()->create([
         'title' => "Publikasi Published {$position}",
         'slug' => "publikasi-published-{$position}",
         'status' => 'published',
@@ -240,13 +240,14 @@ it('limits publications to three published records and excludes non-published re
         ->assertSee($published[0]->title)
         ->assertSee($published[1]->title)
         ->assertSee($published[2]->title)
-        ->assertDontSee($published[3]->title)
+        ->assertSee($published[3]->title)
+        ->assertDontSee($published[4]->title)
         ->assertDontSee($draft->title)
         ->assertDontSee($reviewed->title)
         ->assertSee(route('publications.index'), false)
         ->assertSee(route('publications.show', $published[0]->slug), false);
 
-    expect(substr_count($html, 'data-home-publication'))->toBe(3);
+    expect(substr_count($html, 'data-home-publication'))->toBe(4);
 });
 
 it('renders the about section followed by the active collaboration call to action', function () {
@@ -437,7 +438,7 @@ it('shows the four intended audience groups in the final homepage order', functi
         ->assertOk()
         ->assertSeeInOrder([
             'Untuk Siapa Edulaw',
-            'Mahasiswa &amp; Pembelajar Hukum',
+            'Mahasiswa Hukum',
             'Peneliti &amp; Akademisi',
             'Praktisi &amp; Profesional',
             'Masyarakat &amp; Komunitas',

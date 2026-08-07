@@ -1,6 +1,6 @@
 @php
     $audiences = [
-        ['title' => 'Mahasiswa & Pembelajar Hukum', 'description' => 'Materi dan ruang belajar hukum yang terbuka.', 'symbol' => '◆', 'accent' => 'bg-[#fff2cc] text-[#b98213]', 'label' => 'Jelajahi Program', 'url' => '#program-edulaw'],
+        ['title' => 'Mahasiswa Hukum', 'description' => 'Materi dan ruang belajar hukum yang terbuka.', 'symbol' => '◆', 'accent' => 'bg-[#fff2cc] text-[#b98213]', 'label' => 'Jelajahi Program', 'url' => '#program-edulaw'],
         ['title' => 'Peneliti & Akademisi', 'description' => 'Pengetahuan hukum berbasis bukti dan kajian.', 'symbol' => '●', 'accent' => 'bg-[#ddf7ed] text-[#168565]', 'label' => 'Jelajahi Riset', 'url' => '#riset-publikasi'],
         ['title' => 'Praktisi & Profesional', 'description' => 'Analisis yang relevan untuk praktik dan kebijakan.', 'symbol' => '■', 'accent' => 'bg-[#e8f1ff] text-[#32689c]', 'label' => 'Baca Editorial', 'url' => '#edulaw-insight'],
         ['title' => 'Masyarakat & Komunitas', 'description' => 'Literasi hukum yang dekat dengan kebutuhan publik.', 'symbol' => '✦', 'accent' => 'bg-[#fde8e2] text-[#a85c4b]', 'label' => 'Lihat Multimedia', 'url' => '#multimedia'],
@@ -21,9 +21,9 @@
                     <a href="{{ $audience['url'] }}" class="group flex min-h-40 items-start gap-3 p-4 transition hover:bg-slate-50">
                         <span class="grid size-10 shrink-0 place-items-center rounded-full text-sm font-black {{ $audience['accent'] }}" aria-hidden="true">{{ $audience['symbol'] }}</span>
                         <div class="flex min-w-0 flex-1 self-stretch flex-col">
-                            <h3 class="text-base font-extrabold leading-snug text-[#142f57]">{{ $audience['title'] }}</h3>
-                            <p class="mt-2 flex-1 text-[13px] leading-5 text-slate-500">{{ $audience['description'] }}</p>
-                            <span class="mt-3 inline-flex text-xs font-extrabold text-[#1f3c69]">{{ $audience['label'] }} →</span>
+                            <h3 class="text-[17px] font-extrabold leading-snug tracking-[-0.012em] text-[#142f57]">{{ $audience['title'] }}</h3>
+                            <p class="mt-2 text-sm leading-5 text-slate-500">{{ $audience['description'] }}</p>
+                            <span class="mt-2 inline-flex text-[13px] font-extrabold text-[#1f3c69] transition group-hover:text-brand-teal">{{ $audience['label'] }} →</span>
                         </div>
                     </a>
                 </article>

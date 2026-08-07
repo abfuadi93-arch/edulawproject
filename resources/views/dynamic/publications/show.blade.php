@@ -50,7 +50,7 @@
                     <h3 class="text-sm font-black uppercase tracking-[0.15em] text-brand-navy">Informasi</h3>
                     <dl class="mt-4 space-y-3 text-sm">
                         <div><dt class="text-slate-500">Tipe</dt><dd class="font-bold text-brand-ink">{{ $publication->type?->name ?? '-' }}</dd></div>
-                        <div><dt class="text-slate-500">Tanggal</dt><dd class="font-bold text-brand-ink">{{ optional($publication->published_at)->translatedFormat('d M Y') }}</dd></div>
+                        <div><dt class="text-slate-500">Tahun / Tanggal</dt><dd class="font-bold text-brand-ink">{{ $publication->publication_date_display }}</dd></div>
                         <div><dt class="text-slate-500">Halaman</dt><dd class="font-bold text-brand-ink">{{ $publication->page_count ? $publication->page_count.' halaman' : '-' }}</dd></div>
                         <div><dt class="text-slate-500">Penulis</dt><dd class="font-bold text-brand-ink">{{ $publication->authors->pluck('name')->join(', ') ?: 'Edulaw Project' }}</dd></div>
                     </dl>

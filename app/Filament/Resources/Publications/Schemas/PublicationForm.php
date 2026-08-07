@@ -24,15 +24,6 @@ class PublicationForm
                     ->required(),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                FileUpload::make('cover_image')
-                    ->label('Cover Image')
-                    ->image()
-                    ->disk('public')
-                    ->directory('publications/covers')
-                    ->visibility('public')
-                    ->imageEditor()
-                    ->maxSize(4096)
-                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 FileUpload::make('pdf_file')
                     ->label('PDF File')
                     ->disk('public')

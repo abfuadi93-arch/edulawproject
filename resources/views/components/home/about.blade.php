@@ -11,8 +11,8 @@
         <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_42px_-34px_rgba(15,23,42,.7)] sm:p-8">
             <div class="flex items-start justify-between gap-5">
                 <div>
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#b18332]">Tentang Edulaw</p>
-                    <h2 id="home-about-title" class="mt-3 max-w-2xl font-display text-2xl font-extrabold leading-tight text-[#1f3c69] sm:text-3xl">Ruang belajar dan riset hukum untuk kepentingan publik.</h2>
+                    <p class="home-section-eyebrow text-[#b18332]">Tentang Edulaw</p>
+                    <h2 id="home-about-title" class="home-section-title mt-3">Ruang belajar dan riset hukum untuk kepentingan publik.</h2>
                 </div>
                 @if ($brandMark)
                     <img src="{{ $brandMark }}" alt="Identitas {{ $siteName }}" width="64" height="64" class="hidden size-16 object-contain sm:block" loading="lazy" decoding="async">
@@ -24,14 +24,14 @@
                     <span class="rounded-full bg-[#fff2cc] px-3 py-1.5 text-[11px] font-extrabold text-[#8b661d]">{{ $value }}</span>
                 @endforeach
             </div>
-            <a href="{{ route('about') }}" class="mt-7 inline-flex min-h-11 items-center rounded-lg bg-[#1f3c69] px-5 py-3 text-xs font-extrabold text-white transition hover:bg-[#142f57]">Kenali Edulaw →</a>
+            <a href="{{ route('about') }}" class="mt-7 inline-flex min-h-11 items-center rounded-lg bg-[#1f3c69] px-5 py-3 text-[13px] font-extrabold text-white transition hover:bg-[#142f57]">Kenali Edulaw →</a>
         </article>
 
         <article class="overflow-hidden rounded-2xl bg-[#0d315e] text-white shadow-[0_22px_52px_-36px_rgba(15,23,42,.9)]">
             <div class="p-6 sm:p-8">
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#f0c55e]">Dampak Edulaw</p>
-                <h2 class="mt-3 font-display text-2xl font-extrabold text-white">Pengetahuan yang terus bertumbuh.</h2>
-                <p class="mt-3 text-[13px] leading-6 text-slate-300">Angka berikut diperbarui langsung dari konten yang telah diterbitkan.</p>
+                <p class="home-section-eyebrow text-[#f0c55e]">Dampak Edulaw</p>
+                <h2 class="home-subsection-title mt-3 text-white">Pengetahuan yang terus bertumbuh.</h2>
+                <p class="mt-3 text-sm leading-6 text-slate-300">Angka berikut diperbarui langsung dari konten yang telah diterbitkan.</p>
             </div>
 
             @if ($stats->count() >= 2)

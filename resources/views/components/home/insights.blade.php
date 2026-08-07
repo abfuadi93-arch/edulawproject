@@ -8,10 +8,10 @@
     <div class="section-shell">
         <div class="flex items-end justify-between gap-5">
             <div>
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#e57b66]">Edulaw Insight Terbaru</p>
-                <h2 id="home-insights-title" class="mt-2 font-display text-2xl font-extrabold tracking-tight text-[#1f3c69] sm:text-3xl">Analisis Hukum yang Relevan</h2>
+                <p class="home-section-eyebrow text-[#e57b66]">Edulaw Insight Terbaru</p>
+                <h2 id="home-insights-title" class="home-section-title">Analisis Hukum yang Relevan</h2>
             </div>
-            <a href="{{ route('insights.index') }}" class="text-xs font-extrabold text-[#1f3c69]">Semua Editorial →</a>
+            <a href="{{ route('insights.index') }}" class="home-section-link">Semua Editorial →</a>
         </div>
 
         @if ($items->isNotEmpty())
@@ -26,14 +26,14 @@
                                 <div class="absolute inset-0 bg-[#142f57]/15"></div>
                             </div>
                             <div class="p-4">
-                                <p class="text-[10px] font-extrabold uppercase tracking-wider text-[#35a48d]">{{ $item->display_category }}</p>
-                                <h3 class="mt-2 line-clamp-3 min-h-14 text-base font-extrabold leading-snug text-[#142f57]">{{ $item->title }}</h3>
-                                <div class="mt-4 flex flex-wrap gap-x-2 gap-y-1 text-xs text-slate-400">
+                                <p class="home-card-kicker">{{ $item->display_category }}</p>
+                                <h3 class="home-card-title line-clamp-3 min-h-[4.3rem]">{{ $item->title }}</h3>
+                                <div class="home-card-meta mt-4 flex flex-wrap gap-x-2 gap-y-1">
                                     @if ($item->published_at)<span>{{ $item->published_at->translatedFormat('d M Y') }}</span>@endif
                                     @if ($item->published_at && $item->reading_time)<span>·</span>@endif
                                     @if ($item->reading_time)<span>{{ $item->reading_time }} menit</span>@endif
                                 </div>
-                                <p class="mt-2 line-clamp-1 text-[11px] font-bold text-slate-500">Oleh: {{ $item->display_author }}</p>
+                                <p class="mt-2 line-clamp-1 text-xs font-bold text-slate-500">Oleh: {{ $item->display_author }}</p>
                             </div>
                         </a>
                     </article>

@@ -87,21 +87,29 @@
             ->implode('') ?: 'E';
     };
 
-    $publicationDate = function ($date) {
-        if (! $date) {
-            return 'Belum dipublikasikan';
+    $publicationDate = function ($publication) {
+        if (filled($publication->publication_date_text ?? null)) {
+            return $publication->publication_date_text;
+        }
+
+        if (! $publication->published_at) {
+            return 'Belum diketahui';
         }
 
         try {
-            return $date instanceof Carbon
-                ? $date->translatedFormat('F Y')
-                : Carbon::parse($date)->translatedFormat('F Y');
+            return $publication->published_at instanceof Carbon
+                ? $publication->published_at->translatedFormat('F Y')
+                : Carbon::parse($publication->published_at)->translatedFormat('F Y');
         } catch (\Throwable $e) {
-            return $date;
+            return (string) $publication->published_at;
         }
     };
 
     $publicationYear = function ($publication) {
+        if (filled($publication->publication_year ?? null)) {
+            return $publication->publication_year;
+        }
+
         if (! empty($publication->published_at)) {
             try {
                 return Carbon::parse($publication->published_at)->format('Y');
@@ -740,7 +748,7 @@
                                         </span>
                                     </a>
                                     ·
-                                    {{ $publicationDate($publication->published_at ?? null) }}
+                                    {{ $publicationDate($publication) }}
                                     ·
                                     {{ $publication->page_count ? $publication->page_count . ' halaman' : 'Dokumen digital' }}
                                 </div>
@@ -791,7 +799,7 @@
                                             <small>{{ $publicationTypeName($publication) }}</small>
                                         </div>
 
-                                        <small>{{ $publicationDate($publication->published_at ?? null) }}</small>
+                                            <small>{{ $publicationDate($publication) }}</small>
                                     </div>
                                 @endif
                             </div>

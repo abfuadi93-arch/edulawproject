@@ -28,6 +28,7 @@ class Publication extends Model
         'citation_text',
         'language',
         'published_at',
+        'publication_date_text',
         'page_count',
         'status',
         'featured',
@@ -73,6 +74,7 @@ class Publication extends Model
     {
         return $this->belongsToMany(Author::class, 'author_publication')
             ->withPivot(['author_order', 'role'])
+            ->orderByPivot('author_order')
             ->withTimestamps();
     }
 
@@ -132,7 +134,7 @@ class Publication extends Model
             ->filter()
             ->join(', ');
         $authorLabel = $authorLabel !== '' ? $authorLabel : 'Edulaw Project';
-        $year = $this->published_at?->format('Y') ?: 'n.d.';
+        $year = $this->publication_year ?: 'n.d.';
         $publisher = trim((string) ($this->source_name ?: 'Edulaw Project'));
         $title = trim((string) ($this->title ?: 'Publikasi Edulaw Project'));
         $url = filled($this->slug)
@@ -184,6 +186,26 @@ class Publication extends Model
     public function getPublicUrlAttribute(): ?string
     {
         return filled($this->slug) ? route('publications.show', $this->slug) : null;
+    }
+
+    public function getPublicationDateDisplayAttribute(): string
+    {
+        if (filled($this->publication_date_text)) {
+            return trim((string) $this->publication_date_text);
+        }
+
+        return $this->published_at?->locale('id')->translatedFormat('d F Y') ?: 'Belum diketahui';
+    }
+
+    public function getPublicationYearAttribute(): ?string
+    {
+        if ($this->published_at) {
+            return $this->published_at->format('Y');
+        }
+
+        preg_match('/\b(?:19|20)\d{2}\b/', (string) $this->publication_date_text, $matches);
+
+        return $matches[0] ?? null;
     }
 
     private function needsPdfCover(): bool

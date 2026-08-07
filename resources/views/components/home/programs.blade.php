@@ -11,10 +11,10 @@
             <div>
                 <div class="flex items-end justify-between gap-4">
                     <div>
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#b18332]">Program Edulaw</p>
-                        <h2 id="home-programs-title" class="mt-2 font-display text-2xl font-extrabold tracking-tight text-[#1f3c69] sm:text-3xl">Belajar Hukum secara Kontekstual</h2>
+                        <p class="home-section-eyebrow text-[#b18332]">Program Edulaw</p>
+                        <h2 id="home-programs-title" class="home-section-title">Belajar Hukum secara Kontekstual</h2>
                     </div>
-                    <a href="{{ route('programs.index') }}" class="hidden text-xs font-extrabold text-[#1f3c69] sm:inline-flex">Semua Program →</a>
+                    <a href="{{ route('programs.index') }}" class="home-section-link hidden sm:inline-flex">Semua Program →</a>
                 </div>
 
                 <div class="mt-7 grid gap-4 md:grid-cols-3">
@@ -37,13 +37,13 @@
                                     </div>
                                 </div>
                                 <div class="p-4">
-                                    <h3 class="line-clamp-2 min-h-12 text-base font-extrabold leading-snug text-[#142f57]">{{ $program->display_title }}</h3>
-                                    <div class="mt-4 flex flex-wrap gap-x-3 gap-y-1 text-xs text-slate-400">
+                                    <h3 class="home-card-title line-clamp-2 min-h-12">{{ $program->display_title }}</h3>
+                                    <div class="home-card-meta flex flex-wrap gap-x-3 gap-y-1">
                                         @if ($eventDate)<span>{{ $eventDate->translatedFormat('d M Y') }}</span>@endif
                                         @if ($eventDate && $format)<span>·</span>@endif
                                         @if ($format)<span>{{ $format }}</span>@endif
                                     </div>
-                                    <span class="mt-4 inline-flex text-xs font-extrabold text-[#1f3c69]">Lihat Detail →</span>
+                                    <span class="home-card-action mt-4">Lihat Detail →</span>
                                 </div>
                             </a>
                         </article>
@@ -56,10 +56,10 @@
             <div>
                 <div class="flex items-end justify-between gap-4">
                     <div>
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#e57b66]">Pilihan Editor</p>
-                        <h2 class="mt-2 font-display text-2xl font-extrabold tracking-tight text-[#1f3c69]">Perspektif Utama</h2>
+                        <p class="home-section-eyebrow text-[#e57b66]">Pilihan Editor</p>
+                        <h2 class="home-subsection-title">Perspektif Utama</h2>
                     </div>
-                    <a href="{{ route('insights.index') }}" class="text-xs font-extrabold text-[#1f3c69]">Editorial →</a>
+                    <a href="{{ route('insights.index') }}" class="home-section-link">Editorial →</a>
                 </div>
 
                 @if ($featuredInsight)
@@ -70,10 +70,10 @@
                         <div class="absolute inset-0 bg-linear-to-t from-[#07172e]/95 via-[#142f57]/45 to-transparent"></div>
                         <span class="absolute left-5 top-5 rounded bg-[#f8bd38] px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-[#142f57]">Editor's Pick</span>
                         <div class="relative">
-                            <p class="text-[11px] font-extrabold uppercase tracking-wider text-[#f0c55e]">{{ $featuredInsight->display_category }}</p>
-                            <h3 class="mt-3 line-clamp-4 text-2xl font-extrabold leading-tight text-white">{{ $featuredInsight->title }}</h3>
-                            <p class="mt-3 text-xs text-slate-300">{{ $featuredInsight->display_author }}{{ $featuredInsight->reading_time ? ' · '.$featuredInsight->reading_time.' menit baca' : '' }}</p>
-                            <a href="{{ route('insights.show', $featuredInsight->slug) }}?source=home-editor-pick" class="mt-5 inline-flex text-xs font-extrabold text-white">Baca Editorial →</a>
+                            <p class="home-card-kicker text-[#f0c55e]">{{ $featuredInsight->display_category }}</p>
+                            <h3 class="mt-3 line-clamp-4 text-2xl font-extrabold leading-[1.22] tracking-[-0.015em] text-white">{{ $featuredInsight->title }}</h3>
+                            <p class="mt-3 text-[13px] leading-5 text-slate-300">{{ $featuredInsight->display_author }}{{ $featuredInsight->reading_time ? ' · '.$featuredInsight->reading_time.' menit baca' : '' }}</p>
+                            <a href="{{ route('insights.show', $featuredInsight->slug) }}?source=home-editor-pick" class="mt-5 inline-flex text-[13px] font-extrabold text-white">Baca Editorial →</a>
                         </div>
                     </article>
                 @else

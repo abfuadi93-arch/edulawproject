@@ -35,7 +35,7 @@ class HomeController extends Controller
             ->orderByDesc('featured')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit(3)
+            ->limit(4)
             ->get();
 
         $latestPrograms = Program::with('categoryRelation')

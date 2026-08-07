@@ -18,7 +18,6 @@
 
 @section('content')
 @php
-    use Illuminate\Support\Carbon;
     use Illuminate\Support\Facades\Route;
     use Illuminate\Support\Str;
 
@@ -48,14 +47,7 @@
     $creatorLabel = $authorNames ? 'Penulis' : 'Penerbit';
     $creatorValue = $authorNames ?: $sourceName;
 
-    $publishedYear = null;
-    if (! empty($publication->published_at)) {
-        try {
-            $publishedYear = Carbon::parse($publication->published_at)->format('Y');
-        } catch (\Throwable $e) {
-            $publishedYear = (string) $publication->published_at;
-        }
-    }
+    $publicationDate = $publication->publication_date_display;
 
     $documentFormat = $pdfUrl ? 'PDF digital' : 'Dokumen digital';
     $pageOrFormatLabel = $publication->page_count ? 'Jumlah Halaman' : 'Format';
@@ -94,7 +86,7 @@
 
     $metadataRows = collect([
         ['label' => $creatorLabel, 'value' => $creatorValue],
-        ['label' => 'Tahun', 'value' => $publishedYear ?: 'Belum bertanggal'],
+        ['label' => 'Tahun / Tanggal Publikasi', 'value' => $publicationDate],
         ['label' => 'Tipe Publikasi', 'value' => $typeName],
         ['label' => $pageOrFormatLabel, 'value' => $pageOrFormatValue],
         ['label' => 'Bahasa', 'value' => $languageLabel],
@@ -107,17 +99,7 @@
         ?? $item?->type
         ?? 'Publikasi';
 
-    $relatedYear = function ($item): string {
-        if (empty($item->published_at)) {
-            return 'Dokumen digital';
-        }
-
-        try {
-            return Carbon::parse($item->published_at)->format('Y');
-        } catch (\Throwable $e) {
-            return 'Dokumen digital';
-        }
-    };
+    $relatedYear = fn ($item): string => $item->publication_year ?: 'Dokumen digital';
 @endphp
 
 <main class="publication-show">
@@ -157,7 +139,7 @@
                     @foreach ([
                         ['label' => 'Tipe', 'value' => $typeName],
                         ['label' => $creatorLabel, 'value' => $creatorValue],
-                        ['label' => 'Tahun', 'value' => $publishedYear ?: 'Belum bertanggal'],
+                        ['label' => 'Tahun / Tanggal', 'value' => $publicationDate],
                         ['label' => 'Format', 'value' => $documentFormat],
                     ] as $item)
                         <div class="rounded-2xl border border-white/40 bg-white px-4 py-3 shadow-sm shadow-slate-950/10">

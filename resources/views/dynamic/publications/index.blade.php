@@ -36,7 +36,7 @@
                             <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
                                 <span>{{ $featuredPublication->type?->name }}</span>
                                 <span>•</span>
-                                <span>{{ optional($featuredPublication->published_at)->translatedFormat('d M Y') }}</span>
+                                <span>{{ $featuredPublication->publication_date_display }}</span>
                             </div>
                             <a href="{{ route('publications.show', $featuredPublication->slug) }}" class="mt-6 inline-flex rounded-xl bg-brand-black px-4 py-2 text-sm font-bold text-white">Baca Detail</a>
                         </div>
@@ -72,7 +72,7 @@
                                 <p class="text-xs font-bold uppercase tracking-[0.14em] text-brand-navy">{{ $publication->type?->name ?? 'Publikasi' }}</p>
                                 <h3 class="mt-2 text-lg font-extrabold text-brand-ink">{{ $publication->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $publication->excerpt }}</p>
-                                <p class="mt-3 text-xs text-slate-500">{{ optional($publication->published_at)->translatedFormat('d M Y') }}</p>
+                                <p class="mt-3 text-xs text-slate-500">{{ $publication->publication_date_display }}</p>
                                 <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Baca Selengkapnya →</span>
                             </div>
                         </a>
