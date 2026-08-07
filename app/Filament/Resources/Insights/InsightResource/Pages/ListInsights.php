@@ -15,7 +15,7 @@ class ListInsights extends ListRecords
 
     protected function getListDescription(): string
     {
-        return 'Kelola artikel, status editorial, dan penempatan konten.';
+        return 'Kelola naskah dengan alur sederhana: Draft, Review, dan Published.';
     }
 
     protected function getCreateButtonLabel(): string
@@ -28,17 +28,15 @@ class ListInsights extends ListRecords
         return $this->makeStatusTabs([
             'all' => ['label' => 'Semua'],
             'draft' => [
-                'label' => 'Draf',
+                'label' => 'Draft',
                 'query' => fn (Builder $query): Builder => $query->where('status', 'draft'),
             ],
-            'workflow' => [
-                'label' => 'Dalam Editorial',
-                'query' => fn (Builder $query): Builder => $query->whereIn('status', [
-                    'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved',
-                ]),
+            'review' => [
+                'label' => 'Review',
+                'query' => fn (Builder $query): Builder => $query->where('status', 'review'),
             ],
             'published' => [
-                'label' => 'Diterbitkan',
+                'label' => 'Published',
                 'query' => fn (Builder $query): Builder => $query->where('status', 'published'),
             ],
         ]);

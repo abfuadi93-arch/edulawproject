@@ -163,7 +163,7 @@ class PermissionResource extends Resource
         $name = Str::lower(str_replace('_', ' ', $permission));
 
         return match (true) {
-            Str::contains($name, ['insight', 'editorial', 'editor assignment', 'editor deadline', 'writer deadline']) => 'Editorial',
+            Str::contains($name, ['insight', 'editorial', 'revision']) => 'Editorial',
             Str::contains($name, 'publication') => 'Publikasi',
             Str::contains($name, 'program') => 'Program',
             Str::contains($name, 'opportunit') => 'Peluang',

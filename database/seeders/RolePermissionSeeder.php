@@ -48,37 +48,13 @@ class RolePermissionSeeder extends Seeder
         'view_own_editorial_submissions',
         'assign_editor',
         'reassign_editor',
-        'accept_editor_assignment',
-        'start_editorial_review',
-        'complete_editor_assignment',
-        'cancel_editor_assignment',
         'access_editorial_workspace',
-        'view_editorial_decisions',
-        'create_editorial_decision',
-        'view_editorial_audit_history',
-        'publish_approved_insight',
-        'start_review',
         'add_editorial_note',
         'request_revision',
-        'resubmit_revision',
-        'approve_insight',
-        'reject_insight',
         'publish_insight',
         'archive_insight',
         'view_status_history',
-        'create_section_comment',
-        'reply_editorial_comment',
-        'mark_comment_addressed',
-        'resolve_editorial_comment',
-        'reopen_editorial_comment',
-        'view_revision_history',
-        'compare_insight_revisions',
-        'set_editor_deadline',
-        'set_writer_deadline',
-        'extend_editor_deadline',
-        'extend_writer_deadline',
         'view_editorial_notifications',
-        'override_unresolved_comments',
         'view publications',
         'create publications',
         'update publications',
@@ -125,37 +101,16 @@ class RolePermissionSeeder extends Seeder
     private const ROLE_PERMISSIONS = [
         'editor' => [
             'view insights',
-            'create insights',
-            'update all insights',
-            'delete all insights',
             'review insights',
             'publish insights',
-            'archive insights',
             'view_assigned_editorial_insights',
             'view_editorial_dashboard',
             'view_assigned_editorial_submissions',
-            'accept_editor_assignment',
-            'start_editorial_review',
-            'complete_editor_assignment',
             'access_editorial_workspace',
-            'view_editorial_decisions',
-            'create_editorial_decision',
-            'view_editorial_audit_history',
-            'start_review',
             'add_editorial_note',
             'request_revision',
-            'approve_insight',
-            'reject_insight',
             'publish_insight',
-            'archive_insight',
             'view_status_history',
-            'create_section_comment',
-            'resolve_editorial_comment',
-            'reopen_editorial_comment',
-            'view_revision_history',
-            'compare_insight_revisions',
-            'set_writer_deadline',
-            'extend_writer_deadline',
             'view_editorial_notifications',
             'view publications',
             'create publications',
@@ -179,14 +134,7 @@ class RolePermissionSeeder extends Seeder
             'delete own insights',
             'submit insights',
             'view_own_editorial_submissions',
-            'access_editorial_workspace',
-            'view_editorial_decisions',
-            'view_editorial_audit_history',
-            'resubmit_revision',
             'view_status_history',
-            'reply_editorial_comment',
-            'mark_comment_addressed',
-            'view_revision_history',
             'view_editorial_notifications',
             'view authors',
         ],
@@ -237,7 +185,6 @@ class RolePermissionSeeder extends Seeder
         $roles = $this->syncRoles($permissions);
 
         $this->assignLegacyUsersToNewRoles($roles);
-        $this->assignPrimaryAdmins($roles['super_admin']);
 
         app(PermissionRegistrar::class)->forgetCachedPermissions();
     }
@@ -270,10 +217,10 @@ class RolePermissionSeeder extends Seeder
                 ]),
             ]);
 
-        $roles['super_admin']->givePermissionTo($permissions->values());
+        $roles['super_admin']->syncPermissions($permissions->values());
 
         foreach (self::ROLE_PERMISSIONS as $role => $rolePermissions) {
-            $roles[$role]->givePermissionTo($permissions->only($rolePermissions)->values());
+            $roles[$role]->syncPermissions($permissions->only($rolePermissions)->values());
         }
 
         return $roles;
@@ -298,31 +245,5 @@ class RolePermissionSeeder extends Seeder
                 ->whereHas('roles', fn ($query) => $query->whereKey($legacyRole->getKey()))
                 ->each(fn (User $user) => $user->assignRole($roles[$newRoleName]));
         }
-    }
-
-    private function assignPrimaryAdmins(Role $superAdminRole): void
-    {
-        $adminEmails = collect([
-            config('edulaw.admin_email'),
-            config('mail.from.address'),
-            'admin@edulaw.test',
-            'projectedulaw@gmail.com',
-        ])
-            ->filter()
-            ->map(fn (string $email): string => mb_strtolower(trim($email)))
-            ->unique()
-            ->values();
-
-        $adminUsers = User::query()
-            ->whereIn('email', $adminEmails)
-            ->get();
-
-        $firstUser = User::query()->oldest('id')->first();
-
-        collect([$firstUser])
-            ->merge($adminUsers)
-            ->filter()
-            ->unique('id')
-            ->each(fn (User $user) => $user->assignRole($superAdminRole));
     }
 }

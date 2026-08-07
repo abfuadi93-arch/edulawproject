@@ -2,17 +2,11 @@
 
 namespace App\Services;
 
-use App\Enums\EditorialCommentStatus;
 use App\Enums\InsightStatus;
 use App\Models\Insight;
-use App\Models\InsightEditorialNote;
 use App\Models\User;
-use App\Services\Editorial\InsightAssignmentService;
-use App\Services\Editorial\InsightNotificationService as EditorialNotificationService;
-use App\Services\Editorial\InsightWorkflowService;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Validation\ValidationException;
 use LogicException;
 
@@ -20,337 +14,274 @@ class InsightEditorialWorkflowService
 {
     public function submit(Insight $insight, User $actor): Insight
     {
-        $this->authorizeSubmission($insight, $actor);
-        $this->assertStatus($insight, InsightStatus::Draft);
+        Gate::forUser($actor)->authorize('submit', $insight);
         $this->validateSubmissionCompleteness($insight);
 
-        $insight = app(InsightWorkflowService::class)->submit($insight, $actor, 'Naskah dikirim untuk diperiksa.');
+        $wasPreviouslySubmitted = filled($insight->submitted_at);
+        $didTransition = false;
 
-        app(InsightRevisionService::class)->createInitialSnapshot($insight, $actor);
-        app(InsightNotificationService::class)->notifySubmission($insight);
+        $insight = DB::transaction(function () use ($insight, $actor, $wasPreviouslySubmitted, &$didTransition): Insight {
+            $locked = $this->lock($insight);
+
+            // A double click or a delayed Livewire request may still carry a
+            // Draft snapshot after the first request has moved it to Review.
+            // Treat that as a successful no-op instead of recording twice.
+            if ($locked->status->canonical() === InsightStatus::Review) {
+                return $locked->refresh();
+            }
+
+            $this->assertStatus($locked, InsightStatus::Draft);
+            $didTransition = true;
+
+            return $this->transition(
+                $locked,
+                $actor,
+                InsightStatus::Review,
+                $wasPreviouslySubmitted ? 'resubmitted_for_review' : 'submitted_for_review',
+                $wasPreviouslySubmitted
+                    ? 'Penulis mengirim ulang naskah untuk review.'
+                    : 'Penulis mengirim naskah untuk review.',
+                [
+                    'submitted_at' => now(),
+                    'updated_by' => $actor->id,
+                    'archived_at' => null,
+                ],
+            );
+        });
+
+        if ($didTransition) {
+            app(InsightNotificationService::class)->notifySubmission($insight, $wasPreviouslySubmitted);
+        }
 
         return $insight;
     }
 
-    public function assignEditor(
-        Insight $insight,
-        User $editor,
-        User $actor,
-        Carbon|string|null $deadline = null,
-        ?string $assignmentNote = null,
-    ): Insight {
-        $assignments = app(InsightAssignmentService::class);
-        $activeAssignment = $assignments->getActiveAssignment($insight);
-
-        $assignment = $activeAssignment
-            ? $assignments->reassignEditor(
-                $insight,
-                $editor,
-                $actor,
-                (string) $assignmentNote,
-                $deadline,
-                $assignmentNote,
-            )
-            : $assignments->assignEditor($insight, $editor, $actor, $deadline, $assignmentNote);
-
-        return $assignment->insight->refresh();
-    }
-
-    public function startReview(Insight $insight, User $actor): Insight
+    public function assignEditor(Insight $insight, User $editor, User $actor): Insight
     {
-        $assignment = app(InsightAssignmentService::class)->getActiveAssignment($insight)
-            ?? throw new LogicException('Assignment aktif tidak ditemukan.');
+        $ability = filled($insight->assigned_editor_id) ? 'reassignEditor' : 'assignEditor';
+        Gate::forUser($actor)->authorize($ability, $insight);
+        $this->validateEditor($editor);
 
-        return app(InsightAssignmentService::class)
-            ->startAssignment($assignment, $actor)
-            ->insight
-            ->refresh();
+        $previousEditorId = $insight->assigned_editor_id;
+
+        $insight = DB::transaction(function () use ($insight, $editor, $actor, $previousEditorId): Insight {
+            $locked = $this->lock($insight);
+            $event = filled($previousEditorId) ? 'editor_changed' : 'editor_assigned';
+            $description = filled($previousEditorId)
+                ? "Editor diganti menjadi {$editor->name}."
+                : "{$editor->name} ditugaskan sebagai Editor.";
+
+            $locked->forceFill([
+                'assigned_editor_id' => $editor->id,
+                'assigned_by' => $actor->id,
+                'assigned_at' => now(),
+                'updated_by' => $actor->id,
+            ])->save();
+
+            $this->recordActivity($locked, $actor, $event, $description, metadata: [
+                'previous_editor_id' => $previousEditorId,
+                'editor_id' => $editor->id,
+            ]);
+
+            return $locked->refresh();
+        });
+
+        app(InsightNotificationService::class)->notifyAssignment($insight, filled($previousEditorId));
+
+        return $insight;
     }
 
-    public function addEditorialNote(
-        Insight $insight,
-        User $actor,
-        string $note,
-        bool $isVisibleToWriter = true,
-        string $type = 'general',
-    ): InsightEditorialNote {
-        $this->authorizeAssignedEditorOrManager($insight, $actor, 'add_editorial_note');
-        $this->assertStatus($insight, [
-            InsightStatus::EditorAssigned,
-            InsightStatus::InReview,
-            InsightStatus::RevisionRequested,
-            InsightStatus::Revised,
-        ]);
+    public function requestRevision(Insight $insight, User $actor, string $note): Insight
+    {
+        Gate::forUser($actor)->authorize('requestRevision', $insight);
 
         if (blank($note)) {
-            throw ValidationException::withMessages(['note' => 'Catatan wajib diisi.']);
-        }
-
-        $comment = DB::transaction(fn (): InsightEditorialNote => $this->createNote(
-            $insight,
-            $actor,
-            trim($note),
-            $type,
-            $isVisibleToWriter,
-            status: EditorialCommentStatus::Resolved,
-        ));
-
-        app(InsightNotificationService::class)->notifyCommentCreated($comment);
-
-        return $comment;
-    }
-
-    public function requestRevision(
-        Insight $insight,
-        User $actor,
-        string $note,
-        Carbon|string|null $deadline = null,
-    ): Insight {
-        $this->authorizeAssignedEditor($insight, $actor, 'request_revision');
-        $this->assertStatus($insight, InsightStatus::InReview);
-
-        if (blank($note)) {
-            throw ValidationException::withMessages(['note' => 'Catatan perbaikan wajib diisi.']);
+            throw ValidationException::withMessages(['editor_notes' => 'Catatan untuk Penulis wajib diisi.']);
         }
 
         $insight = DB::transaction(function () use ($insight, $actor, $note): Insight {
             $locked = $this->lock($insight);
-            $this->assertStatus($locked, InsightStatus::InReview);
-            $this->createNote($locked, $actor, trim($note), 'revision_request', true);
+            $this->assertStatus($locked, InsightStatus::Review);
+            $note = trim($note);
 
-            $assignment = app(InsightAssignmentService::class)->getActiveAssignment($locked)
-                ?? throw new LogicException('Assignment aktif tidak ditemukan.');
-
-            return app(InsightWorkflowService::class)->moveToAuthorRevision($locked, $actor, $assignment, trim($note));
-        });
-
-        app(InsightDeadlineService::class)->completeEditorDeadline($insight);
-        $insight = app(InsightDeadlineService::class)->setWriterDeadline($insight, $actor, $deadline ?: now()->addDays(3));
-        app(InsightNotificationService::class)->notifyRevisionRequested($insight->load('creator'));
-
-        return $insight;
-    }
-
-    public function resubmit(Insight $insight, User $actor, string $changeSummary): Insight
-    {
-        $this->authorizeOwner($insight, $actor, 'resubmit_revision');
-        $this->assertStatus($insight, InsightStatus::RevisionRequested);
-
-        if (blank($changeSummary)) {
-            throw ValidationException::withMessages(['change_summary' => 'Ringkasan perubahan wajib diisi.']);
-        }
-
-        $this->validateSubmissionCompleteness($insight);
-
-        if (! app(InsightRevisionService::class)->hasMeaningfulChanges($insight)) {
-            throw ValidationException::withMessages([
-                'change_summary' => 'Tidak ada perubahan bermakna pada naskah dibandingkan versi terakhir.',
+            $locked->editorialNotes()->create([
+                'user_id' => $actor->id,
+                'revision_round' => 0,
+                'type' => 'revision_request',
+                'status' => 'open',
+                'note' => $note,
+                'is_visible_to_writer' => true,
             ]);
-        }
 
-        $insight = DB::transaction(function () use ($insight, $actor, $changeSummary): Insight {
-            $locked = $this->lock($insight);
-            $this->assertStatus($locked, InsightStatus::RevisionRequested);
-            $nextRound = $locked->revision_round + 1;
-            $locked->editorialNotes()
-                ->whereNull('parent_id')
-                ->where('type', 'revision_request')
-                ->whereIn('status', ['open', 'reopened'])
-                ->update([
-                    'status' => 'addressed',
-                    'addressed_by' => $actor->id,
-                    'addressed_at' => now(),
-                ]);
-
-            $assignment = app(InsightAssignmentService::class)->getActiveAssignment($locked)
-                ?? throw new LogicException('Assignment aktif tidak ditemukan.');
-
-            return app(InsightWorkflowService::class)->returnToEditorialReview(
+            return $this->transition(
                 $locked,
                 $actor,
-                $assignment,
-                trim($changeSummary),
-                $nextRound,
+                InsightStatus::Draft,
+                'revision_requested',
+                'Editor meminta perbaikan dan mengembalikan naskah ke Draft.',
+                [
+                    'editor_notes' => $note,
+                    'revision_requested_at' => now(),
+                    'updated_by' => $actor->id,
+                ],
             );
         });
 
-        app(InsightRevisionService::class)->createRevisionSnapshot($insight, $actor, $changeSummary);
-        app(InsightDeadlineService::class)->completeWriterDeadline($insight);
-        app(InsightNotificationService::class)->notifyRevisionSubmitted($insight->load('assignedEditor'));
+        app(InsightNotificationService::class)->notifyRevisionRequested($insight);
 
         return $insight;
     }
 
-    public function approve(Insight $insight, User $actor, ?string $note = null, ?string $overrideReason = null): Insight
+    public function addEditorialNote(Insight $insight, User $actor, string $note): Insight
     {
-        $this->authorizeAssignedEditorOrManager($insight, $actor, 'approve_insight');
-        $this->assertStatus($insight, InsightStatus::InReview);
+        Gate::forUser($actor)->authorize('review', $insight);
 
-        $assignment = app(InsightAssignmentService::class)->getActiveAssignment($insight)
-            ?? throw new LogicException('Assignment aktif tidak ditemukan.');
-        $insight = app(InsightWorkflowService::class)->moveToFinalApproval($insight, $actor, $assignment, $note);
-        app(InsightAssignmentService::class)->completeAssignment($assignment, $actor);
-
-        app(InsightDeadlineService::class)->completeEditorDeadline($insight);
-        app(EditorialNotificationService::class)->insightApproved($insight->load('creator'), $assignment->refresh(), $actor);
-
-        return $insight;
-    }
-
-    public function reject(Insight $insight, User $actor, string $reason): Insight
-    {
-        $this->authorizeAssignedEditor($insight, $actor, 'reject_insight');
-        $this->assertStatus($insight, [
-            InsightStatus::EditorAssigned,
-            InsightStatus::InReview,
-            InsightStatus::Revised,
-        ]);
-
-        if (blank($reason)) {
-            throw ValidationException::withMessages(['rejection_reason' => 'Alasan wajib diisi.']);
+        if (blank($note)) {
+            throw ValidationException::withMessages(['editor_notes' => 'Catatan untuk Penulis wajib diisi.']);
         }
 
-        $assignment = app(InsightAssignmentService::class)->getActiveAssignment($insight)
-            ?? throw new LogicException('Assignment aktif tidak ditemukan.');
-        $insight = app(InsightWorkflowService::class)->reject($insight, $actor, $assignment, trim($reason));
-        app(InsightAssignmentService::class)->completeAssignment($assignment, $actor);
+        $insight->forceFill([
+            'editor_notes' => trim($note),
+            'updated_by' => $actor->id,
+        ])->save();
 
-        app(InsightDeadlineService::class)->completeEditorDeadline($insight);
-        app(InsightNotificationService::class)->notifyRejection($insight->load('creator'));
+        $insight->editorialNotes()->create([
+            'user_id' => $actor->id,
+            'revision_round' => 0,
+            'type' => 'note',
+            'status' => 'open',
+            'note' => trim($note),
+            'is_visible_to_writer' => true,
+        ]);
 
-        return $insight;
+        $this->recordActivity($insight, $actor, 'editor_note_saved', 'Editor menyimpan catatan untuk Penulis.');
+
+        return $insight->refresh();
     }
 
     public function publish(Insight $insight, User $actor): Insight
     {
-        if (! $actor->can('publish_approved_insight') && ! $actor->can('publish_insight')) {
-            throw new AuthorizationException('Izin menerbitkan naskah yang disetujui diperlukan.');
-        }
-
-        $this->assertStatus($insight, InsightStatus::Approved);
+        Gate::forUser($actor)->authorize('publish', $insight);
         $this->validateSubmissionCompleteness($insight);
 
-        $assignment = $insight->editorAssignments()->latest('id')->first();
+        $insight = DB::transaction(function () use ($insight, $actor): Insight {
+            $locked = $this->lock($insight);
+            $this->assertStatus($locked, InsightStatus::Review);
+            $publishedAt = $locked->published_at ?: now();
+            $description = $publishedAt->isFuture()
+                ? 'Editor menjadwalkan artikel terbit pada '.$publishedAt->copy()->timezone(config('edulaw.timezone'))->translatedFormat('d M Y, H:i').' WIB.'
+                : 'Editor menerbitkan artikel.';
 
-        if (! $actor->hasRole('super_admin') && (int) $assignment?->editor_id !== (int) $actor->id) {
-            throw new AuthorizationException('Hanya Editor yang ditugaskan atau Super Admin yang dapat menerbitkan naskah.');
-        }
+            return $this->transition(
+                $locked,
+                $actor,
+                InsightStatus::Published,
+                'published',
+                $description,
+                [
+                    'reviewed_by' => $actor->id,
+                    'reviewed_at' => now(),
+                    'published_at' => $publishedAt,
+                    'updated_by' => $actor->id,
+                    'archived_at' => null,
+                ],
+            );
+        });
 
-        if (app(InsightRevisionService::class)->hasMeaningfulChanges($insight)) {
-            app(InsightRevisionService::class)->createRevisionSnapshot($insight, $actor, 'Perubahan setelah approval sebelum publikasi.');
-        }
-
-        $insight = app(InsightWorkflowService::class)->moveToPublication($insight, $actor, $assignment);
-
-        app(EditorialNotificationService::class)->insightPublished($insight->load('creator'), $assignment, $actor);
+        app(InsightNotificationService::class)->notifyPublication($insight);
 
         return $insight;
     }
 
-    public function archive(Insight $insight, User $actor, ?string $note = null): Insight
+    public function archive(Insight $insight, User $actor): Insight
     {
-        $this->authorizePermission($actor, 'archive_insight');
-
-        $assignment = $insight->editorAssignments()->latest('id')->first();
-
-        if (! $actor->hasRole('super_admin') && (int) $assignment?->editor_id !== (int) $actor->id) {
-            throw new AuthorizationException('Hanya Editor yang ditugaskan atau Super Admin yang dapat mengarsipkan naskah.');
-        }
+        Gate::forUser($actor)->authorize('archive', $insight);
 
         if ($insight->status === InsightStatus::Archived) {
-            throw new LogicException('Naskah sudah diarsipkan.');
+            throw new LogicException('Insight sudah diarsipkan.');
         }
 
-        return app(InsightWorkflowService::class)->archive(
-            $insight,
-            $actor,
-            $assignment,
-            $note,
-        );
+        return DB::transaction(function () use ($insight, $actor): Insight {
+            $locked = $this->lock($insight);
+
+            return $this->transition(
+                $locked,
+                $actor,
+                InsightStatus::Archived,
+                'archived',
+                'Super Admin mengarsipkan Insight.',
+                [
+                    'archived_at' => now(),
+                    'updated_by' => $actor->id,
+                ],
+            );
+        });
     }
 
-    private function lock(Insight $insight): Insight
+    public function recordDraftCreated(Insight $insight, User $actor): void
     {
-        return Insight::query()->lockForUpdate()->findOrFail($insight->getKey());
+        $this->recordActivity($insight, $actor, 'draft_created', 'Penulis membuat draft.');
     }
 
-    private function createNote(
+    private function transition(
         Insight $insight,
         User $actor,
-        string $note,
-        string $type,
-        bool $visible,
-        ?int $revisionRound = null,
-        EditorialCommentStatus $status = EditorialCommentStatus::Open,
-    ): InsightEditorialNote {
-        return $insight->editorialNotes()->create([
-            'user_id' => $actor->id,
-            'revision_id' => $insight->revisions()->latest('revision_number')->value('id'),
-            'revision_round' => $revisionRound ?? $insight->revision_round,
-            'type' => $type,
-            'status' => $status->value,
-            'note' => $note,
-            'is_visible_to_writer' => $visible,
-            'resolved_by' => $status === EditorialCommentStatus::Resolved ? $actor->id : null,
-            'resolved_at' => $status === EditorialCommentStatus::Resolved ? now() : null,
+        InsightStatus $to,
+        string $event,
+        string $description,
+        array $attributes = [],
+    ): Insight {
+        $from = $insight->status;
+
+        $insight->forceFill([
+            ...$attributes,
+            'status' => $to,
+        ])->save();
+
+        $insight->statusHistories()->create([
+            'changed_by' => $actor->id,
+            'from_status' => $from->value,
+            'to_status' => $to->value,
+            'notes' => $description,
+        ]);
+
+        $this->recordActivity($insight, $actor, $event, $description, $from, $to);
+
+        return $insight->refresh();
+    }
+
+    private function recordActivity(
+        Insight $insight,
+        User $actor,
+        string $event,
+        string $description,
+        ?InsightStatus $from = null,
+        ?InsightStatus $to = null,
+        ?array $metadata = null,
+    ): void {
+        $insight->editorialActivities()->create([
+            'actor_id' => $actor->id,
+            'event' => $event,
+            'from_status' => $from?->value,
+            'to_status' => $to?->value,
+            'description' => $description,
+            'metadata' => $metadata,
         ]);
     }
 
-    private function assertStatus(Insight $insight, InsightStatus|array $allowed): void
+    private function assertStatus(Insight $insight, InsightStatus $expected): void
     {
-        $allowed = is_array($allowed) ? $allowed : [$allowed];
-
-        if (! in_array($insight->status, $allowed, true)) {
-            $labels = collect($allowed)->map->label()->join(', ');
-
-            throw new LogicException("Transisi tidak valid dari status {$insight->status->label()}. Status yang diizinkan: {$labels}.");
+        if ($insight->status->canonical() !== $expected) {
+            throw new LogicException("Transisi tidak valid dari status {$insight->status->label()}.");
         }
     }
 
-    private function authorizePermission(User $actor, string $permission): void
+    private function validateEditor(User $editor): void
     {
-        if (! $actor->can($permission)) {
-            throw new AuthorizationException("Izin {$permission} diperlukan.");
-        }
-    }
-
-    private function authorizeSubmission(Insight $insight, User $actor): void
-    {
-        $this->authorizePermission($actor, 'submit insights');
-
-        if (! $actor->hasRole('super_admin') && (int) $insight->created_by !== (int) $actor->id) {
-            throw new AuthorizationException('Hanya pemilik naskah atau Super Admin yang dapat mengirim draft.');
-        }
-    }
-
-    private function authorizeOwner(Insight $insight, User $actor, string $permission): void
-    {
-        $this->authorizePermission($actor, $permission);
-
-        if ((int) $insight->created_by !== (int) $actor->id) {
-            throw new AuthorizationException('Writer hanya dapat memproses naskah miliknya sendiri.');
-        }
-    }
-
-    private function authorizeAssignedEditor(Insight $insight, User $actor, string $permission): void
-    {
-        $this->authorizePermission($actor, $permission);
-
-        $insight->loadMissing('activeEditorAssignment');
-
-        if ((int) $insight->activeEditorAssignment?->editor_id !== (int) $actor->id) {
-            throw new AuthorizationException('Editor hanya dapat memproses naskah yang ditugaskan kepadanya.');
-        }
-    }
-
-    private function authorizeAssignedEditorOrManager(Insight $insight, User $actor, string $permission): void
-    {
-        $this->authorizePermission($actor, $permission);
-
-        $insight->loadMissing('activeEditorAssignment');
-
-        if (! $actor->hasRole('super_admin') && (int) $insight->activeEditorAssignment?->editor_id !== (int) $actor->id) {
-            throw new AuthorizationException('Naskah ini tidak ditugaskan kepada Editor tersebut.');
+        if (! $editor->is_active || ! $editor->hasAnyRole(['editor', 'Editor'])) {
+            throw ValidationException::withMessages([
+                'editor_id' => 'Pilih pengguna aktif dengan role Editor.',
+            ]);
         }
     }
 
@@ -360,14 +291,19 @@ class InsightEditorialWorkflowService
             'title' => blank($insight->title) ? 'Judul wajib diisi.' : null,
             'insight_category_id' => blank($insight->insight_category_id) ? 'Kategori wajib dipilih.' : null,
             'authors' => ! $insight->authors()->exists() ? 'Minimal satu penulis wajib dipilih.' : null,
-            'excerpt' => blank($insight->excerpt) ? 'Ringkasan wajib diisi.' : null,
+            'excerpt' => blank($insight->excerpt) ? 'Excerpt wajib diisi.' : null,
             'content' => blank($insight->content) ? 'Isi artikel wajib diisi.' : null,
-            'cover_image' => blank($insight->cover_image) ? 'Gambar utama wajib diisi.' : null,
+            'cover_image' => blank($insight->cover_image) ? 'Cover wajib diisi.' : null,
             'slug' => blank($insight->slug) ? 'Slug wajib diisi.' : null,
         ])->filter()->all();
 
         if ($errors !== []) {
             throw ValidationException::withMessages($errors);
         }
+    }
+
+    private function lock(Insight $insight): Insight
+    {
+        return Insight::query()->lockForUpdate()->findOrFail($insight->getKey());
     }
 }

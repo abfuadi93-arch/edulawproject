@@ -2,11 +2,9 @@
 
 namespace App\Models;
 
-use App\Enums\EditorialWorkflowStage;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
-use Illuminate\Database\Eloquent\Relations\MorphTo;
 use LogicException;
 
 class InsightEditorialActivity extends Model
@@ -32,7 +30,6 @@ class InsightEditorialActivity extends Model
     ];
 
     protected $casts = [
-        'workflow_stage' => EditorialWorkflowStage::class,
         'metadata' => 'array',
         'created_at' => 'datetime',
     ];
@@ -51,20 +48,5 @@ class InsightEditorialActivity extends Model
     public function actor(): BelongsTo
     {
         return $this->belongsTo(User::class, 'actor_id');
-    }
-
-    public function assignment(): BelongsTo
-    {
-        return $this->belongsTo(InsightEditorAssignment::class, 'assignment_id');
-    }
-
-    public function decision(): BelongsTo
-    {
-        return $this->belongsTo(InsightEditorialDecision::class, 'decision_id');
-    }
-
-    public function subject(): MorphTo
-    {
-        return $this->morphTo();
     }
 }

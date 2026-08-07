@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Insights;
 
-use App\Enums\EditorialWorkflowStage;
 use App\Enums\InsightStatus;
 use App\Filament\Resources\Editorial\EditorialResource;
 use App\Filament\Resources\Insights\InsightResource\Pages;
@@ -16,8 +15,6 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ReplicateAction;
-use Filament\Forms\Components\DatePicker;
-use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\RichEditor;
@@ -33,16 +30,11 @@ use Filament\Schemas\Components\Section;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Columns\ViewColumn;
-use Filament\Tables\Filters\Filter;
-use Filament\Tables\Filters\Indicator;
 use Filament\Tables\Filters\SelectFilter;
-use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Gate;
-use Illuminate\Support\HtmlString;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -50,13 +42,13 @@ class InsightResource extends Resource
 {
     protected static ?string $model = Insight::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Editorial';
 
-    protected static ?string $navigationLabel = 'Editorial';
+    protected static ?string $navigationLabel = 'Semua Insight';
 
-    protected static ?string $modelLabel = 'Editorial';
+    protected static ?string $modelLabel = 'Insight';
 
-    protected static ?string $pluralModelLabel = 'Editorial';
+    protected static ?string $pluralModelLabel = 'Semua Insight';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-newspaper';
 
@@ -66,315 +58,142 @@ class InsightResource extends Resource
 
     public static function form(Schema $schema): Schema
     {
-        return $schema
-            ->components([
-                Grid::make([
-                    'default' => 1,
-                    'xl' => 12,
+        return $schema->components([
+            Grid::make(['default' => 1, 'xl' => 12])
+                ->schema([
+                    Group::make()->schema([
+                        Section::make('Konten')
+                            ->description('Tulis dan lengkapi naskah utama.')
+                            ->schema([
+                                TextInput::make('title')
+                                    ->label('Judul')
+                                    ->required()
+                                    ->maxLength(255)
+                                    ->live(onBlur: true)
+                                    ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
+                                        $currentSlug = (string) ($get('slug') ?? '');
+
+                                        if (filled($currentSlug) && $currentSlug !== Str::slug((string) $old)) {
+                                            return;
+                                        }
+
+                                        $set('slug', Str::slug((string) $state));
+                                    })
+                                    ->columnSpanFull(),
+                                Grid::make(['default' => 1, 'md' => 2])->schema([
+                                    Select::make('insight_category_id')
+                                        ->label('Kategori')
+                                        ->relationship('category', 'name')
+                                        ->searchable()
+                                        ->preload(),
+                                    Select::make('authors')
+                                        ->label('Penulis')
+                                        ->relationship('authors', 'name')
+                                        ->multiple()
+                                        ->searchable()
+                                        ->preload(),
+                                ])->columnSpanFull(),
+                                FileUpload::make('cover_image')
+                                    ->label('Cover')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('insights')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096)
+                                    ->columnSpanFull(),
+                                RichEditor::make('content')
+                                    ->label('Isi Artikel')
+                                    ->disableToolbarButtons(['h1'])
+                                    ->rule(static function (): \Closure {
+                                        return static function (string $attribute, mixed $value, \Closure $fail): void {
+                                            if (static::contentContainsH1(is_string($value) ? $value : null)) {
+                                                $fail('Isi artikel tidak boleh menggunakan H1. Gunakan H2 untuk bagian utama dan H3 untuk subbagian.');
+                                            }
+                                        };
+                                    })
+                                    ->columnSpanFull(),
+                            ]),
+                        Section::make('Metadata')
+                            ->description('Ringkasan, topik, alamat artikel, dan metadata pencarian.')
+                            ->schema([
+                                Textarea::make('excerpt')->label('Excerpt')->rows(4)->maxLength(500)->columnSpanFull(),
+                                Select::make('tags')->label('Tag')->relationship('tags', 'name')->multiple()->searchable()->preload()->columnSpanFull(),
+                                TextInput::make('slug')->label('Slug')->required()->unique(ignoreRecord: true)->maxLength(255)->columnSpanFull(),
+                                TextInput::make('seo_title')->label('SEO Title')->maxLength(300)->columnSpanFull(),
+                                Textarea::make('seo_description')->label('SEO Description')->rows(3)->maxLength(180)->columnSpanFull(),
+                                FileUpload::make('og_image')
+                                    ->label('OG Image')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('seo/og-images')
+                                    ->visibility('public')
+                                    ->maxSize(4096)
+                                    ->columnSpanFull(),
+                            ])
+                            ->collapsible(),
+                    ])->columnSpan(['xl' => 8]),
+                    Group::make()->schema([
+                        Section::make('Editorial')
+                            ->description('Informasi status—bukan konfigurasi.')
+                            ->schema([
+                                Placeholder::make('status_info')
+                                    ->label('Status')
+                                    ->content(fn (?Insight $record): string => $record?->status->canonical()->label() ?? 'Draft'),
+                                Placeholder::make('editor_info')
+                                    ->label('Editor')
+                                    ->content(fn (?Insight $record): string => $record?->assignedEditor?->name ?? 'Belum ditugaskan'),
+                                Placeholder::make('submitted_info')
+                                    ->label('Dikirim')
+                                    ->content(fn (?Insight $record): string => $record?->submitted_at?->locale('id')->translatedFormat('d M Y, H:i') ?? 'Belum dikirim'),
+                                Placeholder::make('published_info')
+                                    ->label('Terbit')
+                                    ->content(fn (?Insight $record): string => $record?->published_at?->locale('id')->translatedFormat('d M Y, H:i') ?? 'Belum terbit'),
+                                Placeholder::make('editor_notes_info')
+                                    ->label('Catatan Editor')
+                                    ->content(fn (?Insight $record): string => $record?->editor_notes ?: 'Belum ada catatan.')
+                                    ->visible(fn (?Insight $record): bool => filled($record?->editor_notes)),
+                                Placeholder::make('reading_time_preview')
+                                    ->label('Estimasi baca')
+                                    ->content(fn ($get): string => static::estimateReadingTime($get('content')).' menit'),
+                            ]),
+                        Section::make('Penempatan')
+                            ->schema([
+                                Toggle::make('featured')->label('Artikel Unggulan'),
+                                Toggle::make('editor_pick')->label('Pilihan Editor'),
+                                TextInput::make('sort_order')->label('Urutan')->numeric()->minValue(0)->default(0),
+                            ])
+                            ->visible(fn (): bool => static::canManageEditorialWorkflow())
+                            ->collapsible(),
+                    ])->columnSpan(['xl' => 4]),
                 ])
-                    ->schema([
-                        Group::make()
-                            ->schema([
-                                Section::make('Konten Artikel')
-                                    ->icon('heroicon-o-document-text')
-                                    ->description('Fokus utama penulisan editorial: judul, kategori, isi, dan gambar utama.')
-                                    ->schema([
-                                        TextInput::make('title')
-                                            ->label('Judul Editorial')
-                                            ->required()
-                                            ->maxLength(255)
-                                            ->placeholder('Pembakaran Buku Tidak Selalu Menggunakan Api')
-                                            ->live(onBlur: true)
-                                            ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
-                                                $currentSlug = (string) ($get('slug') ?? '');
-
-                                                if (filled($currentSlug) && $get('status') === 'published') {
-                                                    return;
-                                                }
-
-                                                $oldSlug = Str::slug((string) $old);
-
-                                                if (filled($currentSlug) && $currentSlug !== $oldSlug) {
-                                                    return;
-                                                }
-
-                                                $set('slug', Str::slug((string) $state));
-                                            })
-                                            ->helperText('Gunakan judul yang jelas dan kuat.')
-                                            ->columnSpanFull(),
-
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                Select::make('insight_category_id')
-                                                    ->label('Kategori')
-                                                    ->relationship('category', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required(),
-
-                                                Select::make('tags')
-                                                    ->label('Topik')
-                                                    ->relationship('tags', 'name')
-                                                    ->multiple()
-                                                    ->searchable()
-                                                    ->preload(),
-                                            ])
-                                            ->columnSpanFull(),
-
-                                        RichEditor::make('content')
-                                            ->label('Isi Artikel')
-                                            ->required()
-                                            ->disableToolbarButtons(['h1'])
-                                            ->rule(static function (): \Closure {
-                                                return static function (string $attribute, mixed $value, \Closure $fail): void {
-                                                    if (static::contentContainsH1(is_string($value) ? $value : null)) {
-                                                        $fail('Isi artikel tidak boleh menggunakan H1. Gunakan H2 untuk bagian utama dan H3 untuk subbagian.');
-                                                    }
-                                                };
-                                            })
-                                            ->helperText('Gunakan H2 untuk bagian utama dan H3 untuk subbagian. H1 hanya untuk judul editorial.')
-                                            ->columnSpanFull(),
-
-                                        Textarea::make('excerpt')
-                                            ->label('Ringkasan / Excerpt')
-                                            ->rows(4)
-                                            ->maxLength(500)
-                                            ->required(fn ($get): bool => $get('status') === 'published')
-                                            ->helperText('Wajib sebelum dikirim untuk diperiksa. Tulis ringkasan mandiri yang menjelaskan manfaat artikel.')
-                                            ->columnSpanFull(),
-
-                                        FileUpload::make('cover_image')
-                                            ->label('Gambar Utama')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('insights')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->imagePreviewHeight('160')
-                                            ->downloadable()
-                                            ->openable()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->required(fn ($get): bool => $get('status') === 'published')
-                                            ->helperText('Wajib sebelum dikirim untuk diperiksa. Rekomendasi rasio 16:9. Maks. 4 MB.')
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                Section::make('SEO & Pengaturan Lanjutan')
-                                    ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Opsional. Jika kosong, sistem memakai judul, isi artikel, dan gambar utama.')
-                                    ->schema([
-                                        TextInput::make('slug')
-                                            ->label('Slug')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(255)
-                                            ->placeholder('otomatis-dari-judul')
-                                            ->helperText('Alamat artikel. Otomatis dibuat dari judul, boleh disesuaikan sebelum terbit.')
-                                            ->columnSpanFull(),
-
-                                        TextInput::make('seo_title')
-                                            ->label('SEO Title')
-                                            ->maxLength(300)
-                                            ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul')
-                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
-
-                                        Textarea::make('seo_description')
-                                            ->label('Meta Description')
-                                            ->rows(3)
-                                            ->maxLength(180)
-                                            ->placeholder('Otomatis dari awal isi artikel')
-                                            ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
-
-                                        FileUpload::make('og_image')
-                                            ->label('Gambar OG')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('seo/og-images')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->downloadable()
-                                            ->openable()
-                                            ->helperText('Kosongkan untuk memakai gambar utama.'),
-                                    ])
-                                    ->columns(1)
-                                    ->collapsible()
-                                    ->collapsed(),
-                            ])
-                            ->columnSpan(['xl' => 8])
-                            ->extraAttributes(['class' => 'edulaw-admin-main-column']),
-
-                        Group::make()
-                            ->schema([
-                                Section::make('Publikasi')
-                                    ->icon('heroicon-o-paper-airplane')
-                                    ->schema([
-                                        Select::make('status')
-                                            ->label('Status')
-                                            ->options(fn (): array => static::statusOptionsForCurrentUser())
-                                            ->default('draft')
-                                            ->live()
-                                            ->disabled()
-                                            ->helperText('Status berubah melalui action workflow, bukan dropdown. Untuk draft, gunakan “Simpan & Kirim untuk Review”.')
-                                            ->required(),
-
-                                        DateTimePicker::make('published_at')
-                                            ->label('Tanggal Publikasi')
-                                            ->seconds(false)
-                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
-
-                                        Select::make('authors')
-                                            ->label('Penulis')
-                                            ->relationship('authors', 'name')
-                                            ->multiple()
-                                            ->searchable()
-                                            ->preload()
-                                            ->required(fn ($get): bool => $get('status') === 'published')
-                                            ->placeholder('Pilih penulis')
-                                            ->helperText('Wajib sebelum dikirim untuk diperiksa. Draft dapat disimpan tanpa penulis.'),
-
-                                        Placeholder::make('reading_time_preview')
-                                            ->label('Estimasi Baca')
-                                            ->content(fn ($get): string => static::estimateReadingTime($get('content')).' menit baca')
-                                            ->helperText('Dihitung otomatis saat artikel disimpan.'),
-
-                                        Placeholder::make('editorial_notes_for_writer')
-                                            ->label('Catatan Editor')
-                                            ->content(function (?Insight $record): HtmlString {
-                                                if (! $record || $record->status !== InsightStatus::RevisionRequested) {
-                                                    return new HtmlString('<span class="text-sm text-gray-500">Belum ada catatan perbaikan.</span>');
-                                                }
-
-                                                $items = $record->editorialNotes()
-                                                    ->visibleToWriter()
-                                                    ->whereNull('parent_id')
-                                                    ->with(['user:id,name', 'replies.user:id,name'])
-                                                    ->latest()
-                                                    ->get()
-                                                    ->map(function ($note): string {
-                                                        $replies = $note->replies->map(fn ($reply): string => '<li class="ml-5 mt-2 border-l pl-3"><strong>'.e($reply->user?->name ?? 'User').'</strong>: '.nl2br(e($reply->note)).'</li>')->join('');
-
-                                                        return '<li class="mb-4 rounded-lg border p-3"><strong>'.e($note->user?->name ?? 'Tim Editorial').'</strong> · '.e($note->status->label()).'<br>'.nl2br(e($note->note)).'<ul>'.$replies.'</ul></li>';
-                                                    })
-                                                    ->join('');
-
-                                                return new HtmlString($items !== '' ? '<ul class="text-sm">'.$items.'</ul>' : '<span class="text-sm text-gray-500">Belum ada catatan perbaikan.</span>');
-                                            })
-                                            ->visible(fn (?Insight $record): bool => $record?->status === InsightStatus::RevisionRequested),
-
-                                        Placeholder::make('writer_deadline_display')
-                                            ->label('Tenggat Perbaikan')
-                                            ->content(fn (?Insight $record): string => $record?->writer_deadline?->locale('id')->translatedFormat('d M Y, H:i') ?? 'Belum ditetapkan')
-                                            ->visible(fn (?Insight $record): bool => $record?->status === InsightStatus::RevisionRequested),
-
-                                        Placeholder::make('public_preview')
-                                            ->label('Pratinjau')
-                                            ->content(function ($get): HtmlString {
-                                                $slug = trim((string) ($get('slug') ?? ''));
-
-                                                if ($slug === '') {
-                                                    return new HtmlString('<span class="text-sm text-gray-500">Tersedia setelah judul dan slug terisi.</span>');
-                                                }
-
-                                                $url = route('insights.show', $slug);
-
-                                                return new HtmlString(
-                                                    '<a href="'.e($url).'" target="_blank" rel="noopener noreferrer" class="fi-btn fi-color-gray fi-size-sm">Buka pratinjau</a>'
-                                                );
-                                            }),
-                                    ])
-                                    ->columns(1),
-
-                                Section::make('Penempatan Editorial')
-                                    ->icon('heroicon-o-squares-2x2')
-                                    ->description('Atur posisi artikel pada halaman Editorial. Angka lebih kecil mendapat prioritas lebih tinggi.')
-                                    ->schema([
-                                        Toggle::make('editor_pick')
-                                            ->label('Pilihan Editor')
-                                            ->helperText('Tampilkan pada bagian Pilihan Editor.')
-                                            ->default(false)
-                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
-
-                                        Toggle::make('featured')
-                                            ->label('Artikel Unggulan')
-                                            ->helperText('Prioritaskan sebagai artikel utama atau hero editorial.')
-                                            ->default(false)
-                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow()),
-
-                                        TextInput::make('sort_order')
-                                            ->label('Urutan Tampil')
-                                            ->numeric()
-                                            ->minValue(0)
-                                            ->default(0)
-                                            ->disabled(fn (): bool => ! static::canManageEditorialWorkflow())
-                                            ->helperText('Gunakan 0 untuk prioritas tertinggi.'),
-                                    ])
-                                    ->columns(1)
-                                    ->collapsible(),
-                            ])
-                            ->columnSpan(['xl' => 4])
-                            ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
-                    ])
-                    ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
-            ]);
+                ->columnSpanFull(),
+        ]);
     }
 
     public static function prepareFormDataForPersistence(array $data): array
     {
         if (static::contentContainsH1($data['content'] ?? null)) {
-            throw ValidationException::withMessages([
-                'content' => 'Isi artikel tidak boleh menggunakan H1. Gunakan H2 untuk bagian utama dan H3 untuk subbagian.',
-            ]);
+            throw ValidationException::withMessages(['content' => 'Isi artikel tidak boleh menggunakan H1.']);
         }
 
-        if (($data['status'] ?? null) === 'published') {
-            $messages = [];
-
-            if (blank($data['cover_image'] ?? null)) {
-                $messages['cover_image'] = 'Gambar utama wajib diisi sebelum artikel diterbitkan.';
-            }
-
-            if (blank($data['excerpt'] ?? null)) {
-                $messages['excerpt'] = 'Ringkasan wajib diisi sebelum artikel diterbitkan.';
-            }
-
-            if ($messages !== []) {
-                throw ValidationException::withMessages($messages);
-            }
-        }
-
-        if (blank($data['slug'] ?? null) && filled($data['title'] ?? null)) {
-            $data['slug'] = Str::slug((string) $data['title']);
-        }
-
-        if (filled($data['slug'] ?? null)) {
-            $data['slug'] = Str::slug((string) $data['slug']);
-        }
-
+        $data['slug'] = filled($data['slug'] ?? null) ? Str::slug((string) $data['slug']) : Str::slug((string) ($data['title'] ?? ''));
+        $data['excerpt'] = filled($data['excerpt'] ?? null) ? trim((string) $data['excerpt']) : static::excerptFromContent($data['content'] ?? null);
+        $data['seo_title'] = filled($data['seo_title'] ?? null) ? trim((string) $data['seo_title']) : ($data['title'] ?? null);
+        $data['seo_description'] = filled($data['seo_description'] ?? null) ? trim((string) $data['seo_description']) : static::excerptFromContent($data['content'] ?? null, 180);
+        $data['og_image'] = filled($data['og_image'] ?? null) ? $data['og_image'] : ($data['cover_image'] ?? null);
         $data['reading_time'] = static::estimateReadingTime($data['content'] ?? null);
 
-        if (blank($data['excerpt'] ?? null)) {
-            $data['excerpt'] = static::excerptFromContent($data['content'] ?? null);
-        } else {
-            $data['excerpt'] = trim((string) $data['excerpt']);
-        }
+        if (($data['status'] ?? null) === InsightStatus::Published->value) {
+            $errors = collect([
+                'cover_image' => blank($data['cover_image'] ?? null) ? 'Cover wajib diisi sebelum artikel diterbitkan.' : null,
+                'excerpt' => blank($data['excerpt'] ?? null) ? 'Excerpt wajib diisi sebelum artikel diterbitkan.' : null,
+            ])->filter()->all();
 
-        if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
-            $data['seo_title'] = (string) $data['title'];
-        }
-
-        if (blank($data['seo_description'] ?? null) && filled($data['excerpt'] ?? null)) {
-            $data['seo_description'] = static::excerptFromContent((string) $data['excerpt'], 180);
-        }
-
-        if (blank($data['og_image'] ?? null) && filled($data['cover_image'] ?? null)) {
-            $data['og_image'] = $data['cover_image'];
+            if ($errors !== []) {
+                throw ValidationException::withMessages($errors);
+            }
         }
 
         return $data;
@@ -387,14 +206,10 @@ class InsightResource extends Resource
 
     public static function publishReadinessIssues(Insight $insight): array
     {
-        $authorsCount = array_key_exists('authors_count', $insight->getAttributes())
-            ? (int) $insight->getAttribute('authors_count')
-            : $insight->authors()->count();
-
         return collect([
-            blank($insight->cover_image) ? 'gambar utama' : null,
-            blank($insight->excerpt) ? 'ringkasan' : null,
-            $authorsCount < 1 ? 'penulis' : null,
+            blank($insight->cover_image) ? 'cover' : null,
+            blank($insight->excerpt) ? 'excerpt' : null,
+            ! $insight->authors()->exists() ? 'penulis' : null,
             static::contentContainsH1($insight->content) ? 'hapus H1 dari isi artikel' : null,
         ])->filter()->values()->all();
     }
@@ -412,56 +227,32 @@ class InsightResource extends Resource
             return null;
         }
 
-        if (mb_strlen($text) <= $limit) {
-            return $text;
-        }
-
-        $excerpt = rtrim(mb_substr($text, 0, max(0, $limit - 3)));
-        $lastSpace = mb_strrpos($excerpt, ' ');
-
-        if ($lastSpace !== false && $lastSpace >= 120) {
-            $excerpt = rtrim(mb_substr($excerpt, 0, $lastSpace));
-        }
-
-        return $excerpt.'...';
+        return Str::limit($text, $limit, '...');
     }
 
     public static function estimateReadingTime(?string $html): int
     {
-        $text = trim(preg_replace('/\s+/', ' ', html_entity_decode(strip_tags((string) $html), ENT_QUOTES, 'UTF-8')) ?? '');
-
-        if ($text === '') {
-            return 1;
-        }
-
-        preg_match_all('/[\p{L}\p{N}]+(?:[\'’.-][\p{L}\p{N}]+)*/u', $text, $matches);
+        $text = trim(preg_replace('/\s+/', ' ', strip_tags((string) $html)) ?? '');
+        preg_match_all('/[\p{L}\p{N}]+/u', $text, $matches);
 
         return max(1, (int) ceil(count($matches[0] ?? []) / 200));
     }
 
     public static function getEloquentQuery(): Builder
     {
-        $query = parent::getEloquentQuery()
-            ->with([
-                'authors:id,name',
-                'category:id,name',
-                'activeEditorAssignment.editor:id,name',
-            ])
-            ->withCount('authors');
+        $query = parent::getEloquentQuery()->with(['authors:id,name', 'category:id,name', 'assignedEditor:id,name']);
         $user = Auth::user();
 
         if (! $user) {
             return $query->whereRaw('1 = 0');
         }
 
-        if (Gate::forUser($user)->allows('view_all_editorial_submissions')
-            || Gate::forUser($user)->allows('view_all_editorial_insights')) {
+        if ($user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])) {
             return $query;
         }
 
-        if (Gate::forUser($user)->allows('view_assigned_editorial_submissions')
-            || Gate::forUser($user)->allows('view_assigned_editorial_insights')) {
-            return $query->whereHas('editorAssignments', fn (Builder $query): Builder => $query->active()->where('editor_id', $user->id));
+        if (Gate::forUser($user)->allows('view_assigned_editorial_insights')) {
+            return $query->where('assigned_editor_id', $user->id);
         }
 
         return $query->where('created_by', $user->id);
@@ -471,17 +262,7 @@ class InsightResource extends Resource
     {
         $user = Auth::user();
 
-        if (! $user) {
-            return false;
-        }
-
-        return Gate::forUser($user)->allows('view_all_editorial_insights')
-            || Gate::forUser($user)->allows('view_assigned_editorial_insights');
-    }
-
-    public static function statusOptionsForCurrentUser(): array
-    {
-        return static::statusOptions();
+        return filled($user) && $user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin']);
     }
 
     public static function statusOptions(): array
@@ -489,237 +270,95 @@ class InsightResource extends Resource
         return InsightStatus::options();
     }
 
-    public static function canSubmitRecord(Insight $record): bool
-    {
-        $user = Auth::user();
-
-        return filled($user)
-            && $record->status === InsightStatus::Draft
-            && $user->can('submit insights')
-            && ($user->hasRole('super_admin') || (int) $record->created_by === (int) $user->id);
-    }
-
-    public static function canResubmitRecord(Insight $record): bool
-    {
-        $user = Auth::user();
-
-        return filled($user)
-            && $record->status === InsightStatus::RevisionRequested
-            && $user->can('resubmit_revision')
-            && (int) $record->created_by === (int) $user->id;
-    }
-
     public static function normalizeStatusForDisplay(InsightStatus|string|null $status): string
     {
-        $status = $status instanceof InsightStatus ? $status->value : $status;
+        $status = $status instanceof InsightStatus ? $status : InsightStatus::tryFrom((string) $status);
 
-        return match ($status) {
-            'reviewed' => InsightStatus::Approved->value,
-            default => InsightStatus::tryFrom((string) $status)?->value ?? InsightStatus::Draft->value,
-        };
+        return ($status ?? InsightStatus::Draft)->canonical()->value;
     }
 
     public static function statusLabel(InsightStatus|string|null $status): string
     {
-        return InsightStatus::from(static::normalizeStatusForDisplay($status))->label();
+        $enum = $status instanceof InsightStatus ? $status : InsightStatus::tryFrom((string) $status);
+
+        return ($enum ?? InsightStatus::Draft)->canonical()->label();
     }
 
     public static function statusColor(InsightStatus|string|null $status): string
     {
-        return InsightStatus::from(static::normalizeStatusForDisplay($status))->color();
+        $enum = $status instanceof InsightStatus ? $status : InsightStatus::tryFrom((string) $status);
+
+        return ($enum ?? InsightStatus::Draft)->canonical()->color();
+    }
+
+    public static function canSubmitRecord(Insight $record): bool
+    {
+        return Auth::user()?->can('submit', $record) ?? false;
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->extraAttributes(['class' => 'edulaw-insight-table'])
             ->columns([
                 ViewColumn::make('article')
                     ->label('Artikel')
                     ->view('filament.tables.columns.insight-article')
-                    ->searchable(['title', 'authors.name', 'category.name'])
+                    ->searchable(['title', 'authors.name'])
                     ->sortable(query: fn (Builder $query, string $direction): Builder => $query->orderBy('title', $direction))
-                    ->grow()
                     ->extraHeaderAttributes(['class' => 'edulaw-insight-article-header'])
-                    ->extraCellAttributes(['class' => 'edulaw-insight-article-cell']),
-
-                TextColumn::make('category.name')
-                    ->label('Kategori')
-                    ->badge()
-                    ->color('primary')
-                    ->placeholder('Belum dikategorikan')
-                    ->limit(24)
-                    ->tooltip(fn (?string $state): ?string => filled($state) && mb_strlen($state) > 24 ? $state : null)
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->visibleFrom('lg')
-                    ->extraHeaderAttributes(['class' => 'edulaw-insight-category-header'])
-                    ->extraCellAttributes(['class' => 'edulaw-insight-category-cell']),
-
+                    ->extraCellAttributes(['class' => 'edulaw-insight-article-cell'])
+                    ->grow(),
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn ($state): string => static::statusColor($state))
                     ->formatStateUsing(fn ($state): string => static::statusLabel($state))
+                    ->color(fn ($state): string => static::statusColor($state))
                     ->extraHeaderAttributes(['class' => 'edulaw-insight-status-header'])
                     ->extraCellAttributes(['class' => 'edulaw-insight-status-cell']),
-
-                TextColumn::make('workflow_stage')
-                    ->label('Tahap')
-                    ->badge()
-                    ->formatStateUsing(fn (EditorialWorkflowStage $state): string => $state->label())
-                    ->color(fn (EditorialWorkflowStage $state): string => $state->color())
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->visibleFrom('md')
-                    ->extraHeaderAttributes(['class' => 'edulaw-insight-stage-header'])
-                    ->extraCellAttributes(['class' => 'edulaw-insight-stage-cell']),
-
-                TextColumn::make('activeEditorAssignment.editor.name')
-                    ->label('Editor Aktif')
+                TextColumn::make('assignedEditor.name')
+                    ->label('Editor')
                     ->placeholder('Belum ditugaskan')
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                ViewColumn::make('placement')
-                    ->label('Penempatan')
-                    ->view('filament.tables.columns.insight-placement')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->visibleFrom('xl')
-                    ->extraCellAttributes(['class' => 'edulaw-insight-placement-cell']),
-
-                TextColumn::make('sort_order')
-                    ->label('Urutan')
-                    ->numeric()
+                    ->limit(22)
+                    ->tooltip(fn (Insight $record): ?string => $record->assignedEditor?->name)
+                    ->visible(fn (): bool => static::canManageEditorialWorkflow())
+                    ->visibleFrom('md')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-editor-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-editor-cell']),
+                TextColumn::make('submitted_at')
+                    ->label('Dikirim / diperbarui')
+                    ->state(fn (Insight $record) => $record->submitted_at ?: $record->updated_at)
+                    ->dateTime('d M Y')
                     ->sortable()
-                    ->alignCenter()
-                    ->placeholder('—')
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->visibleFrom('xl'),
-
-                TextColumn::make('published_at')
-                    ->label('Terbit')
-                    ->formatStateUsing(fn ($state): string => $state
-                        ? $state->locale('id')->translatedFormat('d M Y')
-                        : '—')
-                    ->placeholder('—')
-                    ->sortable()
-                    ->alignCenter()
-                    ->toggleable()
-                    ->visibleFrom('xl')
-                    ->extraHeaderAttributes(['class' => 'edulaw-insight-published-header'])
-                    ->extraCellAttributes(['class' => 'edulaw-insight-published-cell']),
-
+                    ->visibleFrom('lg')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-submitted-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-submitted-cell']),
                 TextColumn::make('updated_at')
-                    ->label('Diperbarui')
-                    ->formatStateUsing(fn ($state): string => $state->locale('id')->diffForHumans())
-                    ->tooltip(fn (Insight $record): string => $record->updated_at
-                        ->locale('id')
-                        ->translatedFormat('d M Y, H:i'))
+                    ->label('Terakhir diperbarui')
+                    ->since()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true)
-                    ->visibleFrom('xl'),
+                    ->visibleFrom('xl')
+                    ->extraHeaderAttributes(['class' => 'edulaw-insight-updated-header'])
+                    ->extraCellAttributes(['class' => 'edulaw-insight-updated-cell']),
             ])
             ->defaultSort('updated_at', 'desc')
-            ->searchPlaceholder('Cari judul, penulis, atau kategori...')
-            ->searchDebounce('500ms')
+            ->searchPlaceholder('Cari judul atau penulis...')
             ->paginationPageOptions([10, 25, 50])
-            ->emptyStateHeading('Belum ada editorial')
-            ->emptyStateDescription('Artikel editorial yang dibuat dari panel admin akan tampil di sini.')
             ->filters([
-                SelectFilter::make('insight_category_id')
-                    ->label('Kategori')
-                    ->relationship('insightCategory', 'name')
-                    ->searchable()
-                    ->preload(),
-
-                SelectFilter::make('status')
-                    ->label('Status Editorial')
-                    ->options(static::statusOptions()),
-
-                SelectFilter::make('authors')
-                    ->label('Penulis')
-                    ->relationship('authors', 'name')
-                    ->searchable()
-                    ->preload(),
-
-                TernaryFilter::make('publish_ready')
-                    ->label('Siap Tayang')
-                    ->placeholder('Semua')
-                    ->trueLabel('Ya')
-                    ->falseLabel('Tidak')
-                    ->queries(
-                        true: fn (Builder $query): Builder => static::applyPublishReadyFilter($query),
-                        false: fn (Builder $query): Builder => static::applyNotPublishReadyFilter($query),
-                    ),
-
-                TernaryFilter::make('featured')
-                    ->label('Unggulan')
-                    ->placeholder('Semua')
-                    ->trueLabel('Ya')
-                    ->falseLabel('Tidak'),
-
-                TernaryFilter::make('editor_pick')
-                    ->label('Pilihan Editor')
-                    ->placeholder('Semua')
-                    ->trueLabel('Ya')
-                    ->falseLabel('Tidak'),
-
-                Filter::make('published_at')
-                    ->label('Tanggal Terbit')
-                    ->schema([
-                        DatePicker::make('from')
-                            ->label('Dari tanggal')
-                            ->native(false),
-                        DatePicker::make('until')
-                            ->label('Sampai tanggal')
-                            ->native(false),
-                    ])
-                    ->columns(2)
-                    ->query(function (Builder $query, array $data): Builder {
-                        return $query
-                            ->when($data['from'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('published_at', '>=', $date))
-                            ->when($data['until'] ?? null, fn (Builder $query, $date): Builder => $query->whereDate('published_at', '<=', $date));
-                    })
-                    ->indicateUsing(function (array $data): array {
-                        $indicators = [];
-
-                        if ($data['from'] ?? null) {
-                            $indicators[] = Indicator::make('Terbit mulai '.Carbon::parse($data['from'])->locale('id')->translatedFormat('d M Y'))
-                                ->removeField('from');
-                        }
-
-                        if ($data['until'] ?? null) {
-                            $indicators[] = Indicator::make('Terbit sampai '.Carbon::parse($data['until'])->locale('id')->translatedFormat('d M Y'))
-                                ->removeField('until');
-                        }
-
-                        return $indicators;
-                    }),
+                SelectFilter::make('status')->label('Status')->options(static::statusOptions()),
             ])
             ->recordActions([
                 ActionGroup::make([
-                    Action::make('view')
-                        ->label('Lihat')
-                        ->icon('heroicon-o-eye')
-                        ->url(fn (Insight $record): string => route('insights.show', $record->slug))
-                        ->openUrlInNewTab()
-                        ->visible(fn (Insight $record): bool => filled($record->slug)
-                            && $record->status === InsightStatus::Published
-                            && ($record->published_at?->isPast() ?? false)),
-
-                    EditAction::make()
-                        ->label('Edit')
-                        ->icon('heroicon-o-pencil-square'),
-
+                    EditAction::make()->label('Edit'),
                     EditorialResource::assignmentAction(),
                     EditorialResource::reassignmentAction(),
-
-                    Action::make('editorial_workspace')
-                        ->label('Buka Workspace')
-                        ->icon('heroicon-o-rectangle-stack')
+                    Action::make('workspace')
+                        ->label('Buka')
+                        ->icon('heroicon-o-arrow-top-right-on-square')
                         ->url(fn (Insight $record): string => EditorialResource::getUrl('workspace', ['record' => $record]))
                         ->visible(fn (Insight $record): bool => Auth::user()?->can('accessEditorialWorkspace', $record) ?? false),
-
                     Action::make('submit')
-                        ->label('Kirim untuk Diperiksa')
+                        ->label('Kirim untuk Review')
                         ->icon('heroicon-o-paper-airplane')
                         ->color('primary')
                         ->requiresConfirmation()
@@ -727,111 +366,56 @@ class InsightResource extends Resource
                         ->action(function (Insight $record): void {
                             try {
                                 app(InsightEditorialWorkflowService::class)->submit($record, Auth::user());
-
-                                Notification::make()
-                                    ->success()
-                                    ->title('Naskah berhasil dikirim')
-                                    ->body('Naskah sekarang menunggu penugasan Editor.')
-                                    ->send();
+                                Notification::make()->success()->title('Naskah dikirim untuk review')->send();
                             } catch (ValidationException $exception) {
-                                Notification::make()
-                                    ->danger()
-                                    ->title('Naskah belum dapat dikirim')
-                                    ->body(collect($exception->errors())->flatten()->implode(' '))
-                                    ->persistent()
-                                    ->send();
+                                Notification::make()->danger()->title('Naskah belum lengkap')->body(collect($exception->errors())->flatten()->implode(' '))->persistent()->send();
                             }
                         }),
-
-                    Action::make('resubmit')
-                        ->label('Kirim Perbaikan')
-                        ->icon('heroicon-o-arrow-path')
-                        ->color('primary')
-                        ->schema([
-                            Textarea::make('change_summary')
-                                ->label('Ringkasan Perubahan')
-                                ->required()
-                                ->rows(5),
-                        ])
-                        ->visible(fn (Insight $record): bool => static::canResubmitRecord($record))
-                        ->action(fn (Insight $record, array $data) => app(InsightEditorialWorkflowService::class)->resubmit($record, Auth::user(), $data['change_summary'])),
-
-                    static::revisionHistoryAction(),
-
                     EditorialResource::historyAction(),
-
+                    Action::make('view_public')
+                        ->label('Lihat di website')
+                        ->icon('heroicon-o-eye')
+                        ->url(fn (Insight $record): string => route('insights.show', $record->slug))
+                        ->openUrlInNewTab()
+                        ->visible(fn (Insight $record): bool => $record->status->canonical() === InsightStatus::Published),
                     ReplicateAction::make()
                         ->label('Duplikasi')
-                        ->modalHeading('Duplikasi artikel')
-                        ->modalSubmitActionLabel('Duplikasi')
                         ->visible(fn (): bool => static::canCreate())
-                        ->mutateRecordDataUsing(function (array $data, Insight $record): array {
-                            return [
-                                ...$data,
-                                'title' => Str::limit($record->title.' (Salinan)', 255, ''),
-                                'slug' => static::uniqueDuplicateSlug($record),
-                                'status' => 'draft',
-                                'published_at' => null,
-                                'featured' => false,
-                                'editor_pick' => false,
-                                'created_by' => Auth::id(),
-                                'updated_by' => Auth::id(),
-                                'reviewed_by' => null,
-                                'reviewed_at' => null,
-                                'assigned_editor_id' => null,
-                                'assigned_by' => null,
-                                'submitted_at' => null,
-                                'assigned_at' => null,
-                                'review_started_at' => null,
-                                'revision_requested_at' => null,
-                                'revised_at' => null,
-                                'approved_at' => null,
-                                'approved_by' => null,
-                                'rejected_at' => null,
-                                'rejected_by' => null,
-                                'rejection_reason' => null,
-                                'revision_round' => 0,
-                                'editorial_deadline' => null,
-                            ];
-                        })
+                        ->mutateRecordDataUsing(fn (array $data, Insight $record): array => [
+                            ...$data,
+                            'title' => Str::limit($record->title.' (Salinan)', 255, ''),
+                            'slug' => static::uniqueDuplicateSlug($record),
+                            'status' => InsightStatus::Draft->value,
+                            'published_at' => null,
+                            'archived_at' => null,
+                            'reviewed_by' => null,
+                            'reviewed_at' => null,
+                            'assigned_editor_id' => null,
+                            'assigned_by' => null,
+                            'assigned_at' => null,
+                            'submitted_at' => null,
+                            'editor_notes' => null,
+                            'created_by' => Auth::id(),
+                            'updated_by' => Auth::id(),
+                        ])
                         ->after(function (Insight $record, Insight $replica): void {
                             $record->loadMissing(['authors', 'tags']);
-
                             $replica->authors()->sync($record->authors->mapWithKeys(fn ($author): array => [
-                                $author->getKey() => [
-                                    'author_order' => $author->pivot->author_order,
-                                    'role' => $author->pivot->role,
-                                ],
+                                $author->getKey() => ['author_order' => $author->pivot->author_order, 'role' => $author->pivot->role],
                             ])->all());
                             $replica->tags()->sync($record->tags->modelKeys());
                         }),
-
                     Action::make('archive')
                         ->label('Arsipkan')
                         ->icon('heroicon-o-archive-box')
                         ->color('warning')
                         ->requiresConfirmation()
-                        ->modalHeading('Arsipkan artikel?')
-                        ->modalDescription('Artikel tidak lagi tampil pada halaman publik dan dapat tetap ditemukan oleh tim editorial.')
-                        ->modalSubmitActionLabel('Arsipkan')
-                        ->visible(fn (Insight $record): bool => $record->status !== InsightStatus::Archived
-                            && (Auth::user()?->can('archive_insight') ?? false))
+                        ->visible(fn (Insight $record): bool => Auth::user()?->can('archive', $record) ?? false)
                         ->action(fn (Insight $record) => app(InsightEditorialWorkflowService::class)->archive($record, Auth::user())),
-
-                    DeleteAction::make()
-                        ->label('Hapus')
-                        ->requiresConfirmation(),
-                ])
-                    ->label('Aksi lainnya')
-                    ->icon('heroicon-o-ellipsis-vertical')
-                    ->tooltip('Aksi lainnya')
-                    ->color('gray'),
+                    DeleteAction::make()->label('Hapus'),
+                ])->label('Aksi')->icon('heroicon-o-ellipsis-vertical'),
             ])
-            ->toolbarActions([
-                BulkActionGroup::make([
-                    DeleteBulkAction::make(),
-                ]),
-            ]);
+            ->toolbarActions([BulkActionGroup::make([DeleteBulkAction::make()])]);
     }
 
     public static function applyPublishReadyFilter(Builder $query): Builder
@@ -842,22 +426,18 @@ class InsightResource extends Resource
             ->whereNotNull('excerpt')
             ->where('excerpt', '!=', '')
             ->whereHas('authors')
-            ->where(function (Builder $query): Builder {
-                return $query->whereNull('content')->orWhere('content', 'not like', '%<h1%');
-            });
+            ->where(fn (Builder $query): Builder => $query->whereNull('content')->orWhere('content', 'not like', '%<h1%'));
     }
 
     public static function applyNotPublishReadyFilter(Builder $query): Builder
     {
-        return $query->where(function (Builder $query): Builder {
-            return $query
-                ->whereNull('cover_image')
-                ->orWhere('cover_image', '')
-                ->orWhereNull('excerpt')
-                ->orWhere('excerpt', '')
-                ->orWhereDoesntHave('authors')
-                ->orWhere('content', 'like', '%<h1%');
-        });
+        return $query->where(fn (Builder $query): Builder => $query
+            ->whereNull('cover_image')
+            ->orWhere('cover_image', '')
+            ->orWhereNull('excerpt')
+            ->orWhere('excerpt', '')
+            ->orWhereDoesntHave('authors')
+            ->orWhere('content', 'like', '%<h1%'));
     }
 
     public static function uniqueDuplicateSlug(Insight $record): string
@@ -867,29 +447,10 @@ class InsightResource extends Resource
         $suffix = 2;
 
         while (Insight::query()->where('slug', $slug)->exists()) {
-            $slug = Str::limit($base, 240 - strlen((string) $suffix), '').'-'.$suffix;
-            $suffix++;
+            $slug = Str::limit($base, 235, '').'-'.$suffix++;
         }
 
         return $slug;
-    }
-
-    protected static function revisionHistoryAction(): Action
-    {
-        return Action::make('revision_history')
-            ->label('Riwayat Versi')
-            ->icon('heroicon-o-document-duplicate')
-            ->modalSubmitAction(false)
-            ->schema([
-                Placeholder::make('revision_history_list')->hiddenLabel()->content(function (Insight $record): HtmlString {
-                    $items = $record->revisions()->latest('revision_number')->get()->map(
-                        fn ($revision): string => '<li class="mb-3"><strong>Versi '.e((string) $revision->revision_number).'</strong><br>'.e($revision->revision_summary ?: 'Tanpa ringkasan').'</li>'
-                    )->join('');
-
-                    return new HtmlString($items !== '' ? '<ol>'.$items.'</ol>' : '<p>Belum ada versi.</p>');
-                }),
-            ])
-            ->visible(fn (Insight $record): bool => (Auth::user()?->can('view_revision_history') ?? false) && (int) $record->created_by === (int) Auth::id());
     }
 
     public static function getPages(): array

@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'timezone' => 'Asia/Jakarta',
+
     'site' => [
         'name' => 'Edulaw Project',
         'legal_name' => 'Edulaw Project',

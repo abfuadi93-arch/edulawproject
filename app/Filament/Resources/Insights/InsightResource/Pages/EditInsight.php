@@ -23,12 +23,12 @@ class EditInsight extends EditRecordAndReturn
     {
         return [
             Action::make('submit_for_review')
-                ->label('Simpan & Kirim untuk Review')
+                ->label('Kirim untuk Review')
                 ->icon('heroicon-o-paper-airplane')
                 ->color('primary')
                 ->requiresConfirmation()
                 ->modalHeading('Kirim naskah untuk review?')
-                ->modalDescription('Perubahan akan disimpan, lalu status draft dipindahkan ke Dikirim. Pastikan kategori, penulis, ringkasan, isi, slug, dan gambar utama sudah lengkap.')
+                ->modalDescription('Perubahan disimpan dan status berubah dari Draft menjadi Review. Naskah tidak dapat diedit Penulis sampai Editor meminta perbaikan.')
                 ->modalSubmitActionLabel('Simpan & Kirim')
                 ->visible(fn (): bool => InsightResource::canSubmitRecord($this->getRecord()))
                 ->action(function (): void {
@@ -39,7 +39,7 @@ class EditInsight extends EditRecordAndReturn
                         Notification::make()
                             ->success()
                             ->title('Naskah berhasil dikirim')
-                            ->body('Status sekarang Dikirim dan naskah siap ditugaskan kepada Editor.')
+                            ->body('Status naskah sekarang Review.')
                             ->send();
 
                         $this->redirect(InsightResource::getUrl('index'));

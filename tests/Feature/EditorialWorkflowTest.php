@@ -1,37 +1,34 @@
 <?php
 
 use App\Enums\InsightStatus;
+use App\Filament\Resources\AssignedInsights\AssignedInsightResource;
+use App\Filament\Resources\AssignedInsights\Pages\ListAssignedInsights;
 use App\Filament\Resources\Editorial\EditorialResource;
-use App\Filament\Resources\Editorial\Pages\ListEditorialInsights;
+use App\Filament\Resources\Editorial\Pages\ViewEditorialWorkspace;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Filament\Resources\Insights\InsightResource\Pages\EditInsight;
-use App\Filament\Resources\Insights\InsightResource\Pages\ListInsights;
 use App\Models\Author;
 use App\Models\Insight;
 use App\Models\InsightCategory;
 use App\Models\User;
-use App\Services\InsightCommentService;
 use App\Services\InsightEditorialWorkflowService;
 use Database\Seeders\RolePermissionSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
-use Spatie\Permission\Models\Permission;
-use Spatie\Permission\Models\Role;
 
 beforeEach(function (): void {
     $this->seed(RolePermissionSeeder::class);
 });
 
-function editorialUser(string $role, ?string $name = null): User
+function simpleEditorialUser(string $role, ?string $name = null): User
 {
-    $name ??= Str::headline($role);
+    $name ??= Str::headline($role).' '.Str::random(5);
     $user = User::query()->create([
         'name' => $name,
-        'email' => Str::slug($name).'-'.Str::random(6).'@example.test',
+        'email' => Str::slug($name).Str::random(4).'@example.test',
         'password' => 'password',
         'is_active' => true,
     ]);
@@ -40,28 +37,27 @@ function editorialUser(string $role, ?string $name = null): User
     return $user;
 }
 
-function completeEditorialInsight(User $writer, array $overrides = []): Insight
+function simpleEditorialInsight(User $writer, array $overrides = []): Insight
 {
     $suffix = Str::lower(Str::random(8));
-    $category = InsightCategory::query()->create([
-        'name' => 'Kategori '.$suffix,
-        'slug' => 'kategori-'.$suffix,
-    ]);
-    $author = Author::query()->create([
-        'user_id' => $writer->id,
-        'name' => $writer->name,
-        'slug' => 'penulis-'.$suffix,
-        'is_active' => true,
-    ]);
+    $category = InsightCategory::query()->create(['name' => 'Kategori '.$suffix, 'slug' => 'kategori-'.$suffix]);
+    $author = Author::query()->firstOrCreate(
+        ['user_id' => $writer->id],
+        [
+            'name' => $writer->name,
+            'slug' => 'writer-'.$suffix,
+            'is_active' => true,
+        ],
+    );
     $insight = Insight::query()->create([
         'created_by' => $writer->id,
         'updated_by' => $writer->id,
         'insight_category_id' => $category->id,
-        'title' => 'Naskah Editorial '.$suffix,
-        'slug' => 'naskah-editorial-'.$suffix,
-        'excerpt' => 'Ringkasan naskah editorial yang lengkap.',
-        'content' => '<h2>Pembahasan</h2><p>Isi naskah editorial yang lengkap.</p>',
-        'cover_image' => 'insights/cover-'.$suffix.'.webp',
+        'title' => 'Naskah '.$suffix,
+        'slug' => 'naskah-'.$suffix,
+        'excerpt' => 'Excerpt artikel yang lengkap.',
+        'content' => '<h2>Pembahasan</h2><p>Isi artikel yang lengkap.</p>',
+        'cover_image' => 'insights/'.$suffix.'.webp',
         'status' => InsightStatus::Draft,
         ...$overrides,
     ]);
@@ -70,483 +66,303 @@ function completeEditorialInsight(User $writer, array $overrides = []): Insight
     return $insight->refresh();
 }
 
-function assignedEditorialInsight(User $writer, User $admin, User $editor): Insight
-{
+test('writer dapat membuat dan mengedit draft miliknya', function () {
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer);
+
+    expect($writer->can('create', Insight::class))->toBeTrue()
+        ->and($insight->status)->toBe(InsightStatus::Draft)
+        ->and($writer->can('update', $insight))->toBeTrue();
+});
+
+test('writer dapat mengirim draft ke review dan mengirim ulang setelah perbaikan', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = completeEditorialInsight($writer);
-    $service->submit($insight, $writer);
+    $insight = simpleEditorialInsight($writer);
 
-    return $service->assignEditor($insight->fresh(), $editor, $admin);
-}
+    $insight = $service->submit($insight, $writer);
+    expect($insight->status)->toBe(InsightStatus::Review)
+        ->and($insight->submitted_at)->not->toBeNull();
 
-test('WriterCanSubmitOwnDraftTest', function () {
-    $writer = editorialUser('writer');
-    $insight = completeEditorialInsight($writer);
+    $service->assignEditor($insight, $editor, $admin);
+    $insight = $service->requestRevision($insight->fresh(), $editor, 'Perjelas dasar hukum.');
+    $insight->update(['content' => '<h2>Revisi</h2><p>Dasar hukum sudah diperjelas.</p>']);
+    $insight = $service->submit($insight->fresh(), $writer);
 
-    $result = app(InsightEditorialWorkflowService::class)->submit($insight, $writer);
-
-    expect($result->status)->toBe(InsightStatus::Submitted)
-        ->and($result->submitted_at)->not->toBeNull();
+    expect($insight->status)->toBe(InsightStatus::Review)
+        ->and($insight->editorialActivities()->where('event', 'resubmitted_for_review')->exists())->toBeTrue();
 });
 
-test('SuperAdminCanSubmitAnyCompleteDraftTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $insight = completeEditorialInsight($writer);
-
-    $result = app(InsightEditorialWorkflowService::class)->submit($insight, $admin);
-
-    expect($result->status)->toBe(InsightStatus::Submitted)
-        ->and($result->submitted_at)->not->toBeNull();
-});
-
-test('DraftCanBeSubmittedFromEditPageTest', function () {
-    $writer = editorialUser('writer');
-    $insight = completeEditorialInsight($writer);
-    Storage::fake('public');
-    Storage::disk('public')->put($insight->cover_image, 'test-cover');
-
-    $this->actingAs($writer);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    $component = Livewire::test(EditInsight::class, ['record' => $insight->getRouteKey()])
-        ->assertActionVisible('submit_for_review')
-        ->callAction('submit_for_review');
-
-    expect($insight->fresh()->status)->toBe(InsightStatus::Submitted);
-
-    $component->assertNotified('Naskah berhasil dikirim');
-});
-
-test('SubmitActionIsHiddenAfterDraftHasBeenSubmittedTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $insight = completeEditorialInsight($writer);
-    app(InsightEditorialWorkflowService::class)->submit($insight, $admin);
-
-    $this->actingAs($admin);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    expect(InsightResource::canSubmitRecord($insight->fresh()))->toBeFalse();
-});
-
-test('WriterCannotSubmitIncompleteInsightTest', function () {
-    $writer = editorialUser('writer');
-    $insight = Insight::query()->create([
-        'created_by' => $writer->id,
-        'title' => 'Belum Lengkap',
-        'slug' => 'belum-lengkap',
-    ]);
-
-    expect(fn () => app(InsightEditorialWorkflowService::class)->submit($insight, $writer))
-        ->toThrow(ValidationException::class);
-});
-
-test('WriterGetsClearNotificationWhenSubmitIsIncompleteTest', function () {
-    $writer = editorialUser('writer');
-    $insight = completeEditorialInsight($writer, ['cover_image' => null]);
-
-    $this->actingAs($writer);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    Livewire::test(ListInsights::class)
-        ->assertTableActionVisible('submit', $insight)
-        ->callTableAction('submit', $insight)
-        ->assertNotified('Naskah belum dapat dikirim');
-
-    expect($insight->fresh()->status)->toBe(InsightStatus::Draft);
-});
-
-test('WriterRevisionFlowDoesNotExposePerSectionCommentActionsTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $workflow = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $workflow->startReview($insight, $editor);
-    $workflow->requestRevision($insight->fresh(), $editor, 'Perbaiki naskah secara menyeluruh.');
-
-    $this->actingAs($writer);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    Livewire::test(ListInsights::class)
-        ->assertCanSeeTableRecords([$insight])
-        ->assertTableActionDoesNotExist('reply_comment', record: $insight)
-        ->assertTableActionDoesNotExist('mark_comment_addressed', record: $insight);
-});
-
-test('EditorialArticleTableUsesCompactDefaultColumnsTest', function () {
-    $admin = editorialUser('super_admin');
-    $writer = editorialUser('writer');
-    $insight = completeEditorialInsight($writer);
-    $this->actingAs($admin);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    Livewire::test(ListInsights::class)
-        ->assertCanSeeTableRecords([$insight])
-        ->assertCanRenderTableColumn('article')
-        ->assertCanRenderTableColumn('status')
-        ->assertCanRenderTableColumn('published_at')
-        ->assertCanNotRenderTableColumn('category.name')
-        ->assertCanNotRenderTableColumn('workflow_stage')
-        ->assertCanNotRenderTableColumn('activeEditorAssignment.editor.name')
-        ->assertCanNotRenderTableColumn('placement');
-});
-
-test('SuperAdminCanAssignEditorTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $insight = completeEditorialInsight($writer);
+test('pengiriman ganda dari state halaman lama tetap aman dan tidak mencatat ulang', function () {
+    $writer = simpleEditorialUser('writer');
     $service = app(InsightEditorialWorkflowService::class);
-    $service->submit($insight, $writer);
+    $insight = simpleEditorialInsight($writer);
+    $firstRequestRecord = $insight->fresh();
+    $delayedRequestRecord = $insight->fresh();
 
-    $result = $service->assignEditor($insight->fresh(), $editor, $admin);
+    $firstResult = $service->submit($firstRequestRecord, $writer);
+    $secondResult = $service->submit($delayedRequestRecord, $writer);
 
-    expect($result->status)->toBe(InsightStatus::EditorAssigned)
-        ->and($result->assigned_editor_id)->toBe($editor->id)
-        ->and($result->assigned_by)->toBe($admin->id);
+    expect($firstResult->status)->toBe(InsightStatus::Review)
+        ->and($secondResult->status)->toBe(InsightStatus::Review)
+        ->and($insight->statusHistories()->where('to_status', InsightStatus::Review->value)->count())->toBe(1)
+        ->and($insight->editorialActivities()->where('event', 'submitted_for_review')->count())->toBe(1);
 });
 
-test('SuperAdminCanAssignEditorThroughFilamentActionTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $insight = completeEditorialInsight($writer);
-    app(InsightEditorialWorkflowService::class)->submit($insight, $writer);
+test('writer tidak dapat menerbitkan insight', function () {
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
 
-    $this->actingAs($admin);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    Livewire::test(ListEditorialInsights::class)
-        ->assertCanSeeTableRecords([$insight])
-        ->assertTableActionVisible('assign_editor', $insight)
-        ->callTableAction('assign_editor', $insight, [
-            'editor_id' => $editor->id,
-            'due_at' => null,
-            'assignment_note' => 'Ditugaskan dari action Filament.',
-            'send_notification' => true,
-        ])
-        ->assertHasNoTableActionErrors();
-
-    expect($insight->fresh()->assigned_editor_id)->toBe($editor->id)
-        ->and($insight->fresh()->status)->toBe(InsightStatus::EditorAssigned);
-});
-
-test('DraftCanBeSubmittedFromEditorialQueueTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $insight = completeEditorialInsight($writer);
-
-    $this->actingAs($admin);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    Livewire::test(ListEditorialInsights::class)
-        ->assertCanSeeTableRecords([$insight])
-        ->assertTableActionVisible('submit_for_review', $insight)
-        ->assertTableActionVisible('edit_draft', $insight)
-        ->assertTableActionHidden('assign_editor', $insight)
-        ->callTableAction('submit_for_review', $insight)
-        ->assertNotified('Naskah berhasil dikirim');
-
-    expect($insight->fresh()->status)->toBe(InsightStatus::Submitted);
-
-    Livewire::test(ListEditorialInsights::class)
-        ->assertTableActionHidden('submit_for_review', $insight->fresh())
-        ->assertTableActionVisible('assign_editor', $insight->fresh());
-});
-
-test('EditorialManagementTableUsesCompactDefaultColumnsTest', function () {
-    $admin = editorialUser('super_admin');
-    $writer = editorialUser('writer');
-    $insight = completeEditorialInsight($writer);
-    $this->actingAs($admin);
-    Filament::setCurrentPanel(Filament::getPanel('admin'));
-
-    Livewire::test(ListEditorialInsights::class)
-        ->assertCanSeeTableRecords([$insight])
-        ->assertCanRenderTableColumn('title')
-        ->assertCanRenderTableColumn('status')
-        ->assertCanRenderTableColumn('activeEditorAssignment.editor.name')
-        ->assertCanNotRenderTableColumn('activeEditorAssignment.due_at')
-        ->assertCanNotRenderTableColumn('editorial_notes_count')
-        ->assertTableColumnDoesNotExist('workflow_stage')
-        ->assertTableColumnDoesNotExist('activeEditorAssignment.status')
-        ->assertTableColumnDoesNotExist('authors.name')
-        ->assertTableColumnDoesNotExist('category.name');
-});
-
-test('SuperAdminCanReassignEditorTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $firstEditor = editorialUser('editor', 'Editor Pertama');
-    $replacementEditor = editorialUser('editor', 'Editor Pengganti');
-    $service = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $firstEditor);
-
-    $result = $service->assignEditor(
-        $insight->fresh(),
-        $replacementEditor,
-        $admin,
-        now()->addDays(5),
-        'Menyesuaikan bidang keahlian Editor.',
-    );
-
-    expect($result->status)->toBe(InsightStatus::EditorAssigned)
-        ->and($result->assigned_editor_id)->toBe($replacementEditor->id)
-        ->and($result->assigned_by)->toBe($admin->id)
-        ->and($result->statusHistories()->latest('id')->value('notes'))
-        ->toContain('Editor diganti', 'Menyesuaikan bidang keahlian Editor.');
-});
-
-test('EditorListOnlyContainsActiveEditorsTest', function () {
-    $activeEditor = editorialUser('editor', 'Editor Aktif');
-    $inactiveEditor = editorialUser('editor', 'Editor Nonaktif');
-    $inactiveEditor->update(['is_active' => false]);
-    $writer = editorialUser('writer', 'Bukan Editor');
-
-    Role::findOrCreate('Editor', 'web');
-    $legacyEditor = User::query()->create([
-        'name' => 'Editor Legacy Aktif',
-        'email' => 'editor-legacy-aktif@example.test',
-        'password' => 'password',
-        'is_active' => true,
-    ]);
-    $legacyEditor->assignRole('Editor');
-
-    $options = EditorialResource::editorOptions();
-
-    expect($options)
-        ->toHaveKey($activeEditor->id)
-        ->toHaveKey($legacyEditor->id)
-        ->not->toHaveKey($inactiveEditor->id)
-        ->not->toHaveKey($writer->id);
-});
-
-test('NonSuperAdminCannotAssignEditorTest', function () {
-    $writer = editorialUser('writer');
-    $editor = editorialUser('editor');
-    $otherEditor = editorialUser('editor', 'Editor Lain');
-    $insight = completeEditorialInsight($writer);
-    $service = app(InsightEditorialWorkflowService::class);
-    $service->submit($insight, $writer);
-
-    expect(fn () => $service->assignEditor($insight->fresh(), $otherEditor, $editor))
+    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $writer))
         ->toThrow(AuthorizationException::class);
 });
 
-test('UserWithAssignEditorPermissionCanAssignEditorTest', function () {
-    $writer = editorialUser('writer');
-    $manager = editorialUser('writer', 'Manajer Editorial');
-    $manager->givePermissionTo('assign_editor');
-    $editor = editorialUser('editor');
+test('writer tidak dapat mengedit insight orang lain atau insight yang sedang review', function () {
+    $writer = simpleEditorialUser('writer');
+    $otherWriter = simpleEditorialUser('writer');
+    $ownReview = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $otherDraft = simpleEditorialInsight($otherWriter);
+
+    expect($writer->can('update', $otherDraft))->toBeFalse()
+        ->and($writer->can('update', $ownReview))->toBeFalse();
+});
+
+test('super admin dapat menugaskan dan mengganti editor tanpa assignment lifecycle', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $firstEditor = simpleEditorialUser('editor');
+    $secondEditor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = completeEditorialInsight($writer);
-    $service->submit($insight, $writer);
 
-    $result = $service->assignEditor($insight->fresh(), $editor, $manager);
+    $assigned = $service->assignEditor($insight, $firstEditor, $admin);
+    $changed = $service->assignEditor($assigned, $secondEditor, $admin);
 
-    expect($result->assigned_editor_id)->toBe($editor->id)
-        ->and($manager->can('assignEditor', $result))->toBeFalse()
-        ->and($manager->can('reassignEditor', $result))->toBeFalse();
+    expect($changed->assigned_editor_id)->toBe($secondEditor->id)
+        ->and($changed->assigned_at)->not->toBeNull()
+        ->and($changed->editorialActivities()->where('event', 'editor_assigned')->exists())->toBeTrue()
+        ->and($changed->editorialActivities()->where('event', 'editor_changed')->exists())->toBeTrue();
 });
 
-test('RolePermissionSeederPreservesExistingPermissionsTest', function () {
-    $customPermission = Permission::findOrCreate('custom_editorial_permission', 'web');
-    $editorRole = Role::findByName('editor', 'web');
-    $editorRole->givePermissionTo($customPermission);
-
-    $this->seed(RolePermissionSeeder::class);
-    $this->seed(RolePermissionSeeder::class);
-
-    expect($editorRole->fresh()->hasPermissionTo($customPermission))->toBeTrue()
-        ->and(Role::query()->where('name', 'super_admin')->where('guard_name', 'web')->count())->toBe(1)
-        ->and(Permission::query()->where('name', 'assign_editor')->where('guard_name', 'web')->count())->toBe(1)
-        ->and(Permission::query()->where('name', 'reassign_editor')->where('guard_name', 'web')->count())->toBe(1);
-});
-
-test('AssignmentChangesStatusToEditorAssignedTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
+test('editor hanya melihat Naskah Saya yang ditugaskan kepadanya', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $otherEditor = simpleEditorialUser('editor');
+    $mine = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $other = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = completeEditorialInsight($writer);
-    $service->submit($insight, $writer);
+    $service->assignEditor($mine, $editor, $admin);
+    $service->assignEditor($other, $otherEditor, $admin);
 
-    $result = $service->assignEditor($insight->fresh(), $editor, $admin);
+    $this->actingAs($editor);
+    $ids = AssignedInsightResource::getEloquentQuery()->pluck('id');
 
-    expect($result->status)->toBe(InsightStatus::EditorAssigned)
-        ->and($result->assigned_at)->not->toBeNull();
+    expect($ids)->toContain($mine->id)->not->toContain($other->id);
 });
 
-test('AssignmentCreatesStatusHistoryTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
+test('permission lama tidak membuka semua insight atau aksi administratif bagi editor', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $mine = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $other = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    app(InsightEditorialWorkflowService::class)->assignEditor($mine, $editor, $admin);
+
+    $editor->givePermissionTo(['view_all_editorial_insights', 'assign_editor', 'archive_insight', 'delete all insights']);
+    $this->actingAs($editor);
+
+    expect(InsightResource::getEloquentQuery()->pluck('id'))
+        ->toContain($mine->id)
+        ->not->toContain($other->id)
+        ->and($editor->can('assignEditor', $other))->toBeFalse()
+        ->and($editor->can('archive', $mine))->toBeFalse()
+        ->and($editor->can('delete', $mine))->toBeFalse();
+});
+
+test('editor dapat meminta perbaikan dan naskah kembali menjadi draft', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = completeEditorialInsight($writer);
-    $service->submit($insight, $writer);
+    $insight = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $insight = $service->assignEditor($insight, $editor, $admin);
 
-    $service->assignEditor($insight->fresh(), $editor, $admin, null, 'Prioritas pekan ini.');
+    $result = $service->requestRevision($insight, $editor, 'Tambahkan rujukan yang relevan.');
 
-    $this->assertDatabaseHas('insight_status_histories', [
-        'insight_id' => $insight->id,
-        'changed_by' => $admin->id,
-        'from_status' => InsightStatus::Submitted->value,
-        'to_status' => InsightStatus::EditorAssigned->value,
-    ]);
-
-    expect($insight->statusHistories()->latest('id')->value('notes'))
-        ->toContain('ditugaskan', 'Prioritas pekan ini.');
+    expect($result->status)->toBe(InsightStatus::Draft)
+        ->and($result->editor_notes)->toBe('Tambahkan rujukan yang relevan.')
+        ->and($writer->can('update', $result))->toBeTrue()
+        ->and($result->editorialNotes()->where('type', 'revision_request')->exists())->toBeTrue();
 });
 
-test('CannotAssignEditorToInvalidStatusTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $insight = completeEditorialInsight($writer);
-
-    expect(fn () => app(InsightEditorialWorkflowService::class)->assignEditor($insight, $editor, $admin))
-        ->toThrow(LogicException::class);
-});
-
-test('EditorCanViewAssignedInsightTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-
-    expect($editor->can('view', $insight))->toBeTrue();
-});
-
-test('EditorCannotViewUnassignedInsightTest', function () {
-    $writer = editorialUser('writer');
-    $editor = editorialUser('editor');
-    $insight = completeEditorialInsight($writer);
-
-    expect($editor->can('view', $insight))->toBeFalse();
-});
-
-test('EditorCanStartReviewTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-
-    $result = app(InsightEditorialWorkflowService::class)->startReview($insight, $editor);
-
-    expect($result->status)->toBe(InsightStatus::InReview)
-        ->and($result->review_started_at)->not->toBeNull();
-});
-
-test('EditorCanRequestRevisionTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
+test('catatan editor wajib saat meminta perbaikan', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $service->startReview($insight, $editor);
+    $insight = $service->assignEditor(simpleEditorialInsight($writer, ['status' => InsightStatus::Review]), $editor, $admin);
 
-    $result = $service->requestRevision($insight->fresh(), $editor, 'Perjelas dasar hukumnya.', now()->addDays(3));
-
-    expect($result->status)->toBe(InsightStatus::RevisionRequested)
-        ->and($result->editorialNotes()->where('type', 'revision_request')->where('is_visible_to_writer', true)->exists())->toBeTrue();
+    expect(fn () => $service->requestRevision($insight, $editor, ''))
+        ->toThrow(ValidationException::class, 'Catatan untuk Penulis wajib diisi');
 });
 
-test('WriterCanEditInsightWhenRevisionRequestedTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
+test('editor dapat menerbitkan dan metadata review terisi', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $service->startReview($insight, $editor);
-    $insight = $service->requestRevision($insight->fresh(), $editor, 'Perbaiki analisis.');
+    $insight = $service->assignEditor(simpleEditorialInsight($writer, ['status' => InsightStatus::Review]), $editor, $admin);
 
-    expect($writer->can('update', $insight))->toBeTrue();
+    $published = $service->publish($insight, $editor);
+
+    expect($published->status)->toBe(InsightStatus::Published)
+        ->and($published->reviewed_by)->toBe($editor->id)
+        ->and($published->reviewed_at)->not->toBeNull()
+        ->and($published->published_at)->not->toBeNull();
 });
 
-test('WriterCannotEditInsightWhileInReviewTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $insight = app(InsightEditorialWorkflowService::class)->startReview($insight, $editor);
-
-    expect($writer->can('update', $insight))->toBeFalse();
-});
-
-test('WriterCanResubmitRevisionTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
+test('editor dapat menjadwalkan terbit dan artikel baru tampil saat waktunya tiba', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $scheduledFor = now()->addDays(2)->startOfMinute();
     $service = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $service->startReview($insight, $editor);
-    $service->requestRevision($insight->fresh(), $editor, 'Perbaiki analisis.');
-    $insight->update(['content' => '<h2>Pembahasan Diperbarui</h2><p>Isi dan dasar hukum telah diperbaiki.</p>']);
+    $insight = $service->assignEditor(simpleEditorialInsight($writer, [
+        'status' => InsightStatus::Review,
+        'published_at' => $scheduledFor,
+    ]), $editor, $admin);
 
-    $result = $service->resubmit($insight->fresh(), $writer, 'Dasar hukum dan analisis telah diperbarui.');
+    $published = $service->publish($insight, $editor);
 
-    expect($result->status)->toBe(InsightStatus::Revised)
-        ->and($result->revision_round)->toBe(1)
-        ->and($result->revised_at)->not->toBeNull();
+    expect($published->status)->toBe(InsightStatus::Published)
+        ->and($published->published_at?->equalTo($scheduledFor))->toBeTrue()
+        ->and($published->editorialActivities()->where('event', 'published')->value('description'))->toContain('menjadwalkan artikel')
+        ->and($writer->notifications()->latest()->first()?->data['title'] ?? null)->toBe('Artikel dijadwalkan');
+
+    $this->get(route('insights.show', $published->slug))->assertNotFound();
+
+    $this->travelTo($scheduledFor->copy()->addMinute());
+    $this->get(route('insights.show', $published->slug))->assertOk();
+    $this->travelBack();
 });
 
-test('EditorCanApproveRevisedInsightTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $service = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $service->startReview($insight, $editor);
-    $service->requestRevision($insight->fresh(), $editor, 'Perbaiki analisis.');
-    $insight->update(['content' => '<h2>Pembahasan Diperbarui</h2><p>Analisis telah diperbaiki.</p>']);
-    $service->resubmit($insight->fresh(), $writer, 'Analisis diperbarui.');
-    $service->startReview($insight->fresh(), $editor);
-    $revisionRequest = $insight->editorialNotes()->where('type', 'revision_request')->firstOrFail();
-    app(InsightCommentService::class)->resolve($revisionRequest, $editor);
+test('hanya artikel published yang tampil pada website publik', function () {
+    $writer = simpleEditorialUser('writer');
+    $published = simpleEditorialInsight($writer, ['status' => InsightStatus::Published, 'published_at' => now()]);
+    $draft = simpleEditorialInsight($writer);
+    $review = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
 
-    $result = $service->approve($insight->fresh(), $editor);
-
-    expect($result->status)->toBe(InsightStatus::Approved)
-        ->and($result->approved_by)->toBe($editor->id)
-        ->and($result->reviewed_by)->toBe($editor->id);
+    $this->get(route('insights.show', $published->slug))->assertOk();
+    $this->get(route('insights.show', $draft->slug))->assertNotFound();
+    $this->get(route('insights.show', $review->slug))->assertNotFound();
 });
 
-test('OnlyApprovedInsightCanBePublishedTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $insight = completeEditorialInsight($writer);
+test('policy mencegah editor membuka workspace yang tidak ditugaskan', function () {
+    $writer = simpleEditorialUser('writer');
+    $editor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
 
-    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $admin))
-        ->toThrow(LogicException::class);
+    expect($editor->can('accessEditorialWorkspace', $insight))->toBeFalse();
+
+    $this->actingAs($editor)
+        ->get(EditorialResource::getUrl('workspace', ['record' => $insight]))
+        ->assertNotFound();
 });
 
-test('PublishedInsightAppearsOnPublicPageTest', function () {
-    $writer = editorialUser('writer');
-    $admin = editorialUser('super_admin');
-    $editor = editorialUser('editor');
-    $service = app(InsightEditorialWorkflowService::class);
-    $insight = assignedEditorialInsight($writer, $admin, $editor);
-    $service->startReview($insight, $editor);
-    $service->approve($insight->fresh(), $editor);
-    $insight = $service->publish($insight->fresh(), $admin);
+test('workspace editor hanya menampilkan action sederhana', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $insight = app(InsightEditorialWorkflowService::class)->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
 
-    $this->get(route('insights.show', $insight->slug))
-        ->assertOk()
-        ->assertSee($insight->title);
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->assertSee('Naskah')
+        ->assertSee('Informasi Editorial')
+        ->assertSee('Catatan untuk Penulis')
+        ->assertFormFieldExists('published_at')
+        ->assertActionVisible('save')
+        ->assertActionVisible('request_revision')
+        ->assertActionVisible('publish')
+        ->assertActionHidden('assign_editor');
 });
 
-test('EditorialStatusHistoryIsCreatedTest', function () {
-    $writer = editorialUser('writer');
-    $insight = completeEditorialInsight($writer);
+test('action Terbitkan menyimpan Jadwal Terbit dari workspace', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $scheduledFor = now()->addDays(3)->startOfMinute();
+    $insight = app(InsightEditorialWorkflowService::class)->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
 
-    app(InsightEditorialWorkflowService::class)->submit($insight, $writer);
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
 
-    $this->assertDatabaseHas('insight_status_histories', [
-        'insight_id' => $insight->id,
-        'changed_by' => $writer->id,
-        'from_status' => 'draft',
-        'to_status' => 'submitted',
-    ]);
+    Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->set('data.published_at', $scheduledFor->copy()->timezone(config('edulaw.timezone'))->format('Y-m-d H:i:s'))
+        ->callAction('publish')
+        ->assertHasNoActionErrors();
+
+    $insight->refresh();
+
+    expect($insight->status)->toBe(InsightStatus::Published)
+        ->and($insight->published_at?->equalTo($scheduledFor))->toBeTrue();
+});
+
+test('form writer hanya menyediakan simpan draft dan kirim untuk review', function () {
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer);
+
+    $this->actingAs($writer);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(EditInsight::class, ['record' => $insight->getRouteKey()])
+        ->assertSee('Konten')
+        ->assertSee('Metadata')
+        ->assertSee('Editorial')
+        ->assertSee('Status')
+        ->assertSee('Belum ditugaskan')
+        ->assertActionVisible('submit_for_review');
+});
+
+test('tabel Naskah Saya memakai kolom ringkas tanpa workflow teknis', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $insight = app(InsightEditorialWorkflowService::class)->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
+
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(ListAssignedInsights::class)
+        ->assertCanSeeTableRecords([$insight])
+        ->assertCanRenderTableColumn('title')
+        ->assertCanRenderTableColumn('status')
+        ->assertCanRenderTableColumn('submitted_at')
+        ->assertCanRenderTableColumn('updated_at')
+        ->assertTableColumnDoesNotExist('workflow_stage');
+});
+
+test('published tidak dapat kembali ke draft melalui transisi biasa', function () {
+    $writer = simpleEditorialUser('writer');
+    $published = simpleEditorialInsight($writer, ['status' => InsightStatus::Published, 'published_at' => now()]);
+
+    expect(fn () => app(InsightEditorialWorkflowService::class)->submit($published, $writer))
+        ->toThrow(AuthorizationException::class);
 });

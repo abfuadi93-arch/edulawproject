@@ -66,6 +66,7 @@ class AdminPanelProvider extends PanelProvider
             ->maxContentWidth(Width::Full)
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([
+                'Editorial',
                 'Manajemen Editorial',
                 'Content',
                 'Interaksi',

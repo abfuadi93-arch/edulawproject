@@ -60,17 +60,9 @@ class User extends Authenticatable implements FilamentUser
         return $this->hasMany(Insight::class, 'assigned_editor_id');
     }
 
-    public function editorialAssignments(): HasMany
-    {
-        return $this->hasMany(InsightEditorAssignment::class, 'editor_id');
-    }
-
     public function assignedEditorialInsights()
     {
-        return Insight::query()->whereHas(
-            'editorAssignments',
-            fn ($query) => $query->active()->where('editor_id', $this->getKey()),
-        );
+        return Insight::query()->where('assigned_editor_id', $this->getKey());
     }
 
     public function editorialNotes(): HasMany

@@ -5,6 +5,11 @@ namespace App\Enums;
 enum InsightStatus: string
 {
     case Draft = 'draft';
+    case Review = 'review';
+    case Published = 'published';
+    case Archived = 'archived';
+
+    /** @deprecated Status lama hanya untuk membaca data sebelum migrasi penyederhanaan. */
     case Submitted = 'submitted';
     case EditorAssigned = 'editor_assigned';
     case InReview = 'in_review';
@@ -12,44 +17,61 @@ enum InsightStatus: string
     case Revised = 'revised';
     case Approved = 'approved';
     case Rejected = 'rejected';
-    case Published = 'published';
-    case Archived = 'archived';
     /** @deprecated Nilai lama, dipertahankan agar data historis tetap dapat dibaca. */
     case LegacyReviewed = 'reviewed';
 
     public function label(): string
     {
         return match ($this) {
-            self::Draft => 'Draf',
-            self::Submitted => 'Dikirim',
-            self::EditorAssigned => 'Editor Ditugaskan',
-            self::InReview => 'Sedang Diperiksa',
-            self::RevisionRequested => 'Perlu Perbaikan',
-            self::Revised => 'Perbaikan Dikirim',
-            self::Approved => 'Disetujui',
-            self::Rejected => 'Tidak Dilanjutkan',
-            self::Published => 'Diterbitkan',
+            self::Draft => 'Draft',
+            self::Review,
+            self::Submitted,
+            self::EditorAssigned,
+            self::InReview,
+            self::Revised,
+            self::Approved,
+            self::Rejected,
+            self::LegacyReviewed => 'Sedang Direview',
+            self::RevisionRequested => 'Draf',
+            self::Published => 'Terbit',
             self::Archived => 'Diarsipkan',
-            self::LegacyReviewed => 'Disetujui',
         };
     }
 
     public function color(): string
     {
         return match ($this) {
-            self::Published, self::Approved, self::LegacyReviewed => 'success',
-            self::Rejected => 'danger',
-            self::RevisionRequested => 'warning',
-            self::InReview, self::Revised, self::EditorAssigned => 'info',
-            self::Submitted => 'primary',
+            self::Published => 'success',
+            self::Review,
+            self::Submitted,
+            self::EditorAssigned,
+            self::InReview,
+            self::Revised,
+            self::Approved,
+            self::Rejected,
+            self::LegacyReviewed => 'warning',
             default => 'gray',
+        };
+    }
+
+    public function canonical(): self
+    {
+        return match ($this) {
+            self::RevisionRequested => self::Draft,
+            self::Submitted,
+            self::EditorAssigned,
+            self::InReview,
+            self::Revised,
+            self::Approved,
+            self::Rejected,
+            self::LegacyReviewed => self::Review,
+            default => $this,
         };
     }
 
     public static function options(): array
     {
-        return collect(self::cases())
-            ->reject(fn (self $status): bool => $status === self::LegacyReviewed)
+        return collect([self::Draft, self::Review, self::Published])
             ->mapWithKeys(fn (self $status): array => [$status->value => $status->label()])
             ->all();
     }

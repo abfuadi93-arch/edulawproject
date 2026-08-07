@@ -6,7 +6,6 @@ use App\Models\CollaborationSubmission;
 use App\Models\ContactMessage;
 use App\Models\Insight;
 use App\Models\Multimedia;
-use App\Models\PageVisit;
 use App\Models\Program;
 use App\Models\Publication;
 use Filament\Widgets\StatsOverviewWidget;
@@ -157,14 +156,14 @@ class AdminStatsOverview extends StatsOverviewWidget
     protected function getHeading(): ?string
     {
         return $this->isEditorDashboard()
-            ? 'Ringkasan Kinerja Editorial'
+            ? 'Naskah Saya'
             : parent::getHeading();
     }
 
     protected function getDescription(): ?string
     {
         return $this->isEditorDashboard()
-            ? 'KPI utama untuk memantau antrean, publikasi, pembaca, dan distribusi karya Edulaw.'
+            ? 'Naskah yang ditugaskan dan menunggu keputusan Anda.'
             : parent::getDescription();
     }
 
@@ -173,65 +172,25 @@ class AdminStatsOverview extends StatsOverviewWidget
      */
     private function getEditorStats(): array
     {
-        $counts = Cache::remember('dashboard.editor-stats-overview.v1', now()->addMinutes(5), fn (): array => [
-            'total_editorials' => Insight::query()->count(),
-            'published_this_month' => Insight::query()
-                ->published()
-                ->where('published_at', '>=', now()->startOfMonth())
-                ->count(),
-            'review_queue' => Insight::query()
-                ->whereIn('status', ['submitted', 'editor_assigned', 'in_review', 'revised', 'approved', 'reviewed'])
-                ->count(),
-            'editorial_views' => PageVisit::query()
-                ->where('route_name', 'insights.show')
-                ->where('status_code', 200)
-                ->since(now()->subDays(29)->startOfDay())
-                ->count(),
-            'total_publications' => Publication::query()->count(),
-            'publication_downloads' => PageVisit::query()
-                ->where('route_name', 'publications.download')
-                ->where('status_code', 200)
-                ->since(now()->subDays(29)->startOfDay())
-                ->count(),
+        $editorId = auth()->id();
+        $counts = Cache::remember("dashboard.editor-stats-overview.v2.{$editorId}", now()->addMinutes(5), fn (): array => [
+            'review' => Insight::query()->where('assigned_editor_id', $editorId)->where('status', 'review')->count(),
+            'assigned' => Insight::query()->where('assigned_editor_id', $editorId)->count(),
         ]);
 
         return [
-            Stat::make('Total Editorial', number_format($counts['total_editorials'], 0, ',', '.'))
-                ->description('seluruh naskah terkelola')
-                ->descriptionIcon('heroicon-o-newspaper')
-                ->color('primary')
-                ->icon('heroicon-o-newspaper')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-blue']),
-            Stat::make('Terbit Bulan Ini', number_format($counts['published_this_month'], 0, ',', '.'))
-                ->description('editorial dipublikasikan')
-                ->descriptionIcon('heroicon-o-check-badge')
-                ->color('success')
-                ->icon('heroicon-o-check-circle')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-emerald']),
-            Stat::make('Menunggu Review', number_format($counts['review_queue'], 0, ',', '.'))
-                ->description('perlu keputusan editor')
+            Stat::make('Naskah Menunggu Review', number_format($counts['review'], 0, ',', '.'))
+                ->description('perlu keputusan Anda')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->icon('heroicon-o-document-magnifying-glass')
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']),
-            Stat::make('Views Editorial 30 Hari', number_format($counts['editorial_views'], 0, ',', '.'))
-                ->description('kunjungan artikel valid')
-                ->descriptionIcon('heroicon-o-arrow-trending-up')
-                ->color('info')
-                ->icon('heroicon-o-eye')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-indigo']),
-            Stat::make('Total Publikasi', number_format($counts['total_publications'], 0, ',', '.'))
-                ->description('dokumen riset terkelola')
-                ->descriptionIcon('heroicon-o-document-text')
-                ->color('success')
-                ->icon('heroicon-o-document-text')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-emerald']),
-            Stat::make('Unduhan Publikasi 30 Hari', number_format($counts['publication_downloads'], 0, ',', '.'))
-                ->description('unduhan dokumen valid')
-                ->descriptionIcon('heroicon-o-arrow-down-tray')
-                ->color('info')
-                ->icon('heroicon-o-arrow-down-tray')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-violet']),
+            Stat::make('Naskah Saya', number_format($counts['assigned'], 0, ',', '.'))
+                ->description('seluruh naskah yang ditugaskan')
+                ->descriptionIcon('heroicon-o-inbox-stack')
+                ->color('primary')
+                ->icon('heroicon-o-inbox-stack')
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-blue']),
         ];
     }
 

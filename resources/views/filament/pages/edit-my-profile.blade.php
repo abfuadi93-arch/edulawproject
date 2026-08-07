@@ -20,15 +20,13 @@
         $statusValue = fn ($status): ?string => $status instanceof \BackedEnum ? $status->value : $status;
         $statusLabel = fn ($status): string => match ($statusValue($status)) {
             'published' => 'Published',
-            'approved', 'reviewed' => 'Disetujui',
-            'revision_requested' => 'Perlu Perbaikan',
-            'in_review' => 'Sedang Diperiksa',
-            'submitted' => 'Dikirim',
+            'review', 'submitted', 'editor_assigned', 'in_review', 'revised', 'approved', 'reviewed' => 'Sedang Direview',
+            'revision_requested' => 'Draft',
             default => 'Draft',
         };
         $statusClass = fn ($status): string => match ($statusValue($status)) {
             'published' => 'bg-green-100 text-green-800 dark:bg-green-600 dark:text-white',
-            'approved', 'reviewed', 'revision_requested', 'in_review', 'submitted' => 'bg-amber-100 text-amber-800 dark:bg-amber-500 dark:text-slate-950',
+            'review', 'submitted', 'editor_assigned', 'in_review', 'revised', 'approved', 'reviewed' => 'bg-amber-100 text-amber-800 dark:bg-amber-500 dark:text-slate-950',
             default => 'bg-slate-100 text-slate-700 dark:bg-slate-600 dark:text-white',
         };
     @endphp

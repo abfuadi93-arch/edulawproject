@@ -2,7 +2,6 @@
 
 namespace App\Models;
 
-use App\Enums\EditorialWorkflowStage;
 use App\Enums\InsightStatus;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -10,7 +9,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Database\Eloquent\Relations\HasMany;
-use Illuminate\Database\Eloquent\Relations\HasOne;
 
 class Insight extends Model
 {
@@ -20,10 +18,6 @@ class Insight extends Model
 
     protected $attributes = [
         'status' => 'draft',
-        'workflow_stage' => 'submission',
-        'revision_round' => 0,
-        'current_review_round' => 0,
-        'current_revision_number' => 0,
     ];
 
     protected $fillable = [
@@ -34,10 +28,8 @@ class Insight extends Model
         'content',
         'cover_image',
         'status',
-        'workflow_stage',
-        'current_review_round',
-        'current_revision_number',
         'published_at',
+        'archived_at',
         'reading_time',
         'featured',
         'editor_pick',
@@ -49,53 +41,24 @@ class Insight extends Model
         'updated_by',
         'reviewed_by',
         'reviewed_at',
+        'editor_notes',
         'assigned_editor_id',
         'assigned_by',
         'submitted_at',
         'assigned_at',
-        'review_started_at',
         'revision_requested_at',
-        'revised_at',
-        'approved_at',
-        'approved_by',
-        'rejected_at',
-        'rejected_by',
-        'rejection_reason',
-        'revision_round',
-        'editorial_deadline',
-        'editor_deadline',
-        'writer_deadline',
-        'editor_deadline_completed_at',
-        'writer_deadline_completed_at',
-        'editor_deadline_extension_count',
-        'writer_deadline_extension_count',
-        'deadline_extension_note',
     ];
 
     protected $casts = [
         'featured' => 'boolean',
         'editor_pick' => 'boolean',
         'status' => InsightStatus::class,
-        'workflow_stage' => EditorialWorkflowStage::class,
-        'current_review_round' => 'integer',
-        'current_revision_number' => 'integer',
         'published_at' => 'datetime',
+        'archived_at' => 'datetime',
         'reviewed_at' => 'datetime',
         'submitted_at' => 'datetime',
         'assigned_at' => 'datetime',
-        'review_started_at' => 'datetime',
         'revision_requested_at' => 'datetime',
-        'revised_at' => 'datetime',
-        'approved_at' => 'datetime',
-        'rejected_at' => 'datetime',
-        'editorial_deadline' => 'datetime',
-        'editor_deadline' => 'datetime',
-        'writer_deadline' => 'datetime',
-        'editor_deadline_completed_at' => 'datetime',
-        'writer_deadline_completed_at' => 'datetime',
-        'editor_deadline_extension_count' => 'integer',
-        'writer_deadline_extension_count' => 'integer',
-        'revision_round' => 'integer',
         'reading_time' => 'integer',
         'sort_order' => 'integer',
     ];
@@ -153,16 +116,6 @@ class Insight extends Model
         return $this->belongsTo(User::class, 'assigned_by');
     }
 
-    public function approvedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'approved_by');
-    }
-
-    public function rejectedBy(): BelongsTo
-    {
-        return $this->belongsTo(User::class, 'rejected_by');
-    }
-
     public function editorialNotes(): HasMany
     {
         return $this->hasMany(InsightEditorialNote::class)->latest();
@@ -173,41 +126,9 @@ class Insight extends Model
         return $this->hasMany(InsightStatusHistory::class)->latest();
     }
 
-    public function revisions(): HasMany
-    {
-        return $this->hasMany(InsightRevision::class);
-    }
-
-    public function editorAssignments(): HasMany
-    {
-        return $this->hasMany(InsightEditorAssignment::class);
-    }
-
-    public function activeEditorAssignment(): HasOne
-    {
-        return $this->hasOne(InsightEditorAssignment::class)
-            ->active()
-            ->latestOfMany();
-    }
-
-    public function editorialDecisions(): HasMany
-    {
-        return $this->hasMany(InsightEditorialDecision::class)->latest('decided_at');
-    }
-
     public function editorialActivities(): HasMany
     {
         return $this->hasMany(InsightEditorialActivity::class)->latest('created_at');
-    }
-
-    public function currentEditorUser(): ?User
-    {
-        return $this->activeEditorAssignment?->editor;
-    }
-
-    public function latestRevision(): HasOne
-    {
-        return $this->hasOne(InsightRevision::class)->latestOfMany('revision_number');
     }
 
     public function scopePublished(Builder $query): Builder

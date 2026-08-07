@@ -2,7 +2,6 @@
 
 namespace App\Policies;
 
-use App\Enums\EditorialWorkflowStage;
 use App\Enums\InsightStatus;
 use App\Models\Insight;
 use App\Models\User;
@@ -20,10 +19,9 @@ class InsightPolicy extends ResourcePermissionPolicy
             return false;
         }
 
-        return $user->can('view_all_editorial_submissions')
-            || $user->can('view_all_editorial_insights')
+        return $this->isSuperAdmin($user)
             || (($user->can('view_assigned_editorial_submissions') || $user->can('view_assigned_editorial_insights'))
-                && $record->editorAssignments()->active()->where('editor_id', $user->id)->exists())
+                && (int) $record->assigned_editor_id === (int) $user->id)
             || ($user->can('view insights') && (int) $record->created_by === (int) $user->id);
     }
 
@@ -33,13 +31,19 @@ class InsightPolicy extends ResourcePermissionPolicy
             return false;
         }
 
-        if ($user->can('view_all_editorial_insights')) {
+        if ($this->isSuperAdmin($user)) {
+            return true;
+        }
+
+        if ((int) $record->assigned_editor_id === (int) $user->id
+            && $user->can('review insights')
+            && in_array($record->status->canonical(), [InsightStatus::Review, InsightStatus::Published], true)) {
             return true;
         }
 
         return $user->can('update own insights')
             && (int) $record->created_by === (int) $user->id
-            && in_array($record->status, [InsightStatus::Draft, InsightStatus::RevisionRequested], true);
+            && $record->status->canonical() === InsightStatus::Draft;
     }
 
     public function delete(User $user, Model $record): bool
@@ -48,7 +52,7 @@ class InsightPolicy extends ResourcePermissionPolicy
             return false;
         }
 
-        if ($user->can('delete all insights')) {
+        if ($this->isSuperAdmin($user)) {
             return true;
         }
 
@@ -59,42 +63,35 @@ class InsightPolicy extends ResourcePermissionPolicy
 
     public function deleteAny(User $user): bool
     {
-        return $user->can('delete all insights');
+        return $this->isSuperAdmin($user);
     }
 
     public function submit(User $user, Insight $insight): bool
     {
         return $user->can('submit insights')
-            && ($user->hasRole('super_admin') || (int) $insight->created_by === (int) $user->id)
-            && $insight->status === InsightStatus::Draft;
+            && ($this->isSuperAdmin($user) || (int) $insight->created_by === (int) $user->id)
+            && $insight->status->canonical() === InsightStatus::Draft;
     }
 
     public function assignEditor(User $user, Insight $insight): bool
     {
-        return ! $insight->editorAssignments()->active()->exists()
-            && $this->hasEditorialAssignmentAccess($user, 'assign_editor')
-            && $insight->status === InsightStatus::Submitted
-            && $insight->workflow_stage === EditorialWorkflowStage::Submission;
+        return blank($insight->assigned_editor_id)
+            && $this->isSuperAdmin($user)
+            && $insight->status->canonical() !== InsightStatus::Published;
     }
 
     public function reassignEditor(User $user, Insight $insight): bool
     {
-        return $insight->editorAssignments()->active()->exists()
-            && $this->hasEditorialAssignmentAccess($user, 'reassign_editor')
-            && in_array($insight->status, [InsightStatus::EditorAssigned, InsightStatus::InReview, InsightStatus::RevisionRequested, InsightStatus::Revised], true);
+        return filled($insight->assigned_editor_id)
+            && $this->isSuperAdmin($user)
+            && $insight->status->canonical() !== InsightStatus::Published;
     }
 
     public function review(User $user, Insight $insight): bool
     {
         return ($user->can('view_assigned_editorial_submissions') || $user->can('view_assigned_editorial_insights'))
-            && $insight->editorAssignments()->active()->where('editor_id', $user->id)->exists();
-    }
-
-    public function resubmit(User $user, Insight $insight): bool
-    {
-        return $user->can('resubmit_revision')
-            && (int) $insight->created_by === (int) $user->id
-            && $insight->status === InsightStatus::RevisionRequested;
+            && (int) $insight->assigned_editor_id === (int) $user->id
+            && $insight->status->canonical() === InsightStatus::Review;
     }
 
     public function viewHistory(User $user, Insight $insight): bool
@@ -104,35 +101,43 @@ class InsightPolicy extends ResourcePermissionPolicy
 
     public function accessEditorialWorkspace(User $user, Insight $insight): bool
     {
-        if ($user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
-            || $user->can('view_all_editorial_submissions')
-            || $user->can('view_all_editorial_insights')) {
+        if ($this->isSuperAdmin($user)) {
             return true;
         }
 
-        if (! $user->can('access_editorial_workspace')) {
+        if (! $user->can('access_editorial_workspace') || $insight->status === InsightStatus::Archived) {
             return false;
         }
 
         if (($user->can('view_assigned_editorial_submissions') || $user->can('view_assigned_editorial_insights'))
-            && $insight->editorAssignments()->active()->where('editor_id', $user->id)->exists()) {
+            && (int) $insight->assigned_editor_id === (int) $user->id) {
             return true;
         }
 
-        return ($user->can('view_own_editorial_submissions') || $user->can('view insights'))
-            && (int) $insight->created_by === (int) $user->id;
+        return false;
     }
 
-    public function publishApproved(User $user, Insight $insight): bool
+    public function requestRevision(User $user, Insight $insight): bool
     {
-        return $user->can('publish_approved_insight')
-            && $insight->status === InsightStatus::Approved
-            && $insight->workflow_stage === EditorialWorkflowStage::FinalApproval;
+        return $insight->status->canonical() === InsightStatus::Review
+            && $user->can('request_revision')
+            && ($this->isSuperAdmin($user) || (int) $insight->assigned_editor_id === (int) $user->id);
     }
 
-    private function hasEditorialAssignmentAccess(User $user, string $permission): bool
+    public function publish(User $user, Insight $insight): bool
     {
-        return $user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
-            || $user->can($permission);
+        return $insight->status->canonical() === InsightStatus::Review
+            && ($user->can('publish_insight') || $user->can('publish insights'))
+            && ($this->isSuperAdmin($user) || (int) $insight->assigned_editor_id === (int) $user->id);
+    }
+
+    public function archive(User $user, Insight $insight): bool
+    {
+        return $this->isSuperAdmin($user) && $insight->status !== InsightStatus::Archived;
+    }
+
+    private function isSuperAdmin(User $user): bool
+    {
+        return $user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin']);
     }
 }

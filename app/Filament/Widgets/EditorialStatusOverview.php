@@ -13,7 +13,7 @@ class EditorialStatusOverview extends StatsOverviewWidget
 
     protected ?string $heading = 'Status Editorial';
 
-    protected ?string $description = 'Distribusi naskah berdasarkan tahapan workflow saat ini.';
+    protected ?string $description = 'Ringkasan alur Insight yang aktif.';
 
     protected static ?int $sort = -29;
 
@@ -25,20 +25,19 @@ class EditorialStatusOverview extends StatsOverviewWidget
     }
 
     /**
-     * @return array{draft: int, reviewed: int, published: int}
+     * @return array{draft: int, review: int, published: int}
      */
     public static function statusCounts(): array
     {
         $counts = Insight::query()
             ->selectRaw('status, COUNT(*) as aggregate')
-            ->whereIn('status', ['draft', 'submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'rejected', 'reviewed', 'published'])
+            ->whereIn('status', ['draft', 'review', 'published'])
             ->groupBy('status')
             ->pluck('aggregate', 'status');
 
         return [
             'draft' => (int) ($counts['draft'] ?? 0),
-            'reviewed' => collect(['submitted', 'editor_assigned', 'in_review', 'revision_requested', 'revised', 'approved', 'rejected', 'reviewed'])
-                ->sum(fn (string $status): int => (int) ($counts[$status] ?? 0)),
+            'review' => (int) ($counts['review'] ?? 0),
             'published' => (int) ($counts['published'] ?? 0),
         ];
     }
@@ -64,9 +63,9 @@ class EditorialStatusOverview extends StatsOverviewWidget
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-blue'])
                 ->url($indexUrl),
 
-            Stat::make('Reviewed', number_format($counts['reviewed'], 0, ',', '.'))
-                ->description('Menunggu keputusan terbit')
-                ->descriptionIcon('heroicon-o-check-badge')
+            Stat::make('Review', number_format($counts['review'], 0, ',', '.'))
+                ->description('Menunggu keputusan Editor')
+                ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->icon('heroicon-o-clipboard-document-check')
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber'])

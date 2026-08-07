@@ -3,6 +3,7 @@
 use App\Filament\Resources\Insights\InsightResource;
 use App\Models\Author;
 use App\Models\Insight;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\ValidationException;
 
@@ -31,21 +32,31 @@ test('insight admin resource derives excerpt and seo fallback from content', fun
 
 test('insight admin resource exposes editorial workflow statuses and maps legacy values', function () {
     expect(InsightResource::statusOptions())->toBe([
-        'draft' => 'Draf',
-        'submitted' => 'Dikirim',
-        'editor_assigned' => 'Editor Ditugaskan',
-        'in_review' => 'Sedang Diperiksa',
-        'revision_requested' => 'Perlu Perbaikan',
-        'revised' => 'Perbaikan Dikirim',
-        'approved' => 'Disetujui',
-        'rejected' => 'Tidak Dilanjutkan',
-        'published' => 'Diterbitkan',
-        'archived' => 'Diarsipkan',
+        'draft' => 'Draft',
+        'review' => 'Sedang Direview',
+        'published' => 'Terbit',
     ])
-        ->and(InsightResource::statusLabel('submitted'))->toBe('Dikirim')
+        ->and(InsightResource::statusLabel('submitted'))->toBe('Sedang Direview')
+        ->and(InsightResource::statusLabel('revision_requested'))->toBe('Draft')
         ->and(InsightResource::statusLabel('archived'))->toBe('Diarsipkan')
-        ->and(InsightResource::statusLabel('published'))->toBe('Diterbitkan')
-        ->and(InsightResource::statusLabel('reviewed'))->toBe('Disetujui');
+        ->and(InsightResource::statusLabel('published'))->toBe('Terbit')
+        ->and(InsightResource::statusLabel('reviewed'))->toBe('Sedang Direview');
+});
+
+test('simplification migration safely maps legacy insight statuses', function () {
+    DB::table('insights')->insert([
+        ['title' => 'Legacy Submitted', 'slug' => 'legacy-submitted', 'status' => 'submitted', 'created_at' => now(), 'updated_at' => now()],
+        ['title' => 'Legacy Revision', 'slug' => 'legacy-revision', 'status' => 'revision_requested', 'created_at' => now(), 'updated_at' => now()],
+        ['title' => 'Legacy Archived', 'slug' => 'legacy-archived', 'status' => 'archived', 'created_at' => now(), 'updated_at' => now()],
+    ]);
+
+    $migration = require database_path('migrations/2026_08_07_000001_simplify_insight_editorial_workflow.php');
+    $migration->up();
+
+    expect(DB::table('insights')->where('slug', 'legacy-submitted')->value('status'))->toBe('review')
+        ->and(DB::table('insights')->where('slug', 'legacy-revision')->value('status'))->toBe('draft')
+        ->and(DB::table('insights')->where('slug', 'legacy-archived')->value('status'))->toBe('archived')
+        ->and(DB::table('insights')->where('slug', 'legacy-archived')->value('archived_at'))->not->toBeNull();
 });
 
 test('insight admin resource preserves a manually curated excerpt', function () {
@@ -73,7 +84,7 @@ test('published insight requires cover and excerpt during persistence', function
         InsightResource::prepareFormDataForPersistence([
             'title' => 'Artikel Siap Terbit',
             'status' => 'published',
-            'content' => '<h2>Bagian Utama</h2><p>Isi artikel.</p>',
+            'content' => null,
             'cover_image' => null,
             'excerpt' => null,
         ]);
@@ -85,8 +96,20 @@ test('published insight requires cover and excerpt during persistence', function
     }
 });
 
-test('insights schema and model expose backward compatible editorial placement fields', function () {
-    expect(Schema::hasColumns('insights', ['featured', 'editor_pick', 'sort_order']))->toBeTrue();
+test('insights schema exposes simplified editorial fields and existing placement fields', function () {
+    expect(Schema::hasColumns('insights', [
+        'status',
+        'assigned_editor_id',
+        'assigned_at',
+        'reviewed_by',
+        'reviewed_at',
+        'editor_notes',
+        'published_at',
+        'archived_at',
+        'featured',
+        'editor_pick',
+        'sort_order',
+    ]))->toBeTrue();
 
     $insight = Insight::query()->create([
         'title' => 'Editorial Tanpa Pengaturan Kurasi',
@@ -108,7 +131,7 @@ test('insight admin resource reports publication readiness issues', function () 
     ]);
 
     expect(InsightResource::publishReadinessIssues($insight))
-        ->toBe(['gambar utama', 'ringkasan', 'penulis', 'hapus H1 dari isi artikel'])
+        ->toBe(['cover', 'excerpt', 'penulis', 'hapus H1 dari isi artikel'])
         ->and(InsightResource::isPublishReady($insight))->toBeFalse();
 
     $author = Author::query()->create([
