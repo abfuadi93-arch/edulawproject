@@ -91,6 +91,7 @@ class User extends Authenticatable implements FilamentUser
                 'institution' => $this->institution,
                 'position' => $this->position,
                 'profile_type' => 'team',
+                'organization_group' => Author::inferOrganizationGroup($this->position, $this->name),
                 'is_active' => $this->is_active !== false,
             ]);
         }

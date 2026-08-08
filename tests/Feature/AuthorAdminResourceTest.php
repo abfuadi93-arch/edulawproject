@@ -19,8 +19,14 @@ test('author public roles use three organizational levels and normalize legacy f
     expect(Author::PROFILE_TYPES)->toBe([
         'director' => 'Director',
         'manager' => 'Manager',
-        'team' => 'Officer, Writer, Designer',
+        'team' => 'Contributor',
     ])
+        ->and(Author::ORGANIZATION_GROUPS)->toBe([
+            'research_team' => 'Research Team',
+            'internship_member' => 'Internship Member',
+            'writer' => 'Writer',
+            'speaker_moderator' => 'Speaker and Moderator',
+        ])
         ->and(Author::canonicalProfileType('founder'))->toBe('director')
         ->and(Author::canonicalProfileType('co_founder'))->toBe('director')
         ->and(AuthorResource::prepareFormDataForPersistence([
@@ -45,6 +51,7 @@ test('author bio supports one thousand characters', function () {
 
 test('author schema exposes editorial contributor curation fields with safe defaults', function () {
     expect(Schema::hasColumns('authors', [
+        'organization_group',
         'show_in_contributor_section',
         'sort_order',
     ]))->toBeTrue();
@@ -56,6 +63,30 @@ test('author schema exposes editorial contributor curation fields with safe defa
 
     expect($author->show_in_contributor_section)->toBeFalse()
         ->and($author->sort_order)->toBeNull();
+});
+
+test('author organization group is explicit for contributors and cleared for higher levels', function () {
+    $contributor = AuthorResource::prepareFormDataForPersistence([
+        'name' => 'Kontributor Riset',
+        'position' => 'General Contributor',
+        'profile_type' => 'team',
+        'organization_group' => 'research-team',
+    ]);
+    $inferred = AuthorResource::prepareFormDataForPersistence([
+        'name' => 'Pembicara Baru',
+        'position' => 'Speaker',
+        'profile_type' => 'team',
+        'organization_group' => null,
+    ]);
+    $manager = AuthorResource::prepareFormDataForPersistence([
+        'name' => 'Manager Program',
+        'profile_type' => 'manager',
+        'organization_group' => 'writer',
+    ]);
+
+    expect($contributor['organization_group'])->toBe('research_team')
+        ->and($inferred['organization_group'])->toBe('speaker_moderator')
+        ->and($manager['organization_group'])->toBeNull();
 });
 
 test('author display order remains nullable when left empty', function () {
@@ -162,7 +193,13 @@ test('super admin can open create and edit author forms with contributor control
         ->assertSee('Peran Publik')
         ->assertSee('Director')
         ->assertSee('Manager')
-        ->assertSee('Officer, Writer, Designer')
+        ->assertSee('Contributor')
+        ->assertSee('Kelompok Organisasi')
+        ->assertSee('Research Team')
+        ->assertSee('Internship Member')
+        ->assertSee('Writer')
+        ->assertSee('Speaker and Moderator')
+        ->assertSee('Menentukan substruktur Contributor pada halaman Tentang.')
         ->assertSee('Founder dan Co-Founder ditetapkan secara statis pada halaman Tentang.')
         ->assertSee('Opsional. Kontributor Editorial diurutkan otomatis berdasarkan jumlah tulisan; angka ini hanya digunakan saat jumlahnya sama.')
         ->assertSee('Tampilkan di Kontributor Editorial');

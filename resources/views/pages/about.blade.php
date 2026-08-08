@@ -128,6 +128,7 @@
             'position' => $jobTitle ?: $profileRole,
             'job_title' => $jobTitle,
             'profile_role' => $profileRole,
+            'organization_group' => $profile->organization_group,
             'interests' => $interests,
             'interest_text' => collect($interests)->join(', '),
             'photo' => $profile->photo_url ?: asset('images/logo/icon-bg.png'),
@@ -194,19 +195,51 @@
         ->all();
     $teamMembers = $organizationRoleProfiles('team')
         ->reject(fn ($profile): bool => in_array($profileLookupKey($profile->name), array_merge($leaderKeys, $managerKeys), true))
-        ->map(fn ($profile): array => $profilePerson($profile, 'Officer, Writer, Designer'))
-        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['job_title'] ?: 'Officer, Writer, Designer'))
+        ->map(fn ($profile): array => $profilePerson($profile, 'Contributor'))
+        ->map(fn (array $person): array => $withOrganizationPosition($person, $person['job_title'] ?: 'Contributor'))
         ->values()
         ->all();
-    $isResearchMember = fn (array $person): bool => Str::contains(
-        Str::lower(collect([
+    $contributorSearchText = fn (array $person): string => Str::lower(
+        collect([
             $person['name'] ?? null,
-            $person['position'] ?? null,
+            $person['job_title'] ?? null,
             $person['organization_position'] ?? null,
             $person['interest_text'] ?? null,
-        ])->filter()->join(' ')),
-        ['research', 'riset', 'peneliti']
+        ])->filter()->join(' ')
     );
+    $matchesContributorRole = fn (array $person, array $keywords): bool => Str::contains(
+        $contributorSearchText($person),
+        $keywords
+    );
+    $contributorGroupFor = function (array $person) use ($matchesContributorRole): string {
+        $explicitGroup = $person['organization_group'] ?? null;
+
+        if (in_array($explicitGroup, ['research_team', 'internship_member', 'writer', 'speaker_moderator'], true)) {
+            return $explicitGroup;
+        }
+
+        if ($matchesContributorRole($person, ['research', 'riset', 'peneliti'])) {
+            return 'research_team';
+        }
+
+        if ($matchesContributorRole($person, ['internship', 'intern', 'magang'])) {
+            return 'internship_member';
+        }
+
+        if ($matchesContributorRole($person, ['writer', 'penulis'])) {
+            return 'writer';
+        }
+
+        if ($matchesContributorRole($person, ['speaker', 'moderator', 'narasumber', 'pembicara'])) {
+            return 'speaker_moderator';
+        }
+
+        return 'internship_member';
+    };
+    $isResearchMember = fn (array $person): bool => $contributorGroupFor($person) === 'research_team';
+    $isInternshipMember = fn (array $person): bool => $contributorGroupFor($person) === 'internship_member';
+    $isWriterMember = fn (array $person): bool => $contributorGroupFor($person) === 'writer';
+    $isSpeakerOrModeratorMember = fn (array $person): bool => $contributorGroupFor($person) === 'speaker_moderator';
     $researchPositionRank = function (array $person): int {
         return match (Str::lower((string) ($person['organization_position'] ?? ''))) {
             'senior researcher' => 1,
@@ -227,7 +260,51 @@
         ->reject($isResearchMember)
         ->values()
         ->all();
-    $orgHasProfiles = count($directors) > 0 || count($managers) > 0 || count($researchMembers) > 0 || count($otherTeamMembers) > 0;
+    $otherContributorMembers = collect($otherTeamMembers);
+    $internshipMembers = $otherContributorMembers
+        ->filter($isInternshipMember)
+        ->values();
+    $writerMembers = $otherContributorMembers
+        ->reject($isInternshipMember)
+        ->filter($isWriterMember)
+        ->values();
+    $speakerAndModeratorMembers = $otherContributorMembers
+        ->reject($isInternshipMember)
+        ->reject($isWriterMember)
+        ->filter($isSpeakerOrModeratorMember)
+        ->values();
+    $classifiedContributorKeys = $internshipMembers
+        ->concat($writerMembers)
+        ->concat($speakerAndModeratorMembers)
+        ->map(fn (array $person): string => $profileLookupKey($person['name'] ?? null))
+        ->all();
+    $internshipMembers = $internshipMembers
+        ->concat($otherContributorMembers->reject(
+            fn (array $person): bool => in_array($profileLookupKey($person['name'] ?? null), $classifiedContributorKeys, true)
+        ))
+        ->values()
+        ->all();
+    $contributorGroups = collect([
+        ['id' => 'research-team', 'label' => 'Research Team', 'members' => $researchMembers],
+        ['id' => 'internship-member', 'label' => 'Internship Member', 'members' => $internshipMembers],
+        ['id' => 'writer', 'label' => 'Writer', 'members' => $writerMembers->all()],
+        ['id' => 'speaker-moderator', 'label' => 'Speaker and Moderator', 'members' => $speakerAndModeratorMembers->all()],
+    ])->filter(fn (array $group): bool => count($group['members']) > 0)->values()->all();
+    $organizationTiers = [
+        ['id' => 'director', 'label' => 'Director', 'groups' => [
+            ['id' => 'director', 'label' => 'Director', 'members' => $directors],
+        ]],
+        ['id' => 'manager', 'label' => 'Manager', 'groups' => [
+            ['id' => 'manager', 'label' => 'Manager', 'members' => $managers],
+        ]],
+        ['id' => 'contributor', 'label' => 'Contributor', 'groups' => $contributorGroups],
+    ];
+    $visibleOrganizationTiers = collect($organizationTiers)
+        ->filter(fn (array $tier): bool => collect($tier['groups'])->contains(
+            fn (array $group): bool => count($group['members']) > 0
+        ))
+        ->values();
+    $orgHasProfiles = $visibleOrganizationTiers->isNotEmpty();
 
     if ($focusBlocks->isNotEmpty()) {
         $focusAreas = $focusBlocks->map(fn ($block) => [
@@ -459,215 +536,111 @@
 
     {{-- Team --}}
     @if ($orgHasProfiles)
-    <section id="tim" class="border-b border-slate-200 bg-[#f7f8fa] py-10 lg:py-12">
+    <section id="tim" class="scroll-mt-20 border-b border-slate-200 bg-white py-12 lg:py-16">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div>
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <p class="edulaw-badge edulaw-badge-md edulaw-badge-amber">
-                        Struktur Organisasi
+                    <p class="text-[10px] font-extrabold uppercase tracking-[0.18em] text-[#e57b66]">
+                        People
                     </p>
-                    <h2 class="mt-2 text-3xl font-black tracking-tight text-slate-950">
-                        Edulaw Project Organizational Structure
+                    <h2 class="mt-2 text-3xl font-extrabold tracking-tight text-[#1f3c69]">
+                        Penggerak Edulaw Project
                     </h2>
+                    <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-500">
+                        Tim, peneliti, dan kontributor yang mengembangkan program serta pengetahuan hukum Edulaw.
+                    </p>
                 </div>
             </div>
 
-            <div class="mt-8 space-y-8">
-                @if (count($directors) > 0)
-                    <div>
-                        <h3 class="text-sm font-black uppercase tracking-[0.2em] text-brand-navy">
-                            Director
-                        </h3>
-
-                        <div class="mt-3 grid gap-4 md:grid-cols-3">
-                            @foreach ($directors as $director)
-                                @php
-                                    $profile = $profileFor($director);
-                                    $directorCardClass = 'group block h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
-                                @endphp
-
-                                @if ($profile)
-                                    <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $directorCardClass }}" aria-label="Lihat profil {{ $director['name'] }}">
-                                @else
-                                    <article class="{{ $directorCardClass }}">
-                                @endif
-                                    <div class="grid h-full grid-cols-[5rem_1fr] gap-3">
-                                        <img
-                                            src="{{ $director['photo'] }}"
-                                            alt="{{ $director['name'] }}"
-                                            class="h-20 w-20 rounded-xl bg-brand-mist object-cover object-top"
-                                        >
-                                        <div class="min-w-0">
-                                            <h4 class="line-clamp-2 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                                {{ $director['name'] }}
-                                            </h4>
-                                            <p class="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-600">
-                                                {{ $director['organization_position'] }}
-                                            </p>
-                                            <p class="mt-2 line-clamp-4 text-xs leading-5 text-slate-500">
-                                                <span class="font-bold text-slate-600">Minat:</span>
-                                                {{ $director['interest_text'] ?: '-' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                @if ($profile)
-                                    </a>
-                                @else
-                                    </article>
-                                @endif
-                            @endforeach
+            <div class="mt-10 space-y-10">
+                @foreach ($visibleOrganizationTiers as $tier)
+                    <div @class(['border-t border-slate-200 pt-8' => ! $loop->first])>
+                        <div class="flex items-center gap-4">
+                            <h3 id="tingkat-{{ $tier['id'] }}" class="shrink-0 text-xs font-extrabold uppercase tracking-[0.2em] text-[#1f3c69]">
+                                {{ $tier['label'] }}
+                            </h3>
+                            <span class="h-px flex-1 bg-slate-200" aria-hidden="true"></span>
                         </div>
-                    </div>
-                @endif
 
-                @if (count($managers) > 0)
-                    <div @class(['border-t border-slate-200 pt-7' => count($directors) > 0])>
-                        <h3 class="text-sm font-black uppercase tracking-[0.2em] text-brand-navy">
-                            Manager
-                        </h3>
+                        @foreach ($tier['groups'] as $group)
+                            @if (count($group['members']) > 0)
+                                <div @class(['mt-5' => $loop->first, 'mt-8' => ! $loop->first])>
+                                    @if ($tier['id'] === 'contributor')
+                                        <h4 id="substruktur-{{ $group['id'] }}" class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-[#e57b66]">
+                                            {{ $group['label'] }}
+                                        </h4>
+                                    @endif
 
-                        <div class="mt-3 grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-                            @foreach ($managers as $manager)
-                                @php
-                                    $profile = $profileFor($manager);
-                                    $managerCardClass = 'group block h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
-                                @endphp
+                                    <div
+                                        @class([
+                                            'mt-3 grid gap-4',
+                                            'grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6 xl:gap-3' => $tier['id'] === 'contributor',
+                                            'grid-cols-2 md:grid-cols-3 lg:grid-cols-4' => $tier['id'] === 'manager',
+                                            'grid-cols-1 md:grid-cols-2' => $tier['id'] === 'director',
+                                        ])
+                                        aria-labelledby="{{ $tier['id'] === 'contributor' ? 'substruktur-'.$group['id'] : 'tingkat-'.$tier['id'] }}"
+                                    >
+                                        @foreach ($group['members'] as $member)
+                                            @php($profile = $profileFor($member))
 
-                                @if ($profile)
-                                    <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $managerCardClass }}" aria-label="Lihat profil {{ $manager['name'] }}">
-                                @else
-                                    <article class="{{ $managerCardClass }}">
-                                @endif
-                                    <div class="grid h-full grid-cols-[5rem_1fr] gap-3">
-                                        <img
-                                            src="{{ $manager['photo'] }}"
-                                            alt="{{ $manager['name'] }}"
-                                            class="h-20 w-20 rounded-xl bg-brand-mist object-cover object-top"
-                                        >
-                                        <div class="min-w-0">
-                                            <h4 class="line-clamp-2 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                                {{ $manager['name'] }}
-                                            </h4>
-                                            <p class="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-600">
-                                                {{ $manager['organization_position'] }}
-                                            </p>
-                                            <p class="mt-2 line-clamp-4 text-xs leading-5 text-slate-500">
-                                                <span class="font-bold text-slate-600">Minat:</span>
-                                                {{ $manager['interest_text'] ?: '-' }}
-                                            </p>
-                                        </div>
-                                    </div>
-                                @if ($profile)
-                                    </a>
-                                @else
-                                    </article>
-                                @endif
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
+                                            <article @class([
+                                                'group flex h-full min-w-0 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition duration-200 hover:-translate-y-0.5 hover:border-[#1f3c69]/25 hover:shadow-[0_20px_40px_-26px_rgba(15,23,42,.65)]',
+                                                'flex-row' => $tier['id'] === 'director',
+                                                'flex-col' => $tier['id'] !== 'director',
+                                            ])>
+                                                <div @class([
+                                                    'relative aspect-square shrink-0 overflow-hidden bg-[linear-gradient(135deg,#dce8f3,#eef3f6_60%,#dceeea)]',
+                                                    'w-1/2' => $tier['id'] === 'director',
+                                                    'w-full' => $tier['id'] !== 'director',
+                                                ])>
+                                                    <img
+                                                        src="{{ $member['photo'] }}"
+                                                        alt="{{ $member['name'] }}"
+                                                        class="absolute inset-0 size-full object-cover object-top transition duration-300 group-hover:scale-[1.02]"
+                                                    >
+                                                    @if ($tier['id'] !== 'director')
+                                                        <span @class([
+                                                            'absolute rounded bg-[#1f3c69]/90 font-extrabold uppercase tracking-wider text-white',
+                                                            'bottom-2 left-2 px-2 py-1 text-[7px]' => $tier['id'] === 'contributor',
+                                                            'bottom-3 left-3 px-2.5 py-1 text-[8px]' => $tier['id'] !== 'contributor',
+                                                        ])>
+                                                            {{ $tier['id'] === 'contributor' ? $group['label'] : $tier['label'] }}
+                                                        </span>
+                                                    @endif
+                                                </div>
 
-                @if (count($researchMembers) > 0 || count($otherTeamMembers) > 0)
-                    <div class="border-t border-slate-200 pt-7">
-                        <h3 class="text-sm font-black uppercase tracking-[0.2em] text-brand-navy">
-                            Officer, Writer, Designer
-                        </h3>
-
-                        @if (count($researchMembers) > 0)
-                            <div class="mt-4">
-                                <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-teal">
-                                    Research Team
-                                </p>
-
-                                <div class="mt-3 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                                    @foreach ($researchMembers as $member)
-                                        @php
-                                            $profile = $profileFor($member);
-                                            $memberCardClass = 'group block h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
-                                        @endphp
-
-                                        @if ($profile)
-                                            <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $memberCardClass }}" aria-label="Lihat profil {{ $member['name'] }}">
-                                        @else
-                                            <article class="{{ $memberCardClass }}">
-                                        @endif
-                                            <div class="grid h-full grid-cols-[4rem_1fr] gap-3">
-                                                <img
-                                                    src="{{ $member['photo'] }}"
-                                                    alt="{{ $member['name'] }}"
-                                                    class="h-16 w-16 rounded-xl bg-brand-mist object-cover object-top"
-                                                >
-                                                <div class="min-w-0">
-                                                    <h4 class="line-clamp-2 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
+                                                <div @class([
+                                                    'flex min-w-0 flex-1 flex-col',
+                                                    'justify-center p-5' => $tier['id'] === 'director',
+                                                    'p-3' => $tier['id'] === 'contributor',
+                                                    'p-4' => $tier['id'] === 'manager',
+                                                ])>
+                                                    @if ($tier['id'] === 'director')
+                                                        <span class="mb-2 w-fit rounded bg-[#1f3c69]/90 px-2.5 py-1 text-[8px] font-extrabold uppercase tracking-wider text-white">
+                                                            Director
+                                                        </span>
+                                                    @endif
+                                                    <h5 @class(['font-extrabold leading-snug text-[#1f3c69]', 'text-xs' => $tier['id'] === 'contributor', 'text-sm' => $tier['id'] !== 'contributor'])>
                                                         {{ $member['name'] }}
-                                                    </h4>
-                                                    <p class="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-600">
+                                                    </h5>
+                                                    <p class="mt-1 text-[10px] leading-4 text-slate-500">
                                                         {{ $member['organization_position'] }}
                                                     </p>
-                                                    <p class="mt-2 line-clamp-4 text-xs leading-5 text-slate-500">
-                                                        <span class="font-bold text-slate-600">Minat:</span>
-                                                        {{ $member['interest_text'] ?: '-' }}
-                                                    </p>
+
+                                                    @if ($profile)
+                                                        <a href="{{ route('profiles.show', $profile->slug) }}" class="mt-auto inline-flex pt-3 text-[10px] font-extrabold text-[#1f3c69] underline-offset-4 hover:underline" aria-label="Lihat profil {{ $member['name'] }}">
+                                                            Lihat Profil <span class="ml-1" aria-hidden="true">→</span>
+                                                        </a>
+                                                    @endif
                                                 </div>
-                                            </div>
-                                        @if ($profile)
-                                            </a>
-                                        @else
                                             </article>
-                                        @endif
-                                    @endforeach
+                                        @endforeach
+                                    </div>
                                 </div>
-                            </div>
-                        @endif
-
-                        @if (count($otherTeamMembers) > 0)
-                            <div @class(['mt-6' => count($researchMembers) > 0, 'mt-4' => count($researchMembers) === 0])>
-                                <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-teal">
-                                    Internship Member
-                                </p>
-
-                                <div class="mt-3 grid gap-4 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4">
-                                    @foreach ($otherTeamMembers as $member)
-                                        @php
-                                            $profile = $profileFor($member);
-                                            $memberCardClass = 'group block h-full rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/25 hover:shadow-lg hover:shadow-slate-900/5';
-                                        @endphp
-
-                                        @if ($profile)
-                                            <a href="{{ route('profiles.show', $profile->slug) }}" class="{{ $memberCardClass }}" aria-label="Lihat profil {{ $member['name'] }}">
-                                        @else
-                                            <article class="{{ $memberCardClass }}">
-                                        @endif
-                                            <div class="grid h-full grid-cols-[4rem_1fr] gap-3">
-                                                <img
-                                                    src="{{ $member['photo'] }}"
-                                                    alt="{{ $member['name'] }}"
-                                                    class="h-16 w-16 rounded-xl bg-brand-mist object-cover object-top"
-                                                >
-                                                <div class="min-w-0">
-                                                    <h4 class="line-clamp-2 text-sm font-black leading-tight text-slate-950 underline-offset-4 group-hover:text-brand-navy group-hover:underline">
-                                                        {{ $member['name'] }}
-                                                    </h4>
-                                                    <p class="mt-1 line-clamp-2 text-xs font-bold leading-5 text-slate-600">
-                                                        {{ $member['organization_position'] }}
-                                                    </p>
-                                                    <p class="mt-2 line-clamp-4 text-xs leading-5 text-slate-500">
-                                                        <span class="font-bold text-slate-600">Minat:</span>
-                                                        {{ $member['interest_text'] ?: '-' }}
-                                                    </p>
-                                                </div>
-                                            </div>
-                                        @if ($profile)
-                                            </a>
-                                        @else
-                                            </article>
-                                        @endif
-                                    @endforeach
-                                </div>
-                            </div>
-                        @endif
+                            @endif
+                        @endforeach
                     </div>
-                @endif
+                @endforeach
             </div>
         </div>
     </section>

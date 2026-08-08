@@ -234,6 +234,7 @@ test('about page team cards link to active public profiles', function () {
         'name' => 'Fadlah Nur',
         'slug' => 'fadlah-nur',
         'profile_type' => 'team',
+        'organization_group' => 'research_team',
         'sort_order' => 30,
         'is_active' => true,
     ]);
@@ -242,7 +243,38 @@ test('about page team cards link to active public profiles', function () {
         'name' => 'Lalu Rizqi Ramdani Alfaen',
         'slug' => 'lalu-rizqi-ramdani-alfaen',
         'profile_type' => 'team',
+        'organization_group' => 'research_team',
         'sort_order' => 99,
+        'is_active' => true,
+    ]);
+
+    $internshipProfile = Author::query()->create([
+        'name' => 'Intern Baru',
+        'slug' => 'intern-baru',
+        'position' => 'Internship Member',
+        'profile_type' => 'team',
+        'organization_group' => 'internship_member',
+        'sort_order' => 100,
+        'is_active' => true,
+    ]);
+
+    $writerProfile = Author::query()->create([
+        'name' => 'Penulis Baru',
+        'slug' => 'penulis-baru',
+        'position' => 'Writer',
+        'profile_type' => 'team',
+        'organization_group' => 'writer',
+        'sort_order' => 101,
+        'is_active' => true,
+    ]);
+
+    $speakerProfile = Author::query()->create([
+        'name' => 'Pembicara Baru',
+        'slug' => 'pembicara-baru',
+        'position' => 'Speaker and Moderator',
+        'profile_type' => 'team',
+        'organization_group' => 'speaker_moderator',
+        'sort_order' => 102,
         'is_active' => true,
     ]);
 
@@ -286,8 +318,6 @@ test('about page team cards link to active public profiles', function () {
         ->assertSee('Menjadi wadah edukasi hukum yang berorientasi pada kesetaraan, kemanusiaan, dan kemajuan')
         ->assertSee('Menyediakan pendidikan hukum yang berkualitas dan setara bagi semua lapisan masyarakat.')
         ->assertSee('Memperluas jaringan keilmuan melalui program kolaboratif.')
-        ->assertSee('Struktur Organisasi')
-        ->assertSee('Edulaw Project Organizational Structure')
         ->assertSeeInOrder([
             'Penggerak Edulaw Project',
             'Abdul Basid Fuadi',
@@ -306,16 +336,30 @@ test('about page team cards link to active public profiles', function () {
         ->assertSee(route('profiles.show', $firstManagerProfile->slug), false)
         ->assertSee(route('profiles.show', $teamProfile->slug), false)
         ->assertSee(route('profiles.show', $seniorResearcherProfile->slug), false)
-        ->assertSeeInOrder(['Edulaw Project Organizational Structure', 'Director', 'Umi Zakia Azzahro', 'Director of Operations', 'Manager'])
+        ->assertSee(route('profiles.show', $internshipProfile->slug), false)
+        ->assertSee(route('profiles.show', $writerProfile->slug), false)
+        ->assertSee(route('profiles.show', $speakerProfile->slug), false)
+        ->assertSeeInOrder(['Director', 'Umi Zakia Azzahro', 'Director of Operations', 'Manager'])
         ->assertSeeInOrder(['Zed Manager', 'Manager Baru'])
-        ->assertSeeInOrder(['Research Team', 'Lalu Rizqi Ramdani Alfaen', 'Senior Researcher', 'Fadlah Nur', 'Junior Researcher'])
-        ->assertDontSee('Internship Member')
+        ->assertSeeInOrder([
+            'Contributor',
+            'Research Team',
+            'Lalu Rizqi Ramdani Alfaen',
+            'Senior Researcher',
+            'Fadlah Nur',
+            'Junior Researcher',
+            'Internship Member',
+            'Intern Baru',
+            'Writer',
+            'Penulis Baru',
+            'Speaker and Moderator',
+            'Pembicara Baru',
+        ])
         ->assertDontSee('Tim Pelaksana')
         ->assertSee('Manager Editorial')
         ->assertSee('Hukum tata negara')
         ->assertSee('demokrasi')
         ->assertSee('Editorial')
-        ->assertSee('riset hukum')
         ->assertSee('authors/abdul-basid-fuadi.webp')
         ->assertDontSee('Nabila Rahma')
         ->assertDontSee('Super Admin')

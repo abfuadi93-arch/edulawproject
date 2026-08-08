@@ -23,6 +23,7 @@ use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Components\Group;
 use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Schema;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
@@ -115,8 +116,17 @@ class AuthorResource extends Resource
                                                     ->searchable()
                                                     ->default('team')
                                                     ->required()
+                                                    ->live()
                                                     ->placeholder('Pilih tingkat peran')
                                                     ->helperText('Founder dan Co-Founder ditetapkan secara statis pada halaman Tentang.'),
+
+                                                Select::make('organization_group')
+                                                    ->label('Kelompok Organisasi')
+                                                    ->options(Author::ORGANIZATION_GROUPS)
+                                                    ->default('internship_member')
+                                                    ->required(fn (Get $get): bool => Author::canonicalProfileType($get('profile_type')) === 'team')
+                                                    ->visible(fn (Get $get): bool => Author::canonicalProfileType($get('profile_type')) === 'team')
+                                                    ->helperText('Menentukan substruktur Contributor pada halaman Tentang.'),
 
                                                 Toggle::make('show_in_organization')
                                                     ->label('Tampilkan di Struktur Organisasi')
@@ -306,6 +316,21 @@ class AuthorResource extends Resource
                     ->extraHeaderAttributes(['class' => 'edulaw-author-institution-header'])
                     ->extraCellAttributes(['class' => 'edulaw-author-institution-cell']),
 
+                TextColumn::make('organization_group')
+                    ->label('Kelompok Organisasi')
+                    ->badge()
+                    ->formatStateUsing(fn (?string $state): ?string => Author::organizationGroupLabel($state))
+                    ->placeholder('—')
+                    ->color(fn (?string $state): string => match (Author::canonicalOrganizationGroup($state)) {
+                        'research_team' => 'info',
+                        'internship_member' => 'warning',
+                        'writer' => 'success',
+                        'speaker_moderator' => 'primary',
+                        default => 'gray',
+                    })
+                    ->sortable()
+                    ->visibleFrom('lg'),
+
                 TextColumn::make('is_active')
                     ->label('Status')
                     ->badge()
@@ -386,6 +411,10 @@ class AuthorResource extends Resource
                     ->label('Institusi')
                     ->options(fn (): array => Author::query()->whereNotNull('institution')->where('institution', '!=', '')->distinct()->orderBy('institution')->pluck('institution', 'institution')->all())
                     ->searchable(),
+
+                SelectFilter::make('organization_group')
+                    ->label('Kelompok Organisasi')
+                    ->options(Author::ORGANIZATION_GROUPS),
 
                 TernaryFilter::make('has_user')
                     ->label('Akun User')
@@ -480,6 +509,15 @@ class AuthorResource extends Resource
     {
         if (array_key_exists('profile_type', $data)) {
             $data['profile_type'] = Author::canonicalProfileType($data['profile_type']) ?? 'team';
+        }
+
+        if (array_key_exists('profile_type', $data) || array_key_exists('organization_group', $data)) {
+            if (($data['profile_type'] ?? 'team') === 'team') {
+                $data['organization_group'] = Author::canonicalOrganizationGroup($data['organization_group'] ?? null)
+                    ?? Author::inferOrganizationGroup($data['position'] ?? null, $data['name'] ?? null);
+            } else {
+                $data['organization_group'] = null;
+            }
         }
 
         if (blank($data['slug'] ?? null) && filled($data['name'] ?? null)) {

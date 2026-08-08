@@ -32,6 +32,10 @@ class EditAuthor extends EditRecordAndReturn
     {
         $data['social_links'] = $this->record->socialLinksMap();
         $data['profile_type'] = Author::canonicalProfileType($data['profile_type'] ?? null) ?? 'team';
+        $data['organization_group'] = $data['profile_type'] === 'team'
+            ? (Author::canonicalOrganizationGroup($data['organization_group'] ?? null)
+                ?? Author::inferOrganizationGroup($data['position'] ?? null, $data['name'] ?? null))
+            : null;
 
         return $data;
     }

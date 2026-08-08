@@ -22,7 +22,14 @@ class Author extends Model
     public const PROFILE_TYPES = [
         'director' => 'Director',
         'manager' => 'Manager',
-        'team' => 'Officer, Writer, Designer',
+        'team' => 'Contributor',
+    ];
+
+    public const ORGANIZATION_GROUPS = [
+        'research_team' => 'Research Team',
+        'internship_member' => 'Internship Member',
+        'writer' => 'Writer',
+        'speaker_moderator' => 'Speaker and Moderator',
     ];
 
     public const LEGACY_PROFILE_TYPE_MAP = [
@@ -48,6 +55,7 @@ class Author extends Model
         'position',
         'location',
         'profile_type',
+        'organization_group',
         'sort_order',
         'social_links',
         'seo_title',
@@ -102,6 +110,11 @@ class Author extends Model
         return self::canonicalProfileType($this->profile_type);
     }
 
+    public function getOrganizationGroupLabelAttribute(): ?string
+    {
+        return self::organizationGroupLabel($this->organization_group);
+    }
+
     public static function canonicalProfileType(?string $profileType): ?string
     {
         $profileType = Str::of((string) $profileType)
@@ -119,6 +132,84 @@ class Author extends Model
         }
 
         return self::LEGACY_PROFILE_TYPE_MAP[$profileType] ?? null;
+    }
+
+    public static function canonicalOrganizationGroup(?string $group): ?string
+    {
+        $group = Str::of((string) $group)
+            ->lower()
+            ->squish()
+            ->replace(['-', ' ', '&'], '_')
+            ->replaceMatches('/_+/', '_')
+            ->trim('_')
+            ->toString();
+
+        if ($group === '') {
+            return null;
+        }
+
+        if (array_key_exists($group, self::ORGANIZATION_GROUPS)) {
+            return $group;
+        }
+
+        return match ($group) {
+            'research', 'researcher', 'riset', 'peneliti' => 'research_team',
+            'intern', 'internship', 'magang' => 'internship_member',
+            'penulis' => 'writer',
+            'speaker', 'moderator', 'speaker_and_moderator' => 'speaker_moderator',
+            default => null,
+        };
+    }
+
+    public static function organizationGroupLabel(?string $group): ?string
+    {
+        $group = self::canonicalOrganizationGroup($group);
+
+        return $group ? self::ORGANIZATION_GROUPS[$group] : null;
+    }
+
+    public static function inferOrganizationGroup(?string $position, ?string $name = null): string
+    {
+        $searchText = Str::lower(collect([$name, $position])->filter()->join(' '));
+        $nameKey = Str::of((string) $name)
+            ->lower()
+            ->replaceMatches('/[^a-z0-9]+/i', ' ')
+            ->squish()
+            ->toString();
+        $knownResearchMembers = [
+            'siti mahmuda',
+            'siti mahmudha',
+            'annisa zahra nur umar',
+            'anisa zahra nur umar',
+            'naufal rizqiyanto',
+            'lalu rizqi ramdani alfaen',
+            'fadila sharfina',
+            'laila andayani',
+            'rahmatika monati',
+            'amirudin nur wahid',
+            'mely noviyanti',
+            'putri yuliani',
+            'fadlah nur',
+        ];
+
+        if (in_array($nameKey, $knownResearchMembers, true)
+            || Str::contains($searchText, ['research', 'riset', 'peneliti'])) {
+            return 'research_team';
+        }
+
+        if (Str::contains($searchText, ['internship', 'intern', 'magang'])) {
+            return 'internship_member';
+        }
+
+        if (Str::contains($searchText, ['writer', 'penulis'])) {
+            return 'writer';
+        }
+
+        if (Str::contains($searchText, ['speaker', 'moderator', 'narasumber', 'pembicara'])) {
+            return 'speaker_moderator';
+        }
+
+        return 'internship_member';
     }
 
     public function getPhotoUrlAttribute(): ?string
