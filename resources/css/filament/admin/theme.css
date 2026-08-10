@@ -95,6 +95,22 @@
     font-family: "Lato", ui-sans-serif, system-ui, sans-serif;
 }
 
+.fi-fo-rich-editor .edulaw-footnote-ref {
+    display: inline-flex;
+    min-width: 1.15rem;
+    min-height: 1.15rem;
+    align-items: center;
+    justify-content: center;
+    margin-inline: 0.08rem;
+    border-radius: 9999px;
+    background: var(--edulaw-admin-blue-soft);
+    color: var(--edulaw-admin-blue);
+    font-size: 0.68em;
+    font-weight: 900;
+    line-height: 1;
+    vertical-align: super;
+}
+
 .fi-layout {
     background: var(--edulaw-admin-soft);
 }

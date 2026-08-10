@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Editorial;
 use App\Enums\InsightStatus;
 use App\Filament\Resources\Editorial\Pages\ListEditorialInsights;
 use App\Filament\Resources\Editorial\Pages\ViewEditorialWorkspace;
+use App\Filament\RichEditor\FootnoteRichContentPlugin;
 use App\Models\Insight;
 use App\Models\User;
 use App\Services\InsightEditorialWorkflowService;
@@ -13,6 +14,7 @@ use Filament\Actions\Action;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -29,6 +31,7 @@ use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\HtmlString;
+use Illuminate\Support\Str;
 use Throwable;
 
 class EditorialResource extends Resource
@@ -152,7 +155,36 @@ class EditorialResource extends Resource
                             RichEditor::make('content')
                                 ->hiddenLabel()
                                 ->required()
+                                ->plugins([new FootnoteRichContentPlugin])
+                                ->toolbarButtons([
+                                    ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link', 'footnote'],
+                                    ['h2', 'h3'],
+                                    ['alignStart', 'alignCenter', 'alignEnd'],
+                                    ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+                                    ['table', 'attachFiles'],
+                                    ['undo', 'redo'],
+                                ])
                                 ->disableToolbarButtons(['h1'])
+                                ->columnSpanFull(),
+                            Repeater::make('footnotes')
+                                ->label('Daftar Catatan Kaki')
+                                ->helperText('Tambahkan catatan melalui tombol Catatan Kaki pada toolbar. Simpan artikel agar catatan baru muncul di daftar ini.')
+                                ->relationship('footnotes')
+                                ->schema([
+                                    Textarea::make('content')
+                                        ->label('Isi Catatan Kaki')
+                                        ->rows(4)
+                                        ->required()
+                                        ->maxLength(10000)
+                                        ->columnSpanFull(),
+                                ])
+                                ->itemLabel(fn (array $state): string => Str::limit((string) ($state['content'] ?? 'Catatan kaki'), 80))
+                                ->itemNumbers()
+                                ->addable(false)
+                                ->deletable()
+                                ->reorderable(false)
+                                ->orderColumn('sort_order')
+                                ->collapsible()
                                 ->columnSpanFull(),
                         ])
                         ->extraAttributes(['class' => 'edulaw-editorial-body-section'])

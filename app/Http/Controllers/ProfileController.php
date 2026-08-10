@@ -7,11 +7,13 @@ use Illuminate\View\View;
 
 class ProfileController extends Controller
 {
-    public function show(Author $author): View
+    public function show(string $slug): View
     {
-        abort_unless($author->is_active, 404);
-
-        $author->loadMissing('user');
+        $author = Author::query()
+            ->publicProfile()
+            ->where('slug', $slug)
+            ->with('user')
+            ->firstOrFail();
 
         $totalInsights = $author->insights()
             ->published()

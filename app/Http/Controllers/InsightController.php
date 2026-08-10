@@ -241,7 +241,7 @@ class InsightController extends Controller
         }
 
         $insight = Insight::query()
-            ->with(['categoryRelation', 'authors.user', 'tags', 'creator', 'reviewer'])
+            ->with(['categoryRelation', 'authors.user', 'tags', 'creator', 'reviewer', 'footnotes'])
             ->published()
             ->where('slug', $slug)
             ->firstOrFail();

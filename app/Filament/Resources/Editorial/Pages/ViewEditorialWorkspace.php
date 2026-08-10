@@ -7,6 +7,7 @@ use App\Filament\Resources\Editorial\EditorialResource;
 use App\Models\Insight;
 use App\Models\User;
 use App\Services\InsightEditorialWorkflowService;
+use App\Services\InsightFootnoteService;
 use Filament\Actions\Action;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -127,6 +128,8 @@ class ViewEditorialWorkspace extends EditRecord
                 $this->getRecord()->editor_notes,
             );
         }
+
+        app(InsightFootnoteService::class)->sync($this->getRecord());
     }
 
     private function runWorkflowAction(callable $callback, string|\Closure $successMessage): void

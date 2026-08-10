@@ -6,6 +6,13 @@ Disallow: /login
 Disallow: /register
 Disallow: /forgot-password
 Disallow: /reset-password
+Disallow: /password/
+Disallow: /email/
+Disallow: /filament/
 Disallow: /search
+Disallow: /*?page=
+Disallow: /*?sort=
+Disallow: /*?author=
+Disallow: /*?category=
 
 Sitemap: https://edulawproject.id/sitemap.xml

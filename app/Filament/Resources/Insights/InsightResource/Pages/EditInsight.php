@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Insights\InsightResource\Pages;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Filament\Resources\Pages\EditRecordAndReturn;
 use App\Services\InsightEditorialWorkflowService;
+use App\Services\InsightFootnoteService;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
@@ -101,5 +102,10 @@ class EditInsight extends EditRecordAndReturn
         $data = InsightResource::prepareFormDataForPersistence($data);
 
         return $data;
+    }
+
+    protected function afterSave(): void
+    {
+        app(InsightFootnoteService::class)->sync($this->getRecord());
     }
 }

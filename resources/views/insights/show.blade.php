@@ -49,7 +49,9 @@
         ->map(fn ($part) => \Illuminate\Support\Str::substr($part, 0, 1))
         ->take(2)
         ->implode('');
-    $preparedArticle = \App\Support\ArticleContent::prepare($insight->content);
+    $preparedFootnotes = app(\App\Services\InsightFootnoteService::class)->prepareForPublic($insight);
+    $preparedArticle = \App\Support\ArticleContent::prepare($preparedFootnotes['html']);
+    $articleFootnotes = $preparedFootnotes['footnotes'];
     $articleHeadings = collect($preparedArticle['headings'])
         ->where('level', 2)
         ->values();
@@ -127,6 +129,25 @@
                         <p>{{ $description }}</p>
                     @endif
                 </div>
+
+                @if ($articleFootnotes->isNotEmpty())
+                    <section class="insight-footnotes" aria-labelledby="insight-footnotes-heading">
+                        <h2 id="insight-footnotes-heading">Catatan Kaki</h2>
+
+                        <ol>
+                            @foreach ($articleFootnotes as $item)
+                                <li id="fn-{{ $item['number'] }}">
+                                    <span>{{ $item['footnote']->content }}</span>
+                                    <a
+                                        href="#fnref-{{ $item['number'] }}"
+                                        class="insight-footnote-backlink"
+                                        aria-label="Kembali ke teks catatan kaki {{ $item['number'] }}"
+                                    >↩</a>
+                                </li>
+                            @endforeach
+                        </ol>
+                    </section>
+                @endif
 
                 @if ($insight->tags->isNotEmpty())
                     <div class="mt-12 border-t border-slate-200 pt-6">

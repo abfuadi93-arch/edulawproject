@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Insights\InsightResource\Pages;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Filament\Resources\Pages\CreateRecordAndReturn;
 use App\Services\InsightEditorialWorkflowService;
+use App\Services\InsightFootnoteService;
 
 class CreateInsight extends CreateRecordAndReturn
 {
@@ -28,6 +29,7 @@ class CreateInsight extends CreateRecordAndReturn
 
     protected function afterCreate(): void
     {
+        app(InsightFootnoteService::class)->sync($this->getRecord());
         app(InsightEditorialWorkflowService::class)->recordDraftCreated($this->getRecord(), auth()->user());
     }
 }

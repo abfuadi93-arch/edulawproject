@@ -81,6 +81,17 @@ test('inactive public profile page is not visible', function () {
         ->assertNotFound();
 });
 
+test('technical super admin author cannot become a public profile', function () {
+    Author::query()->create([
+        'name' => 'Super Admin',
+        'slug' => 'super-admin',
+        'position' => 'admin',
+        'is_active' => true,
+    ]);
+
+    $this->get('/profil/super-admin')->assertNotFound();
+});
+
 test('public profile hides technical user data', function () {
     $user = User::query()->create([
         'name' => 'Nabila Publik',

@@ -47,3 +47,30 @@ test('search page is crawlable but excluded from the search index', function () 
         ->assertSee('<meta name="robots" content="noindex,follow">', false)
         ->assertSee('<link rel="canonical" href="'.route('search.index').'">', false);
 });
+
+test('filter parameters are noindex and canonicalize to the clean index URL', function () {
+    $this->get(route('insights.index', ['author' => 'penulis-publik', 'sort' => 'latest']))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex,follow">', false)
+        ->assertSee('<link rel="canonical" href="'.route('insights.index').'">', false)
+        ->assertDontSee('rel="canonical" href="'.route('insights.index').'?author=', false);
+});
+
+test('administrative html is excluded from crawling and indexing', function () {
+    $this->get('/admin/login')
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex,nofollow">', false);
+});
+
+test('robots file is available with sitemap and parameter exclusions', function () {
+    $this->get(route('robots'))
+        ->assertOk()
+        ->assertHeader('content-type', 'text/plain; charset=UTF-8')
+        ->assertSee('Disallow: /admin', false)
+        ->assertSee('Disallow: /search', false)
+        ->assertSee('Disallow: /*?page=', false)
+        ->assertSee('Disallow: /*?sort=', false)
+        ->assertSee('Disallow: /*?author=', false)
+        ->assertSee('Disallow: /*?category=', false)
+        ->assertSee('Sitemap: https://edulawproject.id/sitemap.xml', false);
+});

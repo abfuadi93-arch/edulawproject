@@ -48,10 +48,17 @@
             '…',
         );
         $canonicalUrl = $absoluteUrl($section('canonical_url', url()->current()));
+        $canonicalUrl = \Illuminate\Support\Str::before(
+            \Illuminate\Support\Str::before($canonicalUrl, '?'),
+            '#',
+        );
         $ogType = strip_tags($section('og_type', 'website'));
         $ogImage = $absoluteUrl($section('og_image', $defaultImage));
         $ogImageAlt = \Illuminate\Support\Str::limit(strip_tags($section('og_image_alt', $pageTitle)), 120);
-        $robots = strip_tags($section('robots', 'index,follow'));
+        $robotsOverride = strip_tags($section('robots'));
+        $robots = $robotsOverride !== ''
+            ? $robotsOverride
+            : (request()->query() !== [] ? 'noindex,follow' : 'index,follow');
     @endphp
 
     <x-seo

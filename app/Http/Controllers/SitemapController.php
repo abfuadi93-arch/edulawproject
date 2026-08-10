@@ -15,75 +15,75 @@ class SitemapController extends Controller
      */
     public function index(): Response
     {
-$staticPages = collect([
-    [
-        'url' => url('/'),
-        'lastmod' => null,
-        'changefreq' => 'daily',
-        'priority' => '1.0',
-    ],
-    [
-        'url' => url('/insight'),
-        'lastmod' => null,
-        'changefreq' => 'daily',
-        'priority' => '0.9',
-    ],
-    ...collect(['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'])
-        ->map(fn (string $category): array => [
-            'url' => route('insights.categories.show', $category),
-            'lastmod' => null,
-            'changefreq' => 'weekly',
-            'priority' => '0.8',
-        ])
-        ->all(),
-    [
-        'url' => url('/riset-publikasi'),
-        'lastmod' => null,
-        'changefreq' => 'weekly',
-        'priority' => '0.9',
-    ],
-    [
-        'url' => url('/program'),
-        'lastmod' => null,
-        'changefreq' => 'weekly',
-        'priority' => '0.8',
-    ],
-    [
-        'url' => url('/opportunities'),
-        'lastmod' => null,
-        'changefreq' => 'daily',
-        'priority' => '0.8',
-    ],
-    [
-        'url' => url('/multimedia'),
-        'lastmod' => null,
-        'changefreq' => 'weekly',
-        'priority' => '0.7',
-    ],
-    [
-        'url' => url('/tentang'),
-        'lastmod' => null,
-        'changefreq' => 'monthly',
-        'priority' => '0.7',
-    ],
-    [
-        'url' => url('/kolaborasi'),
-        'lastmod' => null,
-        'changefreq' => 'monthly',
-        'priority' => '0.6',
-    ],
-    [
-        'url' => url('/kontak'),
-        'lastmod' => null,
-        'changefreq' => 'monthly',
-        'priority' => '0.5',
-    ],
-]);
+        $staticPages = collect([
+            [
+                'url' => route('home'),
+                'lastmod' => null,
+                'changefreq' => 'daily',
+                'priority' => '1.0',
+            ],
+            [
+                'url' => route('insights.index'),
+                'lastmod' => null,
+                'changefreq' => 'daily',
+                'priority' => '0.9',
+            ],
+            ...collect(['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'])
+                ->map(fn (string $category): array => [
+                    'url' => route('insights.categories.show', $category),
+                    'lastmod' => null,
+                    'changefreq' => 'weekly',
+                    'priority' => '0.8',
+                ])
+                ->all(),
+            [
+                'url' => route('publications.index'),
+                'lastmod' => null,
+                'changefreq' => 'weekly',
+                'priority' => '0.9',
+            ],
+            [
+                'url' => route('programs.index'),
+                'lastmod' => null,
+                'changefreq' => 'weekly',
+                'priority' => '0.8',
+            ],
+            [
+                'url' => route('opportunities.index'),
+                'lastmod' => null,
+                'changefreq' => 'daily',
+                'priority' => '0.8',
+            ],
+            [
+                'url' => route('multimedia.index'),
+                'lastmod' => null,
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ],
+            [
+                'url' => route('about'),
+                'lastmod' => null,
+                'changefreq' => 'monthly',
+                'priority' => '0.7',
+            ],
+            [
+                'url' => route('collaboration.index'),
+                'lastmod' => null,
+                'changefreq' => 'monthly',
+                'priority' => '0.6',
+            ],
+            [
+                'url' => route('contact.index'),
+                'lastmod' => null,
+                'changefreq' => 'monthly',
+                'priority' => '0.5',
+            ],
+        ]);
 
         $insights = Insight::query()
-            ->where('status', 'published')
-            ->whereNotNull('published_at')
-            ->where('published_at', '<=', now())
+            ->published()
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
             ->select(['slug', 'updated_at'])
             ->latest('published_at')
             ->get()
@@ -95,7 +95,9 @@ $staticPages = collect([
             ]);
 
         $publications = Publication::query()
-            ->where('status', 'published')
+            ->published()
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
             ->select(['slug', 'updated_at'])
             ->latest('published_at')
             ->get()
@@ -107,7 +109,9 @@ $staticPages = collect([
             ]);
 
         $programs = Program::query()
-            ->whereIn('status', ['upcoming', 'ongoing'])
+            ->visible()
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
             ->select(['slug', 'updated_at'])
             ->latest('updated_at')
             ->get()
@@ -119,7 +123,9 @@ $staticPages = collect([
             ]);
 
         $authors = Author::query()
-            ->where('is_active', true)
+            ->publicProfile()
+            ->where('show_in_contributor_section', true)
+            ->withPublicContribution()
             ->select(['slug', 'updated_at'])
             ->orderBy('name')
             ->get()

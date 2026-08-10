@@ -5,6 +5,7 @@ namespace App\Filament\Resources\Insights;
 use App\Enums\InsightStatus;
 use App\Filament\Resources\Editorial\EditorialResource;
 use App\Filament\Resources\Insights\InsightResource\Pages;
+use App\Filament\RichEditor\FootnoteRichContentPlugin;
 use App\Models\Insight;
 use App\Services\InsightEditorialWorkflowService;
 use BackedEnum;
@@ -17,6 +18,7 @@ use Filament\Actions\EditAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -105,6 +107,15 @@ class InsightResource extends Resource
                                     ->columnSpanFull(),
                                 RichEditor::make('content')
                                     ->label('Isi Artikel')
+                                    ->plugins([new FootnoteRichContentPlugin])
+                                    ->toolbarButtons([
+                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link', 'footnote'],
+                                        ['h2', 'h3'],
+                                        ['alignStart', 'alignCenter', 'alignEnd'],
+                                        ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
+                                        ['table', 'attachFiles'],
+                                        ['undo', 'redo'],
+                                    ])
                                     ->disableToolbarButtons(['h1'])
                                     ->rule(static function (): \Closure {
                                         return static function (string $attribute, mixed $value, \Closure $fail): void {
@@ -113,6 +124,26 @@ class InsightResource extends Resource
                                             }
                                         };
                                     })
+                                    ->columnSpanFull(),
+                                Repeater::make('footnotes')
+                                    ->label('Daftar Catatan Kaki')
+                                    ->helperText('Catatan baru dibuat melalui tombol Catatan Kaki pada toolbar. Simpan artikel agar catatan baru muncul di daftar ini.')
+                                    ->relationship('footnotes')
+                                    ->schema([
+                                        Textarea::make('content')
+                                            ->label('Isi Catatan Kaki')
+                                            ->rows(4)
+                                            ->required()
+                                            ->maxLength(10000)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->itemLabel(fn (array $state): string => Str::limit((string) ($state['content'] ?? 'Catatan kaki'), 80))
+                                    ->itemNumbers()
+                                    ->addable(false)
+                                    ->deletable()
+                                    ->reorderable(false)
+                                    ->orderColumn('sort_order')
+                                    ->collapsible()
                                     ->columnSpanFull(),
                             ]),
                         Section::make('Metadata')

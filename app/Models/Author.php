@@ -237,6 +237,30 @@ class Author extends Model
             ->where('show_in_contributor_section', true);
     }
 
+    public function scopePublicProfile(Builder $query): Builder
+    {
+        return $query
+            ->where('is_active', true)
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
+            ->where('slug', '!=', 'super-admin')
+            ->whereRaw('LOWER(TRIM(name)) NOT IN (?, ?)', ['super admin', 'redaksi edulaw'])
+            ->where(function (Builder $query): void {
+                $query
+                    ->whereNull('position')
+                    ->orWhereRaw('LOWER(TRIM(position)) NOT IN (?, ?, ?)', ['admin', 'superadmin', 'user']);
+            });
+    }
+
+    public function scopeWithPublicContribution(Builder $query): Builder
+    {
+        return $query->where(function (Builder $query): void {
+            $query
+                ->whereHas('insights', fn (Builder $query): Builder => $query->published())
+                ->orWhereHas('publications', fn (Builder $query): Builder => $query->published());
+        });
+    }
+
     protected function interests(): Attribute
     {
         return Attribute::make(

@@ -11,15 +11,21 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\SearchController;
+use App\Http\Controllers\SitemapController;
 use App\Http\Middleware\TrackPageVisit;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\SitemapController;
+
+Route::get('/robots.txt', fn () => response(
+    file_get_contents(public_path('robots.txt')),
+    200,
+    ['Content-Type' => 'text/plain; charset=UTF-8'],
+))->name('robots');
 
 Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/', [HomeController::class, 'index'])->name('home');
 
     Route::get('/tentang', [PageController::class, 'about'])->name('about');
-    Route::get('/profil/{author:slug}', [ProfileController::class, 'show'])->name('profiles.show');
+    Route::get('/profil/{slug}', [ProfileController::class, 'show'])->name('profiles.show');
     Route::get('/kolaborasi', [CollaborationController::class, 'index'])->name('collaboration.index');
     Route::post('/kolaborasi', [CollaborationController::class, 'store'])->name('collaboration.store');
     Route::get('/kontak', [ContactController::class, 'index'])->name('contact.index');
@@ -51,5 +57,5 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 
     Route::get('/sitemap.xml', [SitemapController::class, 'index'])
-    ->name('sitemap');
+        ->name('sitemap');
 });

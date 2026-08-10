@@ -121,6 +121,13 @@ class Insight extends Model
         return $this->hasMany(InsightEditorialNote::class)->latest();
     }
 
+    public function footnotes(): HasMany
+    {
+        return $this->hasMany(InsightFootnote::class)
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
     public function statusHistories(): HasMany
     {
         return $this->hasMany(InsightStatusHistory::class)->latest();
