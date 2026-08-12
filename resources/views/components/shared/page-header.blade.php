@@ -15,6 +15,7 @@
     'accentLine' => false,
     'overlayOpacity' => 0.72,
     'channelHeader' => false,
+    'breakTitleAfterColon' => false,
 ])
 
 @php
@@ -27,6 +28,9 @@
         ? 'text-3xl sm:text-4xl lg:text-[2.45rem]'
         : 'text-4xl sm:text-5xl lg:text-[3.25rem]';
     $defaultContainerClass = 'relative z-10 mx-auto grid w-screen max-w-7xl '.($gridClass ?: $defaultGridClass);
+    $titleParts = $breakTitleAfterColon && str_contains($title, ':')
+        ? explode(':', $title, 2)
+        : null;
 @endphp
 
 @once
@@ -109,7 +113,12 @@
             @endif
 
             <h1 class="{{ $eyebrow ? ($channelHeader ? 'mt-1' : 'mt-2') : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} {{ $titleWidthClass }} font-black leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
-                {{ $title }}
+                @if ($titleParts)
+                    <span class="block">{{ trim($titleParts[0]) }}:</span>
+                    <span class="block">{{ trim($titleParts[1]) }}</span>
+                @else
+                    {{ $title }}
+                @endif
             </h1>
 
             @if ($channelHeader && $description)

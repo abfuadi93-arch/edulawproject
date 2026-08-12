@@ -42,65 +42,35 @@
 
 @section('content')
 <main class="bg-white">
-    <section
-        class="relative isolate overflow-hidden bg-brand-navy text-white"
-        style="background-image: url('{{ $categoryHeroImage }}'); background-position: center; background-size: cover;"
-        data-category-hero-background="{{ $categoryHeroImage }}"
+    <x-shared.page-header
+        :title="$definition['title']"
+        :description="$definition['seo_description']"
+        :compact="true"
+        :channel-header="true"
+        :break-title-after-colon="true"
+        eyebrow="Kanal Editorial"
+        :background-image="$categoryHeroImage"
+        :background-alt="'Pola latar kategori '.$definition['name']"
+        grid-class="gap-5 px-4 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-6"
+        title-class="text-3xl sm:text-4xl lg:text-[2.45rem]"
+        :overlay-opacity="0.48"
+        :breadcrumbs="[
+            ['label' => 'Beranda', 'url' => route('home')],
+            ['label' => 'Editorial', 'url' => route('insights.index')],
+            ['label' => $definition['name']],
+        ]"
     >
-        <div
-            class="absolute inset-0 -z-10"
-            style="background-image: linear-gradient(90deg, rgba(2, 18, 43, 0.72) 0%, rgba(2, 18, 43, 0.38) 58%, rgba(2, 18, 43, 0.52) 100%), radial-gradient(circle at 82% 18%, rgba(41, 101, 177, 0.22), transparent 34%);"
-        ></div>
-        <div class="mx-auto max-w-7xl px-5 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
-            <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-xs font-semibold text-white/65">
-                <a href="{{ route('home') }}" class="transition hover:text-white">Beranda</a>
-                <span aria-hidden="true">/</span>
-                <a href="{{ route('insights.index') }}" class="transition hover:text-white">Insight</a>
-                <span aria-hidden="true">/</span>
-                <span aria-current="page" class="text-white">{{ $definition['name'] }}</span>
-            </nav>
-
-            <div class="mt-8 max-w-4xl">
-                <p class="text-[11px] font-black uppercase tracking-[0.2em] text-brand-amber">Kanal Editorial</p>
-                <h1 class="mt-3 font-display text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-                    {{ $definition['title'] }}
-                </h1>
-                <p class="mt-6 max-w-3xl text-base font-medium leading-8 text-white/78 sm:text-lg">
-                    {{ $definition['seo_description'] }}
-                </p>
-                <div class="mt-7 flex flex-wrap items-center gap-3">
-                    <span class="rounded-full border border-white/20 bg-white/8 px-4 py-2 text-xs font-bold text-white">
-                        {{ number_format($categoryArticleCount, 0, ',', '.') }} artikel terbit
-                    </span>
-                    @if ($currentPage > 1)
-                        <span class="rounded-full border border-brand-amber/35 bg-brand-amber/10 px-4 py-2 text-xs font-bold text-brand-amber">
-                            Halaman {{ $currentPage }} dari {{ $insights->lastPage() }}
-                        </span>
-                    @endif
-                </div>
-            </div>
+        <div class="flex w-full flex-wrap gap-2.5 lg:justify-end">
+            <span class="inline-flex min-h-10 items-center rounded-full border border-white/25 bg-white/10 px-4 text-xs font-bold text-white backdrop-blur">
+                {{ number_format($categoryArticleCount, 0, ',', '.') }} artikel terbit
+            </span>
+            @if ($currentPage > 1)
+                <span class="inline-flex min-h-10 items-center rounded-full border border-brand-amber/40 bg-brand-amber/10 px-4 text-xs font-bold text-brand-amber backdrop-blur">
+                    Halaman {{ $currentPage }} dari {{ $insights->lastPage() }}
+                </span>
+            @endif
         </div>
-    </section>
-
-    <section aria-labelledby="category-introduction-heading" class="border-b border-slate-200 bg-[#fbfaf7]">
-        <div class="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_280px] lg:px-8 lg:py-12">
-            <div>
-                <h2 id="category-introduction-heading" class="font-display text-2xl font-bold text-brand-navy">
-                    Tentang {{ $definition['name'] }}
-                </h2>
-                <p class="mt-4 max-w-4xl text-[15px] leading-8 text-slate-700">
-                    {{ $definition['introduction'] }}
-                </p>
-            </div>
-            <aside class="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm" aria-label="Navigasi kanal">
-                <p class="text-[10px] font-black uppercase tracking-[0.16em] text-brand-coral">Jelajahi Insight</p>
-                <p class="mt-2 text-sm leading-6 text-slate-600">Temukan analisis lintas kanal atau kembali ke halaman utama editorial.</p>
-                <a href="{{ route('insights.index') }}" class="mt-4 inline-flex min-h-10 items-center text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">
-                    Lihat semua Insight
-                </a>
-            </aside>
-        </div>
-    </section>
+    </x-shared.page-header>
 
     <section id="insight-archive" aria-labelledby="category-articles-heading" class="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">

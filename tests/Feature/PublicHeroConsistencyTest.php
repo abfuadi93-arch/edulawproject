@@ -32,3 +32,41 @@ test('hero halaman kanal memakai tinggi desktop Program sebagai rujukan', functi
             ->and($leftColumnText)->toContain($descriptionExcerpt);
     }
 });
+
+test('hero kategori Editorial mengikuti struktur dan tinggi hero kanal', function (string $category, string $name) {
+    $html = $this->get(route('insights.categories.show', $category))->assertOk()->getContent();
+    $document = new DOMDocument;
+    @$document->loadHTML($html);
+    $heading = $document->getElementsByTagName('h1')->item(0);
+    $hero = $heading?->parentNode;
+
+    while ($hero instanceof DOMElement && $hero->tagName !== 'section') {
+        $hero = $hero->parentNode;
+    }
+
+    $heroMarkup = $document->saveHTML($hero);
+    $heroText = html_entity_decode($hero->textContent, ENT_QUOTES | ENT_HTML5);
+    $leftColumnText = html_entity_decode($heading->parentNode->textContent, ENT_QUOTES | ENT_HTML5);
+    $titleLines = collect($heading->childNodes)
+        ->filter(fn ($node): bool => $node instanceof DOMElement && $node->tagName === 'span')
+        ->map(fn (DOMElement $node): string => trim($node->textContent))
+        ->values();
+
+    expect($hero)->toBeInstanceOf(DOMElement::class)
+        ->and($heroMarkup)->toContain('lg:min-h-[240px]')
+        ->and($heroText)
+        ->toContain('Beranda')
+        ->toContain('Editorial')
+        ->toContain($name)
+        ->toContain('Kanal Editorial')
+        ->toContain('artikel terbit')
+        ->and($leftColumnText)->toContain($name)
+        ->and($titleLines)->toHaveCount(2)
+        ->and($titleLines->first())->toEndWith(':')
+        ->and($titleLines->last())->not->toBeEmpty();
+})->with([
+    'law and governance' => ['law-governance', 'Law & Governance'],
+    'legal 101' => ['legal-101', 'Legal 101'],
+    'regulatory update' => ['regulatory-update', 'Regulatory Update'],
+    'edulaw insight' => ['edulaw-insight', 'Edulaw Insight'],
+]);
