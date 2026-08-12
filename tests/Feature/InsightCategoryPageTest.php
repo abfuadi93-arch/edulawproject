@@ -34,6 +34,7 @@ test('core editorial categories have permanent indexable landing pages', functio
         ->assertSee($insight->title)
         ->assertSee('Tentang '.$name)
         ->assertSee('Kanal Terkait')
+        ->assertSee(asset('images/hero/insight-category-pattern.webp'), false)
         ->assertSee('application/ld+json', false)
         ->assertViewHas('definition', function (array $definition) use ($name): bool {
             $wordCount = str_word_count($definition['introduction']);

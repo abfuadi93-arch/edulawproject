@@ -14,6 +14,7 @@
     'descriptionClass' => null,
     'accentLine' => false,
     'overlayOpacity' => 0.72,
+    'channelHeader' => false,
 ])
 
 @php
@@ -53,7 +54,7 @@
     </style>
 @endonce
 
-<section class="relative isolate overflow-hidden border-b border-white/10 text-white" style="background-color: #06132a;">
+<section class="relative isolate overflow-hidden text-white" style="background-color: #06132a;">
     @if ($hasBackground)
         <img
             src="{{ $backgroundImage }}"
@@ -67,7 +68,11 @@
     <div class="{{ $containerClass ?: $defaultContainerClass }}">
         <div class="min-w-0 justify-self-start text-left">
             @if (! empty($breadcrumbs))
-                <nav class="flex flex-wrap items-center gap-2 {{ $compact ? 'text-xs' : 'text-sm' }} font-bold {{ $isDarkHero ? 'text-white/68' : 'text-slate-500' }}">
+                <nav @class([
+                    'flex flex-wrap items-center',
+                    'gap-1.5 text-[11px] font-medium text-white/55' => $channelHeader,
+                    'gap-2 '.($compact ? 'text-xs' : 'text-sm').' font-bold '.($isDarkHero ? 'text-white/68' : 'text-slate-500') => ! $channelHeader,
+                ]) aria-label="Breadcrumb">
                     @foreach ($breadcrumbs as $breadcrumb)
                         @php
                             $breadcrumbLabel = is_array($breadcrumb) ? ($breadcrumb['label'] ?? null) : null;
@@ -79,11 +84,11 @@
                         @endif
 
                         @if (! $loop->first)
-                            <span class="{{ $isDarkHero ? 'text-white/42' : 'text-slate-300' }}">/</span>
+                            <span class="{{ $channelHeader ? '' : ($isDarkHero ? 'text-white/42' : 'text-slate-300') }}" aria-hidden="true">/</span>
                         @endif
 
                         @if (! empty($breadcrumbUrl) && ! $loop->last)
-                            <a href="{{ url($breadcrumbUrl) }}" class="transition {{ $isDarkHero ? 'hover:text-white' : 'hover:text-brand-ink' }}">
+                            <a href="{{ url($breadcrumbUrl) }}" class="{{ $channelHeader ? 'rounded-sm transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber' : 'transition '.($isDarkHero ? 'hover:text-white' : 'hover:text-brand-ink') }}">
                                 {{ $breadcrumbLabel }}
                             </a>
                         @else
@@ -94,19 +99,29 @@
             @endif
 
             @if ($eyebrow)
-                <p class="{{ $compact ? 'mt-2' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $isDarkHero ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
-                    {{ $eyebrow }}
-                </p>
+                @if ($channelHeader)
+                    <p class="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-amber">{{ $eyebrow }}</p>
+                @else
+                    <p class="{{ $compact ? 'mt-2' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $isDarkHero ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
+                        {{ $eyebrow }}
+                    </p>
+                @endif
             @endif
 
-            <h1 class="{{ $eyebrow ? 'mt-2' : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} {{ $titleWidthClass }} font-black leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
+            <h1 class="{{ $eyebrow ? ($channelHeader ? 'mt-1' : 'mt-2') : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} {{ $titleWidthClass }} font-black leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
                 {{ $title }}
             </h1>
+
+            @if ($channelHeader && $description)
+                <p class="mt-1 max-w-2xl text-pretty text-sm leading-6 text-white/78">
+                    {{ $description }}
+                </p>
+            @endif
         </div>
 
-        @if ($description || ! $slot->isEmpty())
+        @if ((! $channelHeader && $description) || ! $slot->isEmpty())
             <div class="edulaw-page-header-right min-w-0 lg:ml-auto lg:w-full lg:justify-self-end lg:text-right">
-                @if ($description)
+                @if (! $channelHeader && $description)
                     <p class="edulaw-page-header-description {{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-sm leading-6' : 'text-base leading-8').' '.($isDarkHero ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto lg:text-right' }}">
                         {{ $description }}
                     </p>
@@ -117,7 +132,7 @@
                 @endif
 
                 @if (! $slot->isEmpty())
-                    <div class="edulaw-page-header-content {{ $description ? ($compact ? 'mt-4' : 'mt-7') : '' }} {{ $contentClass ?: 'lg:ml-auto lg:flex lg:max-w-2xl lg:flex-col lg:items-end lg:text-right' }}">
+                    <div class="edulaw-page-header-content {{ ! $channelHeader && $description ? ($compact ? 'mt-4' : 'mt-7') : '' }} {{ $contentClass ?: 'lg:ml-auto lg:flex lg:max-w-2xl lg:flex-col lg:items-end lg:text-right' }}">
                         {{ $slot }}
                     </div>
                 @endif

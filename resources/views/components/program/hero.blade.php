@@ -20,27 +20,23 @@
     <div class="mx-auto flex max-w-[1320px] items-center px-5 py-8 sm:px-6 lg:min-h-[240px] lg:px-8 lg:py-8">
         <div class="grid w-full items-center gap-6 lg:grid-cols-2">
             <div class="max-w-3xl justify-self-start text-left">
-                <nav class="mb-4 flex items-center gap-2 text-xs font-bold text-white/70" aria-label="Breadcrumb">
-                    <a href="{{ $homeUrl }}" class="transition hover:text-white">Beranda</a>
+                <nav class="flex items-center gap-1.5 text-[11px] font-medium text-white/55" aria-label="Breadcrumb">
+                    <a href="{{ $homeUrl }}" class="rounded-sm transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Beranda</a>
                     <span aria-hidden="true">/</span>
                     <span class="text-white">Program</span>
                 </nav>
 
-                <span class="inline-flex items-center gap-2 rounded-full border border-white/12 bg-white/10 px-3 py-1.5 text-[10px] font-black uppercase tracking-[0.22em] text-white shadow-sm backdrop-blur">
-                    <span class="h-1.5 w-1.5 rounded-full bg-[#D99A25]"></span>
-                    Katalog Program
-                </span>
+                <p class="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-amber">Kanal Program</p>
 
-                <h1 class="mt-3 max-w-2xl text-3xl font-black leading-[1.08] tracking-normal text-white sm:text-4xl lg:text-[2.45rem]">
+                <h1 class="mt-1 max-w-2xl text-3xl font-black leading-[1.08] tracking-normal text-white sm:text-4xl lg:text-[2.45rem]">
                     Program Edulaw
                 </h1>
-            </div>
-
-            <div class="flex min-w-0 flex-col items-end gap-4 text-right lg:justify-self-end">
-                <p class="max-w-2xl text-sm leading-6 text-white/78 lg:ml-auto">
+                <p class="mt-1 max-w-2xl text-pretty text-sm leading-6 text-white/78">
                     Program Edulaw Project dirancang sebagai ruang belajar, diskusi, riset, dan kolaborasi untuk memperkuat literasi hukum publik yang setara, relevan, dan berdampak.
                 </p>
+            </div>
 
+            <div class="flex min-w-0 flex-col items-end text-right lg:justify-self-end">
                 <div class="flex w-full max-w-sm flex-col rounded-[20px] border border-white/12 bg-white/10 p-1.5 text-right shadow-2xl shadow-black/20 backdrop-blur md:ml-auto md:w-auto md:max-w-none md:flex-row md:items-center md:justify-end">
                     @foreach ($stats as $stat)
                         <x-program.statistic-card

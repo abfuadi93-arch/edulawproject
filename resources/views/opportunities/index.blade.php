@@ -236,7 +236,8 @@
     <x-shared.page-header
         title="Opportunities"
         :compact="true"
-        eyebrow="Kanal Pengembangan"
+        eyebrow="Kanal Opportunities"
+        :channel-header="true"
         description="Temukan beasiswa, magang, fellowship, call for papers, kompetisi, dan peluang kolaborasi di bidang hukum. Bersama membuka akses dan memperluas dampak literasi hukum."
         background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kolaborasi dan pengembangan kapasitas hukum"

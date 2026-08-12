@@ -9,6 +9,7 @@
     $pageTitle = $definition['seo_title'].$pageSuffix;
     $pageDescription = $definition['seo_description'].($currentPage > 1 ? " Halaman {$currentPage}." : '');
     $categoryArticleCount = (int) ($category?->published_insights_count ?? 0);
+    $categoryHeroImage = asset('images/hero/insight-category-pattern.webp');
     $itemListSchemaItems = collect($insights->items())
         ->map(fn ($item): array => [
             'name' => $item->title,
@@ -41,8 +42,15 @@
 
 @section('content')
 <main class="bg-white">
-    <section class="relative isolate overflow-hidden bg-brand-navy text-white">
-        <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_82%_18%,rgba(212,159,59,0.2),transparent_34%),radial-gradient(circle_at_12%_82%,rgba(28,128,121,0.22),transparent_38%)]"></div>
+    <section
+        class="relative isolate overflow-hidden bg-brand-navy text-white"
+        style="background-image: url('{{ $categoryHeroImage }}'); background-position: center; background-size: cover;"
+        data-category-hero-background="{{ $categoryHeroImage }}"
+    >
+        <div
+            class="absolute inset-0 -z-10"
+            style="background-image: linear-gradient(90deg, rgba(2, 18, 43, 0.72) 0%, rgba(2, 18, 43, 0.38) 58%, rgba(2, 18, 43, 0.52) 100%), radial-gradient(circle at 82% 18%, rgba(41, 101, 177, 0.22), transparent 34%);"
+        ></div>
         <div class="mx-auto max-w-7xl px-5 py-14 sm:px-6 sm:py-16 lg:px-8 lg:py-20">
             <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-2 text-xs font-semibold text-white/65">
                 <a href="{{ route('home') }}" class="transition hover:text-white">Beranda</a>

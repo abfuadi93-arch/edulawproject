@@ -597,7 +597,8 @@
     <x-shared.page-header
         title="Riset & Publikasi"
         :compact="true"
-        eyebrow="Repository Riset"
+        eyebrow="Kanal Riset & Publikasi"
+        :channel-header="true"
         description="Repository kajian, policy brief, naskah akademik, working paper, research report, dan buku digital untuk memperkuat literasi hukum dan kebijakan publik."
         background-image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1800&q=85"
         background-alt="Riset dan publikasi hukum Edulaw Project"
