@@ -34,8 +34,7 @@ class AssignedInsightResource extends Resource
 
     public static function canViewAny(): bool
     {
-        return Auth::user()?->can('view_assigned_editorial_insights')
-            || (Auth::user()?->can('view_assigned_editorial_submissions') ?? false);
+        return Auth::user()?->canAccessAssignedEditorialInsights() ?? false;
     }
 
     public static function form(Schema $schema): Schema

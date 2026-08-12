@@ -18,6 +18,7 @@ use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
+use Spatie\Permission\PermissionRegistrar;
 
 beforeEach(function (): void {
     $this->seed(RolePermissionSeeder::class);
@@ -161,6 +162,50 @@ test('editor hanya melihat Naskah Saya yang ditugaskan kepadanya', function () {
     $ids = AssignedInsightResource::getEloquentQuery()->pluck('id');
 
     expect($ids)->toContain($mine->id)->not->toContain($other->id);
+});
+
+test('role editor tetap dapat melihat naskah tugas saat permission editorial belum tersinkron', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $otherEditor = simpleEditorialUser('editor');
+    $mine = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $other = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $service = app(InsightEditorialWorkflowService::class);
+    $service->assignEditor($mine, $editor, $admin);
+    $service->assignEditor($other, $otherEditor, $admin);
+    $mine->refresh();
+    $other->refresh();
+
+    $editor->roles()->firstOrFail()->revokePermissionTo([
+        'view_assigned_editorial_insights',
+        'view_assigned_editorial_submissions',
+        'access_editorial_workspace',
+    ]);
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+    $editor->unsetRelation('roles')->unsetRelation('permissions');
+
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    expect(AssignedInsightResource::canViewAny())->toBeTrue()
+        ->and(EditorialResource::canViewAny())->toBeTrue()
+        ->and(AssignedInsightResource::getEloquentQuery()->pluck('id'))
+        ->toContain($mine->id)
+        ->not->toContain($other->id)
+        ->and(InsightResource::getEloquentQuery()->pluck('id'))
+        ->toContain($mine->id)
+        ->not->toContain($other->id)
+        ->and($editor->can('view', $mine))->toBeTrue()
+        ->and($editor->can('view', $other))->toBeFalse()
+        ->and($editor->can('accessEditorialWorkspace', $mine))->toBeTrue()
+        ->and($editor->can('accessEditorialWorkspace', $other))->toBeFalse();
+
+    $this->get(EditorialResource::getUrl('workspace', ['record' => $mine]))->assertOk();
+
+    Livewire::test(ListAssignedInsights::class)
+        ->assertCanSeeTableRecords([$mine])
+        ->assertCanNotSeeTableRecords([$other]);
 });
 
 test('permission lama tidak membuka semua insight atau aksi administratif bagi editor', function () {

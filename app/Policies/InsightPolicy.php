@@ -20,7 +20,7 @@ class InsightPolicy extends ResourcePermissionPolicy
         }
 
         return $this->isSuperAdmin($user)
-            || (($user->can('view_assigned_editorial_submissions') || $user->can('view_assigned_editorial_insights'))
+            || ($user->canAccessAssignedEditorialInsights()
                 && (int) $record->assigned_editor_id === (int) $user->id)
             || ($user->can('view insights') && (int) $record->created_by === (int) $user->id);
     }
@@ -89,7 +89,7 @@ class InsightPolicy extends ResourcePermissionPolicy
 
     public function review(User $user, Insight $insight): bool
     {
-        return ($user->can('view_assigned_editorial_submissions') || $user->can('view_assigned_editorial_insights'))
+        return $user->canAccessAssignedEditorialInsights()
             && (int) $insight->assigned_editor_id === (int) $user->id
             && $insight->status->canonical() === InsightStatus::Review;
     }
@@ -105,16 +105,13 @@ class InsightPolicy extends ResourcePermissionPolicy
             return true;
         }
 
-        if (! $user->can('access_editorial_workspace') || $insight->status === InsightStatus::Archived) {
+        if ($insight->status === InsightStatus::Archived) {
             return false;
         }
 
-        if (($user->can('view_assigned_editorial_submissions') || $user->can('view_assigned_editorial_insights'))
-            && (int) $insight->assigned_editor_id === (int) $user->id) {
-            return true;
-        }
-
-        return false;
+        return $user->canAccessAssignedEditorialInsights()
+            && (int) $insight->assigned_editor_id === (int) $user->id
+            && ($user->hasAnyRole(['editor', 'Editor']) || $user->can('access_editorial_workspace'));
     }
 
     public function requestRevision(User $user, Insight $insight): bool

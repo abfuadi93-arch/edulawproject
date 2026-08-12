@@ -65,6 +65,13 @@ class User extends Authenticatable implements FilamentUser
         return Insight::query()->where('assigned_editor_id', $this->getKey());
     }
 
+    public function canAccessAssignedEditorialInsights(): bool
+    {
+        return $this->hasAnyRole(['editor', 'Editor'])
+            || $this->can('view_assigned_editorial_insights')
+            || $this->can('view_assigned_editorial_submissions');
+    }
+
     public function editorialNotes(): HasMany
     {
         return $this->hasMany(InsightEditorialNote::class);

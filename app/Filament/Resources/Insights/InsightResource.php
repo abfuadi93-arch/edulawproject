@@ -36,7 +36,6 @@ use Filament\Tables\Filters\SelectFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 
@@ -282,7 +281,7 @@ class InsightResource extends Resource
             return $query;
         }
 
-        if (Gate::forUser($user)->allows('view_assigned_editorial_insights')) {
+        if ($user->canAccessAssignedEditorialInsights()) {
             return $query->where('assigned_editor_id', $user->id);
         }
 

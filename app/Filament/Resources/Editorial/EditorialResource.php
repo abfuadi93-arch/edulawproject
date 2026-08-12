@@ -58,7 +58,7 @@ class EditorialResource extends Resource
     public static function canViewAny(): bool
     {
         return Auth::user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
-            || (Auth::user()?->can('view_assigned_editorial_insights') ?? false);
+            || (Auth::user()?->canAccessAssignedEditorialInsights() ?? false);
     }
 
     public static function form(Schema $schema): Schema
