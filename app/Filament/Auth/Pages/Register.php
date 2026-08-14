@@ -50,11 +50,9 @@ class Register extends BaseRegister
 
         event(new Registered($user));
 
-        $this->sendEmailVerificationNotification($user);
-
         Notification::make()
             ->title('Pendaftaran berhasil')
-            ->body('Akun admin Anda sudah dibuat dan menunggu aktivasi dari super admin.')
+            ->body('Akun admin Anda sudah dibuat. Anda dapat masuk setelah akun diaktifkan oleh super admin.')
             ->success()
             ->send();
 

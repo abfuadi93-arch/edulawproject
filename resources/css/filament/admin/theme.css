@@ -1125,7 +1125,7 @@
 
 /* Account identity is the primary signal; access metadata stays compact. */
 .edulaw-user-table :is(.edulaw-user-account-header, .edulaw-user-account-cell) {
-    width: calc(46% - 3.5rem);
+    width: calc(58% - 3.5rem);
     overflow: hidden;
 }
 
@@ -1136,11 +1136,6 @@
 
 .edulaw-user-table :is(.edulaw-user-status-header, .edulaw-user-status-cell) {
     width: 10%;
-    white-space: nowrap;
-}
-
-.edulaw-user-table :is(.edulaw-user-verification-header, .edulaw-user-verification-cell) {
-    width: 12%;
     white-space: nowrap;
 }
 
@@ -1172,7 +1167,7 @@
     font-weight: 750;
 }
 
-.edulaw-user-table :is(.edulaw-user-role-cell, .edulaw-user-status-cell, .edulaw-user-verification-cell) .fi-badge {
+.edulaw-user-table :is(.edulaw-user-role-cell, .edulaw-user-status-cell) .fi-badge {
     max-width: 100%;
     padding-inline: 0.45rem;
 }

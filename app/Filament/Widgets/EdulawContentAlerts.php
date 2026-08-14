@@ -33,7 +33,7 @@ class EdulawContentAlerts extends Widget
     protected function getViewData(): array
     {
         $debugActive = (bool) config('app.debug');
-        $unverifiedUsers = User::whereNull('email_verified_at')->count();
+        $inactiveUsers = User::where('is_active', false)->count();
 
         return [
             'summary' => [
@@ -49,7 +49,7 @@ class EdulawContentAlerts extends Widget
                 ],
                 [
                     'label' => 'Perlu Ditinjau',
-                    'count' => $unverifiedUsers,
+                    'count' => $inactiveUsers,
                     'tone' => 'primary',
                 ],
             ],
@@ -74,10 +74,10 @@ class EdulawContentAlerts extends Widget
                     'severity' => 'medium',
                     'description' => 'Lengkapi kategori agar filter dan halaman program lebih mudah dipakai.',
                 ] : null,
-                $unverifiedUsers > 0 ? [
-                    'label' => 'Ada email pengguna belum terverifikasi',
+                $inactiveUsers > 0 ? [
+                    'label' => 'Ada akun dengan akses nonaktif',
                     'severity' => 'medium',
-                    'description' => "{$unverifiedUsers} user menunggu verifikasi email.",
+                    'description' => "{$inactiveUsers} akun tidak dapat masuk. Super admin dapat meninjau dan mengaktifkan aksesnya.",
                 ] : null,
             ])->filter()->values(),
         ];

@@ -90,10 +90,12 @@ class UserResource extends Resource
                             ->maxLength(255),
 
                         Toggle::make('is_active')
-                            ->label('Aktif')
+                            ->label('Izinkan akses login')
                             ->default(true)
                             ->disabled(fn (?User $record): bool => $record ? static::isLastActiveSuperAdmin($record) : false)
-                            ->helperText('Super Admin aktif terakhir tidak dapat dinonaktifkan.'),
+                            ->helperText(fn (?User $record): string => $record && static::isLastActiveSuperAdmin($record)
+                                ? 'Super Admin aktif terakhir tidak dapat dinonaktifkan.'
+                                : 'Akun hanya dapat masuk setelah aksesnya diaktifkan oleh super admin.'),
                     ])
                     ->columns(['default' => 1, 'lg' => 2]),
 
@@ -142,22 +144,13 @@ class UserResource extends Resource
                     ->extraCellAttributes(['class' => 'edulaw-user-role-cell']),
 
                 TextColumn::make('is_active')
-                    ->label('Status')
+                    ->label('Akses')
                     ->badge()
                     ->formatStateUsing(fn (bool $state): string => $state ? 'Aktif' : 'Nonaktif')
                     ->color(fn (bool $state): string => $state ? 'success' : 'gray')
                     ->sortable()
                     ->extraHeaderAttributes(['class' => 'edulaw-user-status-header'])
                     ->extraCellAttributes(['class' => 'edulaw-user-status-cell']),
-
-                TextColumn::make('email_verified_at')
-                    ->label('Verifikasi')
-                    ->badge()
-                    ->formatStateUsing(fn ($state): string => $state ? 'Terverifikasi' : 'Belum Terverifikasi')
-                    ->color(fn ($state): string => $state ? 'success' : 'warning')
-                    ->visibleFrom('lg')
-                    ->extraHeaderAttributes(['class' => 'edulaw-user-verification-header'])
-                    ->extraCellAttributes(['class' => 'edulaw-user-verification-cell']),
 
                 TextColumn::make('updated_at')
                     ->label('Diperbarui')
@@ -186,16 +179,9 @@ class UserResource extends Resource
                     ->preload(),
 
                 TernaryFilter::make('is_active')
-                    ->label('Status Aktif'),
-
-                TernaryFilter::make('email_verified')
-                    ->label('Verifikasi Email')
-                    ->trueLabel('Terverifikasi')
-                    ->falseLabel('Belum terverifikasi')
-                    ->queries(
-                        true: fn (Builder $query): Builder => $query->whereNotNull('email_verified_at'),
-                        false: fn (Builder $query): Builder => $query->whereNull('email_verified_at'),
-                    ),
+                    ->label('Status Akses')
+                    ->trueLabel('Akses aktif')
+                    ->falseLabel('Akses nonaktif'),
 
                 TernaryFilter::make('without_role')
                     ->label('Kepemilikan Role')

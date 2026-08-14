@@ -28,5 +28,11 @@ test('admin registration creates inactive account pending approval', function ()
 
     expect($user)->not->toBeNull()
         ->and($user->is_active)->toBeFalse()
+        ->and($user->email_verified_at)->toBeNull()
+        ->and($user->canAccessPanel(Filament::getPanel('admin')))->toBeFalse()
         ->and(Auth::check())->toBeFalse();
+
+    $user->update(['is_active' => true]);
+
+    expect($user->refresh()->canAccessPanel(Filament::getPanel('admin')))->toBeTrue();
 });
