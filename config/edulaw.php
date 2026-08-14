@@ -1,7 +1,7 @@
 <?php
 
 return [
-    'timezone' => 'Asia/Jakarta',
+    'timezone' => env('APP_TIMEZONE', 'Asia/Jakarta'),
 
     'site' => [
         'name' => 'Edulaw Project',
