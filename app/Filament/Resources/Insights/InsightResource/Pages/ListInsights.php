@@ -15,7 +15,9 @@ class ListInsights extends ListRecords
 
     protected function getListDescription(): string
     {
-        return 'Kelola naskah dengan alur sederhana: Draft, Review, dan Published.';
+        return auth()->user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
+            ? 'Kelola seluruh naskah dengan alur sederhana: Draft, Review, dan Published.'
+            : 'Tulisan yang Anda buat sebagai writer, dari Draft hingga Published.';
     }
 
     protected function getCreateButtonLabel(): string

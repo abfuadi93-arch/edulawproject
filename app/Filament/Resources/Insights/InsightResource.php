@@ -57,6 +57,16 @@ class InsightResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'title';
 
+    public static function getNavigationLabel(): string
+    {
+        return static::isSuperAdmin() ? 'Semua Insight' : 'Tulisan Saya';
+    }
+
+    public static function getPluralModelLabel(): string
+    {
+        return static::isSuperAdmin() ? 'Semua Insight' : 'Tulisan Saya';
+    }
+
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
@@ -277,15 +287,16 @@ class InsightResource extends Resource
             return $query->whereRaw('1 = 0');
         }
 
-        if ($user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])) {
+        if (static::isSuperAdmin()) {
             return $query;
         }
 
-        if ($user->canAccessAssignedEditorialInsights()) {
-            return $query->where('assigned_editor_id', $user->id);
-        }
-
         return $query->where('created_by', $user->id);
+    }
+
+    private static function isSuperAdmin(): bool
+    {
+        return Auth::user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin']) ?? false;
     }
 
     public static function canManageEditorialWorkflow(): bool

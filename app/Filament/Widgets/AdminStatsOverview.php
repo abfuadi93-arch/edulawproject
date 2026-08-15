@@ -2,6 +2,8 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\AssignedInsights\AssignedInsightResource;
+use App\Filament\Resources\Insights\InsightResource;
 use App\Models\CollaborationSubmission;
 use App\Models\ContactMessage;
 use App\Models\Insight;
@@ -27,6 +29,13 @@ class AdminStatsOverview extends StatsOverviewWidget
 
     protected function getColumns(): int|array|null
     {
+        if ($this->isContributorDashboard()) {
+            return [
+                'sm' => 2,
+                'lg' => $this->contributorStatCount(),
+            ];
+        }
+
         return [
             'sm' => 2,
             'lg' => 3,
@@ -52,8 +61,8 @@ class AdminStatsOverview extends StatsOverviewWidget
     {
         $user = auth()->user();
 
-        if ($this->isEditorDashboard()) {
-            return $this->getEditorStats();
+        if ($this->isContributorDashboard()) {
+            return $this->getContributorStats();
         }
 
         $counts = Cache::remember('dashboard.stats-overview', now()->addMinutes(5), fn (): array => [
@@ -155,52 +164,94 @@ class AdminStatsOverview extends StatsOverviewWidget
 
     protected function getHeading(): ?string
     {
-        return $this->isEditorDashboard()
-            ? 'Naskah Saya'
+        return $this->isContributorDashboard()
+            ? 'Pekerjaan Editorial Saya'
             : parent::getHeading();
     }
 
     protected function getDescription(): ?string
     {
-        return $this->isEditorDashboard()
-            ? 'Naskah yang ditugaskan dan menunggu keputusan Anda.'
+        return $this->isContributorDashboard()
+            ? 'Tulisan yang Anda buat sebagai writer dan naskah yang ditugaskan kepada Anda sebagai editor.'
             : parent::getDescription();
     }
 
     /**
      * @return array<Stat>
      */
-    private function getEditorStats(): array
+    private function getContributorStats(): array
     {
-        $editorId = auth()->id();
-        $counts = Cache::remember("dashboard.editor-stats-overview.v2.{$editorId}", now()->addMinutes(5), fn (): array => [
-            'review' => Insight::query()->where('assigned_editor_id', $editorId)->where('status', 'review')->count(),
-            'assigned' => Insight::query()->where('assigned_editor_id', $editorId)->count(),
+        $user = auth()->user();
+        $userId = $user?->getKey();
+        $counts = Cache::remember("dashboard.contributor-stats-overview.v3.{$userId}", now()->addMinutes(5), fn (): array => [
+            'written_draft' => Insight::query()->where('created_by', $userId)->where('status', 'draft')->count(),
+            'written' => Insight::query()->where('created_by', $userId)->count(),
+            'assigned_review' => Insight::query()->where('assigned_editor_id', $userId)->where('status', 'review')->count(),
+            'assigned' => Insight::query()->where('assigned_editor_id', $userId)->count(),
         ]);
+        $stats = [];
 
-        return [
-            Stat::make('Naskah Menunggu Review', number_format($counts['review'], 0, ',', '.'))
+        if ($this->canWriteInsights()) {
+            $stats[] = Stat::make('Draft Tulisan Saya', number_format($counts['written_draft'], 0, ',', '.'))
+                ->description('masih dapat Anda kerjakan')
+                ->descriptionIcon('heroicon-o-pencil-square')
+                ->color('primary')
+                ->icon('heroicon-o-document-text')
+                ->url(InsightResource::getUrl('index', ['activeTab' => 'draft']))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-blue']);
+            $stats[] = Stat::make('Tulisan Saya', number_format($counts['written'], 0, ',', '.'))
+                ->description('seluruh tulisan yang Anda buat')
+                ->descriptionIcon('heroicon-o-document-duplicate')
+                ->color('info')
+                ->icon('heroicon-o-pencil')
+                ->url(InsightResource::getUrl('index'))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-indigo']);
+        }
+
+        if ($this->canReviewInsights()) {
+            $stats[] = Stat::make('Menunggu Review Anda', number_format($counts['assigned_review'], 0, ',', '.'))
                 ->description('perlu keputusan Anda')
                 ->descriptionIcon('heroicon-o-clock')
                 ->color('warning')
                 ->icon('heroicon-o-document-magnifying-glass')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']),
-            Stat::make('Naskah Saya', number_format($counts['assigned'], 0, ',', '.'))
+                ->url(AssignedInsightResource::getUrl('index', ['activeTab' => 'review']))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']);
+            $stats[] = Stat::make('Tugas Editor', number_format($counts['assigned'], 0, ',', '.'))
                 ->description('seluruh naskah yang ditugaskan')
                 ->descriptionIcon('heroicon-o-inbox-stack')
-                ->color('primary')
+                ->color('success')
                 ->icon('heroicon-o-inbox-stack')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-blue']),
-        ];
+                ->url(AssignedInsightResource::getUrl('index'))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-emerald']);
+        }
+
+        return $stats;
     }
 
-    private function isEditorDashboard(): bool
+    private function isContributorDashboard(): bool
     {
         $user = auth()->user();
 
         return (bool) $user
-            && $user->hasRole('editor')
-            && ! $user->hasRole('super_admin');
+            && ! $user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
+            && ($this->canWriteInsights() || $this->canReviewInsights());
+    }
+
+    private function canWriteInsights(): bool
+    {
+        $user = auth()->user();
+
+        return (bool) $user && ($user->hasAnyRole(['writer', 'Writer']) || $user->can('create insights'));
+    }
+
+    private function canReviewInsights(): bool
+    {
+        return auth()->user()?->canAccessAssignedEditorialInsights() ?? false;
+    }
+
+    private function contributorStatCount(): int
+    {
+        return ($this->canWriteInsights() ? 2 : 0) + ($this->canReviewInsights() ? 2 : 0);
     }
 
     /**

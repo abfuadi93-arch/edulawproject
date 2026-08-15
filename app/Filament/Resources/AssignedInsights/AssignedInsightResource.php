@@ -22,11 +22,11 @@ class AssignedInsightResource extends Resource
 
     protected static string|\UnitEnum|null $navigationGroup = 'Editorial';
 
-    protected static ?string $navigationLabel = 'Naskah Saya';
+    protected static ?string $navigationLabel = 'Tugas Editor';
 
     protected static ?string $modelLabel = 'Naskah';
 
-    protected static ?string $pluralModelLabel = 'Naskah Saya';
+    protected static ?string $pluralModelLabel = 'Tugas Editor';
 
     protected static string|BackedEnum|null $navigationIcon = 'heroicon-o-inbox-stack';
 

@@ -11,6 +11,11 @@ class ListAssignedInsights extends ListRecords
 {
     protected static string $resource = AssignedInsightResource::class;
 
+    public function getSubheading(): ?string
+    {
+        return 'Naskah yang ditugaskan kepada Anda dalam kapasitas sebagai editor.';
+    }
+
     public function getTabs(): array
     {
         return [

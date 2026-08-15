@@ -147,7 +147,7 @@ test('super admin dapat menugaskan dan mengganti editor tanpa assignment lifecyc
         ->and($changed->editorialActivities()->where('event', 'editor_changed')->exists())->toBeTrue();
 });
 
-test('editor hanya melihat Naskah Saya yang ditugaskan kepadanya', function () {
+test('editor hanya melihat Tugas Editor yang ditugaskan kepadanya', function () {
     $writer = simpleEditorialUser('writer');
     $admin = simpleEditorialUser('super_admin');
     $editor = simpleEditorialUser('editor');
@@ -194,7 +194,7 @@ test('role editor tetap dapat melihat naskah tugas saat permission editorial bel
         ->toContain($mine->id)
         ->not->toContain($other->id)
         ->and(InsightResource::getEloquentQuery()->pluck('id'))
-        ->toContain($mine->id)
+        ->not->toContain($mine->id)
         ->not->toContain($other->id)
         ->and($editor->can('view', $mine))->toBeTrue()
         ->and($editor->can('view', $other))->toBeFalse()
@@ -220,7 +220,7 @@ test('permission lama tidak membuka semua insight atau aksi administratif bagi e
     $this->actingAs($editor);
 
     expect(InsightResource::getEloquentQuery()->pluck('id'))
-        ->toContain($mine->id)
+        ->not->toContain($mine->id)
         ->not->toContain($other->id)
         ->and($editor->can('assignEditor', $other))->toBeFalse()
         ->and($editor->can('archive', $mine))->toBeFalse()
@@ -382,7 +382,7 @@ test('form writer hanya menyediakan simpan draft dan kirim untuk review', functi
         ->assertActionVisible('submit_for_review');
 });
 
-test('tabel Naskah Saya memakai kolom ringkas tanpa workflow teknis', function () {
+test('tabel Tugas Editor memakai kolom ringkas tanpa workflow teknis', function () {
     $writer = simpleEditorialUser('writer');
     $admin = simpleEditorialUser('super_admin');
     $editor = simpleEditorialUser('editor');

@@ -2,10 +2,12 @@
 
 namespace App\Filament\Widgets;
 
+use App\Filament\Resources\AssignedInsights\AssignedInsightResource;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Models\Insight;
 use Filament\Widgets\StatsOverviewWidget;
 use Filament\Widgets\StatsOverviewWidget\Stat;
+use Illuminate\Database\Eloquent\Builder;
 
 class EditorialStatusOverview extends StatsOverviewWidget
 {
@@ -29,7 +31,41 @@ class EditorialStatusOverview extends StatsOverviewWidget
      */
     public static function statusCounts(): array
     {
-        $counts = Insight::query()
+        return static::countsFromQuery(Insight::query());
+    }
+
+    /**
+     * @return array{draft: int, review: int, published: int}
+     */
+    public static function currentUserStatusCounts(): array
+    {
+        $query = Insight::query();
+        $user = auth()->user();
+
+        if ($user && ! $user->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])) {
+            $query->where('assigned_editor_id', $user->getKey());
+        }
+
+        return static::countsFromQuery($query);
+    }
+
+    protected function getHeading(): ?string
+    {
+        return auth()->user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
+            ? parent::getHeading()
+            : 'Status Tugas Editor';
+    }
+
+    protected function getDescription(): ?string
+    {
+        return auth()->user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
+            ? parent::getDescription()
+            : 'Ringkasan naskah yang ditugaskan kepada Anda sebagai editor.';
+    }
+
+    private static function countsFromQuery(Builder $query): array
+    {
+        $counts = $query
             ->selectRaw('status, COUNT(*) as aggregate')
             ->whereIn('status', ['draft', 'review', 'published'])
             ->groupBy('status')
@@ -51,8 +87,10 @@ class EditorialStatusOverview extends StatsOverviewWidget
 
     protected function getStats(): array
     {
-        $counts = static::statusCounts();
-        $indexUrl = InsightResource::getUrl('index');
+        $counts = static::currentUserStatusCounts();
+        $indexUrl = auth()->user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
+            ? InsightResource::getUrl('index')
+            : AssignedInsightResource::getUrl('index');
 
         return [
             Stat::make('Draft', number_format($counts['draft'], 0, ',', '.'))
