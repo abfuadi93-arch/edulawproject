@@ -1,10 +1,18 @@
 <?php
 
+use App\Filament\Resources\Insights\InsightResource;
+use App\Filament\Resources\Insights\InsightResource\Pages\EditInsight;
 use App\Filament\RichEditor\FootnoteRichContentPlugin;
+use App\Models\Author;
 use App\Models\Insight;
+use App\Models\InsightCategory;
 use App\Models\InsightFootnote;
+use App\Models\User;
 use App\Services\InsightFootnoteService;
+use Database\Seeders\RolePermissionSeeder;
+use Filament\Facades\Filament;
 use Illuminate\Support\Str;
+use Livewire\Livewire;
 
 test('footnotes are synchronized from stable markers and numbered by appearance', function () {
     $firstUuid = (string) Str::uuid();
@@ -121,4 +129,58 @@ test('rich editor plugin exposes the footnote action tool and tiptap extension',
     expect(collect($plugin->getEditorTools())->map->getName()->all())->toContain('footnote')
         ->and(collect($plugin->getEditorActions())->map->getName()->all())->toContain('footnote')
         ->and($plugin->getTipTapPhpExtensions())->toHaveCount(1);
+});
+
+test('saved footnote immediately appears in the writer form', function () {
+    $this->seed(RolePermissionSeeder::class);
+
+    $writer = User::query()->create([
+        'name' => 'Penulis Catatan Kaki',
+        'email' => 'footnote-writer@example.test',
+        'password' => 'password',
+        'is_active' => true,
+    ]);
+    $writer->assignRole('writer');
+
+    $category = InsightCategory::query()->create([
+        'name' => 'Kategori Catatan Kaki',
+        'slug' => 'kategori-catatan-kaki',
+    ]);
+    $author = Author::query()->create([
+        'user_id' => $writer->id,
+        'name' => $writer->name,
+        'slug' => 'penulis-catatan-kaki',
+        'is_active' => true,
+    ]);
+    $insight = Insight::query()->create([
+        'created_by' => $writer->id,
+        'updated_by' => $writer->id,
+        'insight_category_id' => $category->id,
+        'title' => 'Form Catatan Kaki',
+        'slug' => 'form-catatan-kaki',
+        'content' => '<p>Isi awal.</p>',
+        'status' => 'draft',
+    ]);
+    $insight->authors()->attach($author, ['author_order' => 1, 'role' => 'Penulis']);
+
+    $uuid = (string) Str::uuid();
+    $content = '<p>Pernyataan hukum<sup data-footnote-id="'.$uuid.'" data-footnote-number="1" data-footnote-content="Sumber hukum tersimpan.">1</sup>.</p>';
+
+    $this->actingAs($writer);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    $component = Livewire::test(EditInsight::class, ['record' => $insight->getRouteKey()])
+        ->set('data.content', $content)
+        ->call('save')
+        ->assertHasNoErrors();
+
+    $footnoteState = collect($component->get('data.footnotes'));
+
+    expect($insight->fresh()->content)->toContain('data-footnote-id="'.$uuid.'"')
+        ->and($insight->footnotes()->where('uuid', $uuid)->value('content'))->toBe('Sumber hukum tersimpan.')
+        ->and($footnoteState->pluck('content'))->toContain('Sumber hukum tersimpan.');
+
+    $this->get(InsightResource::getUrl('edit', ['record' => $insight]))
+        ->assertOk()
+        ->assertSee('Sumber hukum tersimpan.');
 });

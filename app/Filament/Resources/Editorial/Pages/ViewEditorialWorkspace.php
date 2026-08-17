@@ -130,6 +130,10 @@ class ViewEditorialWorkspace extends EditRecord
         }
 
         app(InsightFootnoteService::class)->sync($this->getRecord());
+
+        $this->record = Insight::query()->findOrFail($this->getRecord()->getKey());
+        $this->form->model($this->record);
+        $this->fillForm();
     }
 
     private function runWorkflowAction(callable $callback, string|\Closure $successMessage): void
