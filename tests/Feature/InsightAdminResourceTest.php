@@ -79,6 +79,30 @@ test('insight admin resource rejects h1 inside article content', function () {
     ]))->toThrow(ValidationException::class, 'Isi artikel tidak boleh menggunakan H1');
 });
 
+test('insight admin resource rejects active html and unsafe urls', function (string $content) {
+    expect(InsightResource::contentContainsUnsafeHtml($content))->toBeTrue();
+
+    expect(fn () => InsightResource::prepareFormDataForPersistence([
+        'title' => 'Artikel Tidak Aman',
+        'content' => $content,
+    ]))->toThrow(ValidationException::class, 'HTML aktif atau URL yang tidak aman');
+})->with([
+    'script' => '<p>Isi.</p><script>alert(1)</script>',
+    'inline event' => '<img src="/storage/insights/image.jpg" onerror="alert(1)">',
+    'javascript url' => '<a href="javascript:alert(1)">Tautan</a>',
+    'base64 image' => '<img src="data:image/png;base64,AAAA">',
+]);
+
+test('insight admin resource accepts editorial html emitted by TinyMCE', function () {
+    $content = '<h2>Pembahasan</h2><p><strong>Isi</strong> dengan <a href="https://example.com" target="_blank" rel="noopener">tautan</a>.</p><table><tbody><tr><td>Data</td></tr></tbody></table>';
+
+    expect(InsightResource::contentContainsUnsafeHtml($content))->toBeFalse()
+        ->and(InsightResource::prepareFormDataForPersistence([
+            'title' => 'Artikel Aman',
+            'content' => $content,
+        ])['content'])->toBe($content);
+});
+
 test('published insight requires cover and excerpt during persistence', function () {
     try {
         InsightResource::prepareFormDataForPersistence([

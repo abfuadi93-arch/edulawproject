@@ -170,6 +170,7 @@ class EditorialResource extends Resource
                                 ->label('Daftar Catatan Kaki')
                                 ->helperText('Tambahkan catatan melalui tombol Catatan Kaki pada toolbar. Simpan artikel agar catatan baru muncul di daftar ini.')
                                 ->relationship('footnotes')
+                                ->defaultItems(0)
                                 ->schema([
                                     Textarea::make('content')
                                         ->label('Isi Catatan Kaki')

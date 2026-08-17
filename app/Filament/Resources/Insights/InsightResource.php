@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Insights;
 
 use App\Enums\InsightStatus;
+use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\Editorial\EditorialResource;
 use App\Filament\Resources\Insights\InsightResource\Pages;
-use App\Filament\RichEditor\FootnoteRichContentPlugin;
 use App\Models\Insight;
 use App\Services\InsightEditorialWorkflowService;
 use BackedEnum;
@@ -19,7 +19,6 @@ use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -114,22 +113,23 @@ class InsightResource extends Resource
                                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                     ->maxSize(4096)
                                     ->columnSpanFull(),
-                                RichEditor::make('content')
+                                TinyMceEditor::make('content')
                                     ->label('Isi Artikel')
-                                    ->plugins([new FootnoteRichContentPlugin])
-                                    ->toolbarButtons([
-                                        ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link', 'footnote'],
-                                        ['h2', 'h3'],
-                                        ['alignStart', 'alignCenter', 'alignEnd'],
-                                        ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
-                                        ['table', 'attachFiles'],
-                                        ['undo', 'redo'],
-                                    ])
-                                    ->disableToolbarButtons(['h1'])
+                                    ->placeholder('Tulis isi artikel di sini…')
+                                    ->height(650)
+                                    ->fileAttachmentsDisk('public')
+                                    ->fileAttachmentsDirectory('insights/content-images')
+                                    ->fileAttachmentsVisibility('public')
+                                    ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                    ->fileAttachmentsMaxSize(4096)
                                     ->rule(static function (): \Closure {
                                         return static function (string $attribute, mixed $value, \Closure $fail): void {
                                             if (static::contentContainsH1(is_string($value) ? $value : null)) {
                                                 $fail('Isi artikel tidak boleh menggunakan H1. Gunakan H2 untuk bagian utama dan H3 untuk subbagian.');
+                                            }
+
+                                            if (static::contentContainsUnsafeHtml(is_string($value) ? $value : null)) {
+                                                $fail('Isi artikel mengandung HTML aktif atau URL yang tidak aman. Hapus script, iframe, event handler, dan URL javascript/data.');
                                             }
                                         };
                                     })
@@ -138,6 +138,7 @@ class InsightResource extends Resource
                                     ->label('Daftar Catatan Kaki')
                                     ->helperText('Catatan baru dibuat melalui tombol Catatan Kaki pada toolbar. Simpan artikel agar catatan baru muncul di daftar ini.')
                                     ->relationship('footnotes')
+                                    ->defaultItems(0)
                                     ->schema([
                                         Textarea::make('content')
                                             ->label('Isi Catatan Kaki')
@@ -218,6 +219,12 @@ class InsightResource extends Resource
             throw ValidationException::withMessages(['content' => 'Isi artikel tidak boleh menggunakan H1.']);
         }
 
+        if (static::contentContainsUnsafeHtml($data['content'] ?? null)) {
+            throw ValidationException::withMessages([
+                'content' => 'Isi artikel mengandung HTML aktif atau URL yang tidak aman.',
+            ]);
+        }
+
         $data['slug'] = filled($data['slug'] ?? null) ? Str::slug((string) $data['slug']) : Str::slug((string) ($data['title'] ?? ''));
         $data['excerpt'] = filled($data['excerpt'] ?? null) ? trim((string) $data['excerpt']) : static::excerptFromContent($data['content'] ?? null);
         $data['seo_title'] = filled($data['seo_title'] ?? null) ? trim((string) $data['seo_title']) : ($data['title'] ?? null);
@@ -242,6 +249,15 @@ class InsightResource extends Resource
     public static function contentContainsH1(?string $html): bool
     {
         return preg_match('/<h1\b[^>]*>/i', (string) $html) === 1;
+    }
+
+    public static function contentContainsUnsafeHtml(?string $html): bool
+    {
+        $decodedHtml = html_entity_decode((string) $html, ENT_QUOTES | ENT_HTML5, 'UTF-8');
+
+        return preg_match('/<(?:script|iframe|object|embed|form|input|button|textarea|select|option|meta|link|style)\b/i', $decodedHtml) === 1
+            || preg_match('/\son[a-z]+\s*=\s*/i', $decodedHtml) === 1
+            || preg_match('/\s(?:href|src|xlink:href)\s*=\s*(["\']?)\s*(?:javascript|vbscript|data)\s*:/i', $decodedHtml) === 1;
     }
 
     public static function publishReadinessIssues(Insight $insight): array

@@ -52,7 +52,7 @@
     "src": "_instrument-sans-600-normal-DMks36a2.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-BNvhb5pS.css",
+    "file": "assets/app-DYNV81Nb.css",
     "name": "app",
     "names": [
       "app.css"
@@ -61,7 +61,7 @@
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-BtKUic0F.css",
+    "file": "assets/theme-nEMRf1SG.css",
     "name": "theme",
     "names": [
       "theme.css"
@@ -70,18 +70,24 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-Bu-UpoEI.js",
+    "file": "assets/app-Bx0gt3Lu.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "css": [
-      "assets/app-BNvhb5pS.css"
+      "assets/app-DYNV81Nb.css"
     ]
   },
   "resources/js/filament/rich-editor-footnote.js": {
-    "file": "assets/rich-editor-footnote-CS7lEGBt.js",
+    "file": "assets/rich-editor-footnote-Z8INGbqD.js",
     "name": "rich-editor-footnote",
     "src": "resources/js/filament/rich-editor-footnote.js",
+    "isEntry": true
+  },
+  "resources/js/filament/tinymce-editor.js": {
+    "file": "assets/tinymce-editor-DGdtgm-G.js",
+    "name": "tinymce-editor",
+    "src": "resources/js/filament/tinymce-editor.js",
     "isEntry": true
   }
 }

@@ -131,6 +131,17 @@ test('rich editor plugin exposes the footnote action tool and tiptap extension',
         ->and($plugin->getTipTapPhpExtensions())->toHaveCount(1);
 });
 
+test('built rich editor footnote module keeps its default export', function () {
+    $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true, flags: JSON_THROW_ON_ERROR);
+    $entry = $manifest['resources/js/filament/rich-editor-footnote.js'] ?? null;
+
+    expect($entry)->not->toBeNull();
+
+    $asset = file_get_contents(public_path('build/'.$entry['file']));
+
+    expect($asset)->toMatch('/export\s*(?:default|\{[^}]*\bas\s+default\b[^}]*\})/');
+});
+
 test('saved footnote immediately appears in the writer form', function () {
     $this->seed(RolePermissionSeeder::class);
 
@@ -164,7 +175,7 @@ test('saved footnote immediately appears in the writer form', function () {
     $insight->authors()->attach($author, ['author_order' => 1, 'role' => 'Penulis']);
 
     $uuid = (string) Str::uuid();
-    $content = '<p>Pernyataan hukum<sup data-footnote-id="'.$uuid.'" data-footnote-number="1" data-footnote-content="Sumber hukum tersimpan.">1</sup>.</p>';
+    $content = '<p>Pernyataan hukum<sup class="edulaw-footnote-ref" data-footnote-id="'.$uuid.'" data-footnote-number="1" data-footnote-content="Sumber hukum tersimpan.">1</sup>.</p>';
 
     $this->actingAs($writer);
     Filament::setCurrentPanel(Filament::getPanel('admin'));

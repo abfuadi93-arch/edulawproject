@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use App\Filament\Support\ViteAlpineComponent;
 use App\Models\Author;
 use App\Models\CollaborationSubmission;
 use App\Models\ContactMessage;
@@ -31,9 +32,12 @@ use App\Policies\RolePolicy;
 use App\Policies\TagPolicy;
 use App\Policies\UserPolicy;
 use App\Support\EdulawSite;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Foundation\ViteException;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Permission;
 use Spatie\Permission\Models\Role;
@@ -54,6 +58,18 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Model::unguard();
+
+        try {
+            $tinyMceAsset = Vite::asset('resources/js/filament/tinymce-editor.js');
+        } catch (ViteException) {
+            $tinyMceAsset = null;
+        }
+
+        if ($tinyMceAsset) {
+            FilamentAsset::register([
+                ViteAlpineComponent::make('edulaw-tinymce-editor', $tinyMceAsset),
+            ]);
+        }
 
         Gate::before(function (User $user): ?bool {
             return $user->hasRole('super_admin') ? true : null;
