@@ -140,23 +140,37 @@ class InsightEditorialWorkflowService
             throw ValidationException::withMessages(['editor_notes' => 'Catatan untuk Penulis wajib diisi.']);
         }
 
-        $insight->forceFill([
-            'editor_notes' => trim($note),
-            'updated_by' => $actor->id,
-        ])->save();
+        $insight = DB::transaction(function () use ($insight, $actor, $note): Insight {
+            $locked = $this->lock($insight);
+            $this->assertStatus($locked, InsightStatus::Review);
+            $note = trim($note);
 
-        $insight->editorialNotes()->create([
-            'user_id' => $actor->id,
-            'revision_round' => 0,
-            'type' => 'note',
-            'status' => 'open',
-            'note' => trim($note),
-            'is_visible_to_writer' => true,
-        ]);
+            $locked->editorialNotes()->create([
+                'user_id' => $actor->id,
+                'revision_round' => 0,
+                'type' => 'note',
+                'status' => 'open',
+                'note' => $note,
+                'is_visible_to_writer' => true,
+            ]);
 
-        $this->recordActivity($insight, $actor, 'editor_note_saved', 'Editor menyimpan catatan untuk Penulis.');
+            return $this->transition(
+                $locked,
+                $actor,
+                InsightStatus::Draft,
+                'editor_note_saved',
+                'Editor menyimpan catatan untuk Penulis dan membuka kembali akses edit.',
+                [
+                    'editor_notes' => $note,
+                    'revision_requested_at' => now(),
+                    'updated_by' => $actor->id,
+                ],
+            );
+        });
 
-        return $insight->refresh();
+        app(InsightNotificationService::class)->notifyRevisionRequested($insight);
+
+        return $insight;
     }
 
     public function publish(Insight $insight, User $actor): Insight

@@ -243,6 +243,70 @@ test('editor dapat meminta perbaikan dan naskah kembali menjadi draft', function
         ->and($result->editorialNotes()->where('type', 'revision_request')->exists())->toBeTrue();
 });
 
+test('menyimpan catatan editor membuka kembali akses edit penulis', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $service = app(InsightEditorialWorkflowService::class);
+    $insight = $service->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
+
+    $result = $service->addEditorialNote($insight, $editor, 'Perjelas argumentasi pada bagian penutup.');
+
+    expect($result->status)->toBe(InsightStatus::Draft)
+        ->and($result->editor_notes)->toBe('Perjelas argumentasi pada bagian penutup.')
+        ->and($result->revision_requested_at)->not->toBeNull()
+        ->and($writer->can('update', $result))->toBeTrue()
+        ->and($result->editorialNotes()->where('type', 'note')->exists())->toBeTrue()
+        ->and($result->statusHistories()->where('from_status', 'review')->where('to_status', 'draft')->exists())->toBeTrue()
+        ->and($result->editorialActivities()->where('event', 'editor_note_saved')->where('to_status', 'draft')->exists())->toBeTrue()
+        ->and($writer->notifications()->latest()->first()?->data['notification_type'] ?? null)->toBe('revision_requested');
+});
+
+test('migrasi membuka catatan lama hanya jika belum ada pengiriman ulang', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $service = app(InsightEditorialWorkflowService::class);
+
+    $waitingForWriter = $service->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
+    $waitingForWriter->editorialActivities()->create([
+        'actor_id' => $editor->id,
+        'event' => 'editor_note_saved',
+        'description' => 'Editor menyimpan catatan untuk Penulis.',
+    ]);
+
+    $alreadyResubmitted = $service->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
+    $alreadyResubmitted->editorialActivities()->create([
+        'actor_id' => $editor->id,
+        'event' => 'editor_note_saved',
+        'description' => 'Editor menyimpan catatan untuk Penulis.',
+    ]);
+    $alreadyResubmitted->editorialActivities()->create([
+        'actor_id' => $writer->id,
+        'event' => 'resubmitted_for_review',
+        'description' => 'Penulis mengirim ulang naskah untuk review.',
+    ]);
+
+    $migration = require database_path('migrations/2026_08_17_170000_reopen_insights_after_editor_notes.php');
+    $migration->up();
+
+    expect($waitingForWriter->fresh()->status)->toBe(InsightStatus::Draft)
+        ->and($waitingForWriter->statusHistories()->where('from_status', 'review')->where('to_status', 'draft')->exists())->toBeTrue()
+        ->and($alreadyResubmitted->fresh()->status)->toBe(InsightStatus::Review);
+});
+
 test('catatan editor wajib saat meminta perbaikan', function () {
     $writer = simpleEditorialUser('writer');
     $admin = simpleEditorialUser('super_admin');
@@ -339,6 +403,34 @@ test('workspace editor hanya menampilkan action sederhana', function () {
         ->assertActionVisible('request_revision')
         ->assertActionVisible('publish')
         ->assertActionHidden('assign_editor');
+});
+
+test('tombol simpan workspace mengembalikan naskah ke penulis saat catatan diisi', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $insight = app(InsightEditorialWorkflowService::class)->assignEditor(
+        simpleEditorialInsight($writer, ['status' => InsightStatus::Review]),
+        $editor,
+        $admin,
+    );
+
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->set('data.editor_notes', 'Perbaiki uraian dan tambahkan sumber primer.')
+        ->callAction('save')
+        ->assertHasNoActionErrors();
+
+    $insight->refresh();
+
+    expect($insight->status)->toBe(InsightStatus::Draft)
+        ->and($writer->can('update', $insight))->toBeTrue();
+
+    $this->actingAs($writer)
+        ->get(InsightResource::getUrl('edit', ['record' => $insight]))
+        ->assertOk();
 });
 
 test('action Terbitkan menyimpan Jadwal Terbit dari workspace', function () {
