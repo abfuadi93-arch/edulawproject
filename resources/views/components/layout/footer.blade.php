@@ -100,6 +100,9 @@
             <h2 class="text-sm font-extrabold text-white">Terhubung</h2>
             <div class="mt-5 grid gap-3" aria-label="Media sosial Edulaw Project">
                 @foreach ($socialLinks as $link)
+                    @if ($link['label'] === 'Email')
+                        <!--email_off-->
+                    @endif
                     <a
                         href="{{ $link['url'] }}"
                         @if ($link['label'] !== 'Email') target="_blank" rel="noopener noreferrer" @endif
@@ -119,6 +122,9 @@
                         </span>
                         {{ $link['label'] }}
                     </a>
+                    @if ($link['label'] === 'Email')
+                        <!--/email_off-->
+                    @endif
                 @endforeach
             </div>
         </div>
@@ -127,7 +133,9 @@
             <h2 class="text-sm font-extrabold text-white">Hubungi Kami</h2>
             <div class="mt-5 grid gap-3 text-xs font-medium text-slate-200">
                 @if ($emailUrl)
+                    <!--email_off-->
                     <a href="{{ $emailUrl }}" class="break-all transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $email }}</a>
+                    <!--/email_off-->
                 @endif
                 @if ($whatsappUrl && $whatsappLabel)
                     <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $whatsappLabel }}</a>

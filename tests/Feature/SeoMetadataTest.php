@@ -62,6 +62,30 @@ test('administrative html is excluded from crawling and indexing', function () {
         ->assertSee('<meta name="robots" content="noindex,nofollow">', false);
 });
 
+test('www requests redirect permanently to the configured canonical host', function () {
+    config(['app.url' => 'https://edulawproject.id']);
+
+    $this->get('https://www.edulawproject.id/insight?utm_source=google')
+        ->assertMovedPermanently()
+        ->assertRedirect('https://edulawproject.id/insight?utm_source=google');
+});
+
+test('canonical host requests are not redirected', function () {
+    config(['app.url' => 'https://edulawproject.id']);
+
+    $this->get('https://edulawproject.id/')
+        ->assertOk()
+        ->assertSee('<link rel="canonical" href="https://edulawproject.id">', false);
+});
+
+test('public email links opt out of Cloudflare email rewriting', function () {
+    $this->get(route('contact.index'))
+        ->assertOk()
+        ->assertSee('<!--email_off-->', false)
+        ->assertSee('href="mailto:edulawproject@gmail.com"', false)
+        ->assertSee('<!--/email_off-->', false);
+});
+
 test('robots file is available with sitemap and parameter exclusions', function () {
     $this->get(route('robots'))
         ->assertOk()

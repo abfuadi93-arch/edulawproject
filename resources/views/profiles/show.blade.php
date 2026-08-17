@@ -829,7 +829,9 @@
                             @if ($author->email)
                                 <div>
                                     <dt>Email</dt>
+                                    <!--email_off-->
                                     <dd><a href="mailto:{{ $author->email }}">{{ $author->email }}</a></dd>
+                                    <!--/email_off-->
                                 </div>
                             @endif
                             @foreach ($profileLinks as $label => $url)

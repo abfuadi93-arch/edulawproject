@@ -106,6 +106,9 @@
 
             <div class="mt-10 grid gap-6 md:grid-cols-3">
                 @foreach ($contactChannels as $channel)
+                    @if ($channel['icon'] === 'mail')
+                        <!--email_off-->
+                    @endif
                     <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-brand-silver hover:shadow-xl hover:shadow-slate-900/5">
                         <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-navy text-white">
                             @if ($channel['icon'] === 'mail')
@@ -150,6 +153,9 @@
                             </svg>
                         </a>
                     </article>
+                    @if ($channel['icon'] === 'mail')
+                        <!--/email_off-->
+                    @endif
                 @endforeach
             </div>
         </div>
