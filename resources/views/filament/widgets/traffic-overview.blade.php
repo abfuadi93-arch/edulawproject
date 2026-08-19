@@ -86,8 +86,8 @@
                     >
                         <defs>
                             <linearGradient id="trafficBarGradient" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="0%" stop-color="#2563eb" />
-                                <stop offset="100%" stop-color="#60a5fa" />
+                                <stop offset="0%" stop-color="#1f3c69" />
+                                <stop offset="100%" stop-color="#8ca8c8" />
                             </linearGradient>
                         </defs>
 
@@ -116,7 +116,7 @@
                                 x="{{ $point['x'] - 13 }}"
                                 y="{{ max(24, $point['viewsY'] - 9) }}"
                                 text-anchor="middle"
-                                fill="#1d4ed8"
+                                fill="#1f3c69"
                                 font-size="12"
                                 font-weight="800"
                             >{{ $point['views'] }}</text>

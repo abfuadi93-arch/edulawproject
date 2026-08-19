@@ -3,9 +3,13 @@
 use App\Filament\Resources\AssignedInsights\AssignedInsightResource;
 use App\Filament\Resources\Insights\InsightResource;
 use App\Filament\Widgets\AdminStatsOverview;
-use App\Filament\Widgets\EditorialWorkQueueWidget;
+use App\Filament\Widgets\EditorialPipelineWidget;
 use App\Filament\Widgets\EditorialStatusOverview;
+use App\Filament\Widgets\EditorialWorkQueueWidget;
+use App\Filament\Widgets\LatestInsightsWidget;
+use App\Filament\Widgets\RecentActivityWidget;
 use App\Models\Insight;
+use App\Models\InsightEditorialActivity;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Filament\Facades\Filament;
@@ -107,4 +111,54 @@ test('dashboard memisahkan tulisan writer dan tugas editor untuk akun dengan dua
         ->assertSee('Tulisan Buatan Saya')
         ->assertSee('Naskah Tugas Editor Saya')
         ->assertDontSee('Naskah Milik Pengguna Lain');
+});
+
+test('dashboard super admin menampilkan metrik editorial tabel insight dan audit activity nyata', function () {
+    $this->seed(RolePermissionSeeder::class);
+
+    $user = User::query()->create([
+        'name' => 'Super Admin Dashboard',
+        'email' => 'dashboard-admin@example.test',
+        'password' => 'password',
+        'is_active' => true,
+    ]);
+    $user->assignRole('super_admin');
+
+    $insight = Insight::query()->create([
+        'title' => 'Naskah Audit Dashboard',
+        'slug' => 'naskah-audit-dashboard',
+        'status' => 'review',
+        'created_by' => $user->id,
+        'assigned_editor_id' => $user->id,
+    ]);
+
+    InsightEditorialActivity::query()->create([
+        'insight_id' => $insight->id,
+        'actor_id' => $user->id,
+        'event' => 'review_started',
+        'description' => 'Editor memulai review naskah.',
+    ]);
+
+    $this->actingAs($user);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(AdminStatsOverview::class)
+        ->assertSee('Ringkasan Edulaw')
+        ->assertSee('Total Insight')
+        ->assertSee('Insight Terbit')
+        ->assertSee('Dalam Review')
+        ->assertSee('Kunjungan 30 Hari');
+
+    Livewire::test(EditorialPipelineWidget::class)
+        ->assertSee('Aktivitas Editorial')
+        ->assertSee('Naskah Audit Dashboard');
+
+    Livewire::test(LatestInsightsWidget::class)
+        ->assertSee('Insight Terbaru')
+        ->assertSee('Naskah Audit Dashboard');
+
+    Livewire::test(RecentActivityWidget::class)
+        ->assertSee('Aktivitas Terbaru')
+        ->assertSee('memulai review naskah')
+        ->assertSee('Naskah Audit Dashboard');
 });

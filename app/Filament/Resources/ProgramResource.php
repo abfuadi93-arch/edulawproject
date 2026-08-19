@@ -47,7 +47,7 @@ class ProgramResource extends Resource
 {
     protected static ?string $model = Program::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Publikasi & Program';
 
     protected static ?string $navigationLabel = 'Program';
 

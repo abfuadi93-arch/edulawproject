@@ -13,15 +13,18 @@ class PopularInsightsWidget extends Widget
 {
     protected string $view = 'filament.widgets.popular-insights';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 12,
+    ];
 
-    protected static ?int $sort = -26;
+    protected static ?int $sort = 20;
 
     protected static bool $isLazy = false;
 
     public static function canView(): bool
     {
-        return EditorialStatusOverview::canView();
+        return auth()->user()?->can('view insights') ?? false;
     }
 
     public static function items(): Collection

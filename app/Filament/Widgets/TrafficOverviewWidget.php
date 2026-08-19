@@ -14,9 +14,12 @@ class TrafficOverviewWidget extends Widget
 
     protected string $view = 'filament.widgets.traffic-overview';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 12,
+    ];
 
-    protected static ?int $sort = 20;
+    protected static ?int $sort = 0;
 
     protected static bool $isLazy = false;
 

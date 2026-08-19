@@ -10,6 +10,7 @@ use App\Filament\Resources\Publications\PublicationResource;
 use App\Models\CollaborationSubmission;
 use App\Models\ContactMessage;
 use App\Models\Insight;
+use App\Models\InsightEditorialActivity;
 use App\Models\Program;
 use App\Models\Publication;
 use Filament\Widgets\Widget;
@@ -22,10 +23,10 @@ class RecentActivityWidget extends Widget
 
     protected int|string|array $columnSpan = [
         'md' => 6,
-        'xl' => 6,
+        'xl' => 5,
     ];
 
-    protected static ?int $sort = 30;
+    protected static ?int $sort = 10;
 
     protected static bool $isLazy = false;
 
@@ -44,8 +45,9 @@ class RecentActivityWidget extends Widget
 
     protected function getViewData(): array
     {
+        $editorialActivities = $this->mapEditorialAudit();
         $activities = collect()
-            ->merge($this->mapInsights())
+            ->merge($editorialActivities->isNotEmpty() ? $editorialActivities : $this->mapInsights())
             ->merge($this->mapPublications())
             ->merge($this->mapPrograms())
             ->merge($this->mapMessages())
@@ -57,6 +59,31 @@ class RecentActivityWidget extends Widget
         return [
             'activities' => $activities,
         ];
+    }
+
+    private function mapEditorialAudit(): Collection
+    {
+        if (! auth()->user()?->can('view insights')) {
+            return collect();
+        }
+
+        return InsightEditorialActivity::query()
+            ->with(['actor', 'insight'])
+            ->whereIn('insight_id', InsightResource::getEloquentQuery()->select('insights.id'))
+            ->latest('created_at')
+            ->take(5)
+            ->get()
+            ->filter(fn (InsightEditorialActivity $activity): bool => (bool) $activity->insight)
+            ->map(fn (InsightEditorialActivity $activity): array => $this->activity(
+                userName: $activity->actor?->name ?: 'Edulaw Admin',
+                action: $this->editorialEventLabel($activity->event),
+                title: $activity->insight?->title,
+                date: $activity->created_at,
+                tone: $this->editorialTone($activity),
+                url: InsightResource::canEdit($activity->insight)
+                    ? InsightResource::getUrl('edit', ['record' => $activity->insight])
+                    : InsightResource::getUrl('index'),
+            ));
     }
 
     private function mapInsights(): Collection
@@ -194,5 +221,47 @@ class RecentActivityWidget extends Widget
             ->take(2)
             ->map(fn (string $word): string => Str::upper(Str::substr($word, 0, 1)))
             ->join('') ?: 'EA';
+    }
+
+    private function editorialEventLabel(string $event): string
+    {
+        return match ($event) {
+            'draft_created' => 'membuat draft Insight',
+            'submitted_for_review',
+            'submission_submitted' => 'mengirim naskah untuk review',
+            'resubmitted_for_review' => 'mengirim ulang naskah',
+            'editor_assigned' => 'menugaskan Editor',
+            'editor_changed' => 'mengganti Editor',
+            'assignment_accepted' => 'menerima penugasan Editor',
+            'assignment_completed' => 'menyelesaikan penugasan Editor',
+            'editor_note_saved' => 'menyimpan catatan editorial',
+            'review_started' => 'memulai review naskah',
+            'revision_requested' => 'meminta revisi',
+            'revision_submitted' => 'mengirim hasil revisi',
+            'insight_approved' => 'menyetujui naskah',
+            'published',
+            'insight_published' => 'menerbitkan Insight',
+            'notification_sent' => 'mengirim notifikasi editorial',
+            'workflow_stage_changed' => 'memindahkan tahap editorial',
+            'archived' => 'mengarsipkan Insight',
+            default => Str::headline($event),
+        };
+    }
+
+    private function editorialTone(InsightEditorialActivity $activity): string
+    {
+        return match ($activity->to_status) {
+            'published' => 'green',
+            'archived' => 'gray',
+            'draft' => 'orange',
+            default => match (true) {
+                str_contains($activity->event, 'published'),
+                str_contains($activity->event, 'approved') => 'green',
+                str_contains($activity->event, 'revision') => 'orange',
+                str_contains($activity->event, 'editor'),
+                str_contains($activity->event, 'assignment') => 'purple',
+                default => 'blue',
+            },
+        };
     }
 }

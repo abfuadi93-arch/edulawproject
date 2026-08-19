@@ -11,19 +11,25 @@ use Illuminate\Database\Eloquent\Builder;
 
 class EditorialStatusOverview extends StatsOverviewWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 12,
+    ];
 
     protected ?string $heading = 'Status Editorial';
 
     protected ?string $description = 'Ringkasan alur Insight yang aktif.';
 
-    protected static ?int $sort = -29;
+    protected static ?int $sort = -85;
 
     protected static bool $isLazy = false;
 
     public static function canView(): bool
     {
-        return static::canMonitorEditorial();
+        $user = auth()->user();
+
+        return static::canMonitorEditorial()
+            && ! $user?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin']);
     }
 
     /**

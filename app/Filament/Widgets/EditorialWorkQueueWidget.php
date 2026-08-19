@@ -15,9 +15,12 @@ class EditorialWorkQueueWidget extends Widget
 {
     protected string $view = 'filament.widgets.editorial-work-queue';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 12,
+    ];
 
-    protected static ?int $sort = -19;
+    protected static ?int $sort = -70;
 
     protected static bool $isLazy = false;
 

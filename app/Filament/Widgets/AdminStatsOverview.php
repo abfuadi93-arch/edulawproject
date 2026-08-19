@@ -3,11 +3,17 @@
 namespace App\Filament\Widgets;
 
 use App\Filament\Resources\AssignedInsights\AssignedInsightResource;
+use App\Filament\Resources\Authors\AuthorResource;
 use App\Filament\Resources\Insights\InsightResource;
-use App\Models\CollaborationSubmission;
-use App\Models\ContactMessage;
+use App\Filament\Resources\Multimedia\MultimediaResource;
+use App\Filament\Resources\Opportunities\OpportunityResource;
+use App\Filament\Resources\ProgramResource;
+use App\Filament\Resources\Publications\PublicationResource;
+use App\Models\Author;
 use App\Models\Insight;
 use App\Models\Multimedia;
+use App\Models\Opportunity;
+use App\Models\PageVisit;
 use App\Models\Program;
 use App\Models\Publication;
 use Filament\Widgets\StatsOverviewWidget;
@@ -17,13 +23,16 @@ use Illuminate\Support\Facades\Cache;
 
 class AdminStatsOverview extends StatsOverviewWidget
 {
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 12,
+    ];
 
-    protected ?string $heading = 'Inventaris Konten';
+    protected ?string $heading = 'Ringkasan Edulaw';
 
-    protected ?string $description = 'Total aset konten dan interaksi yang dikelola melalui website.';
+    protected ?string $description = 'Metrik utama editorial, publikasi, kontributor, dan audiens website.';
 
-    protected static ?int $sort = -20;
+    protected static ?int $sort = -90;
 
     protected static bool $isLazy = false;
 
@@ -39,22 +48,13 @@ class AdminStatsOverview extends StatsOverviewWidget
         return [
             'sm' => 2,
             'lg' => 3,
-            'xl' => 6,
+            'xl' => 3,
         ];
     }
 
     public static function canView(): bool
     {
-        $user = auth()->user();
-
-        return (bool) $user && collect([
-            'view insights',
-            'view publications',
-            'view programs',
-            'view multimedia',
-            'view contact messages',
-            'view collaboration submissions',
-        ])->contains(fn (string $permission): bool => $user->can($permission));
+        return auth()->check();
     }
 
     protected function getStats(): array
@@ -65,16 +65,38 @@ class AdminStatsOverview extends StatsOverviewWidget
             return $this->getContributorStats();
         }
 
-        $counts = Cache::remember('dashboard.stats-overview', now()->addMinutes(5), fn (): array => [
+        $counts = Cache::remember('dashboard.stats-overview.v4', now()->addMinutes(5), fn (): array => [
             'insights' => [
                 'total' => Insight::query()->count(),
                 'month' => Insight::query()->where('created_at', '>=', now()->startOfMonth())->count(),
+                'published' => Insight::query()->where('status', 'published')->count(),
+                'published_month' => Insight::query()
+                    ->where('status', 'published')
+                    ->where('published_at', '>=', now()->startOfMonth())
+                    ->count(),
+                'review' => Insight::query()->where('status', 'review')->count(),
                 'chart' => $this->weeklyCounts(Insight::class),
             ],
             'publications' => [
                 'total' => Publication::query()->count(),
                 'month' => Publication::query()->where('created_at', '>=', now()->startOfMonth())->count(),
                 'chart' => $this->weeklyCounts(Publication::class),
+            ],
+            'authors' => [
+                'active' => Author::query()->where('is_active', true)->count(),
+                'month' => Author::query()->where('created_at', '>=', now()->startOfMonth())->count(),
+                'chart' => $this->weeklyCounts(Author::class),
+            ],
+            'visits' => [
+                'month' => PageVisit::query()
+                    ->where('status_code', 200)
+                    ->since(now()->subDays(29)->startOfDay())
+                    ->count(),
+                'week' => PageVisit::query()
+                    ->where('status_code', 200)
+                    ->since(now()->subDays(6)->startOfDay())
+                    ->count(),
+                'chart' => $this->weeklyVisitCounts(),
             ],
             'programs' => [
                 'total' => Program::query()->count(),
@@ -86,27 +108,39 @@ class AdminStatsOverview extends StatsOverviewWidget
                 'month' => Multimedia::query()->where('created_at', '>=', now()->startOfMonth())->count(),
                 'chart' => $this->weeklyCounts(Multimedia::class),
             ],
-            'collaborations' => [
-                'total' => CollaborationSubmission::query()->count(),
-                'month' => CollaborationSubmission::query()->where('created_at', '>=', now()->startOfMonth())->count(),
-                'chart' => $this->weeklyCounts(CollaborationSubmission::class),
-            ],
-            'contacts' => [
-                'total' => ContactMessage::query()->count(),
-                'month' => ContactMessage::query()->where('created_at', '>=', now()->startOfMonth())->count(),
-                'chart' => $this->weeklyCounts(ContactMessage::class),
+            'opportunities' => [
+                'open' => Opportunity::query()->where('status', 'open')->count(),
+                'month' => Opportunity::query()->where('created_at', '>=', now()->startOfMonth())->count(),
+                'chart' => $this->weeklyCounts(Opportunity::class),
             ],
         ]);
         $stats = [];
 
         if ($user?->can('view insights')) {
-            $stats[] = Stat::make('Total Editorial', number_format($counts['insights']['total'], 0, ',', '.'))
+            $stats[] = Stat::make('Total Insight', number_format($counts['insights']['total'], 0, ',', '.'))
                 ->description($counts['insights']['month'].' baru bulan ini')
                 ->descriptionIcon('heroicon-o-arrow-trending-up')
                 ->chart($counts['insights']['chart'])
                 ->color('primary')
                 ->icon('heroicon-o-newspaper')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-blue']);
+                ->url(InsightResource::getUrl('index'))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-navy']);
+
+            $stats[] = Stat::make('Insight Terbit', number_format($counts['insights']['published'], 0, ',', '.'))
+                ->description($counts['insights']['published_month'].' terbit bulan ini')
+                ->descriptionIcon('heroicon-o-check-badge')
+                ->color('success')
+                ->icon('heroicon-o-globe-alt')
+                ->url(InsightResource::getUrl('index', ['activeTab' => 'published']))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-emerald']);
+
+            $stats[] = Stat::make('Dalam Review', number_format($counts['insights']['review'], 0, ',', '.'))
+                ->description('memerlukan keputusan editorial')
+                ->descriptionIcon('heroicon-o-clock')
+                ->color('warning')
+                ->icon('heroicon-o-document-magnifying-glass')
+                ->url(InsightResource::getUrl('index', ['activeTab' => 'review']))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']);
         }
 
         if ($user?->can('view publications')) {
@@ -116,50 +150,63 @@ class AdminStatsOverview extends StatsOverviewWidget
                 ->chart($counts['publications']['chart'])
                 ->color('success')
                 ->icon('heroicon-o-document-text')
+                ->url(PublicationResource::getUrl('index'))
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-emerald']);
         }
 
-        if ($user?->can('view programs')) {
+        if ($user?->can('view authors')) {
+            $stats[] = Stat::make('Kontributor Aktif', number_format($counts['authors']['active'], 0, ',', '.'))
+                ->description($counts['authors']['month'].' profil baru bulan ini')
+                ->descriptionIcon('heroicon-o-user-group')
+                ->chart($counts['authors']['chart'])
+                ->color('primary')
+                ->icon('heroicon-o-users')
+                ->url(AuthorResource::getUrl('index'))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-navy']);
+        }
+
+        if ($user?->can('view programs') && ! $user?->can('view insights')) {
             $stats[] = Stat::make('Total Program', number_format($counts['programs']['total'], 0, ',', '.'))
                 ->description($counts['programs']['month'].' baru bulan ini')
                 ->descriptionIcon('heroicon-o-calendar-days')
                 ->chart($counts['programs']['chart'])
                 ->color('warning')
                 ->icon('heroicon-o-academic-cap')
+                ->url(ProgramResource::getUrl('index'))
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']);
         }
 
-        if ($user?->can('view multimedia')) {
+        if ($user?->can('view multimedia') && ! $user?->can('view insights')) {
             $stats[] = Stat::make('Total Multimedia', number_format($counts['multimedia']['total'], 0, ',', '.'))
                 ->description($counts['multimedia']['month'].' baru bulan ini')
                 ->descriptionIcon('heroicon-o-play-circle')
                 ->chart($counts['multimedia']['chart'])
                 ->color('info')
                 ->icon('heroicon-o-play-circle')
+                ->url(MultimediaResource::getUrl('index'))
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-indigo']);
         }
 
-        if ($user?->can('view collaboration submissions')) {
-            $stats[] = Stat::make('Permintaan Kolaborasi', number_format($counts['collaborations']['total'], 0, ',', '.'))
-                ->description($counts['collaborations']['month'].' baru bulan ini')
-                ->descriptionIcon('heroicon-o-inbox-arrow-down')
-                ->chart($counts['collaborations']['chart'])
-                ->color('info')
-                ->icon('heroicon-o-hand-raised')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-violet']);
+        if ($user?->can('view opportunities') && ! $user?->can('view insights')) {
+            $stats[] = Stat::make('Peluang Terbuka', number_format($counts['opportunities']['open'], 0, ',', '.'))
+                ->description($counts['opportunities']['month'].' baru bulan ini')
+                ->descriptionIcon('heroicon-o-megaphone')
+                ->chart($counts['opportunities']['chart'])
+                ->color('warning')
+                ->icon('heroicon-o-briefcase')
+                ->url(OpportunityResource::getUrl('index'))
+                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']);
         }
 
-        if ($user?->can('view contact messages')) {
-            $stats[] = Stat::make('Pesan Kontak', number_format($counts['contacts']['total'], 0, ',', '.'))
-                ->description($counts['contacts']['month'].' baru bulan ini')
-                ->descriptionIcon('heroicon-o-envelope')
-                ->chart($counts['contacts']['chart'])
-                ->color('danger')
-                ->icon('heroicon-o-envelope')
-                ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-rose']);
-        }
+        $stats[] = Stat::make('Kunjungan 30 Hari', number_format($counts['visits']['month'], 0, ',', '.'))
+            ->description(number_format($counts['visits']['week'], 0, ',', '.').' page views dalam 7 hari')
+            ->descriptionIcon('heroicon-o-arrow-trending-up')
+            ->chart($counts['visits']['chart'])
+            ->color('primary')
+            ->icon('heroicon-o-chart-bar-square')
+            ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-navy']);
 
-        return $stats;
+        return array_slice($stats, 0, 6);
     }
 
     protected function getHeading(): ?string
@@ -262,6 +309,16 @@ class AdminStatsOverview extends StatsOverviewWidget
         return collect(range(6, 0))
             ->map(fn (int $daysAgo): int => $model::query()
                 ->whereDate('created_at', now()->subDays($daysAgo)->toDateString())
+                ->count())
+            ->all();
+    }
+
+    private function weeklyVisitCounts(): array
+    {
+        return collect(range(6, 0))
+            ->map(fn (int $daysAgo): int => PageVisit::query()
+                ->where('status_code', 200)
+                ->whereDate('visited_at', now()->subDays($daysAgo)->toDateString())
                 ->count())
             ->all();
     }

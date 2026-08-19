@@ -12,9 +12,12 @@ class EdulawQuickActions extends Widget
 {
     protected string $view = 'filament.widgets.edulaw-quick-actions';
 
-    protected int|string|array $columnSpan = 'full';
+    protected int|string|array $columnSpan = [
+        'md' => 6,
+        'xl' => 12,
+    ];
 
-    protected static ?int $sort = -30;
+    protected static ?int $sort = -100;
 
     protected static bool $isLazy = false;
 
@@ -27,12 +30,10 @@ class EdulawQuickActions extends Widget
     {
         $user = auth()->user();
         $roleName = $user?->getRoleNames()->first();
-        $displayName = $roleName
-            ? Str::headline($roleName)
-            : ($user?->name ?? 'Admin');
 
         return [
-            'displayName' => $displayName,
+            'displayName' => $user?->name ?? 'Admin',
+            'roleLabel' => $roleName ? Str::headline($roleName) : 'Edulaw Admin',
             'dateLabel' => now()->translatedFormat('l, d F Y'),
             'websiteUrl' => url('/'),
             'canCreateInsight' => (bool) $user?->can('create insights'),

@@ -38,7 +38,7 @@ class OpportunityResource extends Resource
 {
     protected static ?string $model = Opportunity::class;
 
-    protected static string|\UnitEnum|null $navigationGroup = 'Content';
+    protected static string|\UnitEnum|null $navigationGroup = 'Publikasi & Program';
 
     protected static ?string $navigationLabel = 'Peluang';
 

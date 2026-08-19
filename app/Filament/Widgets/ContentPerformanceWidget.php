@@ -20,7 +20,7 @@ class ContentPerformanceWidget extends Widget
         'xl' => 6,
     ];
 
-    protected static ?int $sort = 25;
+    protected static ?int $sort = 30;
 
     protected static bool $isLazy = false;
 

@@ -6,6 +6,14 @@
 
 :root {
     --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+    --edulaw-navy-950: #0d1b30;
+    --edulaw-navy-900: #152a49;
+    --edulaw-navy-800: #1f3c69;
+    --edulaw-navy-700: #2b4f7f;
+    --edulaw-navy-600: #3d6595;
+    --edulaw-navy-500: #587dab;
+    --edulaw-navy-100: #dbe6f2;
+    --edulaw-navy-50: #f3f7fb;
     /* Edulaw semantic color system. Component rules consume these tokens so the
        light and dark themes keep the same hierarchy without color inversion. */
     --bg-primary: #f6f8fb;
@@ -23,15 +31,15 @@
     --text-muted: #68778d;
     --text-placeholder: #64748b;
     --text-disabled: #475569;
-    --primary: #1d4ed8;
-    --primary-hover: #2563eb;
-    --primary-active: #3b82f6;
+    --primary: var(--edulaw-navy-800);
+    --primary-hover: var(--edulaw-navy-700);
+    --primary-active: var(--edulaw-navy-900);
     --success: #22c55e;
     --warning: #f59e0b;
     --danger: #ef4444;
     --info: #38bdf8;
-    --card-radius: 1rem;
-    --card-shadow: 0 18px 38px -34px rgba(15, 23, 42, 0.55);
+    --card-radius: 0.875rem;
+    --card-shadow: 0 10px 24px -22px rgba(15, 23, 42, 0.48);
 
     --edulaw-admin-ink: #0f172a;
     --edulaw-admin-heading: #080f1f;
@@ -41,12 +49,12 @@
     --edulaw-admin-panel-subtle: #fbfcfe;
     --edulaw-admin-border: #cbd8ea;
     --edulaw-admin-border-strong: #9fb2ce;
-    --edulaw-admin-border-navy: rgba(16, 42, 86, 0.22);
-    --edulaw-admin-navy: #102a56;
-    --edulaw-admin-blue: #2563eb;
-    --edulaw-admin-blue-soft: #eef4ff;
+    --edulaw-admin-border-navy: rgba(31, 60, 105, 0.2);
+    --edulaw-admin-navy: var(--edulaw-navy-800);
+    --edulaw-admin-blue: var(--edulaw-navy-800);
+    --edulaw-admin-blue-soft: var(--edulaw-navy-50);
     --edulaw-admin-red: #ef4444;
-    --edulaw-admin-shadow: 0 18px 38px -34px rgba(15, 23, 42, 0.55);
+    --edulaw-admin-shadow: var(--card-shadow);
 }
 
 .dark {
@@ -68,9 +76,9 @@
        Slate 500 remains the decorative/disabled token below. */
     --text-placeholder: #94a3b8;
     --text-disabled: #94a3b8;
-    --primary: #1d4ed8;
-    --primary-hover: #2563eb;
-    --primary-active: #3b82f6;
+    --primary: #6f91b8;
+    --primary-hover: #8ca8c8;
+    --primary-active: #587dab;
     --card-shadow: 0 18px 32px -20px rgba(0, 0, 0, 0.55);
 
     --edulaw-admin-ink: var(--text-body);
@@ -83,8 +91,8 @@
     --edulaw-admin-border-strong: var(--border-strong);
     --edulaw-admin-border-navy: var(--border);
     --edulaw-admin-navy: var(--primary);
-    --edulaw-admin-blue: var(--primary);
-    --edulaw-admin-blue-soft: #1e3a8a;
+    --edulaw-admin-blue: #6f91b8;
+    --edulaw-admin-blue-soft: #20395d;
     --edulaw-admin-red: var(--danger);
     --edulaw-admin-shadow: var(--card-shadow);
 }
@@ -158,15 +166,23 @@
 }
 
 .fi-sidebar {
-    border-inline-end: 1px solid var(--edulaw-admin-border);
-    background: var(--edulaw-admin-panel);
-    box-shadow: none;
+    border-inline-end: 1px solid rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, var(--edulaw-navy-950) 0%, var(--edulaw-navy-900) 100%);
+    box-shadow: 10px 0 30px -28px rgba(13, 27, 48, 0.85);
 }
 
 .fi-sidebar-header {
     min-height: 4rem;
-    border-bottom: 1px solid var(--edulaw-admin-border);
-    background: var(--edulaw-admin-panel);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: var(--edulaw-navy-950);
+}
+
+.fi-sidebar .edulaw-admin-brand-logo-image-dark {
+    display: none;
+}
+
+.fi-sidebar .edulaw-admin-brand-logo-image-light {
+    display: block;
 }
 
 .edulaw-admin-brand-logo-wrap {
@@ -190,6 +206,10 @@
     object-fit: contain;
 }
 
+.edulaw-admin-brand-logo-image-light {
+    display: none;
+}
+
 .fi-sidebar-nav {
     padding: 1rem 0.8rem 1.35rem;
 }
@@ -207,7 +227,7 @@
 }
 
 .fi-sidebar-group-label {
-    color: #718096;
+    color: rgba(219, 230, 242, 0.56);
     font-size: 0.7rem;
     font-weight: 800;
     letter-spacing: 0.08em;
@@ -218,7 +238,7 @@
     min-height: 2.45rem;
     margin-inline: 0;
     border-radius: 0.55rem;
-    color: #526174;
+    color: rgba(255, 255, 255, 0.74);
     transition:
         background-color 150ms ease,
         color 150ms ease,
@@ -226,35 +246,40 @@
 }
 
 .fi-sidebar-item-label {
-    color: #526174;
+    color: rgba(255, 255, 255, 0.74);
     font-size: 0.86rem;
     font-weight: 700;
 }
 
 .fi-sidebar-item-icon {
-    color: #7b8798;
+    color: rgba(219, 230, 242, 0.68);
 }
 
 .fi-sidebar-item-btn:hover {
-    background: #f3f7fc;
-    color: var(--edulaw-admin-heading);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
 }
 
 .fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
 .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
-    color: var(--edulaw-admin-heading);
+    color: #ffffff;
 }
 
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
-    background: var(--edulaw-admin-blue-soft);
-    color: var(--edulaw-admin-blue);
-    box-shadow: none;
+    background: rgba(255, 255, 255, 0.13);
+    color: #ffffff;
+    box-shadow: inset 3px 0 0 #d7ae5f;
 }
 
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon,
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
-    color: var(--edulaw-admin-blue);
+    color: #ffffff;
     font-weight: 800;
+}
+
+.fi-sidebar-footer {
+    border-color: rgba(255, 255, 255, 0.08);
+    background: var(--edulaw-navy-950);
 }
 
 .fi-section,
@@ -1979,19 +2004,19 @@
 }
 
 .fi-page:has(.edulaw-performance-hero) .edulaw-admin-card:hover {
-    border-color: rgba(37, 99, 235, 0.26);
-    box-shadow: 0 24px 46px -36px rgba(15, 23, 42, 0.72);
+    border-color: rgba(31, 60, 105, 0.28);
+    box-shadow: 0 18px 34px -30px rgba(15, 23, 42, 0.58);
 }
 
 .edulaw-performance-hero {
     position: relative;
     isolation: isolate;
     overflow: hidden;
-    border: 1px solid rgba(96, 165, 250, 0.28);
+    border: 1px solid rgba(219, 230, 242, 0.22);
     border-radius: 1.25rem;
     background:
-        radial-gradient(circle at 78% 0%, rgba(37, 99, 235, 0.32), transparent 32%),
-        linear-gradient(135deg, #071427 0%, #102a56 58%, #163e71 100%);
+        radial-gradient(circle at 78% 0%, rgba(140, 168, 200, 0.24), transparent 32%),
+        linear-gradient(135deg, var(--edulaw-navy-950) 0%, var(--edulaw-navy-800) 58%, var(--edulaw-navy-700) 100%);
     box-shadow: 0 24px 54px -34px rgba(7, 20, 39, 0.9);
 }
 
@@ -2068,13 +2093,13 @@
 }
 
 .edulaw-performance-action:focus-visible {
-    outline: 2px solid #93c5fd;
+    outline: 2px solid #dbe6f2;
     outline-offset: 2px;
 }
 
 .edulaw-performance-action-search {
-    border-color: rgba(96, 165, 250, 0.32);
-    background: rgba(37, 99, 235, 0.16);
+    border-color: rgba(219, 230, 242, 0.24);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .edulaw-performance-action-primary {
@@ -2089,13 +2114,13 @@
 }
 
 .edulaw-performance-action-publication {
-    border-color: rgba(52, 211, 153, 0.3);
-    background: rgba(16, 185, 129, 0.14);
+    border-color: rgba(219, 230, 242, 0.24);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .edulaw-performance-action-program {
-    border-color: rgba(167, 139, 250, 0.32);
-    background: rgba(124, 58, 237, 0.15);
+    border-color: rgba(219, 230, 242, 0.24);
+    background: rgba(255, 255, 255, 0.08);
 }
 
 .edulaw-performance-panel-header {
@@ -2146,7 +2171,7 @@
 }
 
 .fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat:nth-child(6n + 1) {
-    border-top-color: #2563eb;
+    border-top-color: var(--edulaw-navy-800);
 }
 
 .fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat:nth-child(6n + 2) {
@@ -2197,7 +2222,26 @@
 }
 
 .fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-content {
-    gap: 0.6rem;
+    grid-template-columns: minmax(0, 1fr) auto;
+    column-gap: 1rem;
+    row-gap: 0.6rem;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-label-ctn {
+    grid-column: 1;
+    grid-row: 1;
+    min-width: 0;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-value {
+    grid-column: 2;
+    grid-row: 1;
+    align-self: center;
+    text-align: right;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-description {
+    grid-column: 1 / -1;
 }
 
 .fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-description {
@@ -2205,8 +2249,13 @@
 }
 
 .edulaw-stat-blue {
-    --edulaw-stat-accent: #2563eb;
-    --edulaw-stat-tint: #eff6ff;
+    --edulaw-stat-accent: var(--edulaw-navy-800);
+    --edulaw-stat-tint: var(--edulaw-navy-50);
+}
+
+.edulaw-stat-navy {
+    --edulaw-stat-accent: var(--edulaw-navy-800);
+    --edulaw-stat-tint: var(--edulaw-navy-50);
 }
 
 .edulaw-stat-emerald {
@@ -2449,11 +2498,17 @@
 
 .fi-btn.fi-color-primary {
     background: var(--edulaw-admin-blue);
-    box-shadow: 0 10px 20px -14px rgba(37, 99, 235, 0.8);
+    color: #f5c66d !important;
+    box-shadow: 0 10px 20px -16px rgba(31, 60, 105, 0.72);
 }
 
 .fi-btn.fi-color-primary:hover {
-    background: #1d4ed8;
+    background: var(--edulaw-navy-700);
+    color: #ffe1a3 !important;
+}
+
+.fi-btn.fi-color-primary .fi-icon {
+    color: currentColor;
 }
 
 .fi-btn.fi-color-danger {
@@ -2545,8 +2600,8 @@
 }
 
 .fi-badge.fi-color-primary {
-    background: #eff6ff;
-    color: #1d4ed8;
+    background: var(--edulaw-navy-50);
+    color: var(--edulaw-navy-800);
 }
 
 .fi-badge.fi-color-success {
@@ -2585,8 +2640,83 @@
 }
 
 .edulaw-topbar-site-link:hover {
-    border-color: #b8cdf8;
+    border-color: var(--edulaw-navy-500);
     color: var(--edulaw-admin-blue);
+}
+
+.edulaw-topbar-user-context {
+    display: none;
+    min-width: 0;
+    text-align: right;
+}
+
+.edulaw-topbar-user-name,
+.edulaw-topbar-user-role {
+    display: block;
+    max-width: 11rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.edulaw-topbar-user-name {
+    color: var(--edulaw-admin-heading);
+    font-size: 0.78rem;
+    font-weight: 850;
+}
+
+.edulaw-topbar-user-role {
+    margin-top: 0.08rem;
+    color: var(--edulaw-admin-muted);
+    font-size: 0.66rem;
+    font-weight: 700;
+}
+
+@media (min-width: 64rem) {
+    .edulaw-topbar-user-context {
+        display: block;
+    }
+}
+
+.edulaw-panel-link {
+    gap: 0.35rem;
+    color: var(--edulaw-navy-800);
+    transition: border-color 150ms ease, background-color 150ms ease;
+}
+
+.edulaw-panel-link:hover {
+    border-color: var(--edulaw-navy-500);
+    background: var(--edulaw-navy-50);
+}
+
+.edulaw-latest-insights-view-all {
+    border-radius: 0.5rem;
+    background: #fffbeb;
+    padding: 0.45rem 0.65rem;
+    color: #9a6700 !important;
+    font-weight: 900;
+}
+
+.edulaw-latest-insights-view-all .fi-icon {
+    color: currentColor;
+}
+
+.edulaw-latest-insights-view-all:hover {
+    background: #fef3c7;
+    color: #784c00 !important;
+}
+
+.edulaw-pipeline-metric-navy,
+.edulaw-pipeline-metric-blue {
+    color: var(--edulaw-navy-800);
+}
+
+.edulaw-pipeline-metric-amber {
+    color: #b45309;
+}
+
+.edulaw-pipeline-metric-red {
+    color: #be123c;
 }
 
 .fi-resource-authors .edulaw-admin-profile-form {
@@ -2887,52 +3017,94 @@
     color: var(--text-body);
 }
 
-.dark .fi-topbar,
-.dark .fi-sidebar-header {
+.dark .fi-topbar {
     border-color: var(--border);
     background: rgba(17, 24, 39, 0.96);
     box-shadow: 0 1px 0 rgba(71, 85, 105, 0.22);
 }
 
+.dark .fi-sidebar-header {
+    border-color: rgba(255, 255, 255, 0.1);
+    background: var(--edulaw-navy-950);
+    box-shadow: none;
+}
+
 .dark .fi-sidebar {
-    border-color: var(--border);
-    background: #020617;
+    border-color: rgba(255, 255, 255, 0.08);
+    background: linear-gradient(180deg, var(--edulaw-navy-950) 0%, var(--edulaw-navy-900) 100%);
 }
 
 .dark .fi-sidebar-nav,
 .dark .fi-sidebar-footer {
-    background: #020617;
+    background: transparent;
 }
 
 .dark .fi-sidebar-group-label {
-    color: var(--text-muted);
+    color: rgba(219, 230, 242, 0.56);
 }
 
 .dark .fi-sidebar-item-btn,
 .dark .fi-sidebar-item-label,
 .dark .fi-sidebar-item-icon {
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.74);
 }
 
 .dark .fi-sidebar-item-btn:hover {
-    background: #1e293b;
-    color: var(--text-primary);
+    background: rgba(255, 255, 255, 0.08);
+    color: #ffffff;
 }
 
 .dark .fi-sidebar-item-btn:hover .fi-sidebar-item-icon,
 .dark .fi-sidebar-item-btn:hover .fi-sidebar-item-label {
-    color: var(--text-primary);
+    color: #ffffff;
 }
 
 .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn {
-    background: #2563eb;
+    background: rgba(255, 255, 255, 0.13);
     color: #ffffff;
-    box-shadow: 0 8px 18px -12px rgba(37, 99, 235, 0.9);
+    box-shadow: inset 3px 0 0 #d7ae5f;
 }
 
 .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon,
 .dark .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
     color: #ffffff;
+}
+
+.dark .edulaw-topbar-user-name {
+    color: var(--text-primary);
+}
+
+.dark .edulaw-topbar-user-role {
+    color: var(--text-muted);
+}
+
+.dark .edulaw-panel-link {
+    color: #dbe6f2;
+}
+
+.dark .edulaw-latest-insights-view-all {
+    background: rgba(245, 185, 67, 0.14);
+    color: #f5c66d !important;
+}
+
+.dark .edulaw-latest-insights-view-all:hover {
+    background: rgba(245, 185, 67, 0.22);
+    color: #ffe1a3 !important;
+}
+
+.dark .edulaw-pipeline-metric-navy,
+.dark .edulaw-pipeline-metric-blue {
+    color: #8ca8c8;
+}
+
+.dark .fi-topbar .edulaw-admin-brand-logo-image-dark,
+.dark .fi-simple-layout .edulaw-admin-brand-logo-image-dark {
+    display: none;
+}
+
+.dark .fi-topbar .edulaw-admin-brand-logo-image-light,
+.dark .fi-simple-layout .edulaw-admin-brand-logo-image-light {
+    display: block;
 }
 
 .dark .fi-header-heading,
@@ -2997,7 +3169,7 @@
 }
 
 .dark .fi-section:not(.fi-collapsed) .fi-section-collapse-btn .fi-icon {
-    color: #60a5fa;
+    color: #8ca8c8;
 }
 
 .dark .fi-fo-field-wrp-label,
@@ -3035,14 +3207,14 @@
 .dark .fi-input-wrp:hover:not(:focus-within),
 .dark .fi-textarea:hover:not(:focus),
 .dark .fi-fo-rich-editor:hover:not(:focus-within) {
-    border-color: #60a5fa;
+    border-color: #8ca8c8;
 }
 
 .dark .fi-input-wrp:focus-within,
 .dark .fi-textarea:focus,
 .dark .fi-fo-rich-editor:focus-within {
-    border-color: #3b82f6;
-    box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.24);
+    border-color: #587dab;
+    box-shadow: 0 0 0 3px rgba(88, 125, 171, 0.24);
 }
 
 .dark .fi-input,
@@ -3111,7 +3283,7 @@
 .dark .fi-dropdown-list-item.fi-selected,
 .dark .fi-select-input-option.fi-selected,
 .dark .fi-select-input-option[aria-selected="true"] {
-    background: #2563eb;
+    background: #1f3c69;
     color: #ffffff;
 }
 
@@ -3142,14 +3314,14 @@
 .dark .fi-fo-rich-editor-tool.fi-active,
 .dark .fi-fo-rich-editor-dropdown-tool-trigger.fi-active,
 .dark .fi-fo-rich-editor-dropdown-tool-option.fi-active {
-    background: #2563eb;
+    background: #1f3c69;
     color: #ffffff;
 }
 
 .dark .fi-fo-rich-editor-content {
     background: var(--bg-input);
     color: var(--text-primary);
-    caret-color: #60a5fa;
+    caret-color: #8ca8c8;
 }
 
 .dark .fi-fo-rich-editor-content ::selection {
@@ -3161,8 +3333,8 @@
     --prose-color: var(--text-body);
     --prose-heading-color: var(--text-primary);
     --prose-strong-color: var(--text-primary);
-    --prose-link-color: #60a5fa;
-    --prose-link-underline-color: #3b82f6;
+    --prose-link-color: #8ca8c8;
+    --prose-link-underline-color: #587dab;
     --prose-code-color: var(--text-body);
     --prose-blockquote-border-color: var(--text-muted);
     --prose-pre-bg: #111827;
@@ -3184,23 +3356,24 @@
 }
 
 .dark .fi-fo-file-upload .filepond--root:hover .filepond--panel-root {
-    border-color: #3b82f6;
+    border-color: #587dab;
     background: #1e293b;
 }
 
 .dark .fi-fo-file-upload .filepond--drop-label svg,
 .dark .fi-fo-file-upload .fi-icon {
-    color: #60a5fa;
+    color: #8ca8c8;
 }
 
 /* Actions, toggles and badges */
 .dark .fi-btn.fi-color-primary {
-    background: #2563eb;
-    color: #ffffff;
+    background: #1f3c69;
+    color: #f5c66d !important;
 }
 
 .dark .fi-btn.fi-color-primary:hover {
-    background: #3b82f6;
+    background: #2b4f7f;
+    color: #ffe1a3 !important;
 }
 
 .dark .fi-btn.fi-color-gray {
@@ -3225,7 +3398,7 @@
 
 .dark .fi-toggle.fi-toggle-on,
 .dark .fi-toggle.fi-checked {
-    background: #2563eb;
+    background: #1f3c69;
 }
 
 .dark .fi-toggle > :first-child {
@@ -3253,7 +3426,7 @@
 }
 
 .dark .fi-badge.fi-color-primary {
-    background: #2563eb;
+    background: #1f3c69;
     color: #ffffff;
 }
 
@@ -3282,7 +3455,7 @@
 
 .dark .fi-ta-empty-state-icon-ctn,
 .dark .fi-ta-empty-state-icon {
-    color: #60a5fa;
+    color: #8ca8c8;
 }
 
 .dark .fi-ta-empty-state-heading {
@@ -3321,7 +3494,7 @@
 .dark .fi-tabs-item.fi-active,
 .dark .fi-tabs-item[aria-selected="true"],
 .dark .fi-sc-tabs-tab.fi-active {
-    background: #2563eb;
+    background: #1f3c69;
     color: #ffffff;
 }
 
@@ -3346,7 +3519,7 @@
 }
 
 .dark .fi-no-notification-unread-ctn {
-    background: rgba(37, 99, 235, 0.14);
+    background: rgba(31, 60, 105, 0.32);
 }
 
 .dark .fi-no-notification-title {
@@ -3379,7 +3552,7 @@
 }
 
 .dark .fi-fo-date-time-picker-calendar-day.fi-selected {
-    background: #2563eb;
+    background: #1f3c69;
     color: #ffffff;
 }
 
@@ -3417,7 +3590,7 @@
 }
 
 .dark .fi-wi .bg-blue-50 {
-    background-color: rgba(37, 99, 235, 0.16) !important;
+    background-color: rgba(31, 60, 105, 0.32) !important;
 }
 
 .dark .fi-wi .bg-emerald-50 {
@@ -3442,7 +3615,7 @@
 
 .dark .fi-wi .text-blue-600,
 .dark .fi-wi .text-blue-700 {
-    color: #60a5fa !important;
+    color: #8ca8c8 !important;
 }
 
 .dark .fi-wi .text-emerald-600,
@@ -3468,7 +3641,7 @@
 
 .dark .fi-wi .border-blue-200,
 .dark .fi-wi .border-blue-500 {
-    border-color: #3b82f6 !important;
+    border-color: #587dab !important;
 }
 
 .dark .fi-wi .border-emerald-200,
@@ -3491,8 +3664,13 @@
 }
 
 .dark .edulaw-stat-blue {
-    --edulaw-stat-accent: #60a5fa;
-    --edulaw-stat-tint: rgba(37, 99, 235, 0.18);
+    --edulaw-stat-accent: #8ca8c8;
+    --edulaw-stat-tint: rgba(31, 60, 105, 0.32);
+}
+
+.dark .edulaw-stat-navy {
+    --edulaw-stat-accent: #8ca8c8;
+    --edulaw-stat-tint: rgba(31, 60, 105, 0.32);
 }
 
 .dark .edulaw-stat-emerald {
@@ -3532,9 +3710,9 @@
 }
 
 .dark .edulaw-topbar-site-link:hover {
-    border-color: #3b82f6;
+    border-color: #587dab;
     background: var(--bg-card);
-    color: #60a5fa;
+    color: #8ca8c8;
 }
 
 .dark .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions {

@@ -20,7 +20,7 @@ class RequiresAttentionWidget extends Widget
         'xl' => 4,
     ];
 
-    protected static ?int $sort = -5;
+    protected static ?int $sort = -70;
 
     protected static bool $isLazy = false;
 

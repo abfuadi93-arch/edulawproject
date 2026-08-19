@@ -3,6 +3,7 @@
 namespace App\Providers\Filament;
 
 use App\Filament\Auth\Pages\Register;
+use App\Filament\Pages\EditMyProfile;
 use App\Support\EdulawSite;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -40,13 +41,20 @@ class AdminPanelProvider extends PanelProvider
                     EdulawSite::value('site.footer_logo'),
                     'images/logo/edulaw-logo.png'
                 );
+                $whiteLogoUrl = asset('images/logo/edulaw-logo-white.png');
 
                 return new HtmlString('
                     <span class="edulaw-admin-brand-logo-wrap">
                         <img
                             src="'.e($logoUrl).'"
                             alt="Edulaw Project"
-                            class="edulaw-admin-brand-logo-image"
+                            class="edulaw-admin-brand-logo-image edulaw-admin-brand-logo-image-dark"
+                        >
+                        <img
+                            src="'.e($whiteLogoUrl).'"
+                            alt=""
+                            aria-hidden="true"
+                            class="edulaw-admin-brand-logo-image edulaw-admin-brand-logo-image-light"
                         >
                     </span>
                 ');
@@ -54,7 +62,7 @@ class AdminPanelProvider extends PanelProvider
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/logo/icon-logo.png'))
             ->colors([
-                'primary' => Color::hex('#1d4ed8'),
+                'primary' => Color::hex('#1f3c69'),
                 'gray' => Color::Slate,
             ])
             ->globalSearch()
@@ -67,14 +75,21 @@ class AdminPanelProvider extends PanelProvider
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->navigationGroups([
                 'Editorial',
-                'Manajemen Editorial',
-                'Content',
+                'Publikasi & Program',
                 'Interaksi',
                 'Referensi',
                 'Akun',
+                'Pengaturan Website',
                 'Akses Admin',
             ])
             ->userMenuItems([
+                'profile' => MenuItem::make()
+                    ->label('Keamanan Akun'),
+                MenuItem::make()
+                    ->label('Profil Saya')
+                    ->icon('heroicon-o-identification')
+                    ->url(fn (): string => EditMyProfile::getUrl())
+                    ->sort(-2),
                 MenuItem::make()
                     ->label('Lihat Website')
                     ->icon('heroicon-o-arrow-top-right-on-square')
@@ -84,6 +99,10 @@ class AdminPanelProvider extends PanelProvider
             ->renderHook(
                 PanelsRenderHook::TOPBAR_END,
                 fn () => view('filament.topbar-website-link')
+            )
+            ->renderHook(
+                PanelsRenderHook::USER_MENU_BEFORE,
+                fn () => view('filament.topbar-user-context')
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,

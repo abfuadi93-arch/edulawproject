@@ -6,19 +6,19 @@
                 <div class="flex flex-wrap items-center gap-2.5">
                     <span class="edulaw-performance-kicker">
                         <span class="h-1.5 w-1.5 rounded-full bg-emerald-400"></span>
-                        Control Center
+                        Edulaw Editorial Workspace
                     </span>
-                    <span class="text-xs font-bold text-white/55">{{ $dateLabel }}</span>
+                    <span class="text-xs font-bold text-white/60">{{ $roleLabel }} · {{ $dateLabel }}</span>
                 </div>
 
                 <h2 class="mt-4 max-w-3xl text-2xl font-black tracking-tight text-white sm:text-3xl">
                     Selamat datang, {{ $displayName }}.
                 </h2>
                 <p class="mt-2 max-w-2xl text-sm leading-6 text-slate-300">
-                    Gunakan ringkasan di bawah untuk membaca kesehatan website, memantau audiens, dan menyelesaikan pekerjaan editorial yang paling mendesak.
+                    Berikut ringkasan aktivitas Edulaw Project. Pantau naskah, publikasi, audiens, dan pekerjaan editorial yang perlu ditindaklanjuti.
                 </p>
 
-                <a href="{{ $websiteUrl }}" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 text-xs font-black text-blue-200 transition hover:text-white">
+                <a href="{{ $websiteUrl }}" target="_blank" rel="noopener" class="mt-5 inline-flex items-center gap-2 text-xs font-black text-amber-200 transition hover:text-white">
                     Lihat website publik
                     <x-filament::icon icon="heroicon-o-arrow-top-right-on-square" class="h-4 w-4" />
                 </a>
