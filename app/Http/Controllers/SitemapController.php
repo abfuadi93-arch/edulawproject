@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Insight;
+use App\Models\Opportunity;
 use App\Models\Program;
 use App\Models\Publication;
 use Illuminate\Http\Response;
@@ -122,6 +123,21 @@ class SitemapController extends Controller
                 'priority' => '0.7',
             ]);
 
+        $opportunities = Opportunity::query()
+            ->active()
+            ->withExternalLink()
+            ->whereNotNull('slug')
+            ->where('slug', '!=', '')
+            ->select(['slug', 'updated_at'])
+            ->latest('updated_at')
+            ->get()
+            ->map(fn (Opportunity $opportunity): array => [
+                'url' => route('opportunities.show', $opportunity->slug),
+                'lastmod' => $opportunity->updated_at,
+                'changefreq' => 'weekly',
+                'priority' => '0.7',
+            ]);
+
         $authors = Author::query()
             ->publicProfile()
             ->where('show_in_contributor_section', true)
@@ -140,6 +156,7 @@ class SitemapController extends Controller
             ->concat($insights)
             ->concat($publications)
             ->concat($programs)
+            ->concat($opportunities)
             ->concat($authors)
             ->unique('url')
             ->values();

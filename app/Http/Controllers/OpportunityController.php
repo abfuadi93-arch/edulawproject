@@ -4,10 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Opportunity;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class OpportunityController extends Controller
 {
-    public function index(Request $request)
+    public function index(Request $request): View
     {
         $query = Opportunity::query()
             ->active()
@@ -80,5 +81,29 @@ class OpportunityController extends Controller
             'featuredOpportunity',
             'opportunityTypes'
         ));
+    }
+
+    public function show(string $slug): View
+    {
+        $opportunity = Opportunity::query()
+            ->active()
+            ->withExternalLink()
+            ->where('slug', $slug)
+            ->firstOrFail();
+
+        $relatedOpportunities = Opportunity::query()
+            ->active()
+            ->withExternalLink()
+            ->whereKeyNot($opportunity->id)
+            ->when(
+                filled($opportunity->type),
+                fn ($query) => $query->where('type', $opportunity->type),
+            )
+            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('deadline')
+            ->limit(3)
+            ->get();
+
+        return view('opportunities.show', compact('opportunity', 'relatedOpportunities'));
     }
 }

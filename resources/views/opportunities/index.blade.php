@@ -6,10 +6,10 @@
 @push('head')
     @php
         $opportunityListSchemaItems = collect($opportunities->items())
-            ->filter(fn ($item): bool => filled($item->application_link))
+            ->filter(fn ($item): bool => filled($item->slug))
             ->map(fn ($item): array => [
                 'name' => $item->title,
-                'url' => $item->application_link,
+                'url' => route('opportunities.show', $item->slug),
                 'image' => $item->poster_url,
             ])
             ->values()
@@ -110,37 +110,19 @@
     ];
 
     $indexUrl = route('opportunities.index');
-
-    $contactUrl = url('/kontak');
+    $contactUrl = route('contact.index');
 
     $posterUrl = function ($path) {
         return edulaw_file_url($path);
     };
 
-    $externalUrl = function ($opportunity) {
-        return $opportunity->application_link
-            ?? $opportunity->external_url
-            ?? $opportunity->url
-            ?? null;
+    $opportunityUrl = function ($opportunity) use ($indexUrl) {
+        return filled($opportunity?->slug)
+            ? route('opportunities.show', $opportunity->slug)
+            : $indexUrl;
     };
 
-    $opportunityUrl = function ($opportunity) use ($contactUrl, $externalUrl) {
-        $url = $externalUrl($opportunity);
-
-        return filled($url) && filter_var($url, FILTER_VALIDATE_URL) && Str::startsWith($url, ['http://', 'https://'])
-            ? $url
-            : $contactUrl;
-    };
-
-    $isExternalOpportunity = function ($opportunity) use ($externalUrl) {
-        $url = $externalUrl($opportunity);
-
-        return filled($url) && filter_var($url, FILTER_VALIDATE_URL) && Str::startsWith($url, ['http://', 'https://']);
-    };
-
-    $buttonLabel = function ($opportunity) use ($isExternalOpportunity) {
-        return $isExternalOpportunity($opportunity) ? 'Lihat Peluang' : 'Hubungi Edulaw';
-    };
+    $buttonLabel = fn () => 'Lihat Detail';
 
     $opportunityTypeName = function ($opportunity) use ($typeLabels) {
         $type = $opportunity?->type ?? 'open_collaboration';
@@ -419,7 +401,6 @@
                             <div class="mt-7">
                                 <a
                                     href="{{ $opportunityUrl($featured) }}"
-                                    @if ($isExternalOpportunity($featured)) target="_blank" rel="noopener noreferrer" @endif
                                     class="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-brand-navy px-5 py-3 text-sm font-black text-brand-navy transition hover:bg-brand-navy hover:text-white"
                                 >
                                     {{ $buttonLabel($featured) }}
@@ -726,7 +707,6 @@
 
                                                 <a
                                                     href="{{ $opportunityUrl($opportunity) }}"
-                                                    @if ($isExternalOpportunity($opportunity)) target="_blank" rel="noopener noreferrer" @endif
                                                     class="mt-6 inline-flex w-full items-center justify-center gap-2 rounded-xl border px-4 py-3 text-sm font-black transition {{ $style['button'] }}"
                                                 >
                                                     {{ $buttonLabel($opportunity) }}
