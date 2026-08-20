@@ -30,12 +30,9 @@
     </div>
 
     <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
-        <div class="flex items-start justify-between gap-2">
+        <div class="flex items-start gap-2">
             <span class="min-w-0 rounded-full bg-[#eef2f7] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-brand-navy">
                 {{ $opportunity->display_type }}
-            </span>
-            <span class="inline-flex shrink-0 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] {{ $isOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">
-                {{ $isOpen ? 'Masih Dibuka' : $opportunity->display_status }}
             </span>
         </div>
 
