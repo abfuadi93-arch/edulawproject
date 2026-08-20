@@ -1,8 +1,6 @@
 @props(['opportunity'])
 
 @php
-    $summary = $opportunity->excerpt
-        ?: Illuminate\Support\Str::limit(strip_tags($opportunity->description ?? ''), 145);
     $isOpen = $opportunity->is_open_for_applications;
 @endphp
 
@@ -48,10 +46,6 @@
         <h2 class="mt-3 line-clamp-3 text-base font-black leading-snug tracking-[-0.015em] text-brand-ink transition group-hover:text-brand-navy sm:text-lg">
             {{ $opportunity->title }}
         </h2>
-
-        @if ($summary)
-            <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{{ $summary }}</p>
-        @endif
 
         <div class="mt-auto flex items-end justify-between gap-3 pt-4">
             <div class="min-w-0 border-l-2 border-brand-amber pl-3">
