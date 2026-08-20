@@ -30,10 +30,16 @@
     </div>
 
     <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
-        <div class="flex flex-wrap items-center gap-2">
-            <span class="rounded-full bg-[#eef2f7] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-brand-navy">
+        <div class="flex items-start justify-between gap-2">
+            <span class="min-w-0 rounded-full bg-[#eef2f7] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-brand-navy">
                 {{ $opportunity->display_type }}
             </span>
+            <span class="inline-flex shrink-0 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.08em] {{ $isOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">
+                {{ $isOpen ? 'Masih Dibuka' : $opportunity->display_status }}
+            </span>
+        </div>
+
+        <div class="mt-2 flex flex-wrap items-center gap-2">
             <span class="text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }}</span>
             <span class="text-slate-300" aria-hidden="true">•</span>
             <span class="line-clamp-1 min-w-0 text-[11px] font-bold text-slate-500">{{ $opportunity->location ?: 'Lokasi menyesuaikan' }}</span>
@@ -47,24 +53,20 @@
             <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-500">{{ $summary }}</p>
         @endif
 
-        <div class="mt-4 border-l-2 border-brand-amber pl-3">
-            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Deadline</p>
-            <p class="mt-1 text-base font-black text-brand-ink">{{ $opportunity->deadline_display }}</p>
-            <p class="mt-0.5 text-xs font-black {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">
-                {{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}
-            </p>
-        </div>
-
-        <div class="mt-auto flex flex-col items-start gap-3 pt-4 sm:flex-row sm:items-end sm:justify-between">
-            <span class="inline-flex rounded-full px-3 py-1 text-[10px] font-black uppercase tracking-[0.1em] {{ $isOpen ? 'bg-emerald-50 text-emerald-700' : 'bg-slate-100 text-slate-600' }}">
-                {{ $isOpen ? 'Masih Dibuka' : $opportunity->display_status }}
-            </span>
+        <div class="mt-auto flex items-end justify-between gap-3 pt-4">
+            <div class="min-w-0 border-l-2 border-brand-amber pl-3">
+                <p class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Deadline</p>
+                <p class="mt-1 text-base font-black text-brand-ink">{{ $opportunity->deadline_display }}</p>
+                <p class="mt-0.5 text-xs font-black {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">
+                    {{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}
+                </p>
+            </div>
 
             <a
                 href="{{ $opportunity->application_link }}"
                 target="_blank"
                 rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 text-sm font-black text-brand-navy underline-offset-4 transition hover:text-[#9a610c] hover:underline focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy"
+                class="inline-flex shrink-0 items-center gap-1 text-xs font-black text-brand-navy underline-offset-4 transition hover:text-[#9a610c] hover:underline focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy sm:gap-1.5 sm:text-sm"
                 aria-label="Lihat peluang {{ $opportunity->title }} di situs eksternal"
             >
                 Lihat Peluang
