@@ -263,7 +263,7 @@
             </div>
 
             @if ($opportunities->isNotEmpty())
-                <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
                     @foreach ($opportunities as $opportunity)
                         <x-opportunities.card :opportunity="$opportunity" />
                     @endforeach
