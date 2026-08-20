@@ -91,7 +91,7 @@ class OpportunityController extends Controller
                 ->orderByDesc('id'),
         };
 
-        $opportunities = $query->paginate(9)->withQueryString();
+        $opportunities = $query->paginate(10)->withQueryString();
 
         $relevantOpportunities = Opportunity::query()
             ->withExternalLink()
