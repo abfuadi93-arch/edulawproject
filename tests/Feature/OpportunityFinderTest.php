@@ -38,8 +38,8 @@ test('finder separates featured opportunity from the paginated results', functio
     $response
         ->assertViewHas('featuredOpportunity', fn (?Opportunity $item): bool => $item?->is($featured) === true)
         ->assertViewHas('opportunities', fn ($items): bool => $items->total() === 1 && $items->first()->is($regular))
-        ->assertSee($featured->application_link, false)
-        ->assertSee($regular->application_link, false);
+        ->assertSee(route('opportunities.show', $featured->slug), false)
+        ->assertSee(route('opportunities.show', $regular->slug), false);
 });
 
 test('finder searches and filters by type format location and deadline', function () {

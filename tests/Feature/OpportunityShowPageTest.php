@@ -47,7 +47,7 @@ test('inactive or invalid opportunities do not have public detail pages', functi
     'without external link' => [['application_link' => '/kontak']],
 ]);
 
-test('opportunity index links directly to the external application page', function () {
+test('opportunity index links to the detail page before the external application page', function () {
     $opportunity = Opportunity::query()->create([
         'title' => 'Kompetisi Peradilan Semu',
         'slug' => 'kompetisi-peradilan-semu',
@@ -58,9 +58,9 @@ test('opportunity index links directly to the external application page', functi
 
     $this->get(route('opportunities.index'))
         ->assertOk()
-        ->assertSee($opportunity->application_link, false)
-        ->assertSee('Lihat Peluang')
-        ->assertDontSee(route('opportunities.show', $opportunity->slug), false);
+        ->assertSee(route('opportunities.show', $opportunity->slug), false)
+        ->assertSee('Lihat Detail')
+        ->assertDontSee($opportunity->application_link, false);
 });
 
 test('legacy opportunity detail path is not publicly available', function () {

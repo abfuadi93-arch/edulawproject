@@ -10,7 +10,7 @@
 <article class="overflow-hidden rounded-[1.5rem] border border-[#dbe2ea] bg-white shadow-[0_18px_45px_-36px_rgba(15,23,42,.55)]" data-featured-opportunity>
     <div class="grid md:grid-cols-[minmax(15rem,.72fr)_minmax(0,1.55fr)]">
         <div class="flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6">
-            <div class="relative aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm">
+            <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="relative block aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy" aria-label="Lihat detail {{ $opportunity->title }}">
                 @if ($opportunity->poster_url)
                     <img
                         src="{{ $opportunity->poster_url }}"
@@ -29,7 +29,7 @@
                         <span class="mt-4 text-xs font-black uppercase tracking-[0.16em] text-brand-navy/45">Edulaw Opportunity</span>
                     </div>
                 @endif
-            </div>
+            </a>
         </div>
 
         <div class="flex min-w-0 flex-col p-6 sm:p-8 lg:p-9">
@@ -43,7 +43,9 @@
             </div>
 
             <h2 class="mt-4 max-w-3xl text-2xl font-black leading-tight tracking-[-0.02em] text-brand-ink sm:text-3xl">
-                {{ $opportunity->title }}
+                <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="rounded-sm transition hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
+                    {{ $opportunity->title }}
+                </a>
             </h2>
 
             @if ($summary)
@@ -75,13 +77,11 @@
 
                 <div class="flex justify-start lg:justify-end">
                     <a
-                        href="{{ $opportunity->application_link }}"
-                        target="_blank"
-                        rel="noopener noreferrer"
+                        href="{{ route('opportunities.show', $opportunity->slug) }}"
                         class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy sm:w-auto"
-                        aria-label="Lihat peluang {{ $opportunity->title }} di situs eksternal"
+                        aria-label="Lihat detail peluang {{ $opportunity->title }}"
                     >
-                        Lihat Peluang
+                        Lihat Detail
                         <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
