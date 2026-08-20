@@ -34,18 +34,14 @@
                 <p class="mt-3 text-sm leading-6 text-slate-300">Angka berikut diperbarui langsung dari konten yang telah diterbitkan.</p>
             </div>
 
-            @if ($stats->count() >= 2)
-                <dl class="grid grid-cols-2 border-t border-white/10 sm:grid-cols-4 lg:grid-cols-2 xl:grid-cols-4" aria-label="Statistik kredibilitas Edulaw Project">
-                    @foreach ($stats->take(4) as $stat)
-                        <div class="border-b border-r border-white/10 p-5" data-home-stat="{{ $stat['label'] }}">
-                            <dd class="font-display text-3xl font-extrabold text-[#f5c451]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
-                            <dt class="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">{{ $stat['label'] }}</dt>
-                        </div>
-                    @endforeach
-                </dl>
-            @else
-                <div class="border-t border-white/10 p-6 text-sm leading-7 text-slate-300">Data dampak akan tampil setelah lebih banyak konten diterbitkan.</div>
-            @endif
+            <dl class="grid grid-cols-2 border-t border-white/10 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3" aria-label="Statistik kredibilitas Edulaw Project">
+                @foreach ($stats as $stat)
+                    <div class="border-b border-r border-white/10 p-5" data-home-stat="{{ $stat['label'] }}">
+                        <dd class="font-display text-3xl font-extrabold text-[#f5c451]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
+                        <dt class="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">{{ $stat['label'] }}</dt>
+                    </div>
+                @endforeach
+            </dl>
         </article>
     </div>
 </section>

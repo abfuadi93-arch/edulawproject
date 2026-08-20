@@ -115,13 +115,22 @@ class HomeController extends Controller
                 'value' => Program::query()->visible()->count(),
             ],
             [
+                'label' => 'Riset & Publikasi',
+                'value' => Publication::query()->published()->count(),
+            ],
+            [
+                'label' => 'Konten Multimedia',
+                'value' => Multimedia::query()->published()->count(),
+            ],
+            [
                 'label' => 'Kontributor Aktif',
                 'value' => Author::query()->where('is_active', true)->count(),
             ],
-        ])
-            ->filter(fn (array $stat): bool => $stat['value'] > 0)
-            ->take(4)
-            ->values();
+            [
+                'label' => 'Peluang Aktif',
+                'value' => Opportunity::query()->active()->count(),
+            ],
+        ]);
 
         $homeHero = EdulawSite::block('home.hero');
         $homeValues = EdulawSite::blocks('home.values');

@@ -304,7 +304,7 @@ it('uses canonical hero calls to action and valid contextual audience anchors', 
         ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#multimedia"]')->length)->toBe(1);
 });
 
-it('shows only verified non-zero credibility statistics from the correct record statuses', function () {
+it('shows all dynamic credibility statistics using only the correct public record statuses', function () {
     Insight::query()->create([
         'title' => 'Insight Kredibilitas',
         'slug' => 'insight-kredibilitas',
@@ -327,6 +327,22 @@ it('shows only verified non-zero credibility statistics from the correct record 
         'title' => 'Publikasi Reviewed Statistik',
         'slug' => 'publikasi-reviewed-statistik',
         'status' => 'reviewed',
+    ]);
+
+    Multimedia::query()->create([
+        'title' => 'Video Statistik Publik',
+        'slug' => 'video-statistik-publik',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+    Multimedia::query()->create([
+        'title' => 'Video Statistik Draf',
+        'slug' => 'video-statistik-draf',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'status' => 'draft',
     ]);
 
     Program::query()->create([
@@ -353,17 +369,34 @@ it('shows only verified non-zero credibility statistics from the correct record 
         'is_active' => false,
     ]);
 
+    Opportunity::query()->create([
+        'title' => 'Peluang Statistik Aktif',
+        'slug' => 'peluang-statistik-aktif',
+        'status' => 'open',
+        'deadline' => today()->addWeek(),
+    ]);
+    Opportunity::query()->create([
+        'title' => 'Peluang Statistik Kedaluwarsa',
+        'slug' => 'peluang-statistik-kedaluwarsa',
+        'status' => 'open',
+        'deadline' => today()->subDay(),
+    ]);
+
     $response = $this->get(route('home'))->assertOk();
     $html = $response->getContent();
+    $document = new DOMDocument;
+    $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
 
-    expect(substr_count($html, 'data-home-stat='))->toBe(3);
+    expect(substr_count($html, 'data-home-stat='))->toBe(6);
 
-    foreach (['Insight Terbit', 'Program Edulaw', 'Kontributor Aktif'] as $label) {
-        $response->assertSee('data-home-stat="'.$label.'"', false);
+    foreach (['Insight Terbit', 'Program Edulaw', 'Riset & Publikasi', 'Konten Multimedia', 'Kontributor Aktif', 'Peluang Aktif'] as $label) {
+        $response->assertSee('data-home-stat="'.e($label).'"', false);
+        expect(trim($xpath->query('//*[@data-home-stat="'.$label.'"]/dd')->item(0)?->textContent ?? ''))->toBe('1');
     }
 });
 
-it('does not render a credibility block when fewer than two statistics are non-zero', function () {
+it('keeps every dynamic credibility statistic visible when its value is zero', function () {
     Insight::query()->create([
         'title' => 'Satu-satunya Statistik',
         'slug' => 'satu-satunya-statistik',
@@ -371,9 +404,13 @@ it('does not render a credibility block when fewer than two statistics are non-z
         'published_at' => now()->subDay(),
     ]);
 
-    $this->get(route('home'))
-        ->assertOk()
-        ->assertDontSee('data-home-stat=', false);
+    $response = $this->get(route('home'))->assertOk();
+
+    expect(substr_count($response->getContent(), 'data-home-stat='))->toBe(6);
+    $response
+        ->assertSee('data-home-stat="Insight Terbit"', false)
+        ->assertSee('data-home-stat="Riset &amp; Publikasi"', false)
+        ->assertSee('data-home-stat="Peluang Aktif"', false);
 });
 
 it('keeps identity, SEO, footer legal links, and dynamic copyright robust', function () {
