@@ -79,46 +79,43 @@
 @endphp
 
 <main class="bg-[#f7f8fa] text-brand-ink">
-    <section class="relative overflow-hidden border-b border-[#e3e7ec] bg-linear-to-br from-white via-[#fbfaf6] to-[#f1f4f7] lg:min-h-[240px]" aria-labelledby="opportunities-title">
-        <div class="pointer-events-none absolute -right-16 -top-24 h-72 w-72 rounded-full border border-brand-amber/15" aria-hidden="true"></div>
-        <div class="pointer-events-none absolute -right-6 -top-14 h-48 w-48 rounded-full border border-brand-navy/8" aria-hidden="true"></div>
-
-        <div class="relative mx-auto grid max-w-7xl gap-8 px-4 py-9 sm:px-6 sm:py-11 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-end lg:px-8 lg:py-12">
-            <div class="min-w-0">
-                <nav class="flex items-center gap-2 text-xs font-bold text-slate-500" aria-label="Breadcrumb">
-                    <a href="{{ route('home') }}" class="transition hover:text-brand-navy focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">Beranda</a>
-                    <span class="text-slate-300" aria-hidden="true">/</span>
-                    <span class="text-brand-navy">Opportunities</span>
-                </nav>
-
-                <p class="mt-5 text-[10px] font-black uppercase tracking-[0.2em] text-[#a8660a]">Kanal Opportunities</p>
-                <h1 id="opportunities-title" class="mt-2 text-4xl font-black leading-none tracking-[-0.035em] text-brand-ink sm:text-5xl">Opportunities</h1>
-                <p class="mt-4 max-w-2xl text-sm leading-7 text-slate-600 sm:text-base">
-                    Temukan beasiswa, magang, fellowship, kompetisi, call for papers, dan peluang pengembangan di bidang hukum.
-                </p>
+    <x-shared.page-header
+        title="Opportunities"
+        :compact="true"
+        eyebrow="Kanal Opportunities"
+        :channel-header="true"
+        grid-class="gap-3 px-4 py-5 sm:w-full sm:px-6 sm:py-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:gap-5 lg:px-8 lg:py-7"
+        description="Temukan beasiswa, magang, fellowship, kompetisi, call for papers, dan peluang pengembangan di bidang hukum."
+        background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85"
+        background-alt="Kolaborasi dan pengembangan kapasitas melalui Opportunities Edulaw"
+        :breadcrumbs="[
+            ['label' => 'Beranda', 'url' => route('home')],
+            ['label' => 'Opportunities'],
+        ]"
+    >
+        <dl @class([
+            'grid w-full max-w-md grid-cols-2 rounded-[20px] border border-white/12 bg-white/10 p-1.5 text-left shadow-2xl shadow-black/20 backdrop-blur lg:ml-auto lg:text-right',
+            'sm:grid-cols-3' => $statistics['nearest_deadline'],
+        ]) aria-label="Statistik Opportunities">
+            <div class="min-w-0 rounded-2xl px-3 py-2 sm:rounded-none sm:border-r sm:border-white/20">
+                <dd class="text-2xl font-black leading-none tracking-normal text-white">{{ number_format($statistics['total']) }}</dd>
+                <dt class="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">Peluang</dt>
             </div>
-
-            <dl class="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:min-w-[28rem]" aria-label="Statistik Opportunities">
-                <div class="rounded-2xl border border-white bg-white/90 px-4 py-3 shadow-sm shadow-slate-900/5">
-                    <dd class="text-2xl font-black text-brand-navy">{{ number_format($statistics['total']) }}</dd>
-                    <dt class="mt-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Peluang</dt>
+            <div class="min-w-0 rounded-2xl px-3 py-2 sm:rounded-none sm:border-r sm:border-white/20">
+                <dd class="text-2xl font-black leading-none tracking-normal text-white">{{ number_format($statistics['open']) }}</dd>
+                <dt class="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">Masih Dibuka</dt>
+            </div>
+            @if ($statistics['nearest_deadline'])
+                <div class="col-span-2 min-w-0 rounded-2xl border-t border-white/20 px-3 py-2 sm:col-span-1 sm:rounded-none sm:border-t-0">
+                    <dd class="text-xl font-black leading-none tracking-normal text-brand-amber">{{ $statistics['nearest_deadline'] }}</dd>
+                    <dt class="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">Deadline Terdekat</dt>
                 </div>
-                <div class="rounded-2xl border border-white bg-white/90 px-4 py-3 shadow-sm shadow-slate-900/5">
-                    <dd class="text-2xl font-black text-brand-navy">{{ number_format($statistics['open']) }}</dd>
-                    <dt class="mt-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Masih Dibuka</dt>
-                </div>
-                @if ($statistics['nearest_deadline'])
-                    <div class="col-span-2 rounded-2xl border border-white bg-white/90 px-4 py-3 shadow-sm shadow-slate-900/5 sm:col-span-1">
-                        <dd class="text-xl font-black text-[#9a610c]">{{ $statistics['nearest_deadline'] }}</dd>
-                        <dt class="mt-0.5 text-[10px] font-black uppercase tracking-[0.12em] text-slate-500">Deadline Terdekat</dt>
-                    </div>
-                @endif
-            </dl>
-        </div>
-    </section>
+            @endif
+        </dl>
+    </x-shared.page-header>
 
     <section class="border-b border-slate-200/80 bg-[#f7f8fa]" x-data="{ filtersOpen: {{ $hasAdvancedFilters ? 'true' : 'false' }} }" aria-label="Pencarian dan filter opportunities">
-        <div class="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
             <form method="GET" action="{{ $indexUrl }}" class="rounded-[1.25rem] border border-slate-200 bg-white p-3 shadow-[0_14px_40px_-34px_rgba(15,23,42,.55)] sm:p-4">
                 @if ($filters['type'])
                     <input type="hidden" name="type" value="{{ $filters['type'] }}">
@@ -206,7 +203,7 @@
                 </div>
             </form>
 
-            <nav class="mt-4 flex gap-2 overflow-x-auto pb-1" aria-label="Filter cepat berdasarkan jenis peluang">
+            <nav class="mt-3 flex gap-2 overflow-x-auto pb-1" aria-label="Filter cepat berdasarkan jenis peluang">
                 <a href="{{ $queryFor([], ['type']) }}" class="shrink-0 rounded-full border px-4 py-2 text-xs font-black transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy {{ $filters['type'] ? 'border-slate-200 bg-white text-slate-600 hover:border-brand-navy/30 hover:text-brand-navy' : 'border-brand-navy bg-brand-navy text-white' }}">Semua</a>
                 @foreach ($availableTypes as $type)
                     <a href="{{ $queryFor(['type' => $type]) }}" class="shrink-0 rounded-full border px-4 py-2 text-xs font-black transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy {{ $filters['type'] === $type ? 'border-brand-navy bg-brand-navy text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-navy/30 hover:text-brand-navy' }}">{{ $typeLabels[$type] ?? Illuminate\Support\Str::headline($type) }}</a>
@@ -241,9 +238,9 @@
     </section>
 
     @if ($featuredOpportunity)
-        <section class="py-10 sm:py-12 lg:py-14" aria-labelledby="featured-opportunity-title">
+        <section class="py-7 sm:py-8 lg:py-9" aria-labelledby="featured-opportunity-title">
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-                <div class="mb-5 flex items-end justify-between gap-4">
+                <div class="mb-4 flex items-end justify-between gap-4">
                     <div>
                         <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Rekomendasi Kurator</p>
                         <h2 id="featured-opportunity-title" class="mt-1 text-2xl font-black tracking-[-0.02em] text-brand-ink sm:text-3xl">Pilihan Edulaw</h2>
@@ -255,9 +252,9 @@
         </section>
     @endif
 
-    <section class="pb-12 {{ $featuredOpportunity ? 'pt-1' : 'pt-10 sm:pt-12' }} sm:pb-16 lg:pb-20" aria-labelledby="opportunity-results-title">
+    <section class="pb-10 {{ $featuredOpportunity ? 'pt-1' : 'pt-7 sm:pt-8' }} sm:pb-12 lg:pb-14" aria-labelledby="opportunity-results-title">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-2 border-b border-slate-200 pb-5 sm:flex-row sm:items-end sm:justify-between">
+            <div class="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Opportunity Finder</p>
                     <h2 id="opportunity-results-title" class="mt-1 text-2xl font-black tracking-[-0.02em] text-brand-ink sm:text-3xl">{{ $resultsTitle }}</h2>
@@ -266,7 +263,7 @@
             </div>
 
             @if ($opportunities->isNotEmpty())
-                <div class="mt-6 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
+                <div class="mt-5 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3 lg:gap-6">
                     @foreach ($opportunities as $opportunity)
                         <x-opportunities.card :opportunity="$opportunity" />
                     @endforeach
