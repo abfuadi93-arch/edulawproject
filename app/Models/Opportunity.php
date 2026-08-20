@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Str;
 
 class Opportunity extends Model
 {
@@ -88,9 +89,9 @@ class Opportunity extends Model
             'internship' => 'Magang',
             'volunteer' => 'Volunteer',
             'fellowship' => 'Fellowship',
-            'call_for_paper' => 'Call for Paper',
+            'call_for_paper' => 'Call for Papers',
             'competition' => 'Kompetisi',
-            'open_collaboration' => 'Kolaborasi Terbuka',
+            'open_collaboration' => 'Kolaborasi',
             default => ucfirst(str_replace('_', ' ', (string) ($this->attributes['type'] ?? 'Opportunity'))),
         };
     }
@@ -104,8 +105,58 @@ class Opportunity extends Model
     {
         return match ($this->attributes['status'] ?? null) {
             'open' => 'Masih Dibuka',
-            'closed' => 'Ditutup',
-            default => 'Arsip',
+            'closed' => 'Sudah Ditutup',
+            'archived' => 'Diarsipkan',
+            default => Str::headline((string) ($this->attributes['status'] ?? 'Status')),
         };
+    }
+
+    public function getDisplayFormatAttribute(): string
+    {
+        $format = trim((string) ($this->attributes['format'] ?? ''));
+
+        if ($format === '') {
+            return 'Fleksibel';
+        }
+
+        $normalized = Str::lower($format);
+
+        return match (true) {
+            Str::contains($normalized, 'hybrid'),
+            Str::containsAll($normalized, ['online', 'offline']) => 'Hybrid',
+            Str::contains($normalized, 'online') => 'Online',
+            Str::contains($normalized, 'offline') => 'Offline',
+            default => Str::limit(Str::headline($format), 36),
+        };
+    }
+
+    public function getDeadlineDisplayAttribute(): string
+    {
+        return $this->deadline?->locale('id')->translatedFormat('d F Y') ?? 'Tenggat fleksibel';
+    }
+
+    public function getDeadlineRelativeLabelAttribute(): string
+    {
+        if (! $this->deadline) {
+            return 'Tanpa batas waktu';
+        }
+
+        $days = (int) today()->diffInDays($this->deadline->copy()->startOfDay(), false);
+
+        return match (true) {
+            $days < 0 => 'Deadline berakhir',
+            $days === 0 => 'Hari ini',
+            $days === 1 => 'Besok',
+            $days < 7 => $days.' hari lagi',
+            $days < 14 => '1 minggu lagi',
+            $days < 21 => '2 minggu lagi',
+            default => $days.' hari lagi',
+        };
+    }
+
+    public function getIsOpenForApplicationsAttribute(): bool
+    {
+        return $this->status === 'open'
+            && ($this->deadline === null || $this->deadline->isToday() || $this->deadline->isFuture());
     }
 }

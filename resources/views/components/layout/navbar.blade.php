@@ -70,7 +70,7 @@
         },
     }"
     @keydown.escape.window="if (mobileMenu) closeMenu()"
-    @resize.window="if (window.innerWidth >= 1024) mobileMenu = false"
+    @resize.window="if (window.innerWidth >= 1280) mobileMenu = false"
     @click.outside="mobileMenu = false"
     class="sticky top-0 z-50 border-b border-slate-200 bg-white"
 >
@@ -104,7 +104,7 @@
             </a>
 
             {{-- Desktop Navigation --}}
-            <nav class="hidden flex-1 items-center justify-center gap-7 lg:flex xl:gap-9" aria-label="Navigasi utama">
+            <nav class="hidden flex-1 items-center justify-center gap-9 xl:flex" aria-label="Navigasi utama">
                 @foreach($navItems as $item)
                     <a
                         href="{{ $item['url'] }}"
@@ -127,7 +127,7 @@
             </nav>
 
             {{-- Desktop Actions --}}
-            <div class="hidden shrink-0 items-center gap-3 lg:flex">
+            <div class="hidden shrink-0 items-center gap-3 xl:flex">
                 <a
                     href="{{ route('search.index') }}"
                     aria-label="Cari"
@@ -161,7 +161,7 @@
                 type="button"
                 x-ref="menuButton"
                 @click="toggleMenu()"
-                class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:border-brand-navy hover:text-brand-navy lg:hidden"
+                class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:border-brand-navy hover:text-brand-navy xl:hidden"
                 aria-expanded="false"
                 :aria-expanded="mobileMenu.toString()"
                 aria-label="Buka menu"
@@ -209,7 +209,7 @@
         x-show="mobileMenu"
         x-transition.opacity.duration.200ms
         x-cloak
-        class="border-t border-slate-200 bg-white lg:hidden"
+        class="border-t border-slate-200 bg-white xl:hidden"
     >
         <div class="mx-auto max-w-7xl px-5 py-4">
             <nav class="space-y-1" aria-label="Navigasi mobile">
