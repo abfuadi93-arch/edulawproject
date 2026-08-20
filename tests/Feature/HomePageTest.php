@@ -61,6 +61,8 @@ it('shows compact empty states and omits unavailable publication statistics', fu
         ->assertSee('Lihat Semua Insight')
         ->assertSee('Publikasi sedang disiapkan.')
         ->assertSee('Program terbaru sedang disiapkan.')
+        ->assertSee('Belum ada peluang yang sedang dibuka.')
+        ->assertSee('Lihat arsip peluang')
         ->assertDontSee('Peluang aktif dengan tenggat terdekat')
         ->assertDontSee('Belajar Hukum Melalui Beragam Format')
         ->assertDontSee('Total Unduhan')
@@ -490,16 +492,18 @@ it('shows the four intended audience groups in the final homepage order', functi
     expect(substr_count($html, 'data-home-audience-card'))->toBe(4);
 });
 
-it('shows at most three open opportunities by nearest deadline with direct external links', function () {
-    $opportunities = collect(range(1, 5))->map(fn (int $position) => Opportunity::query()->create([
+it('shows at most six active opportunities with featured priority and the editorial card hierarchy', function () {
+    $types = ['competition', 'fellowship', 'scholarship', 'call_for_paper', 'internship', 'open_collaboration'];
+    $opportunities = collect(range(1, 8))->map(fn (int $position) => Opportunity::query()->create([
         'title' => "Peluang Aktif {$position}",
         'slug' => "peluang-aktif-{$position}",
-        'type' => 'fellowship',
+        'type' => $types[($position - 1) % count($types)],
         'excerpt' => "Ringkasan peluang {$position}.",
-        'poster' => $position === 1 ? 'opportunities/poster-featured.webp' : null,
+        'poster' => "opportunities/poster-{$position}.webp",
         'deadline' => now()->addDays($position)->toDateString(),
         'application_link' => "https://example.test/apply/{$position}",
         'status' => 'open',
+        'featured' => $position === 6,
     ]));
 
     $expired = Opportunity::query()->create([
@@ -528,29 +532,44 @@ it('shows at most three open opportunities by nearest deadline with direct exter
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
+    $document = new DOMDocument;
+    $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
 
     $response
         ->assertOk()
-        ->assertSeeInOrder($opportunities->take(3)->pluck('title')->all())
-        ->assertDontSee($opportunities[3]->title)
-        ->assertDontSee($opportunities[4]->title)
+        ->assertSeeInOrder([
+            $opportunities[5]->title,
+            $opportunities[0]->title,
+            $opportunities[1]->title,
+            $opportunities[2]->title,
+            $opportunities[3]->title,
+            $opportunities[4]->title,
+        ])
+        ->assertDontSee($opportunities[6]->title)
+        ->assertDontSee($opportunities[7]->title)
         ->assertDontSee($expired->title)
         ->assertDontSee($closed->title)
         ->assertDontSee($invalid->title)
-        ->assertSee('href="https://example.test/apply/1"', false)
+        ->assertSee('href="https://example.test/apply/6"', false)
         ->assertSee('class="oppP-featured"', false)
         ->assertSee('class="oppP-stack"', false)
-        ->assertSee('alt="Poster Peluang Aktif 1"', false)
-        ->assertSee('Temukan kompetisi, fellowship, kolaborasi, dan kesempatan pengembangan yang relevan')
+        ->assertSee('class="oppP-bottom"', false)
+        ->assertSee('alt="Poster Peluang Aktif 6"', false)
+        ->assertSee('Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan')
         ->assertSee('target="_blank"', false)
         ->assertSee('rel="noopener noreferrer"', false);
 
-    expect(substr_count($html, 'data-home-opportunity>'))->toBe(3)
-        ->and(substr_count($html, '<article class="oppP-card"'))->toBe(2)
-        ->and(substr_count($html, 'data-home-opportunity-fallback'))->toBe(2);
+    expect($xpath->query('//*[@data-home-opportunity]')->length)->toBe(6)
+        ->and($xpath->query('//*[@data-home-opportunity-featured]')->length)->toBe(1)
+        ->and($xpath->query('//*[@data-home-opportunity-secondary]')->length)->toBe(2)
+        ->and($xpath->query('//*[@data-home-opportunity-bottom]')->length)->toBe(3)
+        ->and($xpath->query('//*[@data-home-opportunity]//img')->length)->toBe(6)
+        ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(6)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(6);
 });
 
-it('keeps a single expired open opportunity compact and deprioritizes it behind current deadlines', function () {
+it('excludes expired open opportunities and renders the opportunities empty state', function () {
     $expired = Opportunity::query()->create([
         'title' => 'Peluang Open Lewat Tenggat',
         'slug' => 'peluang-open-lewat-tenggat',
@@ -564,9 +583,9 @@ it('keeps a single expired open opportunity compact and deprioritizes it behind 
 
     $response
         ->assertOk()
-        ->assertSee($expired->title)
-        ->assertSee('Tenggat telah lewat')
-        ->assertSee('max-w-4xl', false);
+        ->assertDontSee($expired->title)
+        ->assertSee('Belum ada peluang yang sedang dibuka.')
+        ->assertDontSee('data-home-opportunity', false);
 });
 
 it('shows one featured and at most three secondary multimedia teasers', function () {

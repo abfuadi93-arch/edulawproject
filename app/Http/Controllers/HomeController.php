@@ -50,14 +50,13 @@ class HomeController extends Controller
             ->get();
 
         $latestOpportunities = Opportunity::query()
-            ->open()
+            ->active()
             ->withExternalLink()
-            ->orderByRaw('CASE WHEN deadline IS NOT NULL AND deadline < ? THEN 1 ELSE 0 END', [today()->toDateString()])
             ->orderByDesc('featured')
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
             ->orderByDesc('id')
-            ->limit(3)
+            ->limit(6)
             ->get();
 
         $homepageYoutubeVideos = Multimedia::query()
