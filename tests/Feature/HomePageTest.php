@@ -251,7 +251,8 @@ it('limits publications to four published records and excludes non-published rec
         ->assertSee(route('publications.show', $published[0]->slug), false);
 
     expect(substr_count($html, 'data-home-publication'))->toBe(4)
-        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(4);
+        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(8)
+        ->and($xpath->query('//article[@data-home-publication]//div/a/h3[contains(@class, "line-clamp-3")]')->length)->toBe(4);
 });
 
 it('renders the about section followed by the active collaboration call to action', function () {

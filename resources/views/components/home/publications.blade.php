@@ -58,6 +58,9 @@
 
                         <div class="-mt-4 rounded-xl border border-slate-200/80 bg-white px-5 pb-5 pt-8 shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition group-hover:border-[#d9a24c]/50 group-hover:shadow-lg sm:-mt-10 sm:pt-14">
                             <p class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#b77928]">{{ $typeName }}</p>
+                            <a href="{{ route('publications.show', $publication->slug) }}" class="mt-2 block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b77928]">
+                                <h3 class="line-clamp-3 min-h-[4.5rem] text-base font-extrabold leading-6 text-[#061b3a] transition group-hover:text-[#174f7d]">{{ $publication->title }}</h3>
+                            </a>
 
                             <div class="mt-4 flex min-h-6 items-center justify-between gap-3">
                                 <p class="line-clamp-1 text-sm text-slate-500">{{ $publication->publication_date_display }}</p>
