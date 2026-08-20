@@ -30,16 +30,15 @@
     </div>
 
     <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
-        <div class="flex items-start gap-2">
+        <div class="flex items-start justify-between gap-2">
             <span class="min-w-0 rounded-full bg-[#eef2f7] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-brand-navy">
                 {{ $opportunity->display_type }}
             </span>
-        </div>
-
-        <div class="mt-2 flex flex-wrap items-center gap-2">
-            <span class="text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }}</span>
-            <span class="text-slate-300" aria-hidden="true">•</span>
-            <span class="line-clamp-1 min-w-0 text-[11px] font-bold text-slate-500">{{ $opportunity->location ?: 'Lokasi menyesuaikan' }}</span>
+            <div class="flex min-w-0 items-center justify-end gap-1.5 text-right">
+                <span class="shrink-0 text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }}</span>
+                <span class="text-slate-300" aria-hidden="true">•</span>
+                <span class="line-clamp-1 min-w-0 max-w-24 text-[11px] font-bold text-slate-500 sm:max-w-32">{{ $opportunity->location ?: 'Lokasi menyesuaikan' }}</span>
+            </div>
         </div>
 
         <h2 class="mt-3 line-clamp-3 text-base font-black leading-snug tracking-[-0.015em] text-brand-ink transition group-hover:text-brand-navy sm:text-lg">
