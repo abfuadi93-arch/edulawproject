@@ -17,7 +17,7 @@
         <div class="absolute inset-0" style="background-color: rgba(6, 19, 42, 0.72);"></div>
     </div>
 
-    <div class="mx-auto flex max-w-[1320px] items-center px-5 py-8 sm:px-6 lg:min-h-[240px] lg:px-8 lg:py-8">
+    <div class="mx-auto flex max-w-7xl items-center px-5 py-8 sm:px-6 lg:min-h-[240px] lg:px-8 lg:py-8">
         <div class="grid w-full items-center gap-6 lg:grid-cols-2">
             <div class="max-w-3xl justify-self-start text-left">
                 <nav class="flex items-center gap-1.5 text-[11px] font-medium text-white/55" aria-label="Breadcrumb">

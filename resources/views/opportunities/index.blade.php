@@ -84,7 +84,7 @@
         :compact="true"
         eyebrow="Kanal Opportunities"
         :channel-header="true"
-        grid-class="gap-3 px-4 py-5 sm:w-full sm:px-6 sm:py-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:gap-5 lg:px-8 lg:py-7"
+        grid-class="gap-3 px-5 py-5 sm:w-full sm:px-6 sm:py-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:gap-5 lg:px-8 lg:py-7"
         description="Temukan beasiswa, magang, fellowship, kompetisi, call for papers, dan peluang pengembangan di bidang hukum."
         background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kolaborasi dan pengembangan kapasitas melalui Opportunities Edulaw"
@@ -115,7 +115,7 @@
     </x-shared.page-header>
 
     <section class="border-b border-slate-200/80 bg-[#f7f8fa]" x-data="{ filtersOpen: {{ $hasAdvancedFilters ? 'true' : 'false' }} }" aria-label="Pencarian dan filter opportunities">
-        <div class="mx-auto max-w-7xl px-4 py-4 sm:px-6 sm:py-5 lg:px-8">
+        <div class="mx-auto max-w-7xl px-5 py-4 sm:px-6 sm:py-5 lg:px-8">
             <form method="GET" action="{{ $indexUrl }}" class="rounded-[1.25rem] border border-slate-200 bg-white p-3 shadow-[0_14px_40px_-34px_rgba(15,23,42,.55)] sm:p-4">
                 @if ($filters['type'])
                     <input type="hidden" name="type" value="{{ $filters['type'] }}">
@@ -239,7 +239,7 @@
 
     @if ($featuredOpportunity)
         <section class="py-7 sm:py-8 lg:py-9" aria-labelledby="featured-opportunity-title">
-            <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="mb-4 flex items-end justify-between gap-4">
                     <div>
                         <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Rekomendasi Kurator</p>
@@ -253,7 +253,7 @@
     @endif
 
     <section class="pb-10 {{ $featuredOpportunity ? 'pt-1' : 'pt-7 sm:pt-8' }} sm:pb-12 lg:pb-14" aria-labelledby="opportunity-results-title">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
                 <div>
                     <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Opportunity Finder</p>

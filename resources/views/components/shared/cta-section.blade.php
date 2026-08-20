@@ -16,7 +16,7 @@
     $hasSecondary = filled($secondaryUrl) && filled($secondaryLabel);
 @endphp
 
-<section {{ $attributes->merge(['class' => 'bg-brand-paper px-4 py-7 sm:px-6 lg:px-8 lg:py-10']) }}>
+<section {{ $attributes->merge(['class' => 'bg-brand-paper px-5 py-7 sm:px-6 lg:px-8 lg:py-10']) }}>
     <div class="relative isolate mx-auto max-w-7xl overflow-hidden rounded-[1.75rem] border border-brand-sky/20 bg-brand-navy text-white shadow-xl shadow-brand-navy/15 sm:rounded-[2rem]">
         @if ($backgroundImage)
             <div class="absolute inset-0 -z-10">

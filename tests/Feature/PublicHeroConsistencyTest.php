@@ -33,6 +33,31 @@ test('hero halaman kanal memakai tinggi desktop Program sebagai rujukan', functi
     }
 });
 
+test('halaman kanal memakai lebar dan padding horizontal body yang seragam', function () {
+    $pages = [
+        route('programs.index'),
+        route('insights.index'),
+        route('publications.index'),
+        route('opportunities.index'),
+        route('multimedia.index'),
+    ];
+
+    foreach ($pages as $url) {
+        $html = $this->get($url)->assertOk()->getContent();
+        $document = new DOMDocument;
+        @$document->loadHTML($html);
+        $xpath = new DOMXPath($document);
+        $standardContainers = $xpath->query(
+            '//*[contains(concat(" ", normalize-space(@class), " "), " max-w-7xl ")'
+            .' and contains(concat(" ", normalize-space(@class), " "), " px-5 ")'
+            .' and contains(concat(" ", normalize-space(@class), " "), " sm:px-6 ")'
+            .' and contains(concat(" ", normalize-space(@class), " "), " lg:px-8 ")]'
+        );
+
+        expect($standardContainers->length)->toBeGreaterThanOrEqual(2);
+    }
+});
+
 test('hero kategori Editorial mengikuti struktur dan tinggi hero kanal', function (string $category, string $name) {
     $html = $this->get(route('insights.categories.show', $category))->assertOk()->getContent();
     $document = new DOMDocument;

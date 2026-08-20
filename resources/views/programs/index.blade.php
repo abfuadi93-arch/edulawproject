@@ -45,7 +45,7 @@
     <x-program.featured :program="$featuredProgram" />
 
     <section class="bg-white py-10 sm:py-12 lg:py-14">
-        <div class="mx-auto grid max-w-[1320px] gap-6 px-5 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[280px_minmax(0,1fr)_260px]">
+        <div class="mx-auto grid max-w-7xl gap-6 px-5 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[280px_minmax(0,1fr)_260px]">
             <x-program.filters
                 :status-options="$statusOptions"
                 :category-options="$filterCategories"

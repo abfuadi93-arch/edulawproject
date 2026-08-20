@@ -83,7 +83,7 @@
         description="Video, Shorts/Reels, dan dokumentasi kegiatan Edulaw dari kanal resmi kami."
         background-image="https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kegiatan produksi konten dan diskusi Edulaw"
-        grid-class="gap-5 px-4 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         title-class="text-3xl sm:text-4xl lg:text-[2.35rem]"
         description-class="max-w-xl text-sm leading-6 text-white/90 lg:ml-auto lg:text-right"
         :overlay-opacity="0.62"
@@ -103,7 +103,7 @@
     </x-shared.page-header>
 
     <nav aria-label="Navigasi section Multimedia" class="border-b border-slate-200 bg-white/95">
-        <div class="mx-auto max-w-7xl overflow-x-auto px-4 py-3 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl overflow-x-auto px-5 py-3 sm:px-6 lg:px-8">
             <div class="flex w-max gap-2 lg:w-auto">
                 @foreach ([
                     ['label' => 'Video', 'href' => '#video'],
@@ -126,7 +126,7 @@
     </nav>
 
     <section id="video" class="scroll-mt-24 py-14 lg:py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <x-multimedia.section-heading
                     platform="youtube"
@@ -167,7 +167,7 @@
     </section>
 
     <section id="shorts-reels" class="scroll-mt-24 bg-white py-14 lg:py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
                 @if ($instagramUrl)
@@ -209,7 +209,7 @@
     </section>
 
     <section id="album-foto" class="scroll-mt-24 py-14 lg:py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <x-multimedia.section-heading platform="google_photos" eyebrow="Google Photos" title="Dokumentasi Kegiatan" description="Album diskusi, kelas, kolaborasi, dan kegiatan Edulaw." />
 
             @if ($albumItems->isNotEmpty())
@@ -242,7 +242,7 @@
         </div>
     </section>
 
-    <section class="bg-white px-4 py-7 sm:px-6 lg:px-8 lg:py-9">
+    <section class="bg-white px-5 py-7 sm:px-6 lg:px-8 lg:py-9">
         <div class="relative mx-auto grid max-w-7xl items-center gap-6 overflow-hidden rounded-3xl bg-brand-navy px-6 py-8 text-white shadow-lg shadow-brand-navy/12 sm:px-8 lg:grid-cols-[1fr_auto] lg:px-10 lg:py-9">
             <svg class="pointer-events-none absolute -right-24 top-1/2 h-80 w-80 -translate-y-1/2 text-brand-teal/10" viewBox="0 0 320 320" fill="none" aria-hidden="true"><circle cx="160" cy="160" r="118" stroke="currentColor"/><circle cx="160" cy="160" r="76" stroke="currentColor"/></svg>
             <div class="relative">

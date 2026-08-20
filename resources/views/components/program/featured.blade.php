@@ -19,7 +19,7 @@
     @endphp
 
     <section class="bg-white py-10 sm:py-12">
-        <div class="mx-auto max-w-[1320px] px-5 sm:px-6 lg:px-8">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="mb-5 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-brand-navy">
                 <span class="text-[#D99A25]">★</span>
                 Featured Program

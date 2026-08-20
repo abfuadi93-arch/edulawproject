@@ -185,12 +185,6 @@
         background: #f8fafc;
     }
 
-    .publication-repository-container {
-        max-width: 1180px;
-        margin: 0 auto;
-        padding: 0 24px;
-    }
-
     .publication-repository-layout {
         display: grid;
         grid-template-columns: 300px minmax(0, 1fr);
@@ -578,10 +572,6 @@
     }
 
     @media (max-width: 640px) {
-        .publication-repository-container {
-            padding: 0 16px;
-        }
-
         .publication-content h2 {
             font-size: 19px;
         }
@@ -599,6 +589,7 @@
         :compact="true"
         eyebrow="Kanal Riset & Publikasi"
         :channel-header="true"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Repository kajian, policy brief, naskah akademik, working paper, research report, dan buku digital untuk memperkuat literasi hukum dan kebijakan publik."
         background-image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1800&q=85"
         background-alt="Riset dan publikasi hukum Edulaw Project"
@@ -609,7 +600,7 @@
     />
 
     <section class="py-12 lg:py-16">
-        <div class="publication-repository-container">
+        <div class="publication-repository-container mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="publication-repository-layout">
                 <aside>
                     <div class="publication-filter-card">

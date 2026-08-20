@@ -13,7 +13,7 @@
     $allUrl = route('insights.index', $baseParams).($baseParams ? '#insight-archive' : '');
 @endphp
 
-<section aria-label="Navigasi editorial" class="bg-[#fbfaf7] px-4 py-3 sm:px-6 lg:px-8">
+<section aria-label="Navigasi editorial" class="bg-[#fbfaf7] px-5 py-3 sm:px-6 lg:px-8">
     <div class="mx-auto flex max-w-7xl flex-col gap-3 rounded-2xl border border-slate-200 bg-white px-3 py-3 shadow-sm shadow-brand-ink/5 sm:px-4 lg:flex-row lg:items-center lg:justify-between lg:gap-5">
         @if ($hasChannels)
         <nav aria-label="Kategori editorial" class="-mx-1 flex flex-nowrap gap-2 overflow-x-auto px-1 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden lg:mx-0 lg:min-w-0 lg:flex-1 lg:flex-wrap lg:overflow-visible lg:pb-0 lg:px-0">

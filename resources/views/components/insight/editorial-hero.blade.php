@@ -11,7 +11,7 @@
         style="background-image: linear-gradient(90deg, rgba(4, 17, 40, 0.82) 0%, rgba(6, 26, 61, 0.58) 52%, rgba(6, 26, 61, 0.34) 100%), linear-gradient(180deg, rgba(6, 19, 42, 0.12) 0%, rgba(6, 19, 42, 0.28) 100%);"
     ></div>
 
-    <div class="mx-auto grid max-w-7xl gap-6 px-4 py-7 sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-5">
+    <div class="mx-auto grid max-w-7xl gap-6 px-5 py-7 sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,0.88fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-5">
         <div class="min-w-0 max-w-3xl">
             <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-[11px] font-medium text-white/55">
                 <a href="{{ route('home') }}" class="rounded-sm transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Beranda</a>
