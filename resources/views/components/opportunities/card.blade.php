@@ -4,6 +4,16 @@
     $summary = $opportunity->excerpt
         ?: Illuminate\Support\Str::limit(strip_tags($opportunity->description ?? ''), 145);
     $isOpen = $opportunity->is_open_for_applications;
+    $typeBadgeClass = match ($opportunity->type) {
+        'scholarship' => 'bg-emerald-50 text-emerald-700 ring-emerald-200',
+        'internship' => 'bg-sky-50 text-sky-700 ring-sky-200',
+        'volunteer' => 'bg-amber-50 text-amber-800 ring-amber-200',
+        'fellowship' => 'bg-violet-50 text-violet-700 ring-violet-200',
+        'call_for_paper' => 'bg-rose-50 text-rose-700 ring-rose-200',
+        'competition' => 'bg-orange-50 text-orange-700 ring-orange-200',
+        'open_collaboration' => 'bg-teal-50 text-teal-700 ring-teal-200',
+        default => 'bg-slate-100 text-slate-700 ring-slate-200',
+    };
 @endphp
 
 <article class="group grid h-full min-w-0 grid-cols-[7.5rem_minmax(0,1fr)] overflow-hidden rounded-[1.25rem] border border-slate-200 bg-white shadow-[0_16px_38px_-34px_rgba(15,23,42,.65)] transition duration-200 hover:-translate-y-0.5 hover:border-[#d9a24c]/65 hover:shadow-[0_22px_44px_-34px_rgba(15,23,42,.5)] sm:grid-cols-[10.5rem_minmax(0,1fr)] xl:grid-cols-[12rem_minmax(0,1fr)]" data-opportunity-card>
@@ -31,7 +41,7 @@
 
     <div class="flex min-w-0 flex-1 flex-col p-4 sm:p-5">
         <div class="flex items-start justify-between gap-2">
-            <span class="min-w-0 rounded-full bg-[#eef2f7] px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] text-brand-navy">
+            <span class="min-w-0 rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.1em] ring-1 ring-inset {{ $typeBadgeClass }}">
                 {{ $opportunity->display_type }}
             </span>
             <div class="flex min-w-0 items-center justify-end gap-1.5 text-right">
