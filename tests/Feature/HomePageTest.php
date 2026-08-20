@@ -496,6 +496,7 @@ it('shows at most three open opportunities by nearest deadline with direct exter
         'slug' => "peluang-aktif-{$position}",
         'type' => 'fellowship',
         'excerpt' => "Ringkasan peluang {$position}.",
+        'poster' => $position === 1 ? 'opportunities/poster-featured.webp' : null,
         'deadline' => now()->addDays($position)->toDateString(),
         'application_link' => "https://example.test/apply/{$position}",
         'status' => 'open',
@@ -537,11 +538,16 @@ it('shows at most three open opportunities by nearest deadline with direct exter
         ->assertDontSee($closed->title)
         ->assertDontSee($invalid->title)
         ->assertSee('href="https://example.test/apply/1"', false)
+        ->assertSee('class="oppP-featured"', false)
+        ->assertSee('class="oppP-stack"', false)
+        ->assertSee('alt="Poster Peluang Aktif 1"', false)
+        ->assertSee('Temukan kompetisi, fellowship, kolaborasi, dan kesempatan pengembangan yang relevan')
         ->assertSee('target="_blank"', false)
         ->assertSee('rel="noopener noreferrer"', false);
 
     expect(substr_count($html, 'data-home-opportunity>'))->toBe(3)
-        ->and(substr_count($html, 'data-home-opportunity-fallback'))->toBe(3);
+        ->and(substr_count($html, '<article class="oppP-card"'))->toBe(2)
+        ->and(substr_count($html, 'data-home-opportunity-fallback'))->toBe(2);
 });
 
 it('keeps a single expired open opportunity compact and deprioritizes it behind current deadlines', function () {
