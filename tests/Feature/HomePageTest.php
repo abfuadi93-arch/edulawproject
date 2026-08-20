@@ -591,6 +591,9 @@ it('shows one featured and at most three secondary multimedia teasers', function
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
+    $aboutStart = strpos($html, '<section id="tentang-edulaw"');
+    $multimediaStart = strpos($html, '<section id="multimedia"');
+    $nextSectionStart = strpos($html, '<section', $multimediaStart + 1);
 
     $response
         ->assertOk()
@@ -600,16 +603,22 @@ it('shows one featured and at most three secondary multimedia teasers', function
         ->assertSee(route('multimedia.index'), false)
         ->assertSee('Belajar Hukum Melalui Beragam Format')
         ->assertSee('Lihat Semua Multimedia')
+        ->assertSeeInOrder([
+            'Tentang Edulaw',
+            'Belajar Hukum Melalui Beragam Format',
+            'Bangun ruang literasi hukum bersama Edulaw Project.',
+        ])
         ->assertDontSee('<iframe', false)
         ->assertDontSee('autoplay', false);
 
     $multimediaSection = substr(
         $html,
-        strpos($html, '<section id="multimedia"'),
-        strpos($html, '<section id="tentang-edulaw"') - strpos($html, '<section id="multimedia"'),
+        $multimediaStart,
+        $nextSectionStart - $multimediaStart,
     );
 
-    expect(substr_count($html, 'data-home-multimedia '))->toBe(4)
+    expect($aboutStart)->toBeLessThan($multimediaStart)
+        ->and(substr_count($html, 'data-home-multimedia '))->toBe(4)
         ->and(substr_count($html, 'data-home-multimedia-featured'))->toBe(1)
         ->and(substr_count($html, 'data-home-multimedia-secondary'))->toBe(3)
         ->and($multimediaSection)->toContain('from-slate-950/95')

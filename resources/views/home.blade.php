@@ -34,9 +34,9 @@
     <x-home.programs :programs="$latestPrograms" :featured-insight="$featuredInsight" />
     <x-home.insights :featuredInsight="$featuredInsight" :insights="$latestInsights" />
     <x-home.publications :publications="$latestPublications" />
-    <x-home.multimedia :featured="$homepageFeaturedMultimedia" :items="$homepageSecondaryMultimedia" />
     <x-home.opportunities :opportunities="$latestOpportunities" />
     <x-home.about :stats="$credibilityStats" />
+    <x-home.multimedia :featured="$homepageFeaturedMultimedia" :items="$homepageSecondaryMultimedia" />
     <x-home.cta :block="$sharedCta" />
 @endsection
 
