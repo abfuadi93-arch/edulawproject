@@ -58,7 +58,6 @@
 
                         <div class="-mt-4 rounded-xl border border-slate-200/80 bg-white px-5 pb-5 pt-8 shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition group-hover:border-[#d9a24c]/50 group-hover:shadow-lg sm:-mt-10 sm:pt-14">
                             <p class="text-[10px] font-extrabold uppercase tracking-[0.14em] text-[#b77928]">{{ $typeName }}</p>
-                            <h3 class="mt-2 line-clamp-2 min-h-12 text-[15px] font-extrabold leading-snug tracking-[-0.01em] text-[#061b3a]">{{ $publication->title }}</h3>
 
                             <div class="mt-4 flex min-h-6 items-center justify-between gap-3">
                                 <p class="line-clamp-1 text-sm text-slate-500">{{ $publication->publication_date_display }}</p>

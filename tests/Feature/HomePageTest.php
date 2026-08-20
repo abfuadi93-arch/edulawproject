@@ -234,6 +234,9 @@ it('limits publications to four published records and excludes non-published rec
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
+    $document = new DOMDocument;
+    $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
 
     $response
         ->assertOk()
@@ -247,7 +250,8 @@ it('limits publications to four published records and excludes non-published rec
         ->assertSee(route('publications.index'), false)
         ->assertSee(route('publications.show', $published[0]->slug), false);
 
-    expect(substr_count($html, 'data-home-publication'))->toBe(4);
+    expect(substr_count($html, 'data-home-publication'))->toBe(4)
+        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(4);
 });
 
 it('renders the about section followed by the active collaboration call to action', function () {
