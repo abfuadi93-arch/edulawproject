@@ -1,10 +1,9 @@
 @props(['opportunities' => collect()])
 
 @php
-    $opportunityCollection = collect($opportunities)->take(6)->values();
+    $opportunityCollection = collect($opportunities)->take(4)->values();
     $featuredOpportunity = $opportunityCollection->first();
-    $secondaryOpportunities = $opportunityCollection->slice(1, 2)->values();
-    $bottomOpportunities = $opportunityCollection->slice(3, 3)->values();
+    $secondaryOpportunities = $opportunityCollection->slice(1, 3)->values();
     $badgeTone = fn (?string $type): string => match ($type) {
         'competition' => 'oppP-gold',
         'fellowship', 'volunteer' => 'oppP-teal',
@@ -133,46 +132,6 @@
                 @endif
             </div>
 
-            @if ($bottomOpportunities->isNotEmpty())
-                <div class="oppP-bottom">
-                    @foreach ($bottomOpportunities as $opportunity)
-                        <article class="oppP-bottom-card" data-home-opportunity data-home-opportunity-bottom>
-                            <div class="oppP-bottom-poster">
-                                <div class="oppP-poster-fallback" data-home-opportunity-fallback aria-hidden="true">
-                                    <span>{{ mb_substr($opportunity->display_type, 0, 1) }}</span>
-                                </div>
-                                @if ($opportunity->poster_url)
-                                    <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" loading="lazy" decoding="async" onerror="this.remove()">
-                                @endif
-                            </div>
-
-                            <div class="oppP-bottom-body">
-                                <div class="oppP-cardtop">
-                                    <span class="oppP-badge {{ $badgeTone($opportunity->type) }}">{{ $opportunity->display_type }}</span>
-                                    <span class="oppP-arrow" aria-hidden="true">↗</span>
-                                </div>
-
-                                <h3>{{ $opportunity->title }}</h3>
-
-                                <div class="oppP-deadline">
-                                    <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                        <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
-                                    </svg>
-                                    <div>
-                                        <span>{{ $deadlineLabel($opportunity, true) }}</span>
-                                        <strong>{{ $deadlineValue($opportunity) }}</strong>
-                                    </div>
-                                </div>
-
-                                <a href="{{ $opportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="oppP-link" aria-label="Buka peluang {{ $opportunity->title }} di situs eksternal">
-                                    Lihat Peluang
-                                    <span aria-hidden="true">↗</span>
-                                </a>
-                            </div>
-                        </article>
-                    @endforeach
-                </div>
-            @endif
         @else
             <div class="oppP-empty">
                 <div class="oppP-empty-icon" aria-hidden="true">↗</div>

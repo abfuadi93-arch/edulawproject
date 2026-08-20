@@ -492,9 +492,9 @@ it('shows the four intended audience groups in the final homepage order', functi
     expect(substr_count($html, 'data-home-audience-card'))->toBe(4);
 });
 
-it('shows at most six active opportunities with featured priority and the editorial card hierarchy', function () {
+it('shows at most four active opportunities ordered by nearest deadline in a one plus three hierarchy', function () {
     $types = ['competition', 'fellowship', 'scholarship', 'call_for_paper', 'internship', 'open_collaboration'];
-    $opportunities = collect(range(1, 8))->map(fn (int $position) => Opportunity::query()->create([
+    $opportunities = collect(range(1, 6))->map(fn (int $position) => Opportunity::query()->create([
         'title' => "Peluang Aktif {$position}",
         'slug' => "peluang-aktif-{$position}",
         'type' => $types[($position - 1) % count($types)],
@@ -539,34 +539,32 @@ it('shows at most six active opportunities with featured priority and the editor
     $response
         ->assertOk()
         ->assertSeeInOrder([
-            $opportunities[5]->title,
             $opportunities[0]->title,
             $opportunities[1]->title,
             $opportunities[2]->title,
             $opportunities[3]->title,
-            $opportunities[4]->title,
         ])
-        ->assertDontSee($opportunities[6]->title)
-        ->assertDontSee($opportunities[7]->title)
+        ->assertDontSee($opportunities[4]->title)
+        ->assertDontSee($opportunities[5]->title)
         ->assertDontSee($expired->title)
         ->assertDontSee($closed->title)
         ->assertDontSee($invalid->title)
-        ->assertSee('href="https://example.test/apply/6"', false)
+        ->assertSee('href="https://example.test/apply/1"', false)
         ->assertSee('class="oppP-featured"', false)
         ->assertSee('class="oppP-stack"', false)
-        ->assertSee('class="oppP-bottom"', false)
-        ->assertSee('alt="Poster Peluang Aktif 6"', false)
+        ->assertDontSee('class="oppP-bottom"', false)
+        ->assertSee('alt="Poster Peluang Aktif 1"', false)
         ->assertSee('Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan')
         ->assertSee('target="_blank"', false)
         ->assertSee('rel="noopener noreferrer"', false);
 
-    expect($xpath->query('//*[@data-home-opportunity]')->length)->toBe(6)
+    expect($xpath->query('//*[@data-home-opportunity]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity-featured]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-opportunity-secondary]')->length)->toBe(2)
-        ->and($xpath->query('//*[@data-home-opportunity-bottom]')->length)->toBe(3)
-        ->and($xpath->query('//*[@data-home-opportunity]//img')->length)->toBe(6)
-        ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(6)
-        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(6);
+        ->and($xpath->query('//*[@data-home-opportunity-secondary]')->length)->toBe(3)
+        ->and($xpath->query('//*[@data-home-opportunity-bottom]')->length)->toBe(0)
+        ->and($xpath->query('//*[@data-home-opportunity]//img')->length)->toBe(4)
+        ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(4);
 });
 
 it('excludes expired open opportunities and renders the opportunities empty state', function () {

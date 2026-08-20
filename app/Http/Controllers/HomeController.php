@@ -52,11 +52,11 @@ class HomeController extends Controller
         $latestOpportunities = Opportunity::query()
             ->active()
             ->withExternalLink()
-            ->orderByDesc('featured')
             ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
             ->orderBy('deadline')
+            ->orderByDesc('featured')
             ->orderByDesc('id')
-            ->limit(6)
+            ->limit(4)
             ->get();
 
         $homepageYoutubeVideos = Multimedia::query()
