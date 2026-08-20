@@ -1,8 +1,10 @@
 @props(['opportunity'])
 
 @php
-    $summary = $opportunity->excerpt
-        ?: Illuminate\Support\Str::limit(strip_tags($opportunity->description ?? ''), 180);
+    $descriptionSummary = Illuminate\Support\Str::squish(strip_tags($opportunity->description ?? ''));
+    $summary = filled($descriptionSummary)
+        ? Illuminate\Support\Str::limit($descriptionSummary, 680)
+        : $opportunity->excerpt;
 @endphp
 
 <article class="overflow-hidden rounded-[1.5rem] border border-[#dbe2ea] bg-white shadow-[0_18px_45px_-36px_rgba(15,23,42,.55)]" data-featured-opportunity>
@@ -45,44 +47,46 @@
             </h2>
 
             @if ($summary)
-                <p class="mt-3 line-clamp-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-[15px]">
+                <p class="mt-3 line-clamp-5 max-w-none text-sm leading-6 text-slate-600 sm:text-[15px]">
                     {{ $summary }}
                 </p>
             @endif
 
-            <dl class="mt-6 grid gap-3 border-y border-slate-100 py-5 sm:grid-cols-2 xl:grid-cols-4">
-                <div>
-                    <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Deadline</dt>
-                    <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</dd>
-                    <dd class="mt-0.5 text-xs font-bold text-[#a56408]">{{ $opportunity->deadline_relative_label }}</dd>
-                </div>
-                <div>
-                    <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Format</dt>
-                    <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->display_format }}</dd>
-                </div>
-                <div>
-                    <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Lokasi</dt>
-                    <dd class="mt-1 line-clamp-2 text-sm font-black text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
-                </div>
-                <div>
-                    <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Status</dt>
-                    <dd class="mt-1 text-sm font-black text-emerald-700">Masih Dibuka</dd>
-                </div>
-            </dl>
+            <div class="mt-auto grid gap-4 border-y border-slate-100 py-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+                <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+                    <div>
+                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Deadline</dt>
+                        <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</dd>
+                        <dd class="mt-0.5 text-xs font-bold text-[#a56408]">{{ $opportunity->deadline_relative_label }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Format</dt>
+                        <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->display_format }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Lokasi</dt>
+                        <dd class="mt-1 line-clamp-2 text-sm font-black text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
+                    </div>
+                    <div>
+                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Status</dt>
+                        <dd class="mt-1 text-sm font-black text-emerald-700">Masih Dibuka</dd>
+                    </div>
+                </dl>
 
-            <div class="mt-auto flex justify-start pt-6 sm:justify-end">
-                <a
-                    href="{{ $opportunity->application_link }}"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy sm:w-auto"
-                    aria-label="Lihat peluang {{ $opportunity->title }} di situs eksternal"
-                >
-                    Lihat Peluang
-                    <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                        <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                </a>
+                <div class="flex justify-start lg:justify-end">
+                    <a
+                        href="{{ $opportunity->application_link }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy sm:w-auto"
+                        aria-label="Lihat peluang {{ $opportunity->title }} di situs eksternal"
+                    >
+                        Lihat Peluang
+                        <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                            <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </a>
+                </div>
             </div>
         </div>
     </div>
