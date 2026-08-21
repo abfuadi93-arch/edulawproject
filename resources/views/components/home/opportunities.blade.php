@@ -13,9 +13,9 @@
         'open_collaboration' => 'oppP-navy',
         default => 'oppP-gold',
     };
-    $deadlineLabel = fn ($opportunity, bool $short = false): string => $opportunity->deadline?->isPast()
+    $deadlineLabel = fn ($opportunity): string => $opportunity->deadline?->isPast()
         ? 'Tenggat telah lewat'
-        : ($opportunity->deadline ? ($short ? 'Batas akhir' : 'Batas akhir pendaftaran') : 'Jadwal pendaftaran');
+        : ($opportunity->deadline ? 'Batas akhir' : 'Jadwal pendaftaran');
     $deadlineValue = fn ($opportunity): string => $opportunity->deadline
         ? $opportunity->deadline->locale('id')->translatedFormat('d F Y')
         : 'Tenggat fleksibel';
@@ -118,7 +118,7 @@
                                                 <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
                                             </svg>
                                             <div>
-                                                <span>{{ $deadlineLabel($opportunity, true) }}</span>
+                                                <span>{{ $deadlineLabel($opportunity) }}</span>
                                                 <strong>{{ $deadlineValue($opportunity) }}</strong>
                                             </div>
                                         </div>
