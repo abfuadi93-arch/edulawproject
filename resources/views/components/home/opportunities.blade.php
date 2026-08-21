@@ -44,7 +44,6 @@
                 <article class="oppP-featured" data-home-opportunity data-home-opportunity-featured>
                     <div class="oppP-main">
                         <div class="oppP-top">
-                            <div class="oppP-icon" aria-hidden="true">↗</div>
                             <span class="oppP-badge {{ $badgeTone($featuredOpportunity->type) }}">{{ $featuredOpportunity->display_type }}</span>
                         </div>
 

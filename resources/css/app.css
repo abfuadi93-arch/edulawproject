@@ -405,26 +405,31 @@
 
     .oppP-featured {
         display: grid;
-        grid-template-columns: minmax(0, 1.08fr) minmax(14rem, 0.82fr);
+        grid-template-columns: minmax(0, 58fr) minmax(15rem, 42fr);
         min-width: 0;
-        min-height: 27rem;
+        min-height: 29rem;
         overflow: hidden;
-        border: 1px solid rgba(23, 59, 104, 0.12);
-        border-radius: 1.25rem;
+        border: 1px solid #dfe5eb;
+        border-radius: 1.5rem;
         background: #fff;
-        box-shadow: 0 26px 55px -40px rgba(15, 23, 42, 0.72);
+        box-shadow: 0 24px 58px -38px rgba(15, 35, 59, 0.42);
+        transition: border-color 240ms ease, box-shadow 240ms ease, transform 240ms ease;
+    }
+
+    .oppP-featured:hover {
+        transform: translateY(-3px);
+        border-color: rgba(23, 59, 104, 0.22);
+        box-shadow: 0 30px 68px -40px rgba(15, 35, 59, 0.5);
     }
 
     .oppP-main {
         display: flex;
         min-width: 0;
         flex-direction: column;
-        justify-content: space-between;
-        padding: 1.5rem;
-        background:
-            radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.12), transparent 12rem),
-            linear-gradient(145deg, #0b2d57, #173f6d 72%, #245b88);
-        color: #fff;
+        justify-content: flex-start;
+        padding: clamp(1.75rem, 3vw, 2.5rem);
+        background: #fff;
+        color: #102f56;
     }
 
     .oppP-top,
@@ -435,22 +440,12 @@
         gap: 0.8rem;
     }
 
-    .oppP-icon,
     .oppP-arrow {
         display: grid;
         flex: none;
         place-items: center;
         border-radius: 999px;
         font-weight: 900;
-    }
-
-    .oppP-icon {
-        width: 2.6rem;
-        height: 2.6rem;
-        border: 1px solid rgba(255, 255, 255, 0.2);
-        background: rgba(255, 255, 255, 0.1);
-        color: #f5c451;
-        font-size: 1rem;
     }
 
     .oppP-arrow {
@@ -512,27 +507,28 @@
     }
 
     .oppP-body {
-        margin-top: 3.5rem;
+        margin-top: 1.35rem;
     }
 
     .oppP-mini {
-        color: #efc66b;
-        font-size: 0.65rem;
+        color: #b18332;
+        font-size: 0.67rem;
         font-weight: 900;
-        letter-spacing: 0.17em;
+        letter-spacing: 0.16em;
         line-height: 1.4;
         text-transform: uppercase;
     }
 
     .oppP-main h3 {
         display: -webkit-box;
-        margin-top: 0.75rem;
+        max-width: 18ch;
+        margin-top: 0.7rem;
         overflow: hidden;
-        color: #fff;
-        font-size: clamp(1.55rem, 2.1vw, 2.2rem);
+        color: #102f56;
+        font-size: clamp(1.75rem, 2.45vw, 2.55rem);
         font-weight: 900;
-        letter-spacing: -0.025em;
-        line-height: 1.14;
+        letter-spacing: -0.035em;
+        line-height: 1.1;
         text-wrap: balance;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 3;
@@ -545,12 +541,12 @@
     }
 
     .oppP-main .oppP-deadline {
-        width: fit-content;
-        margin-top: 1.5rem;
-        border: 1px solid rgba(255, 255, 255, 0.12);
-        border-radius: 0.8rem;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 0.7rem 0.85rem;
+        width: min(100%, 22rem);
+        margin-top: 1.65rem;
+        border: 1px solid #e1e7ee;
+        border-radius: 0.875rem;
+        background: #f6f8fa;
+        padding: 0.85rem 1rem;
     }
 
     .oppP-cal {
@@ -582,12 +578,12 @@
     }
 
     .oppP-main .oppP-deadline span {
-        color: #bdcad9;
+        color: #738196;
     }
 
     .oppP-main .oppP-deadline strong,
     .oppP-main .oppP-cal {
-        color: #fff;
+        color: #173b68;
     }
 
     .oppP-context {
@@ -598,34 +594,38 @@
     }
 
     .oppP-context span {
-        border: 1px solid rgba(255, 255, 255, 0.14);
+        border: 1px solid #dce3ea;
         border-radius: 999px;
-        background: rgba(255, 255, 255, 0.08);
-        padding: 0.32rem 0.58rem;
-        color: #dbe5f0;
-        font-size: 0.66rem;
+        background: #fff;
+        padding: 0.36rem 0.65rem;
+        color: #516176;
+        font-size: 0.68rem;
         font-weight: 800;
         line-height: 1.2;
     }
 
     .oppP-action {
         display: inline-flex;
-        min-height: 2.75rem;
+        width: fit-content;
+        min-height: 2.85rem;
         align-items: center;
         justify-content: center;
         gap: 0.7rem;
-        margin-top: 1.35rem;
-        border-radius: 0.7rem;
-        background: #f5c451;
-        padding: 0.7rem 1rem;
-        color: #102f56;
-        font-size: 0.8rem;
+        margin-top: 1.5rem;
+        border: 1px solid #173b68;
+        border-radius: 0.75rem;
+        background: #173b68;
+        padding: 0.72rem 1.05rem;
+        color: #fff;
+        font-size: 0.82rem;
         font-weight: 900;
-        box-shadow: 0 12px 25px -18px rgba(0, 0, 0, 0.7);
+        box-shadow: 0 12px 26px -20px rgba(16, 47, 86, 0.75);
+        transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
     }
 
     .oppP-action:hover {
-        background: #fff;
+        border-color: #102f56;
+        background: #102f56;
     }
 
     .oppP-poster,
@@ -648,8 +648,13 @@
         position: absolute;
         inset: 0;
         z-index: 1;
-        object-fit: contain;
         transition: transform 500ms ease;
+    }
+
+    .oppP-poster img {
+        object-fit: cover;
+        object-position: center;
+        transition-duration: 320ms;
     }
 
     .oppP-thumb img {
@@ -657,7 +662,10 @@
         object-position: center;
     }
 
-    .oppP-featured:hover .oppP-poster img,
+    .oppP-featured:hover .oppP-poster img {
+        transform: scale(1.02);
+    }
+
     .oppP-card:hover .oppP-thumb img {
         transform: scale(1.025);
     }
@@ -846,20 +854,34 @@
 
         .oppP-featured {
             grid-template-columns: minmax(0, 1fr);
+            min-height: 0;
         }
 
         .oppP-poster {
             order: -1;
-            min-height: 19rem;
-            max-height: 25rem;
+            min-height: clamp(19rem, 95vw, 25rem);
         }
 
         .oppP-main {
-            min-height: 23rem;
+            min-height: 0;
+            padding: 1.6rem;
         }
 
         .oppP-body {
-            margin-top: 2.5rem;
+            margin-top: 1.1rem;
+        }
+
+        .oppP-main h3 {
+            max-width: 21ch;
+            font-size: clamp(1.65rem, 7vw, 2.15rem);
+        }
+
+        .oppP-main .oppP-deadline {
+            width: 100%;
+        }
+
+        .oppP-action {
+            width: 100%;
         }
 
         .oppP-stack {
@@ -890,6 +912,17 @@
 
         .oppP-link {
             font-size: 0.7rem;
+        }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+        .oppP-featured,
+        .oppP-featured:hover,
+        .oppP-featured .oppP-poster img,
+        .oppP-featured:hover .oppP-poster img,
+        .oppP-action span,
+        .oppP-action:hover span {
+            transform: none;
         }
     }
 
