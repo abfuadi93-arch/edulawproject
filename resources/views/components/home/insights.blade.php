@@ -1,7 +1,7 @@
-@props(['featuredInsight' => null, 'insights' => collect()])
+@props(['insights' => collect()])
 
 @php
-    $items = collect([$featuredInsight])->concat(collect($insights))->filter()->unique('id')->take(4)->values();
+    $items = collect($insights)->filter()->unique('id')->take(4)->values();
 @endphp
 
 <section id="edulaw-insight" class="scroll-mt-20 bg-white py-9 lg:py-12" aria-labelledby="home-insights-title">

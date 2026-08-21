@@ -201,7 +201,7 @@ it('falls back to the nearest archived programs when no active program exists', 
     expect(substr_count($html, 'data-home-program'))->toBe(3);
 });
 
-it('shows at most four published insights without duplicating the featured article', function () {
+it('shows the four latest published insights in chronological order', function () {
     $featured = Insight::query()->create([
         'title' => 'Insight Utama Beranda',
         'slug' => 'insight-utama-beranda',
@@ -210,7 +210,7 @@ it('shows at most four published insights without duplicating the featured artic
         'featured' => true,
     ]);
 
-    collect(range(1, 4))->each(fn (int $position) => Insight::query()->create([
+    $latest = collect(range(1, 4))->map(fn (int $position) => Insight::query()->create([
         'title' => "Insight Published {$position}",
         'slug' => "insight-published-{$position}",
         'status' => 'published',
@@ -234,7 +234,6 @@ it('shows at most four published insights without duplicating the featured artic
     $response = $this->get(route('home'));
     $html = $response->getContent();
     $insightSection = Str::between($html, '<section id="edulaw-insight"', '</section>');
-    $featuredHref = 'href="'.route('insights.show', $featured->slug).'"';
 
     $response
         ->assertOk()
@@ -246,7 +245,14 @@ it('shows at most four published insights without duplicating the featured artic
     expect(substr_count($insightSection, '<article data-home-insight '))->toBe(4)
         ->and(substr_count($insightSection, 'data-home-insight-featured'))->toBe(1)
         ->and(substr_count($insightSection, 'data-home-insight-compact'))->toBe(3)
-        ->and(substr_count($insightSection, $featuredHref))->toBe(1);
+        ->and($insightSection)->toContain($latest[0]->title)
+        ->and($insightSection)->toContain($latest[1]->title)
+        ->and($insightSection)->toContain($latest[2]->title)
+        ->and($insightSection)->toContain($latest[3]->title)
+        ->and($insightSection)->not->toContain($featured->title)
+        ->and(strpos($insightSection, $latest[0]->title))->toBeLessThan(strpos($insightSection, $latest[1]->title))
+        ->and(strpos($insightSection, $latest[1]->title))->toBeLessThan(strpos($insightSection, $latest[2]->title))
+        ->and(strpos($insightSection, $latest[2]->title))->toBeLessThan(strpos($insightSection, $latest[3]->title));
 });
 
 it('limits publications to four published records and excludes non-published records', function () {

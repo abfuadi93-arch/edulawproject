@@ -32,7 +32,7 @@
     />
     <x-home.audience />
     <x-home.programs :programs="$latestPrograms" :featured-insight="$featuredInsight" />
-    <x-home.insights :featuredInsight="$featuredInsight" :insights="$latestInsights" />
+    <x-home.insights :insights="$latestInsights" />
     <x-home.publications :publications="$latestPublications" />
     <x-home.opportunities :opportunities="$latestOpportunities" />
     <x-home.about :stats="$credibilityStats" />
