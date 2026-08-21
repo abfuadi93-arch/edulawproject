@@ -600,6 +600,8 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->assertSee('alt="Poster Peluang Aktif 1"', false)
         ->assertSee('Jakarta')
         ->assertSee('Hybrid')
+        ->assertSee('Lihat Detail')
+        ->assertDontSee('Lihat Peluang')
         ->assertSee('Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan')
         ->assertSee('target="_blank"', false)
         ->assertSee('rel="noopener noreferrer"', false);
@@ -612,11 +614,12 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(4)
         ->and($featuredMarkup)->not->toContain('oppP-icon')
+        ->and($featuredMarkup)->toContain('oppP-featured-footer')
         ->and(strpos($featuredMarkup, 'oppP-badge'))->toBeLessThan(strpos($featuredMarkup, 'oppP-mini'))
         ->and(strpos($featuredMarkup, 'oppP-mini'))->toBeLessThan(strpos($featuredMarkup, '<h3>'))
-        ->and(strpos($featuredMarkup, '<h3>'))->toBeLessThan(strpos($featuredMarkup, 'oppP-deadline'))
-        ->and(strpos($featuredMarkup, 'oppP-deadline'))->toBeLessThan(strpos($featuredMarkup, 'oppP-context'))
-        ->and(strpos($featuredMarkup, 'oppP-context'))->toBeLessThan(strpos($featuredMarkup, 'oppP-action'));
+        ->and(strpos($featuredMarkup, '<h3>'))->toBeLessThan(strpos($featuredMarkup, 'oppP-context'))
+        ->and(strpos($featuredMarkup, 'oppP-context'))->toBeLessThan(strpos($featuredMarkup, 'oppP-featured-footer'))
+        ->and(strpos($featuredMarkup, 'oppP-deadline'))->toBeLessThan(strpos($featuredMarkup, 'oppP-action'));
 });
 
 it('excludes expired open opportunities and renders the opportunities empty state', function () {

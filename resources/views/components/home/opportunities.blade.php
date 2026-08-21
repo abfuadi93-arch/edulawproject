@@ -51,16 +51,6 @@
                             <p class="oppP-mini">Peluang terkini</p>
                             <h3>{{ $featuredOpportunity->title }}</h3>
 
-                            <div class="oppP-deadline">
-                                <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                    <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
-                                </svg>
-                                <div>
-                                    <span>{{ $deadlineLabel($featuredOpportunity) }}</span>
-                                    <strong>{{ $deadlineValue($featuredOpportunity) }}</strong>
-                                </div>
-                            </div>
-
                             @if ($featuredOpportunity->location || $featuredOpportunity->format)
                                 <div class="oppP-context" aria-label="Informasi pelaksanaan">
                                     @if ($featuredOpportunity->location)
@@ -72,10 +62,22 @@
                                 </div>
                             @endif
 
-                            <a href="{{ $featuredOpportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="oppP-action" aria-label="Buka peluang {{ $featuredOpportunity->title }} di situs eksternal">
-                                Lihat Peluang
-                                <span aria-hidden="true">↗</span>
-                            </a>
+                            <div class="oppP-featured-footer">
+                                <div class="oppP-deadline">
+                                    <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                        <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
+                                    </svg>
+                                    <div>
+                                        <span>{{ $deadlineLabel($featuredOpportunity) }}</span>
+                                        <strong>{{ $deadlineValue($featuredOpportunity) }}</strong>
+                                    </div>
+                                </div>
+
+                                <a href="{{ $featuredOpportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="oppP-action" aria-label="Buka peluang {{ $featuredOpportunity->title }} di situs eksternal">
+                                    Lihat Detail
+                                    <span aria-hidden="true">↗</span>
+                                </a>
+                            </div>
                         </div>
                     </div>
 
@@ -121,7 +123,7 @@
                                     </div>
 
                                     <a href="{{ $opportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="oppP-link" aria-label="Buka detail peluang {{ $opportunity->title }} di situs eksternal">
-                                        Lihat Peluang
+                                        Lihat Detail
                                         <span aria-hidden="true">↗</span>
                                     </a>
                                 </div>

@@ -541,8 +541,8 @@
     }
 
     .oppP-main .oppP-deadline {
-        width: min(100%, 22rem);
-        margin-top: 1.65rem;
+        width: 100%;
+        margin-top: 0;
         border: 1px solid #e1e7ee;
         border-radius: 0.875rem;
         background: #f6f8fa;
@@ -590,7 +590,7 @@
         display: flex;
         flex-wrap: wrap;
         gap: 0.45rem;
-        margin-top: 0.85rem;
+        margin-top: 1.35rem;
     }
 
     .oppP-context span {
@@ -611,7 +611,7 @@
         align-items: center;
         justify-content: center;
         gap: 0.7rem;
-        margin-top: 1.5rem;
+        margin-top: 0;
         border: 1px solid #173b68;
         border-radius: 0.75rem;
         background: #173b68;
@@ -621,6 +621,14 @@
         font-weight: 900;
         box-shadow: 0 12px 26px -20px rgba(16, 47, 86, 0.75);
         transition: background-color 200ms ease, border-color 200ms ease, color 200ms ease;
+    }
+
+    .oppP-featured-footer {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: stretch;
+        gap: 0.85rem;
+        margin-top: 1rem;
     }
 
     .oppP-action:hover {
@@ -878,6 +886,10 @@
 
         .oppP-main .oppP-deadline {
             width: 100%;
+        }
+
+        .oppP-featured-footer {
+            grid-template-columns: minmax(0, 1fr);
         }
 
         .oppP-action {
