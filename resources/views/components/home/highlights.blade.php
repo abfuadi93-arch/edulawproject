@@ -45,7 +45,7 @@
                         <h3 class="home-card-title line-clamp-2">{{ $insight?->title ?? 'Editorial pilihan sedang disiapkan' }}</h3>
                         @if ($insight)
                             <p class="mt-2 text-xs font-bold text-slate-500">{{ $insight->display_category }}{{ $insight->reading_time ? ' · '.$insight->reading_time.' menit baca' : '' }}</p>
-                            <a href="{{ route('insights.show', $insight->slug) }}?source=home-highlight" class="home-card-action mt-4">Baca Editorial →</a>
+                            <a href="{{ route('insights.show', $insight->slug) }}" class="home-card-action mt-4">Baca Editorial →</a>
                         @endif
                     </div>
                 </div>

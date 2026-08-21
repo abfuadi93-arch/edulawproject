@@ -357,7 +357,8 @@ test('youtube grid paginates six videos with video_page and keeps the video anch
     expect(substr_count($secondSection, 'data-secondary-media'))->toBe(1)
         ->and($secondSection)->toContain($gridVideos[6]->title)
         ->not->toContain($gridVideos[0]->title)
-        ->and($secondPage->getContent())->toContain('<link rel="canonical" href="'.route('multimedia.index').'">');
+        ->and($secondPage->getContent())->toContain('<meta name="robots" content="index,follow">')
+        ->toContain('<link rel="canonical" href="'.route('multimedia.index', ['video_page' => 2]).'">');
 });
 
 test('two youtube videos render one featured and one secondary external card', function () {

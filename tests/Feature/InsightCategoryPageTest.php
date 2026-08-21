@@ -126,7 +126,7 @@ test('editorial index only exposes curated active categories in configured order
         ->assertDontSee('Kategori Nonaktif');
 });
 
-test('category pagination is noindex with clean canonical and navigable previous and next links', function () {
+test('category pagination is indexable with a self canonical and navigable previous and next links', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Legal 101',
         'slug' => 'legal-101',
@@ -148,8 +148,8 @@ test('category pagination is noindex with clean canonical and navigable previous
     $pageTwoUrl = $baseUrl.'?page=2';
     $html = $this->get($pageTwoUrl)
         ->assertOk()
-        ->assertSee('<meta name="robots" content="noindex,follow">', false)
-        ->assertSee('<link rel="canonical" href="'.$baseUrl.'">', false)
+        ->assertSee('<meta name="robots" content="index,follow">', false)
+        ->assertSee('<link rel="canonical" href="'.$pageTwoUrl.'">', false)
         ->assertSee('<link rel="prev" href="'.$baseUrl.'">', false)
         ->assertSee('<link rel="next" href="'.$baseUrl.'?page=3">', false)
         ->assertSee('Halaman 2 dari 3')

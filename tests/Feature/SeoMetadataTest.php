@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Middleware\RedirectWwwToCanonicalHost;
+use Illuminate\Http\Request;
+
 dataset('indexable public pages', [
     'home' => ['home'],
     'about' => ['about'],
@@ -56,6 +59,22 @@ test('filter parameters are noindex and canonicalize to the clean index URL', fu
         ->assertDontSee('rel="canonical" href="'.route('insights.index').'?author=', false);
 });
 
+test('valid pagination is indexable and canonicalizes to itself', function () {
+    $pageTwoUrl = route('insights.index', ['page' => 2]);
+
+    $this->get($pageTwoUrl)
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="index,follow">', false)
+        ->assertSee('<link rel="canonical" href="'.$pageTwoUrl.'">', false);
+});
+
+test('page one query is treated as a duplicate of the clean index URL', function () {
+    $this->get(route('insights.index', ['page' => 1]))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex,follow">', false)
+        ->assertSee('<link rel="canonical" href="'.route('insights.index').'">', false);
+});
+
 test('administrative html is excluded from crawling and indexing', function () {
     $this->get('/admin/login')
         ->assertOk()
@@ -63,11 +82,47 @@ test('administrative html is excluded from crawling and indexing', function () {
 });
 
 test('www requests redirect permanently to the configured canonical host', function () {
-    config(['app.url' => 'https://edulawproject.id']);
+    config([
+        'app.url' => 'http://edulawproject.id',
+        'edulaw.site.url' => 'https://edulawproject.id',
+    ]);
 
     $this->get('https://www.edulawproject.id/insight?utm_source=google')
         ->assertMovedPermanently()
         ->assertRedirect('https://edulawproject.id/insight?utm_source=google');
+});
+
+test('http canonical host requests redirect directly to https', function () {
+    config(['edulaw.site.url' => 'https://edulawproject.id']);
+
+    $this->get('http://edulawproject.id/insight?utm_source=google')
+        ->assertMovedPermanently()
+        ->assertRedirect('https://edulawproject.id/insight?utm_source=google');
+});
+
+test('http www requests redirect directly to the canonical https origin', function () {
+    config(['edulaw.site.url' => 'https://edulawproject.id']);
+
+    $this->get('http://www.edulawproject.id/insight')
+        ->assertMovedPermanently()
+        ->assertRedirect('https://edulawproject.id/insight');
+});
+
+test('trailing slash requests redirect once to the slashless canonical URL', function () {
+    $request = Request::create('http://localhost/insight/?page=2');
+    $response = app(RedirectWwwToCanonicalHost::class)
+        ->handle($request, fn () => response('next'));
+
+    expect($response->getStatusCode())->toBe(301)
+        ->and($response->headers->get('Location'))->toBe('http://localhost/insight?page=2');
+});
+
+test('host scheme and trailing slash normalization share a single redirect', function () {
+    config(['edulaw.site.url' => 'https://edulawproject.id']);
+
+    $this->get('http://www.edulawproject.id/insight/?page=2')
+        ->assertMovedPermanently()
+        ->assertRedirect('https://edulawproject.id/insight?page=2');
 });
 
 test('canonical host requests are not redirected', function () {
@@ -86,15 +141,15 @@ test('public email links opt out of Cloudflare email rewriting', function () {
         ->assertSee('<!--/email_off-->', false);
 });
 
-test('robots file is available with sitemap and parameter exclusions', function () {
+test('robots file protects internal routes while allowing meta robots and pagination to be crawled', function () {
     $this->get(route('robots'))
         ->assertOk()
         ->assertHeader('content-type', 'text/plain; charset=UTF-8')
         ->assertSee('Disallow: /admin', false)
-        ->assertSee('Disallow: /search', false)
-        ->assertSee('Disallow: /*?page=', false)
-        ->assertSee('Disallow: /*?sort=', false)
-        ->assertSee('Disallow: /*?author=', false)
-        ->assertSee('Disallow: /*?category=', false)
+        ->assertDontSee('Disallow: /search', false)
+        ->assertDontSee('Disallow: /*?page=', false)
+        ->assertDontSee('Disallow: /*?sort=', false)
+        ->assertDontSee('Disallow: /*?author=', false)
+        ->assertDontSee('Disallow: /*?category=', false)
         ->assertSee('Sitemap: https://edulawproject.id/sitemap.xml', false);
 });

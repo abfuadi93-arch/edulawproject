@@ -7,6 +7,7 @@ use App\Models\Opportunity;
 use App\Models\Program;
 use App\Models\Publication;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Str;
 
 it('opens the homepage without leaking template expressions or invalid links', function () {
     $response = $this->get(route('home'));
@@ -199,6 +200,7 @@ it('shows at most four published insights without duplicating the featured artic
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
+    $insightSection = Str::between($html, '<section id="edulaw-insight"', '</section>');
     $featuredHref = 'href="'.route('insights.show', $featured->slug).'"';
 
     $response
@@ -208,10 +210,10 @@ it('shows at most four published insights without duplicating the featured artic
         ->assertDontSee($reviewed->title)
         ->assertSee(route('insights.index'), false);
 
-    expect(substr_count($html, '<article data-home-insight '))->toBe(4)
-        ->and(substr_count($html, 'data-home-insight-featured'))->toBe(1)
-        ->and(substr_count($html, 'data-home-insight-compact'))->toBe(3)
-        ->and(substr_count($html, $featuredHref))->toBe(1);
+    expect(substr_count($insightSection, '<article data-home-insight '))->toBe(4)
+        ->and(substr_count($insightSection, 'data-home-insight-featured'))->toBe(1)
+        ->and(substr_count($insightSection, 'data-home-insight-compact'))->toBe(3)
+        ->and(substr_count($insightSection, $featuredHref))->toBe(1);
 });
 
 it('limits publications to four published records and excludes non-published records', function () {

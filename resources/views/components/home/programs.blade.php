@@ -73,7 +73,7 @@
                             <p class="home-card-kicker text-[#f0c55e]">{{ $featuredInsight->display_category }}</p>
                             <h3 class="mt-3 line-clamp-4 text-2xl font-extrabold leading-[1.22] tracking-[-0.015em] text-white">{{ $featuredInsight->title }}</h3>
                             <p class="mt-3 text-[13px] leading-5 text-slate-300">{{ $featuredInsight->display_author }}{{ $featuredInsight->reading_time ? ' · '.$featuredInsight->reading_time.' menit baca' : '' }}</p>
-                            <a href="{{ route('insights.show', $featuredInsight->slug) }}?source=home-editor-pick" class="mt-5 inline-flex text-[13px] font-extrabold text-white">Baca Editorial →</a>
+                            <a href="{{ route('insights.show', $featuredInsight->slug) }}" class="mt-5 inline-flex text-[13px] font-extrabold text-white">Baca Editorial →</a>
                         </div>
                     </article>
                 @else

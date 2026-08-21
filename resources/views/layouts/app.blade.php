@@ -47,18 +47,39 @@
             160,
             '…',
         );
-        $canonicalUrl = $absoluteUrl($section('canonical_url', url()->current()));
-        $canonicalUrl = \Illuminate\Support\Str::before(
-            \Illuminate\Support\Str::before($canonicalUrl, '?'),
-            '#',
-        );
+        $routeName = request()->route()?->getName();
+        $paginationParameter = match ($routeName) {
+            'insights.index',
+            'insights.categories.show',
+            'publications.index',
+            'programs.archive',
+            'opportunities.index' => 'page',
+            'multimedia.index' => 'video_page',
+            default => null,
+        };
+        $queryParameters = request()->query();
+        $isIndexablePagination = $paginationParameter !== null
+            && array_keys($queryParameters) === [$paginationParameter]
+            && filter_var(
+                $queryParameters[$paginationParameter] ?? null,
+                FILTER_VALIDATE_INT,
+                ['options' => ['min_range' => 2]],
+            ) !== false;
+        $canonicalUrl = $isIndexablePagination
+            ? request()->fullUrl()
+            : $absoluteUrl($section('canonical_url', url()->current()));
+        $canonicalUrl = \Illuminate\Support\Str::before($canonicalUrl, '#');
+
+        if (! $isIndexablePagination) {
+            $canonicalUrl = \Illuminate\Support\Str::before($canonicalUrl, '?');
+        }
         $ogType = strip_tags($section('og_type', 'website'));
         $ogImage = $absoluteUrl($section('og_image', $defaultImage));
         $ogImageAlt = \Illuminate\Support\Str::limit(strip_tags($section('og_image_alt', $pageTitle)), 120);
         $robotsOverride = strip_tags($section('robots'));
         $robots = $robotsOverride !== ''
             ? $robotsOverride
-            : (request()->query() !== [] ? 'noindex,follow' : 'index,follow');
+            : ($queryParameters !== [] && ! $isIndexablePagination ? 'noindex,follow' : 'index,follow');
     @endphp
 
     <x-seo

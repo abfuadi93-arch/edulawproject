@@ -13,6 +13,12 @@
     RewriteCond %{HTTP:x-xsrf-token} .
     RewriteRule .* - [E=HTTP_X_XSRF_TOKEN:%{HTTP:X-XSRF-Token}]
 
+    # Send legacy public URLs directly to the final HTTPS canonical URL.
+    RewriteRule ^publikasi/?$ https://edulawproject.id/riset-publikasi [L,R=301,NE]
+    RewriteRule ^publikasi/([^/]+)/?$ https://edulawproject.id/riset-publikasi/$1 [L,R=301,NE]
+    RewriteRule ^peluang/?$ https://edulawproject.id/opportunities [L,R=301,NE]
+    RewriteRule ^insight/worklife-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental/?$ https://edulawproject.id/insight/work-life-balance-di-era-hustle-culture-menakar-perlindungan-hukum-terhadap-hak-atas-kesehatan-mental [L,R=301,NE]
+
     # Redirect Trailing Slashes If Not A Folder...
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
