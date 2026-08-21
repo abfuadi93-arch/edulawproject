@@ -38,16 +38,32 @@ class HomeController extends Controller
             ->limit(4)
             ->get();
 
+        $today = now()->toDateString();
+
         $latestPrograms = Program::with('categoryRelation')
             ->visible()
             ->active()
             ->orderByDesc('featured')
-            ->orderByRaw("CASE status WHEN 'ongoing' THEN 0 WHEN 'upcoming' THEN 1 ELSE 2 END")
+            ->orderByRaw(
+                'CASE WHEN event_date <= ? AND COALESCE(end_date, event_date) >= ? THEN 0 ELSE 1 END',
+                [$today, $today],
+            )
             ->orderByRaw('CASE WHEN event_date IS NULL THEN 1 ELSE 0 END')
             ->orderBy('event_date')
             ->orderByDesc('id')
             ->limit(3)
             ->get();
+
+        if ($latestPrograms->isEmpty()) {
+            $latestPrograms = Program::with('categoryRelation')
+                ->visible()
+                ->archived()
+                ->orderByRaw('CASE WHEN COALESCE(end_date, event_date) IS NULL THEN 1 ELSE 0 END')
+                ->orderByRaw('COALESCE(end_date, event_date) DESC')
+                ->orderByDesc('id')
+                ->limit(3)
+                ->get();
+        }
 
         $latestOpportunities = Opportunity::query()
             ->active()

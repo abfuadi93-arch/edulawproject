@@ -23,6 +23,14 @@
                             $image = $program->hero_image_url ?: $program->image_url;
                             $eventDate = $program->event_date ?? $program->starts_at;
                             $format = $program->display_format ?: $program->location;
+                            $statusLabel = match ($program->status) {
+                                'ongoing' => 'Berlangsung',
+                                'archived' => 'Arsip',
+                                default => 'Akan Datang',
+                            };
+                            $statusClass = $program->status === 'archived'
+                                ? 'bg-slate-200 text-slate-700'
+                                : 'bg-[#35c4a0] text-[#102b50]';
                         @endphp
                         <article data-home-program class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_16px_36px_-30px_rgba(15,23,42,.7)] transition hover:-translate-y-0.5 hover:shadow-lg">
                             <a href="{{ route('programs.show', $program->slug) }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
@@ -33,7 +41,7 @@
                                     <div class="absolute inset-0 bg-linear-to-t from-[#17375f]/80 to-transparent"></div>
                                     <div class="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
                                         <span class="max-w-32 truncate rounded bg-[#17375f]/90 px-2 py-1 text-[10px] font-extrabold uppercase tracking-wider text-white">{{ $program->categoryRelation?->name ?? 'Program' }}</span>
-                                        <span class="rounded-full bg-[#35c4a0] px-2 py-1 text-[10px] font-extrabold text-[#102b50]">{{ $program->status === 'ongoing' ? 'Berlangsung' : 'Tersedia' }}</span>
+                                        <span class="rounded-full px-2 py-1 text-[10px] font-extrabold {{ $statusClass }}">{{ $statusLabel }}</span>
                                     </div>
                                 </div>
                                 <div class="p-4">

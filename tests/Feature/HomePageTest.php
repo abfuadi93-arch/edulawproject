@@ -168,6 +168,39 @@ it('prioritizes ongoing programs and limits the homepage program section to thre
     expect(substr_count($html, 'data-home-program'))->toBe(3);
 });
 
+it('falls back to the nearest archived programs when no active program exists', function () {
+    $archivedPrograms = collect(range(1, 4))->map(fn (int $position) => Program::query()->create([
+        'name' => "Program Arsip Terdekat {$position}",
+        'slug' => "program-arsip-terdekat-{$position}",
+        'event_date' => now()->subDays($position),
+        'publication_status' => 'published',
+    ]));
+
+    $draftArchive = Program::query()->create([
+        'name' => 'Program Arsip Draft',
+        'slug' => 'program-arsip-draft',
+        'event_date' => now()->subDays(1),
+        'publication_status' => 'draft',
+    ]);
+
+    $response = $this->get(route('home'));
+    $html = $response->getContent();
+
+    $response
+        ->assertOk()
+        ->assertSeeInOrder([
+            $archivedPrograms[0]->name,
+            $archivedPrograms[1]->name,
+            $archivedPrograms[2]->name,
+        ])
+        ->assertDontSee($archivedPrograms[3]->name)
+        ->assertDontSee($draftArchive->name)
+        ->assertDontSee('Program terbaru sedang disiapkan.')
+        ->assertSee('Arsip');
+
+    expect(substr_count($html, 'data-home-program'))->toBe(3);
+});
+
 it('shows at most four published insights without duplicating the featured article', function () {
     $featured = Insight::query()->create([
         'title' => 'Insight Utama Beranda',
