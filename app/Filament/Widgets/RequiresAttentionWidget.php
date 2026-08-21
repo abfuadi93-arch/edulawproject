@@ -49,7 +49,7 @@ class RequiresAttentionWidget extends Widget
                 ->where(fn ($query) => $query->whereNull('excerpt')->orWhere('excerpt', ''))
                 ->count(),
             'programs_without_poster' => Program::query()
-                ->whereIn('status', ['upcoming', 'ongoing'])
+                ->active()
                 ->where(fn ($query) => $query
                     ->where(fn ($imageQuery) => $imageQuery->whereNull('image')->orWhere('image', ''))
                     ->where(fn ($heroQuery) => $heroQuery->whereNull('hero_image')->orWhere('hero_image', '')))

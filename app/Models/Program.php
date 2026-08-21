@@ -2,10 +2,12 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Str;
 use Throwable;
@@ -74,6 +76,20 @@ class Program extends Model
         'sort_order' => 'integer',
     ];
 
+    protected static function booted(): void
+    {
+        static::saving(function (Program $program): void {
+            $storedStatus = $program->getAttributes()['status']
+                ?? $program->getRawOriginal('status');
+
+            $program->setAttribute('status', static::statusFromDates(
+                $program->event_date,
+                $program->end_date,
+                $storedStatus,
+            ));
+        });
+    }
+
     /*
     |--------------------------------------------------------------------------
     | Relationships
@@ -113,7 +129,15 @@ class Program extends Model
 
     public function scopeVisible(Builder $query): Builder
     {
-        $query->whereIn('status', ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived']);
+        $query->where(function (Builder $query): void {
+            $query
+                ->whereNotNull('event_date')
+                ->orWhere(function (Builder $query): void {
+                    $query
+                        ->whereNull('event_date')
+                        ->whereIn('status', ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived']);
+                });
+        });
 
         if (static::hasTableColumn('publication_status')) {
             $query->where('publication_status', 'published');
@@ -124,12 +148,81 @@ class Program extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->whereIn('status', ['upcoming', 'ongoing']);
+        return $query->where(function (Builder $query): void {
+            $query
+                ->upcoming()
+                ->orWhere(fn (Builder $query): Builder => $query->ongoing());
+        });
     }
 
     public function scopeArchived(Builder $query): Builder
     {
-        return $query->whereIn('status', ['completed', 'portfolio', 'archived']);
+        $today = now()->toDateString();
+
+        return $query->where(function (Builder $query) use ($today): void {
+            $query
+                ->where(function (Builder $query) use ($today): void {
+                    $query
+                        ->whereNotNull('event_date')
+                        ->where(function (Builder $query) use ($today): void {
+                            $query
+                                ->whereDate('end_date', '<', $today)
+                                ->orWhere(function (Builder $query) use ($today): void {
+                                    $query
+                                        ->whereNull('end_date')
+                                        ->whereDate('event_date', '<', $today);
+                                });
+                        });
+                })
+                ->orWhere(function (Builder $query): void {
+                    $query
+                        ->whereNull('event_date')
+                        ->whereIn('status', ['completed', 'portfolio', 'archived']);
+                });
+        });
+    }
+
+    public function scopeUpcoming(Builder $query): Builder
+    {
+        $today = now()->toDateString();
+
+        return $query->where(function (Builder $query) use ($today): void {
+            $query
+                ->whereDate('event_date', '>', $today)
+                ->orWhere(function (Builder $query): void {
+                    $query
+                        ->whereNull('event_date')
+                        ->where('status', 'upcoming');
+                });
+        });
+    }
+
+    public function scopeOngoing(Builder $query): Builder
+    {
+        $today = now()->toDateString();
+
+        return $query->where(function (Builder $query) use ($today): void {
+            $query
+                ->where(function (Builder $query) use ($today): void {
+                    $query
+                        ->whereNotNull('event_date')
+                        ->whereDate('event_date', '<=', $today)
+                        ->where(function (Builder $query) use ($today): void {
+                            $query
+                                ->whereDate('end_date', '>=', $today)
+                                ->orWhere(function (Builder $query) use ($today): void {
+                                    $query
+                                        ->whereNull('end_date')
+                                        ->whereDate('event_date', '>=', $today);
+                                });
+                        });
+                })
+                ->orWhere(function (Builder $query): void {
+                    $query
+                        ->whereNull('event_date')
+                        ->where('status', 'ongoing');
+                });
+        });
     }
 
     public function scopePublished(Builder $query): Builder
@@ -170,7 +263,7 @@ class Program extends Model
 
     public function getDisplayStatusAttribute(): string
     {
-        return match ($this->attributes['status'] ?? null) {
+        return match ($this->status) {
             'upcoming' => 'Segera Dibuka',
             'ongoing' => 'Berjalan',
             'completed', 'portfolio', 'archived' => 'Arsip',
@@ -269,12 +362,50 @@ class Program extends Model
         $publicationStatus = $this->attributes['publication_status'] ?? null;
 
         return $publicationStatus === 'published'
-            && in_array($this->attributes['status'] ?? null, ['upcoming', 'ongoing', 'completed', 'portfolio', 'archived'], true);
+            && in_array($this->status, ['upcoming', 'ongoing', 'archived'], true);
     }
 
     public function getIsArchivedAttribute(): bool
     {
-        return in_array($this->attributes['status'] ?? null, ['completed', 'portfolio', 'archived'], true);
+        return $this->status === 'archived';
+    }
+
+    public function getStatusAttribute(?string $storedStatus): string
+    {
+        return static::statusFromDates(
+            $this->attributes['event_date'] ?? null,
+            $this->attributes['end_date'] ?? null,
+            $storedStatus,
+        );
+    }
+
+    public static function statusFromDates(
+        CarbonInterface|string|null $eventDate,
+        CarbonInterface|string|null $endDate = null,
+        ?string $fallback = null,
+        CarbonInterface|string|null $referenceDate = null,
+    ): string {
+        if (blank($eventDate)) {
+            return match ($fallback) {
+                'ongoing' => 'ongoing',
+                'completed', 'portfolio', 'archived' => 'archived',
+                default => 'upcoming',
+            };
+        }
+
+        $today = $referenceDate
+            ? Carbon::parse($referenceDate)->startOfDay()
+            : now()->startOfDay();
+        $start = Carbon::parse($eventDate)->startOfDay();
+        $end = filled($endDate)
+            ? Carbon::parse($endDate)->startOfDay()
+            : $start->copy();
+
+        if ($start->isAfter($today)) {
+            return 'upcoming';
+        }
+
+        return $end->isBefore($today) ? 'archived' : 'ongoing';
     }
 
     public function getImageUrlAttribute(): ?string

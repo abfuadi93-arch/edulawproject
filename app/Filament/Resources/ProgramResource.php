@@ -7,7 +7,6 @@ use App\Models\Program;
 use BackedEnum;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
-use Filament\Actions\BulkAction;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\DeleteBulkAction;
@@ -94,24 +93,12 @@ class ProgramResource extends Resource
                                             })
                                             ->columnSpanFull(),
 
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                Select::make('program_category_id')
-                                                    ->label('Kategori Program')
-                                                    ->relationship('programCategory', 'name')
-                                                    ->searchable()
-                                                    ->preload()
-                                                    ->required(),
-
-                                                Select::make('type')
-                                                    ->label('Jenis Program')
-                                                    ->options(static::typeOptions())
-                                                    ->searchable()
-                                                    ->required(),
-                                            ])
+                                        Select::make('program_category_id')
+                                            ->label('Kategori Program')
+                                            ->relationship('programCategory', 'name')
+                                            ->searchable()
+                                            ->preload()
+                                            ->required()
                                             ->columnSpanFull(),
 
                                         RichEditor::make('description')
@@ -436,15 +423,9 @@ class ProgramResource extends Resource
 
                         Group::make()
                             ->schema([
-                                Section::make('Publikasi')
-                                    ->icon('heroicon-o-paper-airplane')
+                                Section::make('Tampilan')
+                                    ->icon('heroicon-o-eye')
                                     ->schema([
-                                        Select::make('publication_status')
-                                            ->label('Status Publikasi')
-                                            ->options(static::publicationStatusOptions())
-                                            ->default('draft')
-                                            ->required(),
-
                                         Toggle::make('featured')
                                             ->label('Featured')
                                             ->default(false),
@@ -452,11 +433,6 @@ class ProgramResource extends Resource
                                         Toggle::make('show_on_homepage')
                                             ->label('Tampilkan di Beranda')
                                             ->default(false),
-
-                                        TextInput::make('sort_order')
-                                            ->label('Urutan')
-                                            ->numeric()
-                                            ->default(fn (): int => ((int) Program::query()->max('sort_order')) + 1),
 
                                         Placeholder::make('public_preview')
                                             ->label('Pratinjau')
@@ -478,20 +454,15 @@ class ProgramResource extends Resource
 
                                 Section::make('Pelaksanaan')
                                     ->icon('heroicon-o-calendar-days')
+                                    ->description('Status kegiatan ditentukan otomatis dari tanggal mulai dan tanggal selesai.')
                                     ->schema([
-                                        Select::make('status')
-                                            ->label('Status Kegiatan')
-                                            ->options(static::statusOptions())
-                                            ->default('upcoming')
-                                            ->live()
-                                            ->required(),
-
                                         DatePicker::make('event_date')
                                             ->label('Tanggal Mulai')
-                                            ->required(fn (Get $get): bool => $get('status') !== 'archived'),
+                                            ->required(),
 
                                         DatePicker::make('end_date')
-                                            ->label('Tanggal Selesai'),
+                                            ->label('Tanggal Selesai')
+                                            ->minDate(fn (Get $get) => $get('event_date')),
 
                                         Select::make('format')
                                             ->label('Format')
@@ -523,8 +494,12 @@ class ProgramResource extends Resource
             $data['slug'] = Str::slug((string) $data['slug']);
         }
 
-        $data['publication_status'] = static::normalizePublicationStatusForForm($data['publication_status'] ?? null);
-        $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
+        $data['publication_status'] = 'published';
+        $data['status'] = Program::statusFromDates(
+            $data['event_date'] ?? null,
+            $data['end_date'] ?? null,
+            $data['status'] ?? null,
+        );
         $data['short_description'] = static::excerptFromDescription($data['description'] ?? null);
 
         if (blank($data['primary_button_text'] ?? null)) {
@@ -623,8 +598,8 @@ class ProgramResource extends Resource
                 TextColumn::make('status')
                     ->label('Status')
                     ->badge()
-                    ->color(fn (?string $state): string => static::statusColor($state))
-                    ->formatStateUsing(fn (?string $state): string => static::statusLabel($state))
+                    ->color(fn (?string $state, Program $record): string => static::statusColor($record->status))
+                    ->formatStateUsing(fn (?string $state, Program $record): string => static::statusLabel($record->status))
                     ->extraHeaderAttributes(['class' => 'edulaw-resource-status-header'])
                     ->extraCellAttributes(['class' => 'edulaw-resource-status-cell']),
 
@@ -651,13 +626,6 @@ class ProgramResource extends Resource
                     ->label('Featured')
                     ->boolean()
                     ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-
-                TextColumn::make('publication_status')
-                    ->label('Status Publikasi')
-                    ->badge()
-                    ->color(fn (?string $state): string => static::publicationStatusColor($state))
-                    ->formatStateUsing(fn (?string $state): string => static::publicationStatusLabel($state))
                     ->toggleable(isToggledHiddenByDefault: true),
 
                 TextColumn::make('updated_at')
@@ -691,8 +659,9 @@ class ProgramResource extends Resource
                         $status = $data['value'] ?? null;
 
                         match ($status) {
-                            'upcoming', 'ongoing' => $query->where('status', $status),
-                            'archived' => $query->whereIn('status', ['archived', 'completed', 'portfolio']),
+                            'upcoming' => $query->upcoming(),
+                            'ongoing' => $query->ongoing(),
+                            'archived' => $query->archived(),
                             default => null,
                         };
                     }),
@@ -737,49 +706,18 @@ class ProgramResource extends Resource
                             ...$data,
                             'name' => Str::limit($record->name.' (Salinan)', 255, ''),
                             'slug' => static::uniqueDuplicateSlug($record),
-                            'status' => 'upcoming',
-                            'publication_status' => 'draft',
+                            'publication_status' => 'published',
+                            'sort_order' => static::nextSortOrder(),
                             'featured' => false,
                             'show_on_homepage' => false,
                             'created_by' => Auth::id(),
                             'updated_by' => Auth::id(),
                         ]),
-                    Action::make('archive')
-                        ->label('Arsipkan')
-                        ->icon('heroicon-o-archive-box')
-                        ->color('warning')
-                        ->requiresConfirmation()
-                        ->visible(fn (Program $record): bool => ! in_array($record->status, ['archived', 'completed', 'portfolio'], true)
-                            && (Auth::user()?->can('archive programs') ?? false))
-                        ->action(fn (Program $record) => $record->update(['status' => 'archived', 'updated_by' => Auth::id()])),
                     DeleteAction::make()->label('Hapus')->requiresConfirmation(),
                 ])->label('Aksi lainnya')->icon('heroicon-o-ellipsis-vertical')->tooltip('Aksi lainnya')->color('gray'),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
-                    BulkAction::make('upcoming')
-                        ->label('Ubah ke Akan Datang')
-                        ->icon('heroicon-o-calendar')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => Auth::user()?->can('publish programs') ?? false)
-                        ->action(fn ($records) => $records->each->update(['status' => 'upcoming', 'updated_by' => Auth::id()])),
-                    BulkAction::make('ongoing')
-                        ->label('Ubah ke Berlangsung')
-                        ->icon('heroicon-o-play')
-                        ->color('success')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => Auth::user()?->can('publish programs') ?? false)
-                        ->action(fn ($records) => $records->each->update(['status' => 'ongoing', 'updated_by' => Auth::id()])),
-                    BulkAction::make('archive')
-                        ->label('Arsipkan')
-                        ->icon('heroicon-o-archive-box')
-                        ->color('warning')
-                        ->requiresConfirmation()
-                        ->authorizeIndividualRecords('update')
-                        ->visible(fn (): bool => Auth::user()?->can('archive programs') ?? false)
-                        ->action(fn ($records) => $records->each->update(['status' => 'archived', 'updated_by' => Auth::id()])),
                     DeleteBulkAction::make(),
                 ]),
             ]);
@@ -821,6 +759,11 @@ class ProgramResource extends Resource
         }
 
         return $slug;
+    }
+
+    public static function nextSortOrder(): int
+    {
+        return ((int) Program::query()->max('sort_order')) + 1;
     }
 
     public static function statusOptions(): array
@@ -897,22 +840,6 @@ class ProgramResource extends Resource
             'reviewed', 'published' => $status,
             default => 'draft',
         };
-    }
-
-    private static function typeOptions(): array
-    {
-        return [
-            'Inspiring Lecture' => 'Inspiring Lecture',
-            'General Lecture' => 'General Lecture',
-            'Public Lecture' => 'Public Lecture',
-            'DIKSI' => 'DIKSI',
-            'Webinar' => 'Webinar',
-            'Workshop' => 'Workshop',
-            'Training' => 'Training',
-            'Short Course' => 'Short Course',
-            'Bootcamp' => 'Bootcamp',
-            'Community Class' => 'Community Class',
-        ];
     }
 
     private static function levelOptions(): array

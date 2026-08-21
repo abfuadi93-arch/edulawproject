@@ -29,15 +29,15 @@ class ListPrograms extends ListRecords
             'all' => ['label' => 'Semua'],
             'upcoming' => [
                 'label' => 'Akan Datang',
-                'query' => fn (Builder $query): Builder => $query->where('status', 'upcoming'),
+                'query' => fn (Builder $query): Builder => $query->upcoming(),
             ],
             'ongoing' => [
                 'label' => 'Berlangsung',
-                'query' => fn (Builder $query): Builder => $query->where('status', 'ongoing'),
+                'query' => fn (Builder $query): Builder => $query->ongoing(),
             ],
             'archived' => [
                 'label' => 'Diarsipkan',
-                'query' => fn (Builder $query): Builder => $query->whereIn('status', ['archived', 'completed', 'portfolio']),
+                'query' => fn (Builder $query): Builder => $query->archived(),
             ],
         ]);
     }

@@ -35,14 +35,6 @@ class EditProgram extends EditRecordAndReturn
         ];
     }
 
-    protected function mutateFormDataBeforeFill(array $data): array
-    {
-        $data['publication_status'] = ProgramResource::normalizePublicationStatusForForm($data['publication_status'] ?? null);
-        $data['status'] = ProgramResource::normalizeStatusForForm($data['status'] ?? null);
-
-        return $data;
-    }
-
     protected function mutateFormDataBeforeSave(array $data): array
     {
         $data['updated_by'] = auth()->id();

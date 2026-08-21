@@ -19,11 +19,11 @@ class ProgramController extends Controller
             ->filter(fn (ProgramCategory $category) => $category->programs_count > 0)
             ->values();
 
-        $statusCounts = Program::query()
-            ->visible()
-            ->selectRaw('status, COUNT(*) as total')
-            ->groupBy('status')
-            ->pluck('total', 'status');
+        $statusCounts = collect([
+            'upcoming' => Program::query()->visible()->upcoming()->count(),
+            'ongoing' => Program::query()->visible()->ongoing()->count(),
+            'archived' => Program::query()->visible()->archived()->count(),
+        ]);
 
         $formatCounts = Program::query()
             ->visible()
@@ -82,8 +82,11 @@ class ProgramController extends Controller
 
             if ($activeStatuses === []) {
                 $activeQuery->whereRaw('1 = 0');
-            } else {
-                $activeQuery->whereIn('status', $activeStatuses);
+            } elseif (count($activeStatuses) === 1) {
+                match ($activeStatuses[0]) {
+                    'upcoming' => $activeQuery->upcoming(),
+                    'ongoing' => $activeQuery->ongoing(),
+                };
             }
         }
 

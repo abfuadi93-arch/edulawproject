@@ -15,6 +15,7 @@ class CreateProgram extends CreateRecordAndReturn
 
         $data['created_by'] = $user?->id;
         $data['updated_by'] = $user?->id;
+        $data['sort_order'] = ProgramResource::nextSortOrder();
 
         return ProgramResource::prepareFormDataForPersistence($data);
     }

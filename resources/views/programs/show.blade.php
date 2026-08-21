@@ -125,7 +125,6 @@
 
     $sidebarRows = collect([
         ['label' => 'Kategori', 'value' => $categoryLabel],
-        ['label' => 'Jenis', 'value' => filled($program->type) ? Str::headline((string) $program->type) : null],
         ['label' => 'Tanggal Mulai', 'value' => $eventDateLabel],
         ['label' => 'Format', 'value' => $formatLabel],
         ['label' => 'Lokasi', 'value' => $program->location],
