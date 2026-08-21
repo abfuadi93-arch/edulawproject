@@ -593,7 +593,8 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->assertDontSee($expired->title)
         ->assertDontSee($closed->title)
         ->assertDontSee($invalid->title)
-        ->assertSee('href="https://example.test/apply/1"', false)
+        ->assertSee('href="'.route('opportunities.show', $opportunities[0]->slug).'"', false)
+        ->assertDontSee('href="https://example.test/apply/1"', false)
         ->assertSee('class="oppP-featured"', false)
         ->assertSee('class="oppP-stack"', false)
         ->assertDontSee('class="oppP-bottom"', false)
@@ -602,9 +603,7 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->assertSee('Hybrid')
         ->assertSee('Lihat Detail')
         ->assertDontSee('Lihat Peluang')
-        ->assertSee('Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan')
-        ->assertSee('target="_blank"', false)
-        ->assertSee('rel="noopener noreferrer"', false);
+        ->assertSee('Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan');
 
     expect($xpath->query('//*[@data-home-opportunity]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity-featured]')->length)->toBe(1)
@@ -612,7 +611,8 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->and($xpath->query('//*[@data-home-opportunity-bottom]')->length)->toBe(0)
         ->and($xpath->query('//*[@data-home-opportunity]//img')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
-        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(4)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "/opportunities/")]')->length)->toBe(4)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank"]')->length)->toBe(0)
         ->and($featuredMarkup)->not->toContain('oppP-icon')
         ->and($featuredMarkup)->toContain('oppP-featured-footer')
         ->and(strpos($featuredMarkup, 'oppP-badge'))->toBeLessThan(strpos($featuredMarkup, 'oppP-mini'))

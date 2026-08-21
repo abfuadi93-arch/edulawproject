@@ -73,7 +73,7 @@
                                     </div>
                                 </div>
 
-                                <a href="{{ $featuredOpportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="oppP-action" aria-label="Buka peluang {{ $featuredOpportunity->title }} di situs eksternal">
+                                <a href="{{ route('opportunities.show', $featuredOpportunity->slug) }}" class="oppP-action" aria-label="Lihat detail {{ $featuredOpportunity->title }}">
                                     Lihat Detail
                                     <span aria-hidden="true">↗</span>
                                 </a>
@@ -122,7 +122,7 @@
                                         </div>
                                     </div>
 
-                                    <a href="{{ $opportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="oppP-link" aria-label="Buka detail peluang {{ $opportunity->title }} di situs eksternal">
+                                    <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="oppP-link" aria-label="Lihat detail {{ $opportunity->title }}">
                                         Lihat Detail
                                         <span aria-hidden="true">↗</span>
                                     </a>

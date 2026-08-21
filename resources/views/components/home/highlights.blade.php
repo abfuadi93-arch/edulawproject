@@ -31,7 +31,7 @@
                         <h3 class="home-card-title line-clamp-2">{{ $opportunity?->title ?? 'Peluang terbaru sedang disiapkan' }}</h3>
                         @if ($opportunity)
                             <p class="mt-2 text-xs font-bold text-slate-500">{{ $opportunity->deadline ? 'Batas akhir '.$opportunity->deadline->translatedFormat('d M Y') : 'Tenggat fleksibel' }}</p>
-                            <a href="{{ $opportunity->application_link }}" target="_blank" rel="noopener noreferrer" class="home-card-action mt-4">Lihat Detail ↗</a>
+                            <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="home-card-action mt-4">Lihat Detail →</a>
                         @endif
                     </div>
                 </div>
