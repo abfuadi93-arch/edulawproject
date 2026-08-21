@@ -613,6 +613,7 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "/opportunities/")]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank"]')->length)->toBe(0)
+        ->and($xpath->query('//*[@data-home-opportunity-secondary]//div[contains(concat(" ", normalize-space(@class), " "), " oppP-cardfooter ")]')->length)->toBe(3)
         ->and($featuredMarkup)->not->toContain('oppP-icon')
         ->and($featuredMarkup)->toContain('oppP-featured-footer')
         ->and(strpos($featuredMarkup, 'oppP-badge'))->toBeLessThan(strpos($featuredMarkup, 'oppP-mini'))

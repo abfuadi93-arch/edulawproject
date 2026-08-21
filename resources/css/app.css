@@ -774,15 +774,26 @@
         line-height: 1.2;
     }
 
+    .oppP-cardfooter {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        align-items: end;
+        gap: 0.65rem;
+        margin-top: auto;
+    }
+
     .oppP-link {
         display: inline-flex;
         align-items: center;
+        justify-content: flex-end;
         gap: 0.45rem;
-        margin-top: auto;
-        padding-top: 0.3rem;
+        min-width: 0;
+        margin-top: 0;
+        padding-top: 0;
         color: #173b68;
         font-size: 0.7rem;
         font-weight: 900;
+        text-align: right;
     }
 
     .oppP-link:hover {

@@ -112,20 +112,22 @@
 
                                     <h3>{{ $opportunity->title }}</h3>
 
-                                    <div class="oppP-deadline">
-                                        <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                            <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
-                                        </svg>
-                                        <div>
-                                            <span>{{ $deadlineLabel($opportunity, true) }}</span>
-                                            <strong>{{ $deadlineValue($opportunity) }}</strong>
+                                    <div class="oppP-cardfooter">
+                                        <div class="oppP-deadline">
+                                            <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                                <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
+                                            </svg>
+                                            <div>
+                                                <span>{{ $deadlineLabel($opportunity, true) }}</span>
+                                                <strong>{{ $deadlineValue($opportunity) }}</strong>
+                                            </div>
                                         </div>
-                                    </div>
 
-                                    <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="oppP-link" aria-label="Lihat detail {{ $opportunity->title }}">
-                                        Lihat Detail
-                                        <span aria-hidden="true">↗</span>
-                                    </a>
+                                        <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="oppP-link" aria-label="Lihat detail {{ $opportunity->title }}">
+                                            Lihat Detail
+                                            <span aria-hidden="true">↗</span>
+                                        </a>
+                                    </div>
                                 </div>
                             </article>
                         @endforeach
