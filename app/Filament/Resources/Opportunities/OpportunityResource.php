@@ -214,6 +214,7 @@ class OpportunityResource extends Resource
                                             ->image()
                                             ->multiple()
                                             ->reorderable()
+                                            ->live()
                                             ->maxFiles(10)
                                             ->disk('public')
                                             ->directory('opportunities')
@@ -222,7 +223,27 @@ class OpportunityResource extends Resource
                                             ->imagePreviewHeight('180')
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(4096)
-                                            ->helperText('Maksimal 10 poster. Tarik untuk mengubah urutan; poster pertama menjadi gambar utama.'),
+                                            ->helperText('Maksimal 10 poster. Tarik untuk mengubah urutan.'),
+
+                                        Select::make('primary_poster_index')
+                                            ->label('Poster untuk Slide 1')
+                                            ->options(function ($get): array {
+                                                return collect($get('posters') ?? [])
+                                                    ->values()
+                                                    ->mapWithKeys(function (mixed $poster, int $index): array {
+                                                        $filename = is_object($poster) && method_exists($poster, 'getClientOriginalName')
+                                                            ? $poster->getClientOriginalName()
+                                                            : basename((string) $poster);
+
+                                                        return [(string) $index => 'Poster '.($index + 1).' — '.$filename];
+                                                    })
+                                                    ->all();
+                                            })
+                                            ->default('0')
+                                            ->selectablePlaceholder(false)
+                                            ->required(fn ($get): bool => count($get('posters') ?? []) > 1)
+                                            ->visible(fn ($get): bool => count($get('posters') ?? []) > 1)
+                                            ->helperText('Poster terpilih dipindahkan menjadi slide pertama dan gambar utama.'),
                                     ])
                                     ->columns(1),
                             ])
@@ -256,8 +277,16 @@ class OpportunityResource extends Resource
             ->unique()
             ->values();
 
+        $primaryPosterIndex = max(0, (int) ($data['primary_poster_index'] ?? 0));
+
+        if ($posters->has($primaryPosterIndex) && $primaryPosterIndex !== 0) {
+            $primaryPoster = $posters->pull($primaryPosterIndex);
+            $posters = $posters->prepend($primaryPoster)->values();
+        }
+
         $data['posters'] = $posters->all();
         $data['poster'] = $posters->first();
+        unset($data['primary_poster_index']);
 
         if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
             $data['seo_title'] = (string) $data['title'];

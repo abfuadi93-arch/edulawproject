@@ -34,6 +34,7 @@ class EditOpportunity extends EditRecordAndReturn
             ->filter()
             ->values()
             ->all();
+        $data['primary_poster_index'] = '0';
 
         return $data;
     }

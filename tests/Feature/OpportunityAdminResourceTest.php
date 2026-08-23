@@ -48,6 +48,28 @@ test('opportunity admin resource preserves a legacy single poster', function () 
         ->and($data['og_image'])->toBe('opportunities/legacy-poster.jpg');
 });
 
+test('opportunity admin resource moves the selected poster to slide one', function () {
+    $data = OpportunityResource::prepareFormDataForPersistence([
+        'title' => 'Peluang dengan Poster Pilihan',
+        'posters' => [
+            'opportunities/poster-satu.jpg',
+            'opportunities/poster-dua.jpg',
+            'opportunities/poster-tiga.jpg',
+        ],
+        'primary_poster_index' => '2',
+        'og_image' => null,
+    ]);
+
+    expect($data['posters'])->toBe([
+        'opportunities/poster-tiga.jpg',
+        'opportunities/poster-satu.jpg',
+        'opportunities/poster-dua.jpg',
+    ])
+        ->and($data['poster'])->toBe('opportunities/poster-tiga.jpg')
+        ->and($data['og_image'])->toBe('opportunities/poster-tiga.jpg')
+        ->and($data)->not->toHaveKey('primary_poster_index');
+});
+
 test('opportunity create form places the multi poster uploader in the side column', function () {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
 
