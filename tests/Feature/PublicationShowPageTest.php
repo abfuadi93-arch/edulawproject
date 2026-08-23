@@ -28,15 +28,8 @@ test('publication detail hero contains eyebrow and title without body metadata',
         ->assertSee('Detail Publikasi')
         ->assertSee('Preview PDF')
         ->assertSee('Buka Sumber Publikasi')
-        ->assertSee('Bagikan Publikasi')
-        ->assertSee('WhatsApp')
-        ->assertSee('Telegram')
-        ->assertSee('X/Twitter')
-        ->assertSee('Facebook')
-        ->assertSee('LinkedIn')
-        ->assertSee('Email')
-        ->assertSee('Instagram')
-        ->assertSee('Salin Link')
+        ->assertDontSee('Bagikan Publikasi')
+        ->assertDontSee('data-edulaw-share-group', false)
         ->getContent();
 
     $hero = Str::between($html, '<main class="publication-show">', '<section class="publication-body">');
@@ -100,7 +93,7 @@ test('publication detail uses custom citation and share metadata with safe image
         ->toContain('<option value="mla">MLA</option>')
         ->toContain('<option value="ieee">IEEE</option>')
         ->toContain('<option value="harvard">Harvard</option>')
-        ->toContain(rawurlencode('Bagikan Laporan Penelitian Hukum'));
+        ->not->toContain('data-edulaw-share-group');
 
     expect($html)
         ->not->toContain('Unduh RIS')

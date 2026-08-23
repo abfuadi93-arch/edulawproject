@@ -29,6 +29,11 @@ class EditOpportunity extends EditRecordAndReturn
     protected function mutateFormDataBeforeFill(array $data): array
     {
         $data['status'] = OpportunityResource::normalizeStatusForForm($data['status'] ?? null);
+        $data['posters'] = collect($data['posters'] ?? [])
+            ->whenEmpty(fn ($posters) => filled($data['poster'] ?? null) ? $posters->push($data['poster']) : $posters)
+            ->filter()
+            ->values()
+            ->all();
 
         return $data;
     }

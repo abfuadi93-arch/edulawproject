@@ -41,21 +41,14 @@ test('published insight index and detail pages render', function () {
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Artikel Editorial')
         ->assertSee('Tentang Artikel')
-        ->assertSee('Bagikan Artikel')
+        ->assertDontSee('Bagikan Artikel')
         ->assertSee('insight-sidebar grid w-full grid-cols-1 gap-5 self-start', false)
         ->assertDontSee('md:grid-cols-2 lg:sticky', false)
         ->assertDontSee('lg:max-h-[calc(100vh-7rem)]', false)
         ->assertDontSee('lg:overflow-y-auto', false)
         ->assertDontSee('lg:overscroll-contain', false)
         ->assertSee('lg:sticky lg:top-24', false)
-        ->assertSee('WhatsApp')
-        ->assertSee('Telegram')
-        ->assertSee('X/Twitter')
-        ->assertSee('Facebook')
-        ->assertSee('LinkedIn')
-        ->assertSee('Email')
-        ->assertSee('Instagram')
-        ->assertSee('Salin Link')
+        ->assertDontSee('data-edulaw-share-group', false)
         ->assertSee(asset('images/hero/hero-edulaw.jpg'), false)
         ->assertSee('article-content edulaw-readable insight-article-body prose prose-slate max-w-none', false)
         ->assertDontSee('Editorial Terkait')
@@ -66,7 +59,7 @@ test('published insight index and detail pages render', function () {
         ->toContain('property="og:type" content="article"')
         ->toContain('property="og:url" content="'.route('insights.show', $insight->slug).'"')
         ->toContain('name="twitter:card" content="summary_large_image"')
-        ->and(substr_count($html, 'Bagikan Artikel'))->toBe(1)
+        ->and(substr_count($html, 'Bagikan Artikel'))->toBe(0)
         ->and(substr_count($html, now()->translatedFormat('d F Y')))->toBe(1);
 });
 
@@ -112,8 +105,6 @@ test('insight detail normalizes body headings and renders a useful article outli
         ->and($html)
         ->not->toContain('<h1 id="dasar-hierarki">')
         ->and(strpos($html, 'Tentang Artikel'))
-        ->toBeLessThan(strpos($html, 'Bagikan Artikel'))
-        ->and(strpos($html, 'Bagikan Artikel'))
         ->toBeLessThan(strpos($html, 'Daftar Isi'));
 });
 
@@ -165,7 +156,8 @@ test('insight detail renders safe fallbacks when all optional article data is em
         ->toContain('Editorial Edulaw Project menyajikan analisis hukum yang relevan, jernih, dan mudah dipahami.')
         ->toContain(asset('images/hero/hero-edulaw.jpg'))
         ->toContain('Tentang Artikel')
-        ->toContain('Bagikan Artikel')
+        ->not->toContain('Bagikan Artikel')
+        ->not->toContain('data-edulaw-share-group')
         ->toContain('Edulaw Project')
         ->not->toContain('id="article-toc-heading"')
         ->not->toContain('Editorial Terkait')

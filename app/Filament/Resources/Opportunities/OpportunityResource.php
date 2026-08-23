@@ -63,7 +63,7 @@ class OpportunityResource extends Resource
                             ->schema([
                                 Section::make('Konten Opportunity')
                                     ->icon('heroicon-o-sparkles')
-                                    ->description('Isi peluang utama: judul, jenis, deskripsi, poster, tautan pendaftaran, format, dan lokasi.')
+                                    ->description('Isi peluang utama: judul, jenis, deskripsi, tautan pendaftaran, format, dan lokasi.')
                                     ->schema([
                                         TextInput::make('title')
                                             ->label('Judul')
@@ -104,18 +104,6 @@ class OpportunityResource extends Resource
 
                                         RichEditor::make('description')
                                             ->label('Deskripsi')
-                                            ->columnSpanFull(),
-
-                                        FileUpload::make('poster')
-                                            ->label('Poster')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('opportunities')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->imagePreviewHeight('180')
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
                                             ->columnSpanFull(),
 
                                         Grid::make([
@@ -164,7 +152,7 @@ class OpportunityResource extends Resource
 
                                 Section::make('SEO & Pratinjau')
                                     ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster.')
+                                    ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster pertama.')
                                     ->schema([
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
@@ -188,7 +176,7 @@ class OpportunityResource extends Resource
                                             ->imageEditor()
                                             ->maxSize(4096)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->helperText('Kosongkan untuk memakai poster.'),
+                                            ->helperText('Kosongkan untuk memakai poster pertama.'),
                                     ])
                                     ->columns(1)
                                     ->collapsible()
@@ -216,6 +204,27 @@ class OpportunityResource extends Resource
                                             ->default(false),
                                     ])
                                     ->columns(1),
+
+                                Section::make('Poster')
+                                    ->icon('heroicon-o-photo')
+                                    ->description('Poster pertama menjadi gambar utama pada kartu dan hero.')
+                                    ->schema([
+                                        FileUpload::make('posters')
+                                            ->label('Daftar Poster')
+                                            ->image()
+                                            ->multiple()
+                                            ->reorderable()
+                                            ->maxFiles(10)
+                                            ->disk('public')
+                                            ->directory('opportunities')
+                                            ->visibility('public')
+                                            ->imageEditor()
+                                            ->imagePreviewHeight('180')
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->maxSize(4096)
+                                            ->helperText('Maksimal 10 poster. Tarik untuk mengubah urutan; poster pertama menjadi gambar utama.'),
+                                    ])
+                                    ->columns(1),
                             ])
                             ->columnSpan(['xl' => 4])
                             ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
@@ -238,6 +247,18 @@ class OpportunityResource extends Resource
         $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
         $data['excerpt'] = static::excerptFromDescription($data['description'] ?? null);
 
+        $posterState = array_key_exists('posters', $data)
+            ? $data['posters']
+            : ($data['poster'] ?? null);
+        $posters = collect(is_array($posterState) ? $posterState : [$posterState])
+            ->filter(fn (mixed $poster): bool => is_string($poster) && filled(trim($poster)))
+            ->map(fn (string $poster): string => trim($poster))
+            ->unique()
+            ->values();
+
+        $data['posters'] = $posters->all();
+        $data['poster'] = $posters->first();
+
         if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
             $data['seo_title'] = (string) $data['title'];
         }
@@ -246,7 +267,7 @@ class OpportunityResource extends Resource
             $data['seo_description'] = static::excerptFromDescription((string) $data['excerpt'], 180);
         }
 
-        if (blank($data['og_image'] ?? null) && filled($data['poster'] ?? null)) {
+        if (blank($data['og_image'] ?? null) && filled($data['poster'])) {
             $data['og_image'] = $data['poster'];
         }
 

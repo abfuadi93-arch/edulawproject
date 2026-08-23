@@ -501,14 +501,6 @@
                     @endif
                 </div>
 
-                <x-share-buttons
-                    :title="$programTitle"
-                    :url="route('programs.show', $program->slug)"
-                    :description="$shortDescription"
-                    label="Bagikan Program"
-                    class="mt-6 border-t border-slate-100 pt-5"
-                />
-
                 @if ($supportLinks->isNotEmpty())
                     <div class="mt-6 border-t border-slate-100 pt-5">
                         <p class="text-[10px] font-black uppercase tracking-[0.20em] text-slate-400">

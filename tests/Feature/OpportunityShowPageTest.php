@@ -47,6 +47,45 @@ test('inactive or invalid opportunities do not have public detail pages', functi
     'without external link' => [['application_link' => '/kontak']],
 ]);
 
+test('opportunity detail renders multiple posters as a slider', function () {
+    $opportunity = Opportunity::query()->create([
+        'title' => 'Kompetisi Poster Nasional',
+        'slug' => 'kompetisi-poster-nasional',
+        'status' => 'open',
+        'deadline' => now()->addDays(10)->toDateString(),
+        'application_link' => 'https://example.test/daftar',
+        'poster' => 'opportunities/poster-utama.jpg',
+        'posters' => [
+            'opportunities/poster-utama.jpg',
+            'opportunities/poster-kedua.jpg',
+        ],
+    ]);
+
+    expect($opportunity->poster_paths)->toBe([
+        'opportunities/poster-utama.jpg',
+        'opportunities/poster-kedua.jpg',
+    ])
+        ->and($opportunity->poster_urls)->toHaveCount(2)
+        ->and($opportunity->poster_url)->toContain('opportunities/poster-utama.jpg');
+
+    $this->get(route('opportunities.show', $opportunity->slug))
+        ->assertOk()
+        ->assertSee('data-opportunity-poster-slider', false)
+        ->assertSee('opportunities/poster-utama.jpg', false)
+        ->assertSee('opportunities/poster-kedua.jpg', false)
+        ->assertSee('Poster 2 dari 2');
+});
+
+test('opportunity poster accessors fall back to the legacy poster column', function () {
+    $opportunity = new Opportunity([
+        'poster' => 'opportunities/poster-lama.jpg',
+    ]);
+
+    expect($opportunity->poster_paths)->toBe(['opportunities/poster-lama.jpg'])
+        ->and($opportunity->poster_urls)->toHaveCount(1)
+        ->and($opportunity->poster_url)->toContain('opportunities/poster-lama.jpg');
+});
+
 test('opportunity index links to the detail page before the external application page', function () {
     $opportunity = Opportunity::query()->create([
         'title' => 'Kompetisi Peradilan Semu',

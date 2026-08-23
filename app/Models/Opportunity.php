@@ -20,6 +20,7 @@ class Opportunity extends Model
         'excerpt',
         'description',
         'poster',
+        'posters',
         'deadline',
         'application_link',
         'format',
@@ -37,6 +38,7 @@ class Opportunity extends Model
 
     protected $casts = [
         'deadline' => 'date',
+        'posters' => 'array',
         'eligibility' => 'array',
         'benefits' => 'array',
         'featured' => 'boolean',
@@ -79,7 +81,41 @@ class Opportunity extends Model
 
     public function getPosterUrlAttribute(): ?string
     {
-        return EdulawSite::assetUrl($this->attributes['poster'] ?? null);
+        $primaryPoster = $this->poster_paths[0] ?? null;
+
+        return EdulawSite::assetUrl($primaryPoster);
+    }
+
+    /** @return list<string> */
+    public function getPosterPathsAttribute(): array
+    {
+        $posters = $this->getAttribute('posters');
+
+        if (is_string($posters)) {
+            $posters = json_decode($posters, true);
+        }
+
+        $paths = collect(is_array($posters) ? $posters : [])
+            ->filter(fn (mixed $path): bool => is_string($path) && filled(trim($path)))
+            ->map(fn (string $path): string => trim($path))
+            ->unique()
+            ->values();
+
+        if ($paths->isEmpty() && filled($this->attributes['poster'] ?? null)) {
+            $paths->push(trim((string) $this->attributes['poster']));
+        }
+
+        return $paths->all();
+    }
+
+    /** @return list<string> */
+    public function getPosterUrlsAttribute(): array
+    {
+        return collect($this->poster_paths)
+            ->map(fn (string $path): ?string => EdulawSite::assetUrl($path))
+            ->filter()
+            ->values()
+            ->all();
     }
 
     public function getDisplayTypeAttribute(): string

@@ -220,19 +220,6 @@
                     </div>
                 </section>
 
-                <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-share-heading">
-                    <h2 id="article-share-heading" class="text-base font-black text-brand-navy">Bagikan Artikel</h2>
-                    <p class="mt-1 text-xs leading-5 text-slate-500">Bagikan bacaan ini melalui kanal pilihan Anda.</p>
-
-                    <x-share-buttons
-                        :title="$insight->title"
-                        :url="request()->fullUrl()"
-                        :description="$description"
-                        label=""
-                        class="mt-4 justify-start"
-                    />
-                </section>
-
                 @if ($articleHeadings->isNotEmpty())
                     <nav class="article-toc hidden w-full rounded-2xl border border-brand-amber/40 bg-[#f8f5ee] p-6 shadow-sm lg:block" aria-labelledby="article-toc-heading">
                         <div class="flex items-center gap-3">

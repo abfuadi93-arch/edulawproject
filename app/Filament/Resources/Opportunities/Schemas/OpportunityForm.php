@@ -24,9 +24,12 @@ class OpportunityForm
                     ->default('open_collaboration'),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                FileUpload::make('poster')
+                FileUpload::make('posters')
                     ->label('Poster')
                     ->image()
+                    ->multiple()
+                    ->reorderable()
+                    ->maxFiles(10)
                     ->disk('public')
                     ->directory('opportunities')
                     ->visibility('public')

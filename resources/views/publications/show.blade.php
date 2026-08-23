@@ -355,14 +355,6 @@
                             <span data-copy-citation-label>Salin Sitasi</span>
                         </button>
 
-                        <div class="mt-6 border-t border-slate-100 pt-5">
-                            <x-share-buttons
-                                :title="$publication->share_preview_title"
-                                :url="$publication->public_url"
-                                :description="$publication->share_preview_description"
-                                label="Bagikan Publikasi"
-                            />
-                        </div>
                     </section>
                 </aside>
             </div>
