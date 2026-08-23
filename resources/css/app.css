@@ -1161,6 +1161,41 @@
 
 .edulaw-readable :where(ul, ol) {
     margin-block: 7.5pt;
+    padding-inline-start: 1.6rem;
+    list-style-position: outside;
+}
+
+.edulaw-readable :where(ul) {
+    list-style-type: disc;
+}
+
+.edulaw-readable :where(ol) {
+    list-style-type: decimal;
+}
+
+.edulaw-readable :where(ul ul) {
+    list-style-type: circle;
+}
+
+.edulaw-readable :where(ul ul ul) {
+    list-style-type: square;
+}
+
+.edulaw-readable :where(ol ol) {
+    list-style-type: lower-alpha;
+}
+
+.edulaw-readable :where(ol ol ol) {
+    list-style-type: lower-roman;
+}
+
+.edulaw-readable :where(li > ul, li > ol) {
+    margin-block: 0.45rem;
+}
+
+.edulaw-readable :where(li)::marker {
+    color: #b7791f;
+    font-weight: 700;
 }
 
 .edulaw-readable:is(li),
