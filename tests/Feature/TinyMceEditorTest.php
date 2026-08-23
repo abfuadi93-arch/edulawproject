@@ -1,7 +1,12 @@
 <?php
 
 use App\Filament\Forms\Components\TinyMceEditor;
+use App\Filament\Resources\Editorial\Pages\ViewEditorialWorkspace;
 use App\Filament\Resources\Insights\InsightResource\Pages\CreateInsight;
+use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
+use App\Filament\Resources\ProgramResource\Pages\CreateProgram;
+use App\Filament\Resources\Publications\Pages\CreatePublication;
+use App\Models\Insight;
 use App\Models\User;
 use Database\Seeders\RolePermissionSeeder;
 use Filament\Facades\Filament;
@@ -76,4 +81,45 @@ test('TinyMCE image attachments use validated Laravel public storage', function 
         ->toHaveCount(1)
         ->and(Storage::disk('public')->allFiles('insights/content-images')[0])
         ->toEndWith('.png');
+});
+
+test('every primary Filament content form uses self hosted TinyMCE', function () {
+    $this->seed(RolePermissionSeeder::class);
+
+    $user = User::query()->create([
+        'name' => 'TinyMCE Global Administrator',
+        'email' => 'tinymce-global-admin@example.test',
+        'password' => 'password',
+        'is_active' => true,
+    ]);
+    $user->assignRole('super_admin');
+
+    $this->actingAs($user);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    foreach ([
+        [CreateProgram::class, 'programs/content-images'],
+        [CreatePublication::class, 'publications/content-images'],
+        [CreateOpportunity::class, 'opportunities/content-images'],
+    ] as [$page, $directory]) {
+        Livewire::test($page)
+            ->assertFormFieldExists('description', null, fn (Field $field): bool => $field instanceof TinyMceEditor
+                && $field->getFileAttachmentsDiskName() === 'public'
+                && $field->getFileAttachmentsDirectory() === $directory
+                && $field->getFileAttachmentsMaxSize() === 4096);
+    }
+
+    $insight = Insight::query()->create([
+        'title' => 'Naskah TinyMCE Editorial',
+        'slug' => 'naskah-tinymce-editorial',
+        'content' => '<p>Isi naskah editorial.</p>',
+        'status' => 'draft',
+        'created_by' => $user->id,
+        'updated_by' => $user->id,
+    ]);
+
+    Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->assertFormFieldExists('content', null, fn (Field $field): bool => $field instanceof TinyMceEditor
+            && $field->getHeight() === 650
+            && $field->getFileAttachmentsDirectory() === 'insights/content-images');
 });

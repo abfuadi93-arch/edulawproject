@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources;
 
+use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
 use BackedEnum;
@@ -16,7 +17,6 @@ use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
@@ -101,9 +101,18 @@ class ProgramResource extends Resource
                                             ->required()
                                             ->columnSpanFull(),
 
-                                        RichEditor::make('description')
+                                        TinyMceEditor::make('description')
                                             ->label('Deskripsi Detail')
                                             ->required()
+                                            ->height(520)
+                                            ->fileAttachmentsDisk('public')
+                                            ->fileAttachmentsDirectory('programs/content-images')
+                                            ->fileAttachmentsVisibility('public')
+                                            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                            ->fileAttachmentsMaxSize(4096)
+                                            ->editorConfig([
+                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
+                                            ])
                                             ->columnSpanFull(),
 
                                         TagsInput::make('learning_points')

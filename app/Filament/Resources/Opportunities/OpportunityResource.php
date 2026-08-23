@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Opportunities;
 
+use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
 use App\Filament\Resources\Opportunities\Pages\EditOpportunity;
 use App\Filament\Resources\Opportunities\Pages\ListOpportunities;
@@ -11,7 +12,6 @@ use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -102,8 +102,17 @@ class OpportunityResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
-                                        RichEditor::make('description')
+                                        TinyMceEditor::make('description')
                                             ->label('Deskripsi')
+                                            ->height(520)
+                                            ->fileAttachmentsDisk('public')
+                                            ->fileAttachmentsDirectory('opportunities/content-images')
+                                            ->fileAttachmentsVisibility('public')
+                                            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                            ->fileAttachmentsMaxSize(4096)
+                                            ->editorConfig([
+                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
+                                            ])
                                             ->columnSpanFull(),
 
                                         Grid::make([
@@ -207,15 +216,12 @@ class OpportunityResource extends Resource
 
                                 Section::make('Poster')
                                     ->icon('heroicon-o-photo')
-                                    ->description('Poster pertama menjadi gambar utama pada kartu dan hero.')
+                                    ->description('Unggah poster utama terlebih dahulu, lalu tambahkan poster lain bila diperlukan.')
                                     ->schema([
-                                        FileUpload::make('posters')
-                                            ->label('Daftar Poster')
+                                        FileUpload::make('poster')
+                                            ->label('Poster Slide 1')
                                             ->image()
-                                            ->multiple()
-                                            ->reorderable()
                                             ->live()
-                                            ->maxFiles(10)
                                             ->disk('public')
                                             ->directory('opportunities')
                                             ->visibility('public')
@@ -223,27 +229,34 @@ class OpportunityResource extends Resource
                                             ->imagePreviewHeight('180')
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(4096)
-                                            ->helperText('Maksimal 10 poster. Tarik untuk mengubah urutan.'),
+                                            ->required(fn ($get): bool => count($get('additional_posters') ?? []) > 0)
+                                            ->helperText('Poster ini selalu menjadi slide pertama dan gambar utama.'),
 
-                                        Select::make('primary_poster_index')
-                                            ->label('Poster untuk Slide 1')
-                                            ->options(function ($get): array {
-                                                return collect($get('posters') ?? [])
-                                                    ->values()
-                                                    ->mapWithKeys(function (mixed $poster, int $index): array {
-                                                        $filename = is_object($poster) && method_exists($poster, 'getClientOriginalName')
-                                                            ? $poster->getClientOriginalName()
-                                                            : basename((string) $poster);
-
-                                                        return [(string) $index => 'Poster '.($index + 1).' — '.$filename];
-                                                    })
-                                                    ->all();
-                                            })
-                                            ->default('0')
-                                            ->selectablePlaceholder(false)
-                                            ->required(fn ($get): bool => count($get('posters') ?? []) > 1)
-                                            ->visible(fn ($get): bool => count($get('posters') ?? []) > 1)
-                                            ->helperText('Poster terpilih dipindahkan menjadi slide pertama dan gambar utama.'),
+                                        Repeater::make('additional_posters')
+                                            ->label('Poster Tambahan')
+                                            ->schema([
+                                                FileUpload::make('image')
+                                                    ->label('Poster')
+                                                    ->image()
+                                                    ->disk('public')
+                                                    ->directory('opportunities')
+                                                    ->visibility('public')
+                                                    ->imageEditor()
+                                                    ->imagePreviewHeight('150')
+                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                    ->maxSize(4096)
+                                                    ->required(),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->maxItems(9)
+                                            ->addable(fn ($get): bool => filled($get('poster')))
+                                            ->addActionLabel('Tambah Poster')
+                                            ->itemLabel(fn (array $state): string => filled($state['image'] ?? null) ? 'Poster Tambahan' : 'Poster Baru')
+                                            ->reorderable()
+                                            ->collapsible()
+                                            ->helperText(fn ($get): string => filled($get('poster'))
+                                                ? 'Tambahkan maksimal 9 poster. Urutkan untuk menentukan slide 2 dan seterusnya.'
+                                                : 'Unggah Poster Slide 1 agar tombol Tambah Poster tersedia.'),
                                     ])
                                     ->columns(1),
                             ])
@@ -268,25 +281,20 @@ class OpportunityResource extends Resource
         $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
         $data['excerpt'] = static::excerptFromDescription($data['description'] ?? null);
 
-        $posterState = array_key_exists('posters', $data)
-            ? $data['posters']
-            : ($data['poster'] ?? null);
+        $posterState = array_key_exists('additional_posters', $data)
+            ? collect([$data['poster'] ?? null])
+                ->merge(collect($data['additional_posters'] ?? [])->pluck('image'))
+                ->all()
+            : (array_key_exists('posters', $data) ? $data['posters'] : ($data['poster'] ?? null));
         $posters = collect(is_array($posterState) ? $posterState : [$posterState])
             ->filter(fn (mixed $poster): bool => is_string($poster) && filled(trim($poster)))
             ->map(fn (string $poster): string => trim($poster))
             ->unique()
             ->values();
 
-        $primaryPosterIndex = max(0, (int) ($data['primary_poster_index'] ?? 0));
-
-        if ($posters->has($primaryPosterIndex) && $primaryPosterIndex !== 0) {
-            $primaryPoster = $posters->pull($primaryPosterIndex);
-            $posters = $posters->prepend($primaryPoster)->values();
-        }
-
         $data['posters'] = $posters->all();
         $data['poster'] = $posters->first();
-        unset($data['primary_poster_index']);
+        unset($data['additional_posters'], $data['primary_poster_index']);
 
         if (blank($data['seo_title'] ?? null) && filled($data['title'] ?? null)) {
             $data['seo_title'] = (string) $data['title'];

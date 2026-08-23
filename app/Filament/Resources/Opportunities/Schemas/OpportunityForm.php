@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Opportunities\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Components\Toggle;
@@ -24,18 +25,35 @@ class OpportunityForm
                     ->default('open_collaboration'),
                 Textarea::make('description')
                     ->columnSpanFull(),
-                FileUpload::make('posters')
-                    ->label('Poster')
+                FileUpload::make('poster')
+                    ->label('Poster Slide 1')
                     ->image()
-                    ->multiple()
-                    ->reorderable()
-                    ->maxFiles(10)
+                    ->live()
                     ->disk('public')
                     ->directory('opportunities')
                     ->visibility('public')
                     ->imageEditor()
                     ->maxSize(4096)
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+                Repeater::make('additional_posters')
+                    ->label('Poster Tambahan')
+                    ->schema([
+                        FileUpload::make('image')
+                            ->label('Poster')
+                            ->image()
+                            ->disk('public')
+                            ->directory('opportunities')
+                            ->visibility('public')
+                            ->imageEditor()
+                            ->maxSize(4096)
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                            ->required(),
+                    ])
+                    ->defaultItems(0)
+                    ->maxItems(9)
+                    ->addable(fn ($get): bool => filled($get('poster')))
+                    ->addActionLabel('Tambah Poster')
+                    ->reorderable(),
                 DatePicker::make('deadline'),
                 TextInput::make('application_link'),
                 TextInput::make('format'),

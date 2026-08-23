@@ -3,9 +3,9 @@
 namespace App\Filament\Resources\Editorial;
 
 use App\Enums\InsightStatus;
+use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\Editorial\Pages\ListEditorialInsights;
 use App\Filament\Resources\Editorial\Pages\ViewEditorialWorkspace;
-use App\Filament\RichEditor\FootnoteRichContentPlugin;
 use App\Models\Insight;
 use App\Models\User;
 use App\Services\InsightEditorialWorkflowService;
@@ -15,7 +15,6 @@ use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -152,19 +151,15 @@ class EditorialResource extends Resource
                     Section::make('Isi Artikel')
                         ->description('Tinjau dan sunting body artikel pada area kerja penuh.')
                         ->schema([
-                            RichEditor::make('content')
+                            TinyMceEditor::make('content')
                                 ->hiddenLabel()
                                 ->required()
-                                ->plugins([new FootnoteRichContentPlugin])
-                                ->toolbarButtons([
-                                    ['bold', 'italic', 'underline', 'strike', 'subscript', 'superscript', 'link', 'footnote'],
-                                    ['h2', 'h3'],
-                                    ['alignStart', 'alignCenter', 'alignEnd'],
-                                    ['blockquote', 'codeBlock', 'bulletList', 'orderedList'],
-                                    ['table', 'attachFiles'],
-                                    ['undo', 'redo'],
-                                ])
-                                ->disableToolbarButtons(['h1'])
+                                ->height(650)
+                                ->fileAttachmentsDisk('public')
+                                ->fileAttachmentsDirectory('insights/content-images')
+                                ->fileAttachmentsVisibility('public')
+                                ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                ->fileAttachmentsMaxSize(4096)
                                 ->columnSpanFull(),
                             Repeater::make('footnotes')
                                 ->label('Daftar Catatan Kaki')

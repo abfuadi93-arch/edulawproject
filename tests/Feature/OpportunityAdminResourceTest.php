@@ -48,29 +48,28 @@ test('opportunity admin resource preserves a legacy single poster', function () 
         ->and($data['og_image'])->toBe('opportunities/legacy-poster.jpg');
 });
 
-test('opportunity admin resource moves the selected poster to slide one', function () {
+test('opportunity admin resource keeps the primary upload as slide one and appends extra posters', function () {
     $data = OpportunityResource::prepareFormDataForPersistence([
-        'title' => 'Peluang dengan Poster Pilihan',
-        'posters' => [
-            'opportunities/poster-satu.jpg',
-            'opportunities/poster-dua.jpg',
-            'opportunities/poster-tiga.jpg',
+        'title' => 'Peluang dengan Poster Tambahan',
+        'poster' => 'opportunities/poster-satu.jpg',
+        'additional_posters' => [
+            ['image' => 'opportunities/poster-dua.jpg'],
+            ['image' => 'opportunities/poster-tiga.jpg'],
         ],
-        'primary_poster_index' => '2',
         'og_image' => null,
     ]);
 
     expect($data['posters'])->toBe([
-        'opportunities/poster-tiga.jpg',
         'opportunities/poster-satu.jpg',
         'opportunities/poster-dua.jpg',
+        'opportunities/poster-tiga.jpg',
     ])
-        ->and($data['poster'])->toBe('opportunities/poster-tiga.jpg')
-        ->and($data['og_image'])->toBe('opportunities/poster-tiga.jpg')
-        ->and($data)->not->toHaveKey('primary_poster_index');
+        ->and($data['poster'])->toBe('opportunities/poster-satu.jpg')
+        ->and($data['og_image'])->toBe('opportunities/poster-satu.jpg')
+        ->and($data)->not->toHaveKey('additional_posters');
 });
 
-test('opportunity create form places the multi poster uploader in the side column', function () {
+test('opportunity create form presents the primary poster before additional posters', function () {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
 
     $role = Role::findOrCreate('super_admin');
@@ -86,8 +85,9 @@ test('opportunity create form places the multi poster uploader in the side colum
         ->get(OpportunityResource::getUrl('create'))
         ->assertOk()
         ->assertSeeInOrder(['Status Peluang', 'Poster'])
-        ->assertSee('Daftar Poster')
-        ->assertSee('Maksimal 10 poster');
+        ->assertSee('Poster Slide 1')
+        ->assertSee('Poster Tambahan')
+        ->assertSee('Unggah Poster Slide 1 agar tombol Tambah Poster tersedia.');
 });
 
 test('opportunity admin resource exposes only open closed and archived statuses', function () {

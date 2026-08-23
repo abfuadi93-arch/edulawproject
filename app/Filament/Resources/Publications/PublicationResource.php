@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Publications;
 
+use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\Publications\Pages\CreatePublication;
 use App\Filament\Resources\Publications\Pages\EditPublication;
 use App\Filament\Resources\Publications\Pages\ListPublications;
@@ -22,7 +23,6 @@ use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
-use Filament\Forms\Components\RichEditor;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -235,9 +235,18 @@ class PublicationResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
-                                        RichEditor::make('description')
+                                        TinyMceEditor::make('description')
                                             ->label('Deskripsi Lengkap')
                                             ->helperText('Opsional, tetapi disarankan untuk memberi konteks lebih lengkap.')
+                                            ->height(520)
+                                            ->fileAttachmentsDisk('public')
+                                            ->fileAttachmentsDirectory('publications/content-images')
+                                            ->fileAttachmentsVisibility('public')
+                                            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                            ->fileAttachmentsMaxSize(4096)
+                                            ->editorConfig([
+                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
+                                            ])
                                             ->columnSpanFull(),
 
                                         Grid::make(['default' => 1, 'lg' => 2])
