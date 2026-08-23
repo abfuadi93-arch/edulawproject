@@ -10,6 +10,7 @@
         'scholarship' => 'oppP-blue',
         'call_for_paper' => 'oppP-violet',
         'internship' => 'oppP-coral',
+        'career' => 'oppP-blue',
         'open_collaboration' => 'oppP-navy',
         default => 'oppP-gold',
     };

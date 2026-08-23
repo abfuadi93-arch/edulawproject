@@ -344,6 +344,7 @@ class OpportunityResource extends Resource
             'fellowship' => 'Fellowship',
             'call_for_paper' => 'Call for Papers',
             'competition' => 'Kompetisi',
+            'career' => 'Karier',
             'open_collaboration' => 'Kolaborasi Terbuka',
         ];
     }
@@ -376,6 +377,7 @@ class OpportunityResource extends Resource
                         'fellowship' => 'primary',
                         'call_for_paper' => 'gray',
                         'competition' => 'danger',
+                        'career' => 'info',
                         'open_collaboration' => 'primary',
                         default => 'gray',
                     })

@@ -31,6 +31,7 @@
         'competition' => 'Kompetisi',
         'call_for_paper' => 'Call for Papers',
         'fellowship' => 'Fellowship',
+        'career' => 'Karier',
         'open_collaboration' => 'Kolaborasi',
         'volunteer' => 'Volunteer',
     ];

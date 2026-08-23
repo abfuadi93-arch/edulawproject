@@ -71,6 +71,30 @@ test('finder searches and filters by type format location and deadline', functio
         ->assertSeeText('1 kesempatan ditemukan');
 });
 
+test('finder always exposes and filters the career opportunity type', function () {
+    $career = createFinderOpportunity([
+        'title' => 'Karier Legal Researcher',
+        'type' => 'career',
+    ]);
+    $competition = createFinderOpportunity([
+        'title' => 'Kompetisi Nonkarier',
+        'type' => 'competition',
+    ]);
+
+    $this->get(route('opportunities.index'))
+        ->assertOk()
+        ->assertSee('Karier')
+        ->assertSee(route('opportunities.index', ['type' => 'career']), false);
+
+    $this->get(route('opportunities.index', ['type' => 'career']))
+        ->assertOk()
+        ->assertSee($career->title)
+        ->assertDontSee($competition->title)
+        ->assertViewHas('filters', fn (array $filters): bool => $filters['type'] === 'career');
+
+    expect($career->display_type)->toBe('Karier');
+});
+
 test('finder can show closed opportunities without exposing archived or expired open records by default', function () {
     $open = createFinderOpportunity(['title' => 'Masih Aktif']);
     $closed = createFinderOpportunity(['title' => 'Sudah Selesai', 'status' => 'closed']);

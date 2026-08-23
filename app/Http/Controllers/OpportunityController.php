@@ -119,6 +119,8 @@ class OpportunityController extends Controller
             ->distinct()
             ->pluck('type')
             ->filter(fn (string $type): bool => array_key_exists($type, self::typeLabels()))
+            ->push('career')
+            ->unique()
             ->values();
 
         $availableFormats = Opportunity::query()
@@ -170,6 +172,7 @@ class OpportunityController extends Controller
             'competition' => 'Kompetisi',
             'call_for_paper' => 'Call for Papers',
             'fellowship' => 'Fellowship',
+            'career' => 'Karier',
             'open_collaboration' => 'Kolaborasi',
             'volunteer' => 'Volunteer',
         ];

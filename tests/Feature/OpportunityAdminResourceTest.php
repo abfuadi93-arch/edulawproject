@@ -81,6 +81,11 @@ test('opportunity admin resource exposes only open closed and archived statuses'
         ->and(OpportunityResource::normalizeStatusForForm('draft'))->toBe('open');
 });
 
+test('opportunity admin resource exposes career as an opportunity type', function () {
+    expect(OpportunityResource::typeOptions())
+        ->toHaveKey('career', 'Karier');
+});
+
 test('opportunity deadline labels are localized and null safe', function () {
     expect(OpportunityResource::deadlineRelativeLabel(null))->toBeNull()
         ->and(OpportunityResource::deadlineRelativeLabel(today()))->toBe('Berakhir hari ini')

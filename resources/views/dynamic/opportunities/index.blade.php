@@ -61,7 +61,7 @@
                     <input type="search" name="q" value="{{ $search }}" placeholder="Cari opportunity..." class="rounded-xl border border-slate-200 px-4 py-2 text-sm">
                     <select name="type" class="rounded-xl border border-slate-200 px-4 py-2 text-sm">
                         <option value="">Semua jenis</option>
-                        @foreach (['scholarship' => 'Beasiswa', 'internship' => 'Magang', 'volunteer' => 'Volunteer', 'fellowship' => 'Fellowship', 'call_for_paper' => 'Call for Papers', 'competition' => 'Kompetisi', 'open_collaboration' => 'Kolaborasi Terbuka'] as $key => $label)
+                        @foreach (['scholarship' => 'Beasiswa', 'internship' => 'Magang', 'volunteer' => 'Volunteer', 'fellowship' => 'Fellowship', 'call_for_paper' => 'Call for Papers', 'competition' => 'Kompetisi', 'career' => 'Karier', 'open_collaboration' => 'Kolaborasi Terbuka'] as $key => $label)
                             <option value="{{ $key }}" @selected($selectedType === $key)>{{ $label }}</option>
                         @endforeach
                     </select>

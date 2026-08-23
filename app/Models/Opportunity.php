@@ -127,6 +127,7 @@ class Opportunity extends Model
             'fellowship' => 'Fellowship',
             'call_for_paper' => 'Call for Papers',
             'competition' => 'Kompetisi',
+            'career' => 'Karier',
             'open_collaboration' => 'Kolaborasi',
             default => ucfirst(str_replace('_', ' ', (string) ($this->attributes['type'] ?? 'Opportunity'))),
         };
