@@ -25,12 +25,6 @@
 
 @section('content')
     <x-home.hero :hero="$homeHero" :values="$homeValues" />
-    <x-home.highlights
-        :program="$latestPrograms->first()"
-        :opportunity="$latestOpportunities->first()"
-        :insight="$featuredInsight"
-    />
-    <x-home.audience />
     <x-home.programs :programs="$latestPrograms" :featured-insight="$featuredInsight" />
     <x-home.insights :insights="$latestInsights" />
     <x-home.publications :publications="$latestPublications" />
