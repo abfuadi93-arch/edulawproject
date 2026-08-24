@@ -5,6 +5,7 @@ namespace App\Providers\Filament;
 use App\Filament\Auth\Pages\Register;
 use App\Filament\Pages\EditMyProfile;
 use App\Support\EdulawSite;
+use Filament\FontProviders\LocalFontProvider;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -18,6 +19,7 @@ use Filament\View\PanelsRenderHook;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
+use Illuminate\Foundation\Vite;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Support\HtmlString;
@@ -61,6 +63,7 @@ class AdminPanelProvider extends PanelProvider
             })
             ->brandLogoHeight('2.5rem')
             ->favicon(asset('images/logo/icon-logo.png'))
+            ->font('Lato', provider: LocalFontProvider::class)
             ->colors([
                 'primary' => Color::hex('#1f3c69'),
                 'gray' => Color::Slate,
@@ -106,7 +109,10 @@ class AdminPanelProvider extends PanelProvider
             )
             ->renderHook(
                 PanelsRenderHook::HEAD_END,
-                fn (): HtmlString => new HtmlString('<meta name="robots" content="noindex,nofollow">')
+                fn (): HtmlString => new HtmlString(
+                    app(Vite::class)->fonts('lato')->toHtml()."\n".
+                    '<meta name="robots" content="noindex,nofollow">'
+                )
             )
             ->discoverResources(
                 in: app_path('Filament/Resources'),

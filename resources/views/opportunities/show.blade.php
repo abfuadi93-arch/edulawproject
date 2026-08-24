@@ -188,15 +188,6 @@
         <div class="space-y-7">
             @if ($posterImages->isNotEmpty())
                 <section
-                    x-data="{
-                        active: 0,
-                        total: {{ $posterImages->count() }},
-                        next() { this.active = (this.active + 1) % this.total },
-                        previous() { this.active = (this.active - 1 + this.total) % this.total },
-                        goTo(index) { this.active = index },
-                    }"
-                    @keydown.left.stop.prevent="previous()"
-                    @keydown.right.stop.prevent="next()"
                     class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm"
                     aria-roledescription="carousel"
                     aria-label="Poster {{ $opportunity->title }}"
@@ -206,9 +197,8 @@
                     <div class="relative overflow-hidden bg-slate-100">
                         @foreach ($posterImages as $index => $image)
                             <figure
-                                x-show="active === {{ $index }}"
-                                x-transition.opacity.duration.300ms
-                                @if ($index !== 0) x-cloak @endif
+                                data-poster-slide
+                                @if ($index !== 0) hidden @endif
                                 class="relative h-[min(78vh,820px)] min-h-[360px]"
                                 role="group"
                                 aria-roledescription="slide"
@@ -228,7 +218,7 @@
                             <div class="pointer-events-none absolute inset-x-0 top-1/2 flex -translate-y-1/2 justify-between px-3 sm:px-5">
                                 <button
                                     type="button"
-                                    @click="previous()"
+                                    data-poster-previous
                                     class="pointer-events-auto grid size-11 place-items-center rounded-full border border-white/35 bg-[#102b50]/85 text-2xl font-bold text-white shadow-lg backdrop-blur transition hover:bg-[#102b50] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber"
                                     aria-label="Poster sebelumnya"
                                 >
@@ -236,7 +226,7 @@
                                 </button>
                                 <button
                                     type="button"
-                                    @click="next()"
+                                    data-poster-next
                                     class="pointer-events-auto grid size-11 place-items-center rounded-full border border-white/35 bg-[#102b50]/85 text-2xl font-bold text-white shadow-lg backdrop-blur transition hover:bg-[#102b50] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber"
                                     aria-label="Poster berikutnya"
                                 >
@@ -245,7 +235,7 @@
                             </div>
 
                             <div class="absolute bottom-4 right-4 rounded-full bg-[#102b50]/85 px-3 py-1.5 text-xs font-black text-white backdrop-blur" aria-live="polite">
-                                <span x-text="String(active + 1).padStart(2, '0')">01</span>
+                                <span data-poster-counter>01</span>
                                 <span class="text-white/60"> / {{ str_pad((string) $posterImages->count(), 2, '0', STR_PAD_LEFT) }}</span>
                             </div>
                         @endif
@@ -256,10 +246,9 @@
                             @foreach ($posterImages as $index => $image)
                                 <button
                                     type="button"
-                                    @click="goTo({{ $index }})"
-                                    :aria-current="active === {{ $index }} ? 'true' : null"
-                                    :class="active === {{ $index }} ? 'w-8 bg-brand-navy' : 'w-2.5 bg-slate-300 hover:bg-slate-400'"
-                                    class="h-2.5 rounded-full transition-all"
+                                    data-poster-dot="{{ $index }}"
+                                    @if ($index === 0) aria-current="true" @endif
+                                    class="h-2.5 rounded-full transition-all {{ $index === 0 ? 'w-8 bg-brand-navy' : 'w-2.5 bg-slate-300 hover:bg-slate-400' }}"
                                     aria-label="Tampilkan poster {{ $index + 1 }}"
                                 ></button>
                             @endforeach

@@ -35,6 +35,18 @@ it('opens the homepage without leaking template expressions or invalid links', f
         ->each->not->toStartWith('javascript:');
 });
 
+it('serves the brand fonts locally without a third-party stylesheet chain', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertDontSee('fonts.googleapis.com', false)
+        ->assertDontSee('fonts.gstatic.com', false)
+        ->assertDontSee('fonts.bunny.net', false)
+        ->assertSee('font-family: "Lato"', false)
+        ->assertSee('/build/assets/lato-400-normal-', false)
+        ->assertSee('/build/assets/lato-700-normal-', false)
+        ->assertSee('/build/assets/lato-900-normal-', false);
+});
+
 it('places Tentang after Multimedia in the primary navigation', function () {
     $response = $this->get(route('home'));
     $document = new DOMDocument;

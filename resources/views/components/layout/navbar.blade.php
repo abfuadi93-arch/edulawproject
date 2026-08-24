@@ -53,25 +53,7 @@
 @endphp
 
 <header
-    x-data="{
-        mobileMenu: false,
-        toggleMenu() {
-            this.mobileMenu ? this.closeMenu() : this.openMenu();
-        },
-        openMenu() {
-            this.mobileMenu = true;
-            this.$nextTick(() => this.$refs.firstMobileLink?.focus());
-        },
-        closeMenu(restoreFocus = true) {
-            this.mobileMenu = false;
-            if (restoreFocus) {
-                this.$nextTick(() => this.$refs.menuButton?.focus());
-            }
-        },
-    }"
-    @keydown.escape.window="if (mobileMenu) closeMenu()"
-    @resize.window="if (window.innerWidth >= 1280) mobileMenu = false"
-    @click.outside="mobileMenu = false"
+    data-site-header
     class="sticky top-0 z-50 border-b border-slate-200 bg-white"
 >
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
@@ -159,17 +141,14 @@
             {{-- Mobile Trigger --}}
             <button
                 type="button"
-                x-ref="menuButton"
-                @click="toggleMenu()"
+                data-mobile-menu-button
                 class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:border-brand-navy hover:text-brand-navy xl:hidden"
                 aria-expanded="false"
-                :aria-expanded="mobileMenu.toString()"
                 aria-label="Buka menu"
-                :aria-label="mobileMenu ? 'Tutup menu' : 'Buka menu'"
                 aria-controls="mobile-navigation"
             >
                 <svg
-                    x-show="!mobileMenu"
+                    data-mobile-menu-open-icon
                     class="h-5 w-5"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -184,8 +163,8 @@
                 </svg>
 
                 <svg
-                    x-show="mobileMenu"
-                    x-cloak
+                    data-mobile-menu-close-icon
+                    hidden
                     class="h-5 w-5"
                     viewBox="0 0 24 24"
                     fill="none"
@@ -206,16 +185,15 @@
     {{-- Mobile Menu --}}
     <div
         id="mobile-navigation"
-        x-show="mobileMenu"
-        x-transition.opacity.duration.200ms
-        x-cloak
+        data-mobile-navigation
+        hidden
         class="border-t border-slate-200 bg-white xl:hidden"
     >
         <div class="mx-auto max-w-7xl px-5 py-4">
             <nav class="space-y-1" aria-label="Navigasi mobile">
 
                 <a
-                    x-ref="firstMobileLink"
+                    data-mobile-first-link
                     href="{{ route('home') }}"
                     @if ($isHome) aria-current="page" @endif
                     class="block rounded-xl px-4 py-3 text-sm font-semibold

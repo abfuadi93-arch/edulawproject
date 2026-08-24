@@ -98,18 +98,10 @@
     {{-- Favicon placeholder --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
-    {{-- Brand typography --}}
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&display=swap"
-        rel="stylesheet"
-    >
+    {{-- Self-hosted brand typography; inlined declarations avoid a font CSS request chain. --}}
+    @fonts('lato')
 
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7017591389930348"
-        crossorigin="anonymous"></script>
 
     <style>
         html {

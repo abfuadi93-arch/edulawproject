@@ -1,6 +1,6 @@
 import { defineConfig } from 'vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import { local } from 'laravel-vite-plugin/fonts';
 import tailwindcss from '@tailwindcss/vite';
 import { viteStaticCopy } from 'vite-plugin-static-copy';
 
@@ -38,8 +38,13 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                local('Lato', {
+                    variants: [
+                        { src: 'resources/fonts/lato/lato-400-latin.woff2', weight: 400 },
+                        { src: 'resources/fonts/lato/lato-700-latin.woff2', weight: 700 },
+                        { src: 'resources/fonts/lato/lato-900-latin.woff2', weight: 900 },
+                    ],
+                    preload: false,
                 }),
             ],
         }),

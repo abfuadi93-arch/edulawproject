@@ -124,7 +124,7 @@
         </section>
     @endif
 
-    <section id="opportunity-finder" class="py-9 sm:py-10 lg:py-11" aria-labelledby="opportunity-results-title" x-data="{ filtersOpen: {{ $hasAdvancedFilters ? 'true' : 'false' }} }">
+    <section id="opportunity-finder" class="py-9 sm:py-10 lg:py-11" aria-labelledby="opportunity-results-title" data-opportunity-filters>
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -167,7 +167,7 @@
                         </select>
                     </label>
 
-                    <button type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-[#f8fafc] px-4 text-sm font-black text-brand-navy" @click="filtersOpen = !filtersOpen" :aria-expanded="filtersOpen.toString()" aria-controls="opportunity-advanced-filters">
+                    <button type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-[#f8fafc] px-4 text-sm font-black text-brand-navy" data-opportunity-filters-toggle aria-expanded="{{ $hasAdvancedFilters ? 'true' : 'false' }}" aria-controls="opportunity-advanced-filters">
                         Filter Lanjutan
                         @if ($activeFilterCount > 0)
                             <span class="grid h-5 min-w-5 place-items-center rounded-full bg-brand-navy px-1 text-[11px] text-white">{{ $activeFilterCount }}</span>
@@ -186,7 +186,7 @@
                     </div>
                 </div>
 
-                <div id="opportunity-advanced-filters" x-cloak x-show="filtersOpen" x-transition.opacity.duration.150ms class="mt-3 border-t border-slate-100 pt-3">
+                <div id="opportunity-advanced-filters" data-opportunity-filters-panel @if (! $hasAdvancedFilters) hidden @endif class="mt-3 border-t border-slate-100 pt-3">
                     <div class="grid gap-3 sm:grid-cols-3">
                         <label>
                             <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Status</span>
