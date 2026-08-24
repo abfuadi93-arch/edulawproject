@@ -75,24 +75,24 @@
 @endphp
 
 <main class="overflow-x-clip bg-transparent text-brand-ink">
-    <x-shared.page-header
+    <x-shared.primary-hero
         title="Multimedia Literasi Hukum Edulaw"
-        :compact="true"
         eyebrow="Kanal Multimedia"
-        :channel-header="true"
         description="Video, Shorts/Reels, dan dokumentasi kegiatan Edulaw dari kanal resmi kami."
         background-image="https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kegiatan produksi konten dan diskusi Edulaw"
-        grid-class="gap-7 px-5 py-8 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8 lg:py-8"
-        title-class="text-3xl sm:text-4xl lg:text-[2.35rem]"
-        description-class="max-w-xl text-base leading-7 text-white/90 lg:ml-auto lg:text-right"
-        :overlay-opacity="0.62"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Multimedia'],
         ]"
+        :highlights="[
+            'Video diskusi dan pembelajaran',
+            'Konten singkat yang mudah dipahami',
+            'Dokumentasi gerakan Edulaw',
+        ]"
+        panel-label="Kanal multimedia"
     >
-        <div class="grid w-full gap-1.5 rounded-2xl border border-white/15 bg-white/10 p-1.5 text-left shadow-2xl shadow-black/20 backdrop-blur sm:grid-cols-3 lg:w-auto">
+        <div class="grid gap-1.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             @foreach ([
                 ['label' => 'Video', 'meta' => 'YouTube Edulaw', 'href' => '#video', 'icon' => '▶'],
                 ['label' => 'Shorts & Reels', 'meta' => 'Instagram', 'href' => '#shorts-reels', 'icon' => '▯'],
@@ -104,7 +104,7 @@
                 </a>
             @endforeach
         </div>
-    </x-shared.page-header>
+    </x-shared.primary-hero>
 
     <section id="video" class="scroll-mt-24 py-9 sm:py-10 lg:py-11">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">

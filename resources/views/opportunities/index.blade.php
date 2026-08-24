@@ -80,12 +80,9 @@
 @endphp
 
 <main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
-    <x-shared.page-header
+    <x-shared.primary-hero
         title="Opportunities"
-        :compact="true"
         eyebrow="Kanal Opportunities"
-        :channel-header="true"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Temukan beasiswa, magang, fellowship, kompetisi, call for papers, dan peluang pengembangan di bidang hukum."
         background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kolaborasi dan pengembangan kapasitas melalui Opportunities Edulaw"
@@ -93,27 +90,18 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Opportunities'],
         ]"
-    >
-        <dl @class([
-            'grid w-full max-w-md grid-cols-2 overflow-hidden rounded-[14px] border border-white/15 bg-white/10 text-left backdrop-blur lg:ml-auto lg:text-right',
-            'sm:grid-cols-3' => $statistics['nearest_deadline'],
-        ]) aria-label="Statistik Opportunities">
-            <div class="px-5 py-4">
-                <dd class="font-display text-3xl font-black tabular-nums text-white">{{ number_format($statistics['total']) }}</dd>
-                <dt class="mt-1 text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Total Peluang</dt>
-            </div>
-            <div class="border-l border-white/15 px-5 py-4">
-                <dd class="font-display text-3xl font-black tabular-nums text-white">{{ number_format($statistics['open']) }}</dd>
-                <dt class="mt-1 text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Masih Dibuka</dt>
-            </div>
-            @if ($statistics['nearest_deadline'])
-                <div class="col-span-2 border-t border-white/15 px-5 py-4 sm:col-span-1 sm:border-l sm:border-t-0">
-                    <dd class="text-xl font-black text-brand-amber">{{ $statistics['nearest_deadline'] }}</dd>
-                    <dt class="mt-1 text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Deadline Terdekat</dt>
-                </div>
-            @endif
-        </dl>
-    </x-shared.page-header>
+        :highlights="[
+            'Peluang belajar dan berkembang',
+            'Informasi deadline yang terarah',
+            'Akses ke jejaring hukum yang lebih luas',
+        ]"
+        :stats="collect([
+            ['value' => number_format($statistics['total']), 'label' => 'Total Peluang'],
+            ['value' => number_format($statistics['open']), 'label' => 'Masih Dibuka'],
+            $statistics['nearest_deadline'] ? ['value' => $statistics['nearest_deadline'], 'label' => 'Deadline Terdekat'] : null,
+        ])->filter()->values()->all()"
+        panel-label="Statistik Opportunities"
+    />
 
     @if ($featuredOpportunity)
         <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="featured-opportunity-title">

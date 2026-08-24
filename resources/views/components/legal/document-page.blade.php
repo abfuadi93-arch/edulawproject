@@ -13,12 +13,9 @@
 ])
 
 <main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
-    <x-shared.page-header
+    <x-shared.primary-hero
         :title="$title"
-        :compact="true"
         :eyebrow="$eyebrow"
-        :channel-header="true"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8 lg:py-8"
         :description="$description"
         :background-image="$backgroundImage"
         :background-alt="$backgroundAlt"
@@ -26,11 +23,14 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => $title],
         ]"
+        :highlights="collect($summaryItems)->take(3)->pluck('title')->all()"
+        panel-label="Informasi dokumen"
     >
-        <div class="inline-flex min-h-11 items-center rounded-lg border border-white/15 bg-white/10 px-4 py-2 text-sm font-bold text-white/85 backdrop-blur">
-            Terakhir diperbarui: <span class="ml-1.5 text-brand-amber">{{ $updatedAt }}</span>
+        <div class="flex min-h-28 flex-col justify-center rounded-lg px-4 py-3">
+            <p class="text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/65">Terakhir diperbarui</p>
+            <p class="mt-2 font-display text-2xl font-black text-brand-amber">{{ $updatedAt }}</p>
         </div>
-    </x-shared.page-header>
+    </x-shared.primary-hero>
 
     <section class="bg-white py-8 sm:py-9 lg:py-10" aria-label="Ringkasan {{ $title }}">
         <div class="section-shell">

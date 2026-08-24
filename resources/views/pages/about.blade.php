@@ -232,50 +232,24 @@
 @endphp
 
 <div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
-    <section class="relative isolate overflow-hidden bg-brand-navy text-white">
-        <img src="{{ $aboutHero?->image_url ?? 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1800&q=85' }}" alt="{{ $aboutHero?->image_alt ?? 'Perpustakaan hukum Edulaw Project' }}" class="absolute inset-0 -z-20 size-full object-cover opacity-30">
-        <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,19,43,0.98)_0%,rgba(8,35,69,0.91)_58%,rgba(13,74,84,0.82)_100%)]"></div>
-        <div class="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-6 sm:py-12 lg:min-h-[360px] lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] lg:items-center lg:gap-12 lg:px-8">
-            <div class="min-w-0">
-                <nav aria-label="Breadcrumb" class="flex items-center gap-1.5 text-xs font-medium text-white/60">
-                    <a href="{{ route('home') }}" class="hover:text-white">Beranda</a><span aria-hidden="true">/</span><span class="text-white">Tentang</span>
-                </nav>
-                <p class="mt-3 text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-amber">{{ $aboutHero?->eyebrow ?? 'Tentang Kami' }}</p>
-                <h1 class="mt-2 font-display text-4xl font-black leading-none text-white sm:text-5xl">{{ $aboutHero?->title ?? 'Edulaw Project' }}</h1>
-                <p class="mt-5 max-w-4xl text-lg font-bold leading-7 text-white/90 sm:text-xl sm:leading-8">{{ $heroDescription }}</p>
-
-                <div class="mt-6 grid divide-y divide-white/15 overflow-hidden rounded-xl border border-white/15 bg-white/5 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
-                    @foreach ([
-                        ['Belajar untuk memahami hukum', 'book'],
-                        ['Riset untuk menjawab masalah nyata', 'research'],
-                        ['Bergerak untuk mendorong perubahan sosial', 'move'],
-                    ] as [$principle, $icon])
-                        <div class="flex min-w-0 items-start gap-2.5 p-3 sm:h-full">
-                            <span class="grid size-8 shrink-0 place-items-center rounded-lg border border-brand-amber/35 text-brand-amber">
-                                @if ($icon === 'book')
-                                    <svg class="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 5.5A2.5 2.5 0 0 1 6.5 3H20v16H6.5A2.5 2.5 0 0 0 4 21.5v-16Z" stroke="currentColor" stroke-width="1.7"/></svg>
-                                @elseif ($icon === 'research')
-                                    <svg class="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m20 20-4.2-4.2M10.8 17a6.2 6.2 0 1 1 0-12.4 6.2 6.2 0 0 1 0 12.4Z" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>
-                                @else
-                                    <svg class="size-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M5 18 18 5m0 0h-7m7 0v7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                                @endif
-                            </span>
-                            <p class="pt-0.5 text-xs font-extrabold leading-5 text-white/88 sm:text-[13px]">{{ $principle }}</p>
-                        </div>
-                    @endforeach
-                </div>
-            </div>
-
-            <dl class="grid grid-cols-2 overflow-hidden rounded-[14px] border border-white/15 bg-white/8 backdrop-blur-sm">
-                @foreach ($heroStats as $stat)
-                    <div class="min-w-0 border-white/15 p-5 {{ $loop->iteration % 2 === 0 ? 'border-l' : '' }} {{ $loop->iteration > 2 ? 'border-t' : '' }}">
-                        <dd class="font-display text-3xl font-black tabular-nums text-brand-amber sm:text-4xl">{{ $stat['value'] }}</dd>
-                        <dt class="mt-2 text-[11px] font-extrabold uppercase leading-4 tracking-[0.1em] text-white/70">{{ $stat['label'] }}</dt>
-                    </div>
-                @endforeach
-            </dl>
-        </div>
-    </section>
+    <x-shared.primary-hero
+        :title="$aboutHero?->title ?? 'Edulaw Project'"
+        :eyebrow="$aboutHero?->eyebrow ?? 'Tentang Kami'"
+        :description="$heroDescription"
+        :background-image="$aboutHero?->image_url ?? 'https://images.unsplash.com/photo-1505664194779-8beaceb93744?auto=format&fit=crop&w=1800&q=85'"
+        :background-alt="$aboutHero?->image_alt ?? 'Perpustakaan hukum Edulaw Project'"
+        :breadcrumbs="[
+            ['label' => 'Beranda', 'url' => route('home')],
+            ['label' => 'Tentang'],
+        ]"
+        :highlights="[
+            'Belajar untuk memahami hukum',
+            'Riset untuk menjawab masalah nyata',
+            'Bergerak untuk mendorong perubahan sosial',
+        ]"
+        :stats="$heroStats"
+        panel-label="Dampak Edulaw Project"
+    />
 
     <section class="bg-white py-6 sm:py-7 lg:py-8" aria-labelledby="why-edulaw-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">

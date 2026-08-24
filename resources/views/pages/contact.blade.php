@@ -54,12 +54,9 @@
 
 <main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     {{-- Hero --}}
-    <x-shared.page-header
+    <x-shared.primary-hero
         title="Terhubung dengan Edulaw Project"
-        :compact="true"
         eyebrow="Kontak"
-        :channel-header="true"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Sampaikan pertanyaan, kebutuhan informasi, usulan kerja sama, atau komunikasi lainnya melalui kanal resmi Edulaw Project."
         background-image="https://images.unsplash.com/photo-1556761175-b413da4baf72?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kanal komunikasi Edulaw Project"
@@ -67,8 +64,10 @@
             ['label' => 'Beranda', 'url' => '/'],
             ['label' => 'Kontak'],
         ]"
+        :highlights="collect($contactChannels)->pluck('title')->all()"
+        panel-label="Aksi kontak"
     >
-        <div class="flex flex-col gap-3 sm:flex-row">
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <a
                 href="#form-kontak"
                 class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-black text-brand-navy transition hover:bg-[#ffd670]"
@@ -86,7 +85,7 @@
                 Ajukan Kolaborasi
             </a>
         </div>
-    </x-shared.page-header>
+    </x-shared.primary-hero>
 
     {{-- Contact Channels --}}
     <section class="bg-white py-9 sm:py-10 lg:py-11">

@@ -117,12 +117,9 @@
 @endphp
 
 <main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
-    <x-shared.page-header
+    <x-shared.primary-hero
         title="Riset & Publikasi"
-        :compact="true"
         eyebrow="Kanal Riset & Publikasi"
-        :channel-header="true"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Repository kajian, policy brief, naskah akademik, working paper, research report, dan buku digital untuk memperkuat literasi hukum dan kebijakan publik."
         background-image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1800&q=85"
         background-alt="Riset dan publikasi hukum Edulaw Project"
@@ -130,18 +127,17 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Riset & Publikasi'],
         ]"
-    >
-        <dl class="grid w-full max-w-md grid-cols-2 overflow-hidden rounded-[14px] border border-white/15 bg-white/10 text-left backdrop-blur lg:ml-auto lg:text-right" aria-label="Statistik riset dan publikasi">
-            <div class="px-5 py-4">
-                <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Dokumen Terbit</dt>
-                <dd class="mt-1 font-display text-3xl font-black tabular-nums text-brand-amber">{{ number_format($totalPublications, 0, ',', '.') }}</dd>
-            </div>
-            <div class="border-l border-white/15 px-5 py-4">
-                <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Jenis Publikasi</dt>
-                <dd class="mt-1 font-display text-3xl font-black tabular-nums text-white">{{ number_format($typeCollection->count(), 0, ',', '.') }}</dd>
-            </div>
-        </dl>
-    </x-shared.page-header>
+        :highlights="[
+            'Riset berbasis bukti',
+            'Publikasi untuk kepentingan publik',
+            'Pengetahuan yang dapat dirujuk',
+        ]"
+        :stats="[
+            ['value' => number_format($totalPublications, 0, ',', '.'), 'label' => 'Dokumen Terbit'],
+            ['value' => number_format($typeCollection->count(), 0, ',', '.'), 'label' => 'Jenis Publikasi'],
+        ]"
+        panel-label="Statistik riset dan publikasi"
+    />
 
     @if ($featured)
         @php

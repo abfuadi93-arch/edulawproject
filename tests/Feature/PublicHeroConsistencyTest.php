@@ -1,15 +1,15 @@
 <?php
 
-test('hero halaman kanal memakai tinggi desktop yang sesuai konteks', function () {
+test('hero halaman kanal memakai pola utama dan tinggi desktop yang seragam', function () {
     $pages = [
-        [route('programs.index'), 'Program', 'Kanal Program', 'Program Edulaw Project dirancang sebagai ruang belajar', 'lg:min-h-[200px]'],
-        [route('insights.index'), 'Editorial', 'Kanal Editorial', 'Editorial Edulaw menghadirkan analisis hukum', 'lg:min-h-[210px]'],
-        [route('publications.index'), 'Riset & Publikasi', 'Kanal Riset & Publikasi', 'Repository kajian, policy brief, naskah akademik', 'lg:min-h-[240px]'],
-        [route('opportunities.index'), 'Opportunities', 'Kanal Opportunities', 'Temukan beasiswa, magang, fellowship', 'lg:min-h-[240px]'],
-        [route('multimedia.index'), 'Multimedia', 'Kanal Multimedia', 'Video, Shorts/Reels, dan dokumentasi kegiatan', 'lg:min-h-[240px]'],
+        [route('programs.index'), 'Program', 'Kanal Program', 'Program Edulaw Project dirancang sebagai ruang belajar'],
+        [route('insights.index'), 'Editorial', 'Kanal Editorial', 'Editorial Edulaw menghadirkan analisis hukum'],
+        [route('publications.index'), 'Riset & Publikasi', 'Kanal Riset & Publikasi', 'Repository kajian, policy brief, naskah akademik'],
+        [route('opportunities.index'), 'Opportunities', 'Kanal Opportunities', 'Temukan beasiswa, magang, fellowship'],
+        [route('multimedia.index'), 'Multimedia', 'Kanal Multimedia', 'Video, Shorts/Reels, dan dokumentasi kegiatan'],
     ];
 
-    foreach ($pages as [$url, $breadcrumb, $channelLabel, $descriptionExcerpt, $heightClass]) {
+    foreach ($pages as [$url, $breadcrumb, $channelLabel, $descriptionExcerpt]) {
         $html = $this->get($url)->assertOk()->getContent();
         $document = new DOMDocument;
         @$document->loadHTML($html);
@@ -24,12 +24,49 @@ test('hero halaman kanal memakai tinggi desktop yang sesuai konteks', function (
         $leftColumnText = html_entity_decode($document->getElementsByTagName('h1')->item(0)->parentNode->textContent, ENT_QUOTES | ENT_HTML5);
 
         expect($hero)->toBeInstanceOf(DOMElement::class)
-            ->and($heroMarkup)->toContain($heightClass)
+            ->and($heroMarkup)
+            ->toContain('lg:min-h-[300px]')
+            ->toContain('lg:grid-cols-[minmax(0,7fr)_minmax(300px,3fr)]')
             ->and($heroText)
             ->toContain('Beranda')
             ->toContain($breadcrumb)
             ->toContain($channelLabel)
             ->and($leftColumnText)->toContain($descriptionExcerpt);
+    }
+});
+
+test('hero halaman informasi publik mengikuti pola hero Tentang', function () {
+    $pages = [
+        [route('about'), 'Tentang', 'Tentang Kami', 'Edulaw Project adalah ruang belajar'],
+        [route('collaboration.index'), 'Kolaborasi', 'Kolaborasi', 'Edulaw Project membuka ruang kerja sama'],
+        [route('contact.index'), 'Kontak', 'Kontak', 'Sampaikan pertanyaan, kebutuhan informasi'],
+        [route('terms'), 'Syarat & Ketentuan', 'Ketentuan Layanan', 'Ketentuan penggunaan website Edulaw Project'],
+        [route('privacy'), 'Kebijakan Privasi', 'Kebijakan', 'Cara Edulaw Project mengelola'],
+    ];
+
+    foreach ($pages as [$url, $breadcrumb, $eyebrow, $descriptionExcerpt]) {
+        $html = $this->get($url)->assertOk()->getContent();
+        $document = new DOMDocument;
+        @$document->loadHTML($html);
+        $hero = $document->getElementsByTagName('h1')->item(0)?->parentNode;
+
+        while ($hero instanceof DOMElement && $hero->tagName !== 'section') {
+            $hero = $hero->parentNode;
+        }
+
+        $heroMarkup = $document->saveHTML($hero);
+        $heroText = html_entity_decode($hero->textContent, ENT_QUOTES | ENT_HTML5);
+
+        expect($hero)->toBeInstanceOf(DOMElement::class)
+            ->and($heroMarkup)
+            ->toContain('lg:min-h-[300px]')
+            ->toContain('lg:grid-cols-[minmax(0,7fr)_minmax(300px,3fr)]')
+            ->toContain('sm:grid-cols-3')
+            ->and($heroText)
+            ->toContain('Beranda')
+            ->toContain($breadcrumb)
+            ->toContain($eyebrow)
+            ->toContain($descriptionExcerpt);
     }
 });
 

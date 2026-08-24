@@ -47,12 +47,9 @@
 
 <main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     {{-- Hero --}}
-    <x-shared.page-header
+    <x-shared.primary-hero
         title="Bangun Literasi Hukum Bersama Edulaw Project"
-        :compact="true"
         eyebrow="Kolaborasi"
-        :channel-header="true"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Edulaw Project membuka ruang kerja sama dengan kampus, komunitas, lembaga, organisasi mahasiswa, pusat studi, dan mitra strategis untuk mengembangkan edukasi hukum yang inklusif, relevan, dan berdampak."
         :background-image="asset('images/hero/hero-edulaw.jpg')"
         background-alt="Diskusi kolaborasi literasi hukum Edulaw Project"
@@ -60,8 +57,10 @@
             ['label' => 'Beranda', 'url' => '/'],
             ['label' => 'Kolaborasi'],
         ]"
+        :highlights="collect($collaborationScopes)->take(3)->pluck('title')->all()"
+        panel-label="Aksi kolaborasi"
     >
-        <div class="flex flex-col gap-3 sm:flex-row">
+        <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <a
                 href="#form-kolaborasi"
                 class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-black text-brand-navy transition hover:bg-[#ffd670]"
@@ -79,7 +78,7 @@
                 Lihat Program
             </a>
         </div>
-    </x-shared.page-header>
+    </x-shared.primary-hero>
 
     {{-- Scope --}}
     <section class="bg-white py-9 sm:py-10 lg:py-11">
