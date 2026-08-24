@@ -90,11 +90,6 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Opportunities'],
         ]"
-        :highlights="[
-            'Peluang belajar dan berkembang',
-            'Informasi deadline yang terarah',
-            'Akses ke jejaring hukum yang lebih luas',
-        ]"
         :stats="collect([
             ['value' => number_format($statistics['total']), 'label' => 'Total Peluang'],
             ['value' => number_format($statistics['open']), 'label' => 'Masih Dibuka'],

@@ -127,11 +127,6 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Riset & Publikasi'],
         ]"
-        :highlights="[
-            'Riset berbasis bukti',
-            'Publikasi untuk kepentingan publik',
-            'Pengetahuan yang dapat dirujuk',
-        ]"
         :stats="[
             ['value' => number_format($totalPublications, 0, ',', '.'), 'label' => 'Dokumen Terbit'],
             ['value' => number_format($typeCollection->count(), 0, ',', '.'), 'label' => 'Jenis Publikasi'],

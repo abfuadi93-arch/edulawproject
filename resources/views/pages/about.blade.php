@@ -242,11 +242,6 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Tentang'],
         ]"
-        :highlights="[
-            'Belajar untuk memahami hukum',
-            'Riset untuk menjawab masalah nyata',
-            'Bergerak untuk mendorong perubahan sosial',
-        ]"
         :stats="$heroStats"
         panel-label="Dampak Edulaw Project"
     />

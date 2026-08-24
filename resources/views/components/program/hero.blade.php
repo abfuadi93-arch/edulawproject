@@ -17,11 +17,6 @@
         ['label' => 'Beranda', 'url' => $homeUrl],
         ['label' => 'Program'],
     ]"
-    :highlights="[
-        'Belajar hukum secara kontekstual',
-        'Berdiskusi dengan perspektif beragam',
-        'Berkolaborasi untuk dampak publik',
-    ]"
     :stats="$stats"
     panel-label="Statistik Program"
 />

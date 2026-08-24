@@ -14,11 +14,6 @@
         ['label' => 'Beranda', 'url' => route('home')],
         ['label' => 'Editorial'],
     ]"
-    :highlights="[
-        'Analisis hukum yang jernih',
-        'Regulasi dalam konteks publik',
-        'Gagasan untuk perubahan kebijakan',
-    ]"
     :stats="[
         ['value' => number_format((int) $articleCount, 0, ',', '.'), 'label' => 'Artikel Terbit'],
         ['value' => number_format((int) $categoryCount, 0, ',', '.'), 'label' => 'Kategori Editorial'],

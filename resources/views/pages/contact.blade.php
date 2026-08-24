@@ -64,7 +64,6 @@
             ['label' => 'Beranda', 'url' => '/'],
             ['label' => 'Kontak'],
         ]"
-        :highlights="collect($contactChannels)->pluck('title')->all()"
         panel-label="Aksi kontak"
     >
         <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">

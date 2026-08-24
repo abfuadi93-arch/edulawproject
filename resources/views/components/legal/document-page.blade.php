@@ -23,7 +23,6 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => $title],
         ]"
-        :highlights="collect($summaryItems)->take(3)->pluck('title')->all()"
         panel-label="Informasi dokumen"
     >
         <div class="flex min-h-28 flex-col justify-center rounded-lg px-4 py-3">

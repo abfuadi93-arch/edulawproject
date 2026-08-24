@@ -25,8 +25,9 @@ test('hero halaman kanal memakai pola utama dan tinggi desktop yang seragam', fu
 
         expect($hero)->toBeInstanceOf(DOMElement::class)
             ->and($heroMarkup)
-            ->toContain('lg:min-h-[300px]')
+            ->toContain('lg:min-h-[240px]')
             ->toContain('lg:grid-cols-[minmax(0,7fr)_minmax(300px,3fr)]')
+            ->not->toContain('divide-white/15')
             ->and($heroText)
             ->toContain('Beranda')
             ->toContain($breadcrumb)
@@ -59,9 +60,9 @@ test('hero halaman informasi publik mengikuti pola hero Tentang', function () {
 
         expect($hero)->toBeInstanceOf(DOMElement::class)
             ->and($heroMarkup)
-            ->toContain('lg:min-h-[300px]')
+            ->toContain('lg:min-h-[240px]')
             ->toContain('lg:grid-cols-[minmax(0,7fr)_minmax(300px,3fr)]')
-            ->toContain('sm:grid-cols-3')
+            ->not->toContain('divide-white/15')
             ->and($heroText)
             ->toContain('Beranda')
             ->toContain($breadcrumb)

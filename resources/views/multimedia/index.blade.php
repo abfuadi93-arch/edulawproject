@@ -85,11 +85,6 @@
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Multimedia'],
         ]"
-        :highlights="[
-            'Video diskusi dan pembelajaran',
-            'Konten singkat yang mudah dipahami',
-            'Dokumentasi gerakan Edulaw',
-        ]"
         panel-label="Kanal multimedia"
     >
         <div class="grid gap-1.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
