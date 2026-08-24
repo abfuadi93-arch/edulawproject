@@ -47,6 +47,19 @@ it('serves the brand fonts locally without a third-party stylesheet chain', func
         ->assertSee('/build/assets/lato-900-normal-', false);
 });
 
+it('keeps advertising scripts off the initial render path', function () {
+    $response = $this->get(route('home'))
+        ->assertOk()
+        ->assertDontSee('pagead2.googlesyndication.com', false)
+        ->assertDontSee('fundingchoicesmessages.google.com', false);
+
+    $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true, flags: JSON_THROW_ON_ERROR);
+    $scriptPath = public_path('build/'.$manifest['resources/js/app.js']['file']);
+
+    expect(filesize($scriptPath))->toBeLessThan(10 * 1024)
+        ->and($response->getContent())->toContain(basename($scriptPath));
+});
+
 it('places Tentang after Multimedia in the primary navigation', function () {
     $response = $this->get(route('home'));
     $document = new DOMDocument;
@@ -746,8 +759,9 @@ it('provides semantic landmarks, a single page heading, and accessible mobile na
         ->assertSee('aria-label="Navigasi mobile"', false)
         ->assertSee('aria-controls="mobile-navigation"', false)
         ->assertSee('id="mobile-navigation"', false)
-        ->assertSee(':aria-expanded="mobileMenu.toString()"', false)
-        ->assertSee('@keydown.escape.window', false)
+        ->assertSee('data-mobile-menu-button', false)
+        ->assertSee('aria-expanded="false"', false)
+        ->assertSee('data-mobile-navigation', false)
         ->assertSee('focus-visible:outline', false)
         ->assertSee('fetchpriority="high"', false)
         ->assertSee('decoding="async"', false);

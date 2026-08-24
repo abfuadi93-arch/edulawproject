@@ -34,13 +34,10 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-mYtOWFpz.js",
+    "file": "assets/app-Da4onqzI.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true,
-    "css": [
-      "assets/app-DaxFtq7r.css"
-    ]
+    "isEntry": true
   },
   "resources/js/filament/rich-editor-footnote.js": {
     "file": "assets/rich-editor-footnote-Z8INGbqD.js",

@@ -71,6 +71,11 @@ test('opportunity detail renders multiple posters as a slider', function () {
     $this->get(route('opportunities.show', $opportunity->slug))
         ->assertOk()
         ->assertSee('data-opportunity-poster-slider', false)
+        ->assertSee('data-poster-slide', false)
+        ->assertSee('data-poster-previous', false)
+        ->assertSee('data-poster-next', false)
+        ->assertSee('data-poster-dot="1"', false)
+        ->assertDontSee('x-data=', false)
         ->assertSee('opportunities/poster-utama.jpg', false)
         ->assertSee('opportunities/poster-kedua.jpg', false)
         ->assertSee('Poster 2 dari 2');

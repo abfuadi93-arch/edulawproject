@@ -42,6 +42,16 @@ test('finder separates featured opportunity from the paginated results', functio
         ->assertSee(route('opportunities.show', $regular->slug), false);
 });
 
+test('finder renders its advanced filters without a public Alpine dependency', function () {
+    $this->get(route('opportunities.index'))
+        ->assertOk()
+        ->assertSee('data-opportunity-filters', false)
+        ->assertSee('data-opportunity-filters-toggle', false)
+        ->assertSee('data-opportunity-filters-panel', false)
+        ->assertSee('aria-expanded="false"', false)
+        ->assertDontSee('x-data=', false);
+});
+
 test('finder searches and filters by type format location and deadline', function () {
     $matching = createFinderOpportunity([
         'title' => 'Beasiswa Riset Konstitusi',
