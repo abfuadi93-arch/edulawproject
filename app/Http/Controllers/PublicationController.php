@@ -12,6 +12,8 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class PublicationController extends Controller
 {
+    private const ITEMS_PER_PAGE = 12;
+
     public function index(Request $request): View
     {
         $type = $request->query('type');
@@ -39,7 +41,7 @@ class PublicationController extends Controller
 
         return view('publications.index', [
             'featuredPublication' => $featuredPublication,
-            'publications' => $query->paginate(9)->withQueryString(),
+            'publications' => $query->paginate(self::ITEMS_PER_PAGE)->withQueryString(),
             'publicationTypes' => PublicationType::query()->where('is_active', true)->orderBy('sort_order')->get(),
             'selectedType' => $type,
             'search' => $search,

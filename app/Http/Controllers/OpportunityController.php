@@ -10,6 +10,8 @@ use Illuminate\View\View;
 
 class OpportunityController extends Controller
 {
+    private const ITEMS_PER_PAGE = 12;
+
     public function index(Request $request): View
     {
         $featuredOpportunity = Opportunity::query()
@@ -91,7 +93,7 @@ class OpportunityController extends Controller
                 ->orderByDesc('id'),
         };
 
-        $opportunities = $query->paginate(10)->withQueryString();
+        $opportunities = $query->paginate(self::ITEMS_PER_PAGE)->withQueryString();
 
         $relevantOpportunities = Opportunity::query()
             ->withExternalLink()

@@ -157,8 +157,8 @@ test('finder sorts deadlines in both directions and supports latest ordering', f
         ->assertSeeInOrder([$far->title, $flexible->title, $near->title]);
 });
 
-test('finder paginates ten results and preserves query parameters', function () {
-    collect(range(1, 11))->each(fn (int $position) => createFinderOpportunity([
+test('finder paginates twelve results and preserves query parameters', function () {
+    collect(range(1, 13))->each(fn (int $position) => createFinderOpportunity([
         'title' => 'Kompetisi Halaman '.str_pad((string) $position, 2, '0', STR_PAD_LEFT),
         'deadline' => today()->addDays($position)->toDateString(),
     ]));
@@ -167,10 +167,20 @@ test('finder paginates ten results and preserves query parameters', function () 
 
     $response
         ->assertOk()
-        ->assertViewHas('opportunities', fn ($items): bool => $items->perPage() === 10 && $items->count() === 10 && $items->total() === 11)
+        ->assertViewHas('opportunities', fn ($items): bool => $items->perPage() === 12 && $items->count() === 12 && $items->total() === 13)
         ->assertSee('q=Kompetisi', false)
         ->assertSee('sort=deadline', false)
-        ->assertSee('Menampilkan 1–10 dari 11 peluang');
+        ->assertSee('Menampilkan 1–12 dari 13 peluang');
+
+    $this->get(route('opportunities.index', [
+        'q' => 'Kompetisi',
+        'sort' => 'deadline',
+        'page' => 2,
+    ]))
+        ->assertOk()
+        ->assertViewHas('opportunities', fn ($items): bool => $items->perPage() === 12
+            && $items->currentPage() === 2
+            && $items->count() === 1);
 });
 
 test('finder statistics are calculated from public database records', function () {

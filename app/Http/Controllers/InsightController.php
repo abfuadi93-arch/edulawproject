@@ -15,6 +15,8 @@ use Illuminate\View\View;
 
 class InsightController extends Controller
 {
+    private const ITEMS_PER_PAGE = 12;
+
     private const CATEGORY_PAGES = [
         'law-governance' => [
             'name' => 'Law & Governance',
@@ -161,7 +163,7 @@ class InsightController extends Controller
             'popularTags' => $this->popularTags(),
             'editorialContributors' => $this->editorialContributors(),
             'insights' => $query
-                ->paginate(9)
+                ->paginate(self::ITEMS_PER_PAGE)
                 ->withQueryString(),
             'publishedEditorialCount' => Insight::query()->published()->count(),
             'editorialCategoryCount' => $insightCategories->count(),
@@ -198,7 +200,7 @@ class InsightController extends Controller
             )
             ->orderByDesc('published_at')
             ->latest('id')
-            ->paginate(9);
+            ->paginate(self::ITEMS_PER_PAGE);
 
         abort_if($insights->currentPage() > $insights->lastPage(), 404);
 

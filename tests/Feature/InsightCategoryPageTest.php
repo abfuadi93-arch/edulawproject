@@ -133,7 +133,7 @@ test('category pagination is indexable with a self canonical and navigable previ
         'is_active' => true,
     ]);
 
-    foreach (range(1, 19) as $position) {
+    foreach (range(1, 25) as $position) {
         Insight::query()->create([
             'insight_category_id' => $category->id,
             'title' => "Panduan Hukum {$position}",
@@ -153,11 +153,12 @@ test('category pagination is indexable with a self canonical and navigable previ
         ->assertSee('<link rel="prev" href="'.$baseUrl.'">', false)
         ->assertSee('<link rel="next" href="'.$baseUrl.'?page=3">', false)
         ->assertSee('Halaman 2 dari 3')
+        ->assertViewHas('insights', fn ($insights): bool => $insights->perPage() === 12 && $insights->count() === 12)
         ->getContent();
 
     expect($html)
         ->toContain('<title>Legal 101: Panduan Dasar-Dasar Hukum - Halaman 2 | Edulaw Project</title>')
-        ->toContain('Panduan Hukum 10')
+        ->toContain('Panduan Hukum 13')
         ->not->toContain('Panduan Hukum 1</h3>');
 
     $this->get($baseUrl.'?page=99')->assertNotFound();

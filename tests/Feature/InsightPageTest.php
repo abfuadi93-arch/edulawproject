@@ -393,8 +393,15 @@ test('most read insights are ordered by page visits from the last 30 days', func
         ->toContain('Editorial Paling Banyak Dibaca')
         ->toContain('Editorial Lebih Sedikit Dibaca');
 
-    expect(strpos($html, 'Editorial Paling Banyak Dibaca'))
-        ->toBeLessThan(strpos($html, 'Editorial Lebih Sedikit Dibaca'));
+    $document = new DOMDocument;
+    $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
+    $mostReadItems = collect((new DOMXPath($document))->query('//*[@data-most-read-item]'))
+        ->map(fn (DOMNode $node): string => trim($node->textContent))
+        ->values();
+
+    expect($mostReadItems[0])
+        ->toContain('Editorial Paling Banyak Dibaca')
+        ->and($mostReadItems[1])->toContain('Editorial Lebih Sedikit Dibaca');
 
     $response
         ->assertViewHas('popularInsights', function ($insights) use ($mostRead, $lessRead): bool {
@@ -561,7 +568,7 @@ test('editorial archive pagination remains available', function () {
         'is_active' => true,
     ]);
 
-    foreach (range(1, 10) as $position) {
+    foreach (range(1, 13) as $position) {
         Insight::query()->create([
             'insight_category_id' => $category->id,
             'title' => "Editorial Arsip {$position}",
@@ -575,7 +582,9 @@ test('editorial archive pagination remains available', function () {
     $this->get(route('insights.index', ['archive' => 'latest', 'page' => 2]))
         ->assertOk()
         ->assertSee('Halaman 2 dari 2')
-        ->assertViewHas('insights', fn ($insights) => $insights->currentPage() === 2 && $insights->count() === 1);
+        ->assertViewHas('insights', fn ($insights) => $insights->perPage() === 12
+            && $insights->currentPage() === 2
+            && $insights->count() === 1);
 });
 
 test('editorial archive supports publication sorting and list presentation', function () {
