@@ -35,15 +35,17 @@
 @endphp
 
 <section class="relative isolate overflow-hidden bg-[#082344] text-white" data-home-hero>
-    <img
-        src="{{ $heroImage }}"
-        alt="{{ $heroAlt }}"
+    <x-responsive-image
+        :src="$heroImage"
+        :alt="$heroAlt"
+        :widths="[768, 960, 1280, 1600]"
+        sizes="100vw"
         width="1600"
         height="900"
         class="absolute inset-0 -z-20 size-full object-cover object-center lg:object-[65%_center]"
         fetchpriority="high"
-        decoding="async"
-    >
+        :loading="null"
+    />
     <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,25,51,.98)_0%,rgba(8,36,70,.94)_45%,rgba(8,34,65,.68)_72%,rgba(8,34,65,.48)_100%)]"></div>
     <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_14%_48%,rgba(37,183,160,.18),transparent_44%),radial-gradient(circle_at_86%_12%,rgba(245,185,67,.10),transparent_30%)]"></div>
     <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-[#061b36] to-transparent"></div>

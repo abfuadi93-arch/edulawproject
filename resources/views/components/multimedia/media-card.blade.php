@@ -35,14 +35,15 @@
             </div>
 
             @if ($item->thumbnail_url)
-                <img
-                    src="{{ $item->thumbnail_url }}"
+                <x-responsive-image
+                    :src="$item->thumbnail_url"
+                    :alt="$item->title"
+                    :widths="$isHorizontal ? [160, 240, 320] : [320, 480, 640]"
+                    :sizes="$isHorizontal ? '112px' : '(min-width: 1024px) 33vw, 100vw'"
                     data-fallback="{{ $fallbackThumbnail }}"
                     onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
-                    alt="{{ $item->title }}"
-                    loading="lazy"
                     @class(['absolute inset-0 h-full w-full transition duration-500 group-hover:scale-[1.03]', 'object-cover' => $isHorizontal, 'object-contain bg-white' => ! $isHorizontal])
-                >
+                />
             @endif
 
             @unless ($isHorizontal)

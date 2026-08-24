@@ -39,7 +39,7 @@
                     <article data-home-publication class="group relative mx-auto w-full max-w-sm">
                         <a href="{{ route('publications.show', $publication->slug) }}" class="relative z-10 mx-auto flex aspect-[1/1.34] w-[82%] max-w-64 flex-col justify-between overflow-hidden rounded-md p-5 text-white shadow-xl shadow-slate-900/15 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
                             @if ($publication->cover_image_url)
-                                <img src="{{ $publication->cover_image_url }}" alt="Sampul {{ $publication->title }}" width="480" height="640" class="absolute inset-0 size-full object-cover" loading="lazy" decoding="async" onerror="this.remove()">
+                                <x-responsive-image :src="$publication->cover_image_url" alt="Sampul {{ $publication->title }}" :widths="[240, 320, 480]" sizes="(min-width: 1024px) 235px, (min-width: 640px) 41vw, 82vw" width="480" height="640" class="absolute inset-0 size-full object-cover" onerror="this.remove()" />
                             @endif
                             <span class="absolute inset-0" style="background: linear-gradient(155deg, {{ $palette['overlay'] }}, {{ $palette['from'] }} 70%, {{ $palette['to'] }});"></span>
                             <span class="absolute -right-10 -top-10 size-36 rounded-full border border-white/10"></span>

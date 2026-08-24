@@ -16,7 +16,7 @@
     <div class="section-shell grid gap-5 lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)]">
         <article class="relative overflow-hidden rounded-xl border border-[#e7ebf0] bg-white p-6 sm:p-8 lg:p-9">
             @if ($brandMark)
-                <img src="{{ $brandMark }}" alt="Identitas {{ $siteName }}" width="64" height="64" class="absolute right-6 top-6 hidden size-14 object-contain opacity-90 sm:block" loading="lazy" decoding="async">
+                <x-responsive-image :src="$brandMark" alt="Identitas {{ $siteName }}" :widths="[64, 96]" sizes="56px" width="64" height="64" class="absolute right-6 top-6 hidden size-14 object-contain opacity-90 sm:block" />
             @endif
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#b77928]">Tentang Edulaw</p>
             <h2 id="home-about-title" class="mt-3 max-w-lg text-2xl font-extrabold leading-[1.18] tracking-[-0.02em] text-[#102f56] sm:text-3xl">Ruang belajar dan riset hukum untuk kepentingan publik.</h2>

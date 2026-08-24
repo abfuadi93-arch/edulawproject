@@ -19,13 +19,15 @@
                 </div>
 
                 @if ($item->thumbnail_url)
-                    <img
-                        src="{{ $item->thumbnail_url }}"
+                    <x-responsive-image
+                        :src="$item->thumbnail_url"
+                        :alt="$item->title"
+                        :widths="[640, 960, 1280]"
+                        sizes="(min-width: 1024px) 845px, 100vw"
                         data-fallback="{{ $fallbackThumbnail }}"
                         onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
-                        alt="{{ $item->title }}"
                         class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]"
-                    >
+                    />
                 @endif
 
                 <div class="absolute inset-0 bg-slate-950/10"></div>
@@ -54,13 +56,15 @@
                 </div>
 
                 @if ($item->thumbnail_url)
-                    <img
-                        src="{{ $item->thumbnail_url }}"
+                    <x-responsive-image
+                        :src="$item->thumbnail_url"
+                        :alt="$item->title"
+                        :widths="[480, 640, 960]"
+                        sizes="(min-width: 1024px) 60vw, 100vw"
                         data-fallback="{{ $fallbackThumbnail }}"
                         onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
-                        alt="{{ $item->title }}"
                         class="relative z-10 h-full w-full object-contain transition duration-700 group-hover:scale-[1.025]"
-                    >
+                    />
                 @endif
 
                 <div class="absolute inset-0 z-10 bg-linear-to-t from-slate-950/10 to-transparent"></div>

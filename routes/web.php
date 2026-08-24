@@ -3,6 +3,7 @@
 use App\Http\Controllers\CollaborationController;
 use App\Http\Controllers\ContactController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\ImageVariantController;
 use App\Http\Controllers\InsightController;
 use App\Http\Controllers\MultimediaController;
 use App\Http\Controllers\OpportunityController;
@@ -20,6 +21,11 @@ Route::get('/robots.txt', fn () => response(
     200,
     ['Content-Type' => 'text/plain; charset=UTF-8'],
 ))->name('robots');
+
+Route::get('/media/image/{token}/{width}.webp', ImageVariantController::class)
+    ->where('token', '[A-Za-z0-9_-]+')
+    ->whereNumber('width')
+    ->name('media.variant');
 
 Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/', [HomeController::class, 'index'])->name('home');

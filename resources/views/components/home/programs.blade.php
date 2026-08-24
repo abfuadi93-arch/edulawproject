@@ -32,7 +32,7 @@
                             <a href="{{ route('programs.show', $program->slug) }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                                 <div class="relative h-40 overflow-hidden bg-[#234777]">
                                     @if ($image)
-                                        <img src="{{ $image }}" alt="Poster {{ $program->display_title }}" width="640" height="400" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" loading="lazy" decoding="async" onerror="this.remove()">
+                                        <x-responsive-image :src="$image" alt="Poster {{ $program->display_title }}" :widths="[320, 480, 640]" sizes="(min-width: 1280px) 253px, (min-width: 768px) 33vw, 100vw" width="640" height="400" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                                     @endif
                                     <div class="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
                                         <span class="max-w-32 truncate rounded bg-[#17375f]/90 px-2 py-1 text-[11px] font-extrabold uppercase tracking-wide text-white">{{ $program->categoryRelation?->name ?? 'Program' }}</span>
@@ -70,7 +70,7 @@
                 @if ($featuredInsight)
                     <article data-home-insight-featured class="group relative mt-7 flex min-h-[338px] items-end overflow-hidden rounded-xl bg-[linear-gradient(145deg,#142f57,#155e68)] p-6 text-white">
                         @if ($featuredInsight->cover_image_url)
-                            <img src="{{ $featuredInsight->cover_image_url }}" alt="Sampul {{ $featuredInsight->title }}" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" loading="lazy" decoding="async">
+                            <x-responsive-image :src="$featuredInsight->cover_image_url" alt="Sampul {{ $featuredInsight->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1280px) 380px, 100vw" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
                         @endif
                         <div class="absolute inset-0 bg-linear-to-t from-[#07172e]/95 via-[#142f57]/45 to-transparent"></div>
                         <span class="absolute left-5 top-5 rounded bg-[#f8bd38] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#142f57]">Editor's Pick</span>

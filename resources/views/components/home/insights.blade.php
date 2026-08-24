@@ -21,7 +21,7 @@
                         <a href="{{ route('insights.show', $item->slug) }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                             <div class="relative aspect-[16/9] overflow-hidden bg-[linear-gradient(135deg,#173b63,#4a8796)]">
                                 @if ($item->cover_image_url)
-                                    <img src="{{ $item->cover_image_url }}" alt="Sampul {{ $item->title }}" width="520" height="292" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" loading="lazy" decoding="async" onerror="this.remove()">
+                                    <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1024px) 290px, (min-width: 640px) 50vw, 100vw" width="520" height="292" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" onerror="this.remove()" />
                                 @endif
                             </div>
                             <div class="p-4">

@@ -44,7 +44,7 @@
                     <div class="relative order-first min-h-[340px] overflow-hidden bg-[#dfe5eb] md:order-last md:min-h-full">
                         <div data-home-opportunity-fallback class="absolute inset-0 grid place-items-center bg-[linear-gradient(145deg,#dbe7ef,#a9becf)] text-7xl font-black text-[#0d315e]/20" aria-hidden="true">{{ mb_substr($featuredOpportunity->display_type, 0, 1) }}</div>
                         @if ($featuredOpportunity->poster_url)
-                            <img src="{{ $featuredOpportunity->poster_url }}" alt="Poster {{ $featuredOpportunity->title }}" width="640" height="800" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.02]" loading="lazy" decoding="async" onerror="this.remove()">
+                            <x-responsive-image :src="$featuredOpportunity->poster_url" alt="Poster {{ $featuredOpportunity->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1024px) 320px, (min-width: 768px) 42vw, 100vw" width="640" height="800" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.02]" onerror="this.remove()" />
                         @endif
                     </div>
                 </article>
@@ -57,7 +57,7 @@
                                     <div class="relative min-h-32 overflow-hidden bg-[#dfe5eb]">
                                         <div data-home-opportunity-fallback class="absolute inset-0 grid place-items-center text-4xl font-black text-[#0d315e]/20" aria-hidden="true">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
                                         @if ($opportunity->poster_url)
-                                            <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" width="240" height="300" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" loading="lazy" decoding="async" onerror="this.remove()">
+                                            <x-responsive-image :src="$opportunity->poster_url" alt="Poster {{ $opportunity->title }}" :widths="[160, 240, 320]" sizes="(min-width: 640px) 120px, 104px" width="240" height="300" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                                         @endif
                                     </div>
                                     <div class="min-w-0 p-4">
