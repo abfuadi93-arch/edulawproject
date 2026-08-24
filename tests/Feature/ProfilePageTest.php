@@ -289,6 +289,18 @@ test('about page team cards link to active public profiles', function () {
         'is_active' => true,
     ]);
 
+    $lastStructureProfile = null;
+    foreach (range(1, 12) as $index) {
+        $lastStructureProfile = Author::query()->create([
+            'name' => sprintf('Struktur Contributor %02d', $index),
+            'slug' => sprintf('struktur-contributor-%02d', $index),
+            'position' => 'Contributor',
+            'profile_type' => 'team',
+            'sort_order' => 200 + $index,
+            'is_active' => true,
+        ]);
+    }
+
     $publicOnlyProfile = Author::query()->create([
         'name' => 'Kontributor Publik',
         'slug' => 'kontributor-publik',
@@ -325,12 +337,13 @@ test('about page team cards link to active public profiles', function () {
     $this->get(route('about'))
         ->assertOk()
         ->assertSee('Penggerak Edulaw Project')
-        ->assertSee('Vision &amp; Mission', false)
+        ->assertSee('Visi &amp; Misi', false)
         ->assertSee('Menjadi wadah edukasi hukum yang berorientasi pada kesetaraan, kemanusiaan, dan kemajuan')
-        ->assertSee('Menyediakan pendidikan hukum yang berkualitas dan setara bagi semua lapisan masyarakat.')
-        ->assertSee('Memperluas jaringan keilmuan melalui program kolaboratif.')
+        ->assertSee('Menyediakan pendidikan hukum yang kontekstual, inklusif, dan mudah diakses.')
+        ->assertSee('Mengadvokasi pengetahuan hukum yang mendukung keadilan dan demokrasi.')
         ->assertSeeInOrder([
-            'Penggerak Edulaw Project',
+            'Mengapa Edulaw Hadir?',
+            'Founder & Co-Founder',
             'Abdul Basid Fuadi',
             'Founder',
             'Azmi Fathu Rohman',
@@ -339,7 +352,10 @@ test('about page team cards link to active public profiles', function () {
             'Co-Founder',
             'Umi Zakia Azzahro',
             'Co-Founder',
-            'Vision',
+            'Arah kerja Edulaw Project',
+            'Pendidikan, Riset & Kolaborasi untuk Dampak Nyata',
+            'Perjalanan Edulaw',
+            'Penggerak Edulaw Project',
         ])
         ->assertSee(route('profiles.show', $activeProfile->slug), false)
         ->assertSee(route('profiles.show', $directorProfile->slug), false)
@@ -350,22 +366,29 @@ test('about page team cards link to active public profiles', function () {
         ->assertSee(route('profiles.show', $internshipProfile->slug), false)
         ->assertSee(route('profiles.show', $writerProfile->slug), false)
         ->assertSee(route('profiles.show', $speakerProfile->slug), false)
+        ->assertSee(route('profiles.show', $lastStructureProfile->slug), false)
         ->assertSeeInOrder(['Director', 'Umi Zakia Azzahro', 'Director of Operations', 'Manager'])
         ->assertSeeInOrder(['Zed Manager', 'Manager Baru'])
         ->assertSeeInOrder([
-            'Contributor',
             'Research Team',
-            'Lalu Rizqi Ramdani Alfaen',
-            'Senior Researcher',
             'Fadlah Nur',
             'Junior Researcher',
+            'Lalu Rizqi Ramdani Alfaen',
+            'Senior Researcher',
             'Internship Member',
             'Intern Baru',
+            'Internship Member',
             'Writer',
             'Penulis Baru',
-            'Speaker and Moderator',
+            'Writer',
+            'Speaker & Moderator',
             'Pembicara Baru',
+            'Speaker and Moderator',
+            'Contributor',
+            'Struktur Contributor 12',
         ])
+        ->assertDontSee('Manager lainnya')
+        ->assertDontSee('Anggota lainnya')
         ->assertDontSee('Tim Pelaksana')
         ->assertSee('Manager Editorial')
         ->assertSee('Hukum tata negara')

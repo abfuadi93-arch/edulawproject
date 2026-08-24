@@ -5,7 +5,7 @@
 @section('robots', 'noindex,follow')
 
 @section('content')
-<main class="bg-brand-paper">
+<main class="bg-transparent">
     <x-shared.page-header
         title="Pencarian"
         description="Cari konten website yang terhubung langsung dengan data panel admin."

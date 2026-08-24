@@ -4,145 +4,77 @@
     $opportunityCollection = collect($opportunities)->take(4)->values();
     $featuredOpportunity = $opportunityCollection->first();
     $secondaryOpportunities = $opportunityCollection->slice(1, 3)->values();
-    $badgeTone = fn (?string $type): string => match ($type) {
-        'competition' => 'oppP-gold',
-        'fellowship', 'volunteer' => 'oppP-teal',
-        'scholarship' => 'oppP-blue',
-        'call_for_paper' => 'oppP-violet',
-        'internship' => 'oppP-coral',
-        'career' => 'oppP-blue',
-        'open_collaboration' => 'oppP-navy',
-        default => 'oppP-gold',
-    };
-    $deadlineLabel = fn ($opportunity): string => $opportunity->deadline?->isPast()
-        ? 'Tenggat telah lewat'
-        : ($opportunity->deadline ? 'Batas akhir' : 'Jadwal pendaftaran');
-    $deadlineValue = fn ($opportunity): string => $opportunity->deadline
-        ? $opportunity->deadline->locale('id')->translatedFormat('d F Y')
-        : 'Tenggat fleksibel';
 @endphp
 
-<section id="opportunities" class="oppP-section" aria-labelledby="home-opportunities-title">
+<section id="opportunities" class="home-section home-surface-warm scroll-mt-20 border-y border-[#e8e5dc]" aria-labelledby="home-opportunities-title">
     <div class="section-shell">
-        <div class="oppP-header">
-            <div class="oppP-copy">
-                <p class="home-section-eyebrow text-[#e57b66]">Peluang Terbuka</p>
-                <h2 id="home-opportunities-title" class="home-section-title">Ruang untuk Tumbuh dan Berkontribusi</h2>
-                <p class="oppP-desc">Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan untuk memperluas pengalaman dan jejaring.</p>
+        <div class="home-section-header">
+            <div class="home-section-copy">
+                <p class="home-section-eyebrow">Opportunities</p>
+                <h2 id="home-opportunities-title" class="home-section-title">Peluang untuk Tumbuh dan Berkontribusi</h2>
+                <p class="home-section-description">Ragam kesempatan untuk belajar, berkembang, dan memberi dampak nyata.</p>
             </div>
-
-            <a href="{{ route('opportunities.index') }}" class="oppP-all">
-                Semua Peluang
-                <span aria-hidden="true">→</span>
-            </a>
+            <a href="{{ route('opportunities.index') }}" class="home-section-link hidden sm:inline-flex">Semua Peluang →</a>
         </div>
 
         @if ($featuredOpportunity)
-            <div @class([
-                'oppP-layout',
-                'oppP-layout-single max-w-4xl' => $secondaryOpportunities->isEmpty(),
-            ])>
-                <article class="oppP-featured" data-home-opportunity data-home-opportunity-featured>
-                    <div class="oppP-main">
-                        <div class="oppP-top">
-                            <span class="oppP-badge {{ $badgeTone($featuredOpportunity->type) }}">{{ $featuredOpportunity->display_type }}</span>
+            <div class="mt-8 grid gap-6 lg:grid-cols-[minmax(0,1.8fr)_minmax(330px,1fr)]">
+                <article data-home-opportunity data-home-opportunity-featured class="grid overflow-hidden rounded-xl border border-[#e7ebf0] bg-white md:grid-cols-[minmax(0,1.05fr)_minmax(250px,.78fr)]">
+                    <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-9">
+                        <p class="home-card-kicker">{{ $featuredOpportunity->display_type }}</p>
+                        <h3 class="mt-3 line-clamp-4 text-2xl font-extrabold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
+
+                        @if ($featuredOpportunity->location || $featuredOpportunity->format)
+                            <p class="mt-4 text-sm font-bold text-slate-500">
+                                {{ $featuredOpportunity->location }}
+                                @if ($featuredOpportunity->location && $featuredOpportunity->format)<span aria-hidden="true"> · </span>@endif
+                                {{ $featuredOpportunity->format ? Illuminate\Support\Str::headline($featuredOpportunity->format) : '' }}
+                            </p>
+                        @endif
+
+                        <div class="mt-7 border-l-2 border-[#f5c451] pl-4">
+                            <p class="text-[11px] font-extrabold uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
+                            <p class="mt-1 text-lg font-extrabold text-[#a45e08]">{{ $featuredOpportunity->deadline_display }}</p>
+                            <p class="mt-1 text-xs font-bold text-slate-500">{{ $featuredOpportunity->deadline_relative_label }}</p>
                         </div>
 
-                        <div class="oppP-body">
-                            <p class="oppP-mini">Peluang terkini</p>
-                            <h3>{{ $featuredOpportunity->title }}</h3>
-
-                            @if ($featuredOpportunity->location || $featuredOpportunity->format)
-                                <div class="oppP-context" aria-label="Informasi pelaksanaan">
-                                    @if ($featuredOpportunity->location)
-                                        <span>{{ $featuredOpportunity->location }}</span>
-                                    @endif
-                                    @if ($featuredOpportunity->format)
-                                        <span>{{ Illuminate\Support\Str::headline($featuredOpportunity->format) }}</span>
-                                    @endif
-                                </div>
-                            @endif
-
-                            <div class="oppP-featured-footer">
-                                <div class="oppP-deadline">
-                                    <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                        <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
-                                    </svg>
-                                    <div>
-                                        <span>{{ $deadlineLabel($featuredOpportunity) }}</span>
-                                        <strong>{{ $deadlineValue($featuredOpportunity) }}</strong>
-                                    </div>
-                                </div>
-
-                                <a href="{{ route('opportunities.show', $featuredOpportunity->slug) }}" class="oppP-action" aria-label="Lihat detail {{ $featuredOpportunity->title }}">
-                                    Lihat Detail
-                                    <span aria-hidden="true">↗</span>
-                                </a>
-                            </div>
-                        </div>
+                        <a href="{{ route('opportunities.show', $featuredOpportunity->slug) }}" class="mt-7 inline-flex w-fit text-sm font-extrabold text-[#102f56] transition hover:text-brand-teal">Lihat Detail →</a>
                     </div>
 
-                    <div class="oppP-poster">
-                        <div class="oppP-poster-fallback" data-home-opportunity-fallback aria-hidden="true">
-                            <span>{{ mb_substr($featuredOpportunity->display_type, 0, 1) }}</span>
-                        </div>
+                    <div class="relative order-first min-h-[340px] overflow-hidden bg-[#dfe5eb] md:order-last md:min-h-full">
+                        <div data-home-opportunity-fallback class="absolute inset-0 grid place-items-center bg-[linear-gradient(145deg,#dbe7ef,#a9becf)] text-7xl font-black text-[#0d315e]/20" aria-hidden="true">{{ mb_substr($featuredOpportunity->display_type, 0, 1) }}</div>
                         @if ($featuredOpportunity->poster_url)
-                            <img src="{{ $featuredOpportunity->poster_url }}" alt="Poster {{ $featuredOpportunity->title }}" loading="lazy" decoding="async" onerror="this.remove()">
+                            <img src="{{ $featuredOpportunity->poster_url }}" alt="Poster {{ $featuredOpportunity->title }}" width="640" height="800" class="absolute inset-0 h-full w-full object-cover transition duration-500 hover:scale-[1.02]" loading="lazy" decoding="async" onerror="this.remove()">
                         @endif
                     </div>
                 </article>
 
                 @if ($secondaryOpportunities->isNotEmpty())
-                    <div class="oppP-stack">
+                    <div class="grid auto-rows-fr gap-3">
                         @foreach ($secondaryOpportunities as $opportunity)
-                            <article class="oppP-card" data-home-opportunity data-home-opportunity-secondary>
-                                <div class="oppP-thumb">
-                                    <div class="oppP-poster-fallback" data-home-opportunity-fallback aria-hidden="true">
-                                        <span>{{ mb_substr($opportunity->display_type, 0, 1) }}</span>
+                            <article data-home-opportunity data-home-opportunity-secondary class="group overflow-hidden rounded-xl border border-[#e7ebf0] bg-white transition hover:border-slate-300">
+                                <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="grid h-full grid-cols-[104px_minmax(0,1fr)] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber sm:grid-cols-[120px_minmax(0,1fr)]">
+                                    <div class="relative min-h-32 overflow-hidden bg-[#dfe5eb]">
+                                        <div data-home-opportunity-fallback class="absolute inset-0 grid place-items-center text-4xl font-black text-[#0d315e]/20" aria-hidden="true">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
+                                        @if ($opportunity->poster_url)
+                                            <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" width="240" height="300" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" loading="lazy" decoding="async" onerror="this.remove()">
+                                        @endif
                                     </div>
-                                    @if ($opportunity->poster_url)
-                                        <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" loading="lazy" decoding="async" onerror="this.remove()">
-                                    @endif
-                                </div>
-
-                                <div class="oppP-cardbody">
-                                    <div class="oppP-cardtop">
-                                        <span class="oppP-badge {{ $badgeTone($opportunity->type) }}">{{ $opportunity->display_type }}</span>
-                                        <span class="oppP-arrow" aria-hidden="true">↗</span>
+                                    <div class="min-w-0 p-4">
+                                        <p class="home-card-kicker">{{ $opportunity->display_type }}</p>
+                                        <h3 class="mt-2 line-clamp-2 text-[16px] font-extrabold leading-[1.3] text-[#102f56]">{{ $opportunity->title }}</h3>
+                                        <p class="mt-3 text-xs font-extrabold text-[#a45e08]">Deadline {{ $opportunity->deadline_display }}</p>
                                     </div>
-
-                                    <h3>{{ $opportunity->title }}</h3>
-
-                                    <div class="oppP-cardfooter">
-                                        <div class="oppP-deadline">
-                                            <svg class="oppP-cal" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                                <path d="M7 3v3M17 3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v14H4V6a1 1 0 0 1 1-1Z" />
-                                            </svg>
-                                            <div>
-                                                <span>{{ $deadlineLabel($opportunity) }}</span>
-                                                <strong>{{ $deadlineValue($opportunity) }}</strong>
-                                            </div>
-                                        </div>
-
-                                        <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="oppP-link" aria-label="Lihat detail {{ $opportunity->title }}">
-                                            Lihat Detail
-                                            <span aria-hidden="true">↗</span>
-                                        </a>
-                                    </div>
-                                </div>
+                                </a>
                             </article>
                         @endforeach
                     </div>
                 @endif
             </div>
-
         @else
-            <div class="oppP-empty">
-                <div class="oppP-empty-icon" aria-hidden="true">↗</div>
-                <h3>Belum ada peluang yang sedang dibuka.</h3>
-                <p>Peluang terbaru akan ditampilkan setelah tersedia melalui kanal resmi Edulaw.</p>
-                <a href="{{ route('opportunities.index') }}">Lihat arsip peluang →</a>
-            </div>
+            <div class="home-empty-state mt-8"><p class="text-sm leading-6 text-slate-600">Belum ada peluang yang sedang dibuka.</p></div>
         @endif
+
+        <a href="{{ route('opportunities.index') }}" class="home-section-link mt-6 sm:hidden">Semua Peluang →</a>
     </div>
 </section>

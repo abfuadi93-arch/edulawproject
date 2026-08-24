@@ -74,7 +74,7 @@
             @if (! empty($breadcrumbs))
                 <nav @class([
                     'flex flex-wrap items-center',
-                    'gap-1.5 text-[11px] font-medium text-white/55' => $channelHeader,
+                    'gap-1.5 text-xs font-medium text-white/60' => $channelHeader,
                     'gap-2 '.($compact ? 'text-xs' : 'text-sm').' font-bold '.($isDarkHero ? 'text-white/68' : 'text-slate-500') => ! $channelHeader,
                 ]) aria-label="Breadcrumb">
                     @foreach ($breadcrumbs as $breadcrumb)
@@ -104,7 +104,7 @@
 
             @if ($eyebrow)
                 @if ($channelHeader)
-                    <p class="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-amber">{{ $eyebrow }}</p>
+                    <p class="mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">{{ $eyebrow }}</p>
                 @else
                     <p class="{{ $compact ? 'mt-2' : 'mt-6' }} edulaw-badge edulaw-badge-md {{ $isDarkHero ? 'edulaw-badge-dark' : 'edulaw-badge-navy' }}">
                         {{ $eyebrow }}
@@ -122,7 +122,7 @@
             </h1>
 
             @if ($channelHeader && $description)
-                <p class="mt-1 max-w-2xl text-pretty text-sm leading-6 text-white/78">
+                <p class="mt-1 max-w-2xl text-pretty text-base leading-7 text-white/82">
                     {{ $description }}
                 </p>
             @endif
@@ -131,7 +131,7 @@
         @if ((! $channelHeader && $description) || ! $slot->isEmpty())
             <div class="edulaw-page-header-right min-w-0 lg:ml-auto lg:w-full lg:justify-self-end lg:text-right">
                 @if (! $channelHeader && $description)
-                    <p class="edulaw-page-header-description {{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-sm leading-6' : 'text-base leading-8').' '.($isDarkHero ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto lg:text-right' }}">
+                    <p class="edulaw-page-header-description {{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-base leading-7' : 'text-base leading-8').' '.($isDarkHero ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto lg:text-right' }}">
                         {{ $description }}
                     </p>
 

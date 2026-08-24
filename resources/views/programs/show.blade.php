@@ -149,7 +149,7 @@
     $relatedPrograms = collect($relatedPrograms ?? []);
 @endphp
 
-<main class="bg-[#f7f8fa]">
+<main class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
         <img
             src="{{ $heroBackground }}"

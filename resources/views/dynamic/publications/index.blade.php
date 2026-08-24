@@ -8,7 +8,7 @@
     $publicationImage = fn ($publication) => $publication?->cover_image_url ?: 'https://images.unsplash.com/photo-1497366754035-f200968a6e72?auto=format&fit=crop&w=1200&q=85';
 @endphp
 
-<main class="bg-brand-paper">
+<main class="bg-transparent">
     <x-shared.page-header
         title="Riset & Publikasi"
         description="Konten publikasi yang dikelola dari panel admin Edulaw."

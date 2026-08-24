@@ -88,100 +88,17 @@
     ];
 @endphp
 
-<main class="bg-brand-paper">
-    {{-- Header --}}
-    <x-shared.page-header
-        title="Kebijakan Privasi"
-        eyebrow="Kebijakan"
-        description="Halaman ini menjelaskan bagaimana Edulaw Project mengelola, menggunakan, dan melindungi informasi yang diberikan oleh pengguna melalui website dan kanal komunikasi resmi."
-        background-image="https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?auto=format&fit=crop&w=1800&q=85"
-        background-alt="Kebijakan privasi dan perlindungan informasi Edulaw Project"
-        :breadcrumbs="[
-            ['label' => 'Beranda', 'url' => '/'],
-            ['label' => 'Kebijakan Privasi'],
-        ]"
-    >
-        <div class="edulaw-badge edulaw-badge-lg edulaw-badge-dark normal-case tracking-normal">
-            Terakhir diperbarui: {{ $updatedAt }}
-        </div>
-    </x-shared.page-header>
-
-    {{-- Summary --}}
-    <section class="py-12 lg:py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid gap-6 md:grid-cols-3">
-                @foreach ($summaryItems as $index => $item)
-                    <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-navy text-sm font-extrabold text-white">
-                            {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                        </div>
-
-                        <h2 class="mt-6 text-lg font-extrabold leading-tight text-brand-ink">
-                            {{ $item['title'] }}
-                        </h2>
-
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            {{ $item['description'] }}
-                        </p>
-                    </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- Policy content --}}
-    <section class="pb-14 lg:pb-20">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
-            <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-                <div class="space-y-10">
-                    @foreach ($sections as $section)
-                        <section>
-                            <h2 class="text-2xl font-extrabold leading-tight tracking-tight text-brand-ink">
-                                {{ $section['title'] }}
-                            </h2>
-
-                            <div class="edulaw-readable mt-4 text-[15px] text-slate-700 sm:text-base">
-                                @foreach ($section['content'] as $paragraph)
-                                    <p>
-                                        {{ $paragraph }}
-                                    </p>
-                                @endforeach
-                            </div>
-                        </section>
-                    @endforeach
-                </div>
-            </article>
-
-            {{-- Sidebar --}}
-            <aside class="space-y-6">
-                <div class="sticky top-24 space-y-6">
-                    <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
-                            Navigasi
-                        </p>
-
-                        <div class="mt-5 grid gap-2">
-                            @foreach ($sections as $section)
-                                <a
-                                    href="#"
-                                    class="rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-brand-paper hover:text-brand-ink"
-                                >
-                                    {{ $section['title'] }}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <x-shared.cta-card
-                        eyebrow="Pertanyaan?"
-                        title="Hubungi Edulaw Project."
-                        body="Jika Anda memiliki pertanyaan mengenai pengelolaan data atau kebijakan privasi, silakan hubungi kami melalui halaman kontak."
-                        :url="url('/kontak')"
-                        label="Hubungi Kami"
-                    />
-                </div>
-            </aside>
-        </div>
-    </section>
-</main>
+<x-legal.document-page
+    title="Kebijakan Privasi"
+    eyebrow="Kebijakan"
+    description="Cara Edulaw Project mengelola, menggunakan, dan melindungi informasi yang diberikan melalui website dan kanal komunikasi resmi."
+    :updated-at="$updatedAt"
+    :summary-items="$summaryItems"
+    :sections="$sections"
+    background-image="https://images.unsplash.com/photo-1563986768494-4dee2763ff3f?auto=format&fit=crop&w=1800&q=85"
+    background-alt="Kebijakan privasi dan perlindungan informasi Edulaw Project"
+    aside-eyebrow="Pertanyaan Privasi"
+    aside-title="Butuh penjelasan mengenai data Anda?"
+    aside-body="Hubungi kami untuk klarifikasi, pembaruan, atau permintaan terkait informasi pribadi yang pernah dikirimkan."
+/>
 @endsection

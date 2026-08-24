@@ -7,8 +7,8 @@
         : $opportunity->excerpt;
 @endphp
 
-<article class="overflow-hidden rounded-[1.5rem] border border-[#dbe2ea] bg-white shadow-[0_18px_45px_-36px_rgba(15,23,42,.55)]" data-featured-opportunity>
-    <div class="grid md:grid-cols-[minmax(15rem,.72fr)_minmax(0,1.55fr)]">
+<article class="overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity>
+    <div class="grid md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)]">
         <div class="flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6">
             <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="relative block aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy" aria-label="Lihat detail {{ $opportunity->title }}">
                 @if ($opportunity->poster_url)
@@ -34,10 +34,10 @@
 
         <div class="flex min-w-0 flex-col p-6 sm:p-8 lg:p-9">
             <div class="flex flex-wrap items-center gap-2">
-                <span class="rounded-full bg-[#fff4d7] px-3 py-1 text-[10px] font-black uppercase tracking-[0.14em] text-[#80500a]">
+                <span class="rounded-full bg-[#fff4d7] px-3 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-[#80500a]">
                     {{ $opportunity->display_type }}
                 </span>
-                <span class="rounded-full bg-emerald-50 px-3 py-1 text-[10px] font-black uppercase tracking-[0.12em] text-emerald-700">
+                <span class="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.1em] text-emerald-700">
                     Masih Dibuka
                 </span>
             </div>
@@ -57,20 +57,20 @@
             <div class="mt-auto grid gap-4 border-y border-slate-100 py-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
                 <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <div>
-                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Deadline</dt>
+                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</dt>
                         <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</dd>
                         <dd class="mt-0.5 text-xs font-bold text-[#a56408]">{{ $opportunity->deadline_relative_label }}</dd>
                     </div>
                     <div>
-                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Format</dt>
+                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Format</dt>
                         <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->display_format }}</dd>
                     </div>
                     <div>
-                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Lokasi</dt>
+                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Lokasi</dt>
                         <dd class="mt-1 line-clamp-2 text-sm font-black text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Status</dt>
+                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Status</dt>
                         <dd class="mt-1 text-sm font-black text-emerald-700">Masih Dibuka</dd>
                     </div>
                 </dl>

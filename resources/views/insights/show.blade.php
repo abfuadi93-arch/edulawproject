@@ -63,7 +63,7 @@
         ->values();
 @endphp
 
-<main class="bg-white">
+<main class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
         @if ($coverImage)
             <img

@@ -1,15 +1,15 @@
 <?php
 
-test('hero halaman kanal memakai tinggi desktop Program sebagai rujukan', function () {
+test('hero halaman kanal memakai tinggi desktop yang sesuai konteks', function () {
     $pages = [
-        [route('programs.index'), 'Program', 'Kanal Program', 'Program Edulaw Project dirancang sebagai ruang belajar'],
-        [route('insights.index'), 'Editorial', 'Kanal Editorial', 'Editorial Edulaw menghadirkan analisis hukum'],
-        [route('publications.index'), 'Riset & Publikasi', 'Kanal Riset & Publikasi', 'Repository kajian, policy brief, naskah akademik'],
-        [route('opportunities.index'), 'Opportunities', 'Kanal Opportunities', 'Temukan beasiswa, magang, fellowship'],
-        [route('multimedia.index'), 'Multimedia', 'Kanal Multimedia', 'Video, Shorts/Reels, dan dokumentasi kegiatan'],
+        [route('programs.index'), 'Program', 'Kanal Program', 'Program Edulaw Project dirancang sebagai ruang belajar', 'lg:min-h-[200px]'],
+        [route('insights.index'), 'Editorial', 'Kanal Editorial', 'Editorial Edulaw menghadirkan analisis hukum', 'lg:min-h-[210px]'],
+        [route('publications.index'), 'Riset & Publikasi', 'Kanal Riset & Publikasi', 'Repository kajian, policy brief, naskah akademik', 'lg:min-h-[240px]'],
+        [route('opportunities.index'), 'Opportunities', 'Kanal Opportunities', 'Temukan beasiswa, magang, fellowship', 'lg:min-h-[240px]'],
+        [route('multimedia.index'), 'Multimedia', 'Kanal Multimedia', 'Video, Shorts/Reels, dan dokumentasi kegiatan', 'lg:min-h-[240px]'],
     ];
 
-    foreach ($pages as [$url, $breadcrumb, $channelLabel, $descriptionExcerpt]) {
+    foreach ($pages as [$url, $breadcrumb, $channelLabel, $descriptionExcerpt, $heightClass]) {
         $html = $this->get($url)->assertOk()->getContent();
         $document = new DOMDocument;
         @$document->loadHTML($html);
@@ -24,7 +24,7 @@ test('hero halaman kanal memakai tinggi desktop Program sebagai rujukan', functi
         $leftColumnText = html_entity_decode($document->getElementsByTagName('h1')->item(0)->parentNode->textContent, ENT_QUOTES | ENT_HTML5);
 
         expect($hero)->toBeInstanceOf(DOMElement::class)
-            ->and($heroMarkup)->toContain('lg:min-h-[240px]')
+            ->and($heroMarkup)->toContain($heightClass)
             ->and($heroText)
             ->toContain('Beranda')
             ->toContain($breadcrumb)

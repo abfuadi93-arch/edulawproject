@@ -14,7 +14,7 @@
         {{ $title }}
     </h2>
 
-    <p class="mt-2 text-sm leading-6 text-slate-600 sm:text-base">
+    <p class="mt-2 text-base leading-7 text-slate-600">
         {{ $description }}
     </p>
 </div>

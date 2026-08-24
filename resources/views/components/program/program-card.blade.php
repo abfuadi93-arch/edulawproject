@@ -25,13 +25,13 @@
         $level = $program->display_level ?? \Illuminate\Support\Str::headline((string) ($program->level ?? 'Umum'));
     @endphp
 
-    <article class="group flex h-[430px] flex-col overflow-hidden rounded-[20px] border border-slate-200 bg-white shadow-[0_16px_40px_rgba(15,23,42,0.06)] transition duration-200 hover:-translate-y-1 hover:shadow-[0_24px_60px_rgba(15,23,42,0.12)] sm:h-[440px]">
-        <a href="{{ $detailUrl }}" class="relative block h-[175px] shrink-0 overflow-hidden bg-slate-200 sm:h-[185px]">
+    <article class="group flex h-full min-w-0 flex-col overflow-hidden rounded-xl border border-[#e1e7e6] bg-white transition duration-200 hover:border-brand-navy/25">
+        <a href="{{ $detailUrl }}" class="relative block aspect-[16/10] shrink-0 overflow-hidden bg-slate-200">
             @if ($image)
                 <img
                     src="{{ $image }}"
                     alt="{{ $title }}"
-                    class="h-full w-full object-cover transition duration-200 group-hover:scale-105"
+                    class="h-full w-full object-cover transition duration-300 group-hover:scale-[1.02]"
                     loading="lazy"
                 >
             @else
@@ -39,10 +39,10 @@
             @endif
 
             <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-                <span class="rounded-full bg-white/92 px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] text-brand-navy shadow-sm backdrop-blur">
+                <span class="rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-brand-navy shadow-sm backdrop-blur">
                     {{ $category }}
                 </span>
-                <span class="rounded-full px-2.5 py-1 text-[9px] font-black uppercase tracking-[0.15em] shadow-sm {{ $statusClass }}">
+                <span class="rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.11em] shadow-sm {{ $statusClass }}">
                     {{ $statusLabel }}
                 </span>
             </div>
@@ -81,7 +81,7 @@
             </div>
 
             <div class="mt-auto pt-3">
-                <a href="{{ $detailUrl }}" class="inline-flex min-h-9 items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-4 py-2 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white">
+                <a href="{{ $detailUrl }}" class="inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-teal">
                     Lihat Detail
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

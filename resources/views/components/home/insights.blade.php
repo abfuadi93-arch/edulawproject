@@ -4,7 +4,7 @@
     $items = collect($insights)->filter()->unique('id')->take(4)->values();
 @endphp
 
-<section id="edulaw-insight" class="scroll-mt-20 bg-white py-9 lg:py-12" aria-labelledby="home-insights-title">
+<section id="edulaw-insight" class="home-surface-paper scroll-mt-20 py-8 sm:py-9 lg:py-10" aria-labelledby="home-insights-title">
     <div class="section-shell">
         <div class="flex items-end justify-between gap-5">
             <div>
@@ -17,13 +17,12 @@
         @if ($items->isNotEmpty())
             <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($items as $index => $item)
-                    <article data-home-insight @if ($index === 0) data-home-insight-featured @else data-home-insight-compact @endif class="group overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition hover:-translate-y-0.5 hover:shadow-lg">
+                    <article data-home-insight @if ($index === 0) data-home-insight-latest @endif class="group overflow-hidden rounded-xl border border-[#e7ebf0] bg-white transition hover:border-slate-300">
                         <a href="{{ route('insights.show', $item->slug) }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                             <div class="relative aspect-[16/9] overflow-hidden bg-[linear-gradient(135deg,#173b63,#4a8796)]">
                                 @if ($item->cover_image_url)
-                                    <img src="{{ $item->cover_image_url }}" alt="Sampul {{ $item->title }}" class="h-full w-full object-cover transition duration-500 group-hover:scale-105" loading="lazy" decoding="async" onerror="this.remove()">
+                                    <img src="{{ $item->cover_image_url }}" alt="Sampul {{ $item->title }}" width="520" height="292" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" loading="lazy" decoding="async" onerror="this.remove()">
                                 @endif
-                                <div class="absolute inset-0 bg-[#142f57]/15"></div>
                             </div>
                             <div class="p-4">
                                 <p class="home-card-kicker">{{ $item->display_category }}</p>
@@ -42,7 +41,7 @@
         @else
             <div class="home-empty-state mt-7 py-4">
                 <p class="text-sm leading-6 text-slate-600">Insight terbaru sedang disiapkan.</p>
-                <a href="{{ route('insights.index') }}" class="btn-dark mt-4 min-h-11">Lihat Semua Insight</a>
+                <a href="{{ route('insights.index') }}" class="home-section-link mt-3">Lihat Semua Insight →</a>
             </div>
         @endif
     </div>

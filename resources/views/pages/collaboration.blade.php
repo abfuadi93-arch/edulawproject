@@ -45,12 +45,14 @@
 
 @endphp
 
-<main class="bg-brand-paper">
+<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     {{-- Hero --}}
     <x-shared.page-header
         title="Bangun Literasi Hukum Bersama Edulaw Project"
         :compact="true"
         eyebrow="Kolaborasi"
+        :channel-header="true"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Edulaw Project membuka ruang kerja sama dengan kampus, komunitas, lembaga, organisasi mahasiswa, pusat studi, dan mitra strategis untuk mengembangkan edukasi hukum yang inklusif, relevan, dan berdampak."
         :background-image="asset('images/hero/hero-edulaw.jpg')"
         background-alt="Diskusi kolaborasi literasi hukum Edulaw Project"
@@ -62,7 +64,7 @@
         <div class="flex flex-col gap-3 sm:flex-row">
             <a
                 href="#form-kolaborasi"
-                class="inline-flex items-center justify-center gap-2 rounded-xl bg-brand-silver px-6 py-3.5 text-sm font-extrabold text-brand-ink shadow-sm transition hover:bg-white"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-black text-brand-navy transition hover:bg-[#ffd670]"
             >
                 Ajukan Kolaborasi
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -72,7 +74,7 @@
 
             <a
                 href="{{ url('/program') }}"
-                class="inline-flex items-center justify-center rounded-xl border border-white/20 bg-white/10 px-6 py-3.5 text-sm font-extrabold text-white backdrop-blur transition hover:bg-white/15"
+                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur transition hover:bg-white/15"
             >
                 Lihat Program
             </a>
@@ -80,31 +82,31 @@
     </x-shared.page-header>
 
     {{-- Scope --}}
-    <section class="py-14 lg:py-20">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+    <section class="bg-white py-9 sm:py-10 lg:py-11">
+        <div class="section-shell">
             <div class="max-w-3xl">
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
                     Bentuk Kolaborasi
                 </p>
 
-                <h2 class="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-brand-ink sm:text-4xl">
+                <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">
                     Ruang kerja sama yang dapat dikembangkan bersama.
                 </h2>
 
-                <p class="mt-4 text-base leading-7 text-slate-600">
+                <p class="mt-2 max-w-3xl text-base leading-7 text-slate-600">
                     Kolaborasi dapat disesuaikan dengan kebutuhan mitra, sasaran peserta,
                     format kegiatan, dan tujuan pengembangan literasi hukum.
                 </p>
             </div>
 
-            <div class="mt-10 grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div class="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($collaborationScopes as $index => $scope)
-                    <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm transition hover:-translate-y-1 hover:border-brand-silver hover:shadow-xl hover:shadow-slate-900/5">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-navy text-sm font-extrabold text-white">
+                    <article class="rounded-[14px] bg-[#f7f8fa] p-5">
+                        <div class="grid size-9 place-items-center rounded-full bg-brand-amber-soft text-[10px] font-black text-brand-navy">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                         </div>
 
-                        <h3 class="mt-6 text-lg font-extrabold leading-tight text-brand-ink">
+                        <h3 class="mt-4 text-lg font-black leading-tight text-brand-navy">
                             {{ $scope['title'] }}
                         </h3>
 
@@ -118,32 +120,32 @@
     </section>
 
     {{-- Process --}}
-    <section class="bg-white py-14 lg:py-20">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.8fr_1.2fr] lg:px-8">
+    <section class="py-9 sm:py-10 lg:py-11">
+        <div class="section-shell">
             <div>
-                <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
                     Alur Kolaborasi
                 </p>
 
-                <h2 class="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-brand-ink sm:text-4xl">
+                <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">
                     Dari usulan hingga pelaksanaan program.
                 </h2>
 
-                <p class="mt-5 text-base leading-7 text-slate-600">
+                <p class="mt-2 max-w-3xl text-base leading-7 text-slate-600">
                     Setiap usulan kolaborasi akan ditinjau secara bertahap agar kegiatan yang
                     dirancang sesuai dengan kebutuhan mitra dan arah pengembangan Edulaw Project.
                 </p>
             </div>
 
-            <div class="space-y-4">
+            <div class="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($steps as $index => $step)
-                    <article class="grid gap-4 rounded-[2rem] border border-slate-200 bg-white p-5 shadow-sm sm:grid-cols-[56px_1fr]">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-silver text-sm font-extrabold text-brand-ink">
+                    <article class="rounded-[14px] bg-white p-5">
+                        <div class="grid size-9 place-items-center rounded-full bg-brand-teal-soft text-[10px] font-black text-brand-navy">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                         </div>
 
-                        <div>
-                            <h3 class="text-lg font-extrabold text-brand-ink">
+                        <div class="mt-4">
+                            <h3 class="text-lg font-black text-brand-navy">
                                 {{ $step['title'] }}
                             </h3>
 
@@ -158,15 +160,15 @@
     </section>
 
     {{-- Form Section --}}
-    <section id="form-kolaborasi" class="py-14 lg:py-20">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[0.85fr_1.15fr] lg:px-8">
+    <section id="form-kolaborasi" class="scroll-mt-20 bg-white py-9 sm:py-10 lg:py-11">
+        <div class="section-shell grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <aside>
-                <div class="sticky top-24 rounded-[2rem] bg-brand-navy p-6 text-white shadow-xl shadow-slate-900/10 sm:p-8">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-amber">
+                <div class="sticky top-24 rounded-[14px] bg-brand-navy p-6 text-white sm:p-7">
+                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-amber">
                         Ajukan Kolaborasi
                     </p>
 
-                    <h2 class="mt-4 text-3xl font-extrabold leading-tight tracking-tight text-white sm:text-4xl">
+                    <h2 class="mt-2 font-display text-2xl font-black leading-tight text-white sm:text-3xl">
                         Ceritakan gagasan kerja sama Anda.
                     </h2>
 
@@ -175,25 +177,25 @@
                         riset, publikasi, pelatihan, atau bentuk kerja sama lain yang relevan.
                     </p>
 
-                    <div class="mt-8 space-y-4">
-                        <div class="rounded-2xl border border-white/15 bg-white p-5 text-brand-ink shadow-sm shadow-slate-950/10">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-navy/70">
+                    <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
+                        <div class="rounded-[12px] bg-white/8 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-amber">
                                 Respons
                             </p>
-                            <p class="mt-2 text-sm font-semibold leading-6 text-slate-700">
+                            <p class="mt-2 text-sm font-semibold leading-6 text-white/75">
                                 Tim Edulaw Project akan meninjau usulan dan menghubungi Anda melalui kontak yang tersedia.
                             </p>
                         </div>
 
-                        <div class="rounded-2xl border border-white/15 bg-white p-5 text-brand-ink shadow-sm shadow-slate-950/10">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-navy/70">
+                        <div class="rounded-[12px] bg-white/8 p-4">
+                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-amber">
                                 Kontak Cepat
                             </p>
                             <a
                                 href="https://wa.me/6281529927677"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="mt-3 inline-flex items-center gap-2 text-sm font-extrabold text-brand-navy transition hover:text-brand-teal"
+                                class="mt-3 inline-flex items-center gap-2 text-sm font-black text-white transition hover:text-brand-amber"
                             >
                                 Hubungi via WhatsApp
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -217,7 +219,7 @@
         title="Mari susun format kolaborasi yang paling tepat."
         title-class="lg:whitespace-nowrap"
         body="Ceritakan kebutuhan, sasaran peserta, dan bentuk kegiatan yang Anda bayangkan agar Edulaw dapat menyiapkan respons yang relevan."
-        :primary-url="route('collaboration.index')"
+        :primary-url="route('collaboration.index').'#form-kolaborasi'"
         primary-label="Isi Form Kolaborasi"
         :secondary-url="route('contact.index')"
         secondary-label="Hubungi Kami"

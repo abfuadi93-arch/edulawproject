@@ -41,7 +41,7 @@
 @endpush
 
 @section('content')
-<main class="bg-white">
+<main class="bg-transparent">
     <x-shared.page-header
         :title="$definition['title']"
         :description="$definition['seo_description']"

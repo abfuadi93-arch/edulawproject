@@ -8,7 +8,7 @@
     $multimediaImage = fn ($item) => $item?->thumbnail_url ?: 'https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1200&q=85';
 @endphp
 
-<main class="bg-brand-paper">
+<main class="bg-transparent">
     <x-shared.page-header
         title="Multimedia"
         description="Konten multimedia terbaru dari panel admin."

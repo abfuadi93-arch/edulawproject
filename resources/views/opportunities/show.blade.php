@@ -88,7 +88,7 @@
 @endpush
 
 @section('content')
-<main class="bg-[#f7f8fa]">
+<main class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
         <img
             src="{{ $heroImage }}"
@@ -420,8 +420,6 @@
         primary-label="Ajukan Kerja Sama"
         :secondary-url="route('opportunities.index')"
         secondary-label="Lihat Opportunities"
-        background-image="https://images.unsplash.com/photo-1552664730-d307ca884978?auto=format&fit=crop&w=1800&q=85"
-        background-alt="Kolaborasi program literasi hukum"
     />
 </main>
 @endsection

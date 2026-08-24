@@ -52,12 +52,12 @@
                     {{ $label }}
                 </h3>
 
-                <p class="insight-clamp-2 mt-2 text-sm leading-6 text-slate-600">
+                <p class="insight-clamp-2 mt-2 text-base leading-7 text-slate-600">
                     {{ $description }}
                 </p>
             </div>
 
-            <span class="shrink-0 rounded-full bg-[#EAF2FF] px-3 py-1 text-[10px] font-black uppercase tracking-[0.1em] text-brand-navy">
+            <span class="shrink-0 rounded-full bg-[#EAF2FF] px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-brand-navy">
                 {{ number_format($articleCount, 0, ',', '.') }} artikel
             </span>
         </div>

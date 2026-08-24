@@ -12,7 +12,7 @@
     $isExternalOpportunity = fn ($opportunity) => false;
 @endphp
 
-<main class="bg-brand-paper">
+<main class="bg-transparent">
     <x-shared.page-header
         title="Opportunities"
         description="Daftar peluang terbaru yang dikelola dari panel admin."

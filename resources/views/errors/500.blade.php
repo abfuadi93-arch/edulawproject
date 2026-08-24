@@ -5,7 +5,7 @@
 @section('robots', 'noindex,nofollow')
 
 @section('content')
-<main class="min-h-[calc(100vh-82px)] bg-[#fbf7ef]">
+<main class="home-surface-warm min-h-[calc(100vh-82px)]">
     <section class="relative isolate overflow-hidden">
         {{-- Background decoration --}}
         <div class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-amber-200/50 blur-3xl"></div>

@@ -4,25 +4,22 @@
 ])
 
 @if ($featured)
-    <section id="multimedia" class="home-section scroll-mt-24 bg-white" aria-labelledby="home-multimedia-title">
+    <section id="multimedia" class="home-section home-surface-paper scroll-mt-24" aria-labelledby="home-multimedia-title">
         <div class="section-shell">
             <div class="home-section-header">
                 <div class="home-section-copy">
                     <p class="home-section-eyebrow">Multimedia</p>
                     <h2 id="home-multimedia-title" class="home-section-title">Belajar Hukum Melalui Beragam Format</h2>
-                    <p class="home-section-description">Video, konten singkat, dan dokumentasi kegiatan dari kanal resmi Edulaw.</p>
+                    <p class="home-section-description">Video, podcast, dan diskusi untuk memperluas wawasan hukum.</p>
                 </div>
 
-                <a href="{{ route('multimedia.index') }}" class="section-link">
-                    Lihat Semua Multimedia
-                    <span aria-hidden="true">→</span>
-                </a>
+                <a href="{{ route('multimedia.index') }}" class="home-section-link">Lihat Semua Multimedia →</a>
             </div>
 
             <div @class([
-                'mt-7 grid items-stretch gap-6',
+                'mt-8 grid items-stretch gap-6',
                 'mx-auto max-w-3xl' => $items->isEmpty(),
-                'lg:grid-cols-[minmax(0,1.55fr)_minmax(340px,1fr)]' => $items->isNotEmpty(),
+                'lg:grid-cols-[minmax(0,1.85fr)_minmax(320px,1fr)]' => $items->isNotEmpty(),
             ])>
                 <x-multimedia.featured-card :item="$featured" variant="home" />
 

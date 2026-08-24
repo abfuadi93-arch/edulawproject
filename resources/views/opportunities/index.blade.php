@@ -48,6 +48,7 @@
         'latest' => 'Terbaru',
     ];
     $indexUrl = route('opportunities.index');
+    $selectedView = request('view') === 'list' ? 'list' : 'grid';
     $queryFor = function (array $changes = [], array $remove = []) use ($indexUrl): string {
         $parameters = request()->except(array_merge(['page'], $remove));
 
@@ -62,15 +63,14 @@
         return $parameters === [] ? $indexUrl : route('opportunities.index', $parameters);
     };
     $hasAdvancedFilters = $filters['status'] === 'closed'
-        || filled($filters['format'])
         || filled($filters['deadline'])
         || filled($filters['location']);
     $hasActiveFilters = filled($filters['q'])
         || filled($filters['type'])
+        || filled($filters['format'])
         || $hasAdvancedFilters;
     $activeFilterCount = collect([
         $filters['status'] === 'closed' ? $filters['status'] : null,
-        $filters['format'],
         $filters['deadline'],
         $filters['location'],
     ])->filter()->count();
@@ -79,13 +79,13 @@
         : 'Peluang yang Masih Dibuka';
 @endphp
 
-<main class="bg-[#f7f8fa] text-brand-ink">
+<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.page-header
         title="Opportunities"
         :compact="true"
         eyebrow="Kanal Opportunities"
         :channel-header="true"
-        grid-class="gap-3 px-5 py-5 sm:w-full sm:px-6 sm:py-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:gap-5 lg:px-8 lg:py-7"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
         description="Temukan beasiswa, magang, fellowship, kompetisi, call for papers, dan peluang pengembangan di bidang hukum."
         background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kolaborasi dan pengembangan kapasitas melalui Opportunities Edulaw"
@@ -95,178 +95,149 @@
         ]"
     >
         <dl @class([
-            'grid w-full max-w-md grid-cols-2 rounded-[20px] border border-white/12 bg-white/10 p-1.5 text-left shadow-2xl shadow-black/20 backdrop-blur lg:ml-auto lg:text-right',
+            'grid w-full max-w-md grid-cols-2 overflow-hidden rounded-[14px] border border-white/15 bg-white/10 text-left backdrop-blur lg:ml-auto lg:text-right',
             'sm:grid-cols-3' => $statistics['nearest_deadline'],
         ]) aria-label="Statistik Opportunities">
-            <div class="min-w-0 rounded-2xl px-3 py-2 sm:rounded-none sm:border-r sm:border-white/20">
-                <dd class="text-2xl font-black leading-none tracking-normal text-white">{{ number_format($statistics['total']) }}</dd>
-                <dt class="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">Peluang</dt>
+            <div class="px-5 py-4">
+                <dd class="font-display text-3xl font-black tabular-nums text-white">{{ number_format($statistics['total']) }}</dd>
+                <dt class="mt-1 text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Total Peluang</dt>
             </div>
-            <div class="min-w-0 rounded-2xl px-3 py-2 sm:rounded-none sm:border-r sm:border-white/20">
-                <dd class="text-2xl font-black leading-none tracking-normal text-white">{{ number_format($statistics['open']) }}</dd>
-                <dt class="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">Masih Dibuka</dt>
+            <div class="border-l border-white/15 px-5 py-4">
+                <dd class="font-display text-3xl font-black tabular-nums text-white">{{ number_format($statistics['open']) }}</dd>
+                <dt class="mt-1 text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Masih Dibuka</dt>
             </div>
             @if ($statistics['nearest_deadline'])
-                <div class="col-span-2 min-w-0 rounded-2xl border-t border-white/20 px-3 py-2 sm:col-span-1 sm:rounded-none sm:border-t-0">
-                    <dd class="text-xl font-black leading-none tracking-normal text-brand-amber">{{ $statistics['nearest_deadline'] }}</dd>
-                    <dt class="mt-1 text-[10px] font-black uppercase tracking-[0.16em] text-white/72">Deadline Terdekat</dt>
+                <div class="col-span-2 border-t border-white/15 px-5 py-4 sm:col-span-1 sm:border-l sm:border-t-0">
+                    <dd class="text-xl font-black text-brand-amber">{{ $statistics['nearest_deadline'] }}</dd>
+                    <dt class="mt-1 text-[11px] font-black uppercase tracking-[0.11em] text-white/70">Deadline Terdekat</dt>
                 </div>
             @endif
         </dl>
     </x-shared.page-header>
 
-    <section class="border-b border-slate-200/80 bg-[#f7f8fa]" x-data="{ filtersOpen: {{ $hasAdvancedFilters ? 'true' : 'false' }} }" aria-label="Pencarian dan filter opportunities">
-        <div class="mx-auto max-w-7xl px-5 py-4 sm:px-6 sm:py-5 lg:px-8">
-            <form method="GET" action="{{ $indexUrl }}" class="rounded-[1.25rem] border border-slate-200 bg-white p-3 shadow-[0_14px_40px_-34px_rgba(15,23,42,.55)] sm:p-4">
+    @if ($featuredOpportunity)
+        <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="featured-opportunity-title">
+            <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+                <p class="mb-4 text-[11px] font-black uppercase tracking-[0.15em] text-brand-navy"><span class="mr-1 text-brand-amber" aria-hidden="true">★</span> Pilihan Edulaw</p>
+                <x-opportunities.featured-card :opportunity="$featuredOpportunity" />
+            </div>
+        </section>
+    @endif
+
+    <section id="opportunity-finder" class="py-9 sm:py-10 lg:py-11" aria-labelledby="opportunity-results-title" x-data="{ filtersOpen: {{ $hasAdvancedFilters ? 'true' : 'false' }} }">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+            <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+                <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.15em] text-brand-navy">Opportunity Finder</p>
+                    <h2 id="opportunity-results-title" class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">{{ $resultsTitle }}</h2>
+                    <p class="mt-1.5 max-w-3xl text-base leading-7 text-slate-600">Cari peluang berdasarkan kata kunci, kategori, format, lokasi, dan deadline.</p>
+                </div>
+                <p class="text-sm font-bold text-slate-500"><strong class="text-brand-navy">{{ number_format($opportunities->total()) }}</strong> kesempatan ditemukan</p>
+            </div>
+
+            <form method="GET" action="{{ $indexUrl }}#opportunity-finder" class="mt-5 rounded-[14px] bg-white p-3">
+                <input type="hidden" name="view" value="{{ $selectedView }}">
                 @if ($filters['type'])
                     <input type="hidden" name="type" value="{{ $filters['type'] }}">
                 @endif
 
-                <div class="grid gap-3 lg:grid-cols-[minmax(0,1fr)_auto_auto_auto]">
-                    <label class="relative block min-w-0">
+                <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(240px,1fr)_170px_180px_auto_auto_auto]">
+                    <label class="relative block min-w-0 sm:col-span-2 lg:col-span-1">
                         <span class="sr-only">Cari opportunities</span>
-                        <svg class="pointer-events-none absolute left-4 top-1/2 h-5 w-5 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                        <input type="search" name="q" value="{{ $filters['q'] }}" placeholder="Cari beasiswa, magang, kompetisi, call for papers..." class="h-12 w-full rounded-xl border border-slate-200 bg-[#f8fafc] pl-12 pr-4 text-sm font-bold text-brand-ink outline-none transition placeholder:font-medium placeholder:text-slate-400 focus:border-brand-navy focus:bg-white focus:ring-4 focus:ring-brand-navy/10">
+                        <svg class="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
+                        <input type="search" name="q" value="{{ $filters['q'] }}" placeholder="Cari beasiswa, magang, kompetisi..." class="h-11 w-full rounded-lg border border-slate-200 bg-[#f8fafc] pl-10 pr-3 text-sm font-medium text-brand-ink outline-none placeholder:text-slate-400 focus:border-brand-navy focus:bg-white focus:ring-2 focus:ring-brand-navy/10">
                     </label>
 
-                    <button type="button" class="inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-black text-brand-navy transition hover:border-brand-navy/40 hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy" @click="filtersOpen = !filtersOpen" :aria-expanded="filtersOpen.toString()" aria-controls="opportunity-advanced-filters">
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                        Filter
-                        @if ($activeFilterCount > 0)
-                            <span class="flex h-5 min-w-5 items-center justify-center rounded-full bg-brand-navy px-1 text-[10px] text-white">{{ $activeFilterCount }}</span>
-                        @endif
-                    </button>
+                    <label>
+                        <span class="sr-only">Format opportunities</span>
+                        <select name="format" class="h-11 w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 text-sm font-bold text-brand-navy outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10">
+                            <option value="">Semua Format</option>
+                            @foreach ($availableFormats as $format)
+                                <option value="{{ $format }}" @selected($filters['format'] === $format)>{{ $formatLabels[$format] ?? Illuminate\Support\Str::headline($format) }}</option>
+                            @endforeach
+                        </select>
+                    </label>
 
-                    <label class="relative block">
+                    <label>
                         <span class="sr-only">Urutkan opportunities</span>
-                        <select name="sort" class="h-12 w-full appearance-none rounded-xl border border-slate-200 bg-white pl-4 pr-10 text-sm font-black text-brand-ink outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10 lg:w-52">
+                        <select name="sort" class="h-11 w-full rounded-lg border border-slate-200 bg-[#f8fafc] px-3 text-sm font-bold text-brand-navy outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10">
                             @foreach ($sortLabels as $value => $label)
                                 <option value="{{ $value }}" @selected($filters['sort'] === $value)>{{ $label }}</option>
                             @endforeach
                         </select>
-                        <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m7 10 5 5 5-5" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </label>
 
-                    <button type="submit" class="h-12 rounded-xl bg-brand-navy px-6 text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">Temukan</button>
+                    <button type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-[#f8fafc] px-4 text-sm font-black text-brand-navy" @click="filtersOpen = !filtersOpen" :aria-expanded="filtersOpen.toString()" aria-controls="opportunity-advanced-filters">
+                        Filter Lanjutan
+                        @if ($activeFilterCount > 0)
+                            <span class="grid h-5 min-w-5 place-items-center rounded-full bg-brand-navy px-1 text-[11px] text-white">{{ $activeFilterCount }}</span>
+                        @endif
+                    </button>
+
+                    <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white transition hover:bg-brand-ink">Terapkan</button>
+
+                    <div class="flex h-11 items-center rounded-lg border border-slate-200 bg-[#f8fafc] p-1" aria-label="Pilihan tampilan opportunities">
+                        <a href="{{ $queryFor(['view' => 'grid']) }}#opportunity-finder" aria-label="Tampilan grid" aria-current="{{ $selectedView === 'grid' ? 'true' : 'false' }}" class="grid h-9 w-9 place-items-center rounded-md {{ $selectedView === 'grid' ? 'bg-brand-navy text-white' : 'text-slate-500 hover:text-brand-navy' }}">
+                            <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M2.5 2.5h6v6h-6v-6Zm9 0h6v6h-6v-6Zm-9 9h6v6h-6v-6Zm9 0h6v6h-6v-6Z"/></svg>
+                        </a>
+                        <a href="{{ $queryFor(['view' => 'list']) }}#opportunity-finder" aria-label="Tampilan daftar" aria-current="{{ $selectedView === 'list' ? 'true' : 'false' }}" class="grid h-9 w-9 place-items-center rounded-md {{ $selectedView === 'list' ? 'bg-brand-navy text-white' : 'text-slate-500 hover:text-brand-navy' }}">
+                            <svg viewBox="0 0 20 20" class="h-4 w-4" fill="currentColor" aria-hidden="true"><path d="M2.5 3.5h3v3h-3v-3Zm5 0h10v3h-10v-3Zm-5 5h3v3h-3v-3Zm5 0h10v3h-10v-3Zm-5 5h3v3h-3v-3Zm5 0h10v3h-10v-3Z"/></svg>
+                        </a>
+                    </div>
                 </div>
 
-                <div id="opportunity-advanced-filters" x-cloak x-show="filtersOpen" x-transition.opacity.duration.150ms class="mt-4 border-t border-slate-100 pt-4">
-                    <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+                <div id="opportunity-advanced-filters" x-cloak x-show="filtersOpen" x-transition.opacity.duration.150ms class="mt-3 border-t border-slate-100 pt-3">
+                    <div class="grid gap-3 sm:grid-cols-3">
                         <label>
-                            <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Status</span>
-                            <select name="status" class="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10">
+                            <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Status</span>
+                            <select name="status" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
                                 <option value="open" @selected($filters['status'] === 'open')>Masih Dibuka</option>
                                 <option value="closed" @selected($filters['status'] === 'closed')>Sudah Ditutup</option>
                             </select>
                         </label>
-
-                        @if ($availableFormats->isNotEmpty())
-                            <label>
-                                <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Format</span>
-                                <select name="format" class="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10">
-                                    <option value="">Semua format</option>
-                                    @foreach ($availableFormats as $format)
-                                        <option value="{{ $format }}" @selected($filters['format'] === $format)>{{ $formatLabels[$format] ?? Illuminate\Support\Str::headline($format) }}</option>
-                                    @endforeach
-                                </select>
-                            </label>
-                        @endif
-
                         <label>
-                            <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Deadline</span>
-                            <select name="deadline" class="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10">
+                            <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</span>
+                            <select name="deadline" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
                                 <option value="">Semua deadline</option>
                                 @foreach ($deadlineLabels as $value => $label)
                                     <option value="{{ $value }}" @selected($filters['deadline'] === $value)>{{ $label }}</option>
                                 @endforeach
                             </select>
                         </label>
-
-                        @if ($availableLocations->isNotEmpty())
-                            <label>
-                                <span class="text-[10px] font-black uppercase tracking-[0.14em] text-slate-500">Lokasi</span>
-                                <select name="location" class="mt-2 h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10">
-                                    <option value="">Semua lokasi</option>
-                                    @foreach ($availableLocations as $location)
-                                        <option value="{{ $location }}" @selected($filters['location'] === $location)>{{ Illuminate\Support\Str::limit($location, 48) }}</option>
-                                    @endforeach
-                                </select>
-                            </label>
-                        @endif
+                        <label>
+                            <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Lokasi</span>
+                            <select name="location" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
+                                <option value="">Semua lokasi</option>
+                                @foreach ($availableLocations as $location)
+                                    <option value="{{ $location }}" @selected($filters['location'] === $location)>{{ Illuminate\Support\Str::limit($location, 48) }}</option>
+                                @endforeach
+                            </select>
+                        </label>
                     </div>
-
-                    <div class="mt-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-                        <p class="text-xs leading-5 text-slate-500">Filter diterapkan melalui URL agar hasil dapat dibagikan.</p>
-                        <a href="{{ $indexUrl }}" class="text-sm font-black text-brand-navy underline-offset-4 hover:underline focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">Hapus semua filter</a>
+                    <div class="mt-3 flex justify-end">
+                        <a href="{{ $indexUrl }}#opportunity-finder" class="text-sm font-black text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Hapus semua filter</a>
                     </div>
                 </div>
             </form>
 
-            <nav class="mt-3 flex gap-2 overflow-x-auto pb-1" aria-label="Filter cepat berdasarkan jenis peluang">
-                <a href="{{ $queryFor([], ['type']) }}" class="shrink-0 rounded-full border px-4 py-2 text-xs font-black transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy {{ $filters['type'] ? 'border-slate-200 bg-white text-slate-600 hover:border-brand-navy/30 hover:text-brand-navy' : 'border-brand-navy bg-brand-navy text-white' }}">Semua</a>
+            <nav class="mt-2 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden" aria-label="Jenis opportunities">
+                <a href="{{ $queryFor([], ['type']) }}#opportunity-finder" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ blank($filters['type']) ? 'bg-brand-navy text-white' : 'bg-white text-brand-navy' }}">Semua</a>
                 @foreach ($availableTypes as $type)
-                    <a href="{{ $queryFor(['type' => $type]) }}" class="shrink-0 rounded-full border px-4 py-2 text-xs font-black transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy {{ $filters['type'] === $type ? 'border-brand-navy bg-brand-navy text-white' : 'border-slate-200 bg-white text-slate-600 hover:border-brand-navy/30 hover:text-brand-navy' }}">{{ $typeLabels[$type] ?? Illuminate\Support\Str::headline($type) }}</a>
+                    <a href="{{ $queryFor(['type' => $type]) }}#opportunity-finder" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ $filters['type'] === $type ? 'bg-brand-navy text-white' : 'bg-white text-brand-navy' }}">{{ $typeLabels[$type] ?? Illuminate\Support\Str::headline($type) }}</a>
                 @endforeach
             </nav>
 
-            @if ($hasActiveFilters)
-                <div class="mt-4 flex flex-wrap items-center gap-2" aria-label="Filter aktif">
-                    <span class="mr-1 text-[10px] font-black uppercase tracking-[0.14em] text-slate-400">Filter aktif</span>
-                    @if ($filters['q'])
-                        <a href="{{ $queryFor([], ['q']) }}" class="rounded-full bg-[#edf2f7] px-3 py-1.5 text-xs font-bold text-brand-navy">“{{ Illuminate\Support\Str::limit($filters['q'], 28) }}” ×</a>
-                    @endif
-                    @if ($filters['type'])
-                        <a href="{{ $queryFor([], ['type']) }}" class="rounded-full bg-[#edf2f7] px-3 py-1.5 text-xs font-bold text-brand-navy">{{ $typeLabels[$filters['type']] ?? $filters['type'] }} ×</a>
-                    @endif
-                    @if ($filters['status'] === 'closed')
-                        <a href="{{ $queryFor([], ['status']) }}" class="rounded-full bg-[#edf2f7] px-3 py-1.5 text-xs font-bold text-brand-navy">Sudah Ditutup ×</a>
-                    @endif
-                    @if ($filters['format'])
-                        <a href="{{ $queryFor([], ['format']) }}" class="rounded-full bg-[#edf2f7] px-3 py-1.5 text-xs font-bold text-brand-navy">{{ $formatLabels[$filters['format']] ?? $filters['format'] }} ×</a>
-                    @endif
-                    @if ($filters['deadline'])
-                        <a href="{{ $queryFor([], ['deadline']) }}" class="rounded-full bg-[#edf2f7] px-3 py-1.5 text-xs font-bold text-brand-navy">{{ $deadlineLabels[$filters['deadline']] ?? $filters['deadline'] }} ×</a>
-                    @endif
-                    @if ($filters['location'])
-                        <a href="{{ $queryFor([], ['location']) }}" class="rounded-full bg-[#edf2f7] px-3 py-1.5 text-xs font-bold text-brand-navy">{{ Illuminate\Support\Str::limit($filters['location'], 28) }} ×</a>
-                    @endif
-                    <a href="{{ $indexUrl }}" class="ml-1 text-xs font-black text-[#955c08] underline underline-offset-4">Hapus semua filter</a>
-                </div>
-            @endif
-        </div>
-    </section>
-
-    @if ($featuredOpportunity)
-        <section class="py-7 sm:py-8 lg:py-9" aria-labelledby="featured-opportunity-title">
-            <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-                <div class="mb-4 flex items-end justify-between gap-4">
-                    <div>
-                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Rekomendasi Kurator</p>
-                        <h2 id="featured-opportunity-title" class="mt-1 text-2xl font-black tracking-[-0.02em] text-brand-ink sm:text-3xl">Pilihan Edulaw</h2>
-                    </div>
-                    <span class="hidden text-xs font-bold text-slate-500 sm:block">Satu peluang yang layak diprioritaskan</span>
-                </div>
-                <x-opportunities.featured-card :opportunity="$featuredOpportunity" />
-            </div>
-        </section>
-    @endif
-
-    <section class="pb-10 {{ $featuredOpportunity ? 'pt-1' : 'pt-7 sm:pt-8' }} sm:pb-12 lg:pb-14" aria-labelledby="opportunity-results-title">
-        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-2 border-b border-slate-200 pb-4 sm:flex-row sm:items-end sm:justify-between">
-                <div>
-                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Opportunity Finder</p>
-                    <h2 id="opportunity-results-title" class="mt-1 text-2xl font-black tracking-[-0.02em] text-brand-ink sm:text-3xl">{{ $resultsTitle }}</h2>
-                </div>
-                <p class="text-sm font-bold text-slate-500"><strong class="text-brand-navy">{{ number_format($opportunities->total()) }}</strong> kesempatan ditemukan</p>
+            <div class="mt-7 flex flex-wrap items-center justify-between gap-3 text-sm text-slate-500">
+                <p>Diurutkan berdasarkan <strong class="text-brand-navy">{{ Illuminate\Support\Str::lower($sortLabels[$filters['sort']] ?? 'Deadline Terdekat') }}</strong></p>
+                @if ($opportunities->lastPage() > 1)
+                    <p>Halaman {{ $opportunities->currentPage() }} dari {{ $opportunities->lastPage() }}</p>
+                @endif
             </div>
 
             @if ($opportunities->isNotEmpty())
-                <div class="mt-5 grid grid-cols-1 gap-5 lg:grid-cols-2 lg:gap-6">
+                <div class="mt-4 grid grid-cols-1 gap-5 {{ $selectedView === 'grid' ? 'sm:grid-cols-2 lg:grid-cols-3' : '' }}">
                     @foreach ($opportunities as $opportunity)
-                        <x-opportunities.card :opportunity="$opportunity" />
+                        <x-opportunities.card :opportunity="$opportunity" :view="$selectedView" />
                     @endforeach
                 </div>
 
@@ -275,29 +246,38 @@
                     {{ $opportunities->onEachSide(1)->links() }}
                 </div>
             @else
-                <div class="mt-6 rounded-[1.25rem] border border-dashed border-slate-300 bg-white px-6 py-12 text-center">
-                    <span class="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-[#edf2f7] text-brand-navy" aria-hidden="true">
-                        <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/></svg>
-                    </span>
-                    <h3 class="mt-4 text-xl font-black text-brand-ink">Belum ada peluang yang sesuai</h3>
-                    <p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-slate-600">{{ $hasActiveFilters ? 'Coba ubah kata kunci atau filter untuk memperluas hasil pencarian.' : 'Belum ada opportunity yang tersedia untuk daftar ini saat ini.' }}</p>
+                <div class="mt-6 rounded-[14px] border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
+                    <h3 class="font-display text-xl font-black text-brand-navy">Belum ada peluang yang sesuai</h3>
+                    <p class="mx-auto mt-2 max-w-lg text-base leading-7 text-slate-600">{{ $hasActiveFilters ? 'Coba ubah kata kunci atau filter untuk memperluas hasil pencarian.' : 'Belum ada opportunity yang tersedia untuk daftar ini saat ini.' }}</p>
                     @if ($hasActiveFilters)
-                        <a href="{{ $indexUrl }}" class="mt-5 inline-flex min-h-11 items-center justify-center rounded-xl bg-brand-navy px-5 text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">Hapus Filter</a>
+                        <a href="{{ $indexUrl }}#opportunity-finder" class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white">Hapus Filter</a>
                     @endif
                 </div>
             @endif
         </div>
     </section>
 
+    <section class="bg-white py-8 sm:py-9" aria-labelledby="opportunity-curation-heading">
+        <div class="section-shell">
+            <article class="rounded-[14px] bg-[#f7f8fa] p-5 sm:grid sm:grid-cols-[0.42fr_0.58fr] sm:items-center sm:gap-6 sm:p-6">
+                <div>
+                    <p class="text-[11px] font-black uppercase tracking-[0.15em] text-brand-teal">Kurasi Edulaw</p>
+                    <h2 id="opportunity-curation-heading" class="mt-2 font-display text-2xl font-black text-brand-navy">Informasi peluang yang lebih mudah dipindai.</h2>
+                </div>
+                <p class="mt-3 text-base leading-7 text-slate-600 sm:mt-0">Setiap peluang diringkas melalui kategori, format, lokasi, dan deadline agar pembaca dapat mengambil keputusan dengan cepat.</p>
+            </article>
+        </div>
+    </section>
+
     <x-shared.cta-section
-        eyebrow="Kontribusi Komunitas"
-        title="Punya informasi peluang?"
-        body="Bagikan informasi beasiswa, kompetisi, call for papers, atau peluang lainnya kepada komunitas Edulaw."
+        heading-id="opportunity-contribution-heading"
+        eyebrow="Bagikan Peluang"
+        title="Punya informasi peluang yang relevan?"
+        body="Organisasi, kampus, komunitas, dan mitra dapat mengirimkan informasi beasiswa, kompetisi, karier, magang, fellowship, atau call for papers."
         :primary-url="route('collaboration.index')"
-        primary-label="Ajukan Opportunity"
+        primary-label="Kirim Informasi Peluang"
         :secondary-url="route('contact.index')"
         secondary-label="Hubungi Edulaw"
-        background-image=""
     />
 </main>
 @endsection

@@ -13,16 +13,16 @@
 <form
     method="POST"
     action="{{ url('/kolaborasi') }}"
-    class="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8"
+    class="rounded-[14px] bg-[#f7f8fa] p-5 sm:p-7"
 >
     @csrf
 
     <div>
-        <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
             Form Kolaborasi
         </p>
 
-        <h2 class="mt-3 text-2xl font-extrabold tracking-tight text-brand-ink sm:text-3xl">
+        <h2 class="mt-2 font-display text-2xl font-black text-brand-navy sm:text-3xl">
             Ajukan Kolaborasi
         </h2>
 
@@ -31,7 +31,7 @@
         </p>
     </div>
 
-    <div class="mt-8 grid gap-5">
+    <div class="mt-6 grid gap-4">
         {{-- Nama --}}
         <div>
             <label for="name" class="block text-sm font-bold text-brand-ink">
@@ -45,7 +45,7 @@
                 value="{{ old('name') }}"
                 placeholder="Masukkan nama lengkap Anda"
                 required
-                class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-mist"
+                class="mt-2 block min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
             >
 
             @error('name')
@@ -66,7 +66,7 @@
                 value="{{ old('institution') }}"
                 placeholder="Contoh: Fakultas Hukum, komunitas, lembaga, atau organisasi"
                 required
-                class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-mist"
+                class="mt-2 block min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
             >
 
             @error('institution')
@@ -88,7 +88,7 @@
                     value="{{ old('email') }}"
                     placeholder="nama@email.com"
                     required
-                    class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-mist"
+                    class="mt-2 block min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
                 >
 
                 @error('email')
@@ -108,7 +108,7 @@
                     value="{{ old('whatsapp') }}"
                     placeholder="08xxxxxxxxxx"
                     required
-                    class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-mist"
+                    class="mt-2 block min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
                 >
 
                 @error('whatsapp')
@@ -127,7 +127,7 @@
                 id="collaboration_type"
                 name="collaboration_type"
                 required
-                class="mt-2 block w-full rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm text-brand-ink shadow-sm outline-none transition focus:border-brand-blue focus:ring-4 focus:ring-brand-mist"
+                class="mt-2 block min-h-11 w-full rounded-lg border border-slate-200 bg-white px-3.5 py-2.5 text-sm text-brand-ink outline-none transition focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
             >
                 <option value="">Pilih jenis kolaborasi</option>
 
@@ -155,7 +155,7 @@
                 rows="5"
                 placeholder="Ceritakan bentuk kerja sama yang ingin diajukan..."
                 required
-                class="mt-2 block w-full resize-y rounded-2xl border border-slate-200 bg-white px-4 py-3 text-sm leading-6 text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-blue focus:ring-4 focus:ring-brand-mist"
+                class="mt-2 block w-full resize-y rounded-lg border border-slate-200 bg-white px-3.5 py-3 text-sm leading-6 text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
             >{{ old('message') }}</textarea>
 
             @error('message')
@@ -165,7 +165,7 @@
     </div>
 
     {{-- Privacy note --}}
-    <div class="mt-5 flex gap-3 rounded-2xl bg-brand-paper p-4 text-sm leading-6 text-slate-700">
+    <div class="mt-5 flex gap-3 rounded-[12px] bg-white p-4 text-sm leading-6 text-slate-700">
         <span class="mt-0.5 flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-brand-silver text-brand-ink">
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="M12 3 5 6v6c0 4.4 2.8 7.4 7 9 4.2-1.6 7-4.6 7-9V6l-7-3Z" stroke="currentColor" stroke-width="1.8" stroke-linejoin="round"/>
@@ -187,7 +187,7 @@
     <div class="mt-7 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
         <button
             type="submit"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-navy hover:text-white"
+        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-[#294f82]"
         >
             Kirim Usulan Kolaborasi
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -199,7 +199,7 @@
             href="https://wa.me/6281529927677"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex w-full items-center justify-center gap-2 rounded-2xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-extrabold text-brand-ink shadow-sm transition hover:border-brand-silver hover:bg-brand-paper sm:w-auto"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-black text-brand-navy transition hover:border-brand-teal/40 hover:bg-brand-teal-soft sm:w-auto"
         >
             Hubungi via WhatsApp
         </a>

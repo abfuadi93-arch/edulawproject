@@ -109,100 +109,17 @@
     ];
 @endphp
 
-<main class="bg-brand-paper">
-    {{-- Header --}}
-    <x-shared.page-header
-        title="Syarat & Ketentuan"
-        eyebrow="Ketentuan Layanan"
-        description="Halaman ini menjelaskan ketentuan penggunaan website Edulaw Project, termasuk akses konten, penggunaan informasi, tautan eksternal, formulir kontak, dan kanal kolaborasi."
-        background-image="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1800&q=85"
-        background-alt="Syarat dan ketentuan penggunaan website Edulaw Project"
-        :breadcrumbs="[
-            ['label' => 'Beranda', 'url' => '/'],
-            ['label' => 'Syarat & Ketentuan'],
-        ]"
-    >
-        <div class="edulaw-badge edulaw-badge-lg edulaw-badge-dark normal-case tracking-normal">
-            Terakhir diperbarui: {{ $updatedAt }}
-        </div>
-    </x-shared.page-header>
-
-    {{-- Summary --}}
-    <section class="py-12 lg:py-16">
-        <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <div class="grid gap-6 md:grid-cols-3">
-                @foreach ($summaryItems as $index => $item)
-                    <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                        <div class="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-navy text-sm font-extrabold text-white">
-                            {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
-                        </div>
-
-                        <h2 class="mt-6 text-lg font-extrabold leading-tight text-brand-ink">
-                            {{ $item['title'] }}
-                        </h2>
-
-                        <p class="mt-3 text-sm leading-6 text-slate-600">
-                            {{ $item['description'] }}
-                        </p>
-                    </article>
-                @endforeach
-            </div>
-        </div>
-    </section>
-
-    {{-- Terms content --}}
-    <section class="pb-14 lg:pb-20">
-        <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
-            <article class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm sm:p-8 lg:p-10">
-                <div class="space-y-10">
-                    @foreach ($sections as $section)
-                        <section>
-                            <h2 class="text-2xl font-extrabold leading-tight tracking-tight text-brand-ink">
-                                {{ $section['title'] }}
-                            </h2>
-
-                            <div class="edulaw-readable mt-4 text-[15px] text-slate-700 sm:text-base">
-                                @foreach ($section['content'] as $paragraph)
-                                    <p>
-                                        {{ $paragraph }}
-                                    </p>
-                                @endforeach
-                            </div>
-                        </section>
-                    @endforeach
-                </div>
-            </article>
-
-            {{-- Sidebar --}}
-            <aside class="space-y-6">
-                <div class="sticky top-24 space-y-6">
-                    <div class="rounded-[2rem] border border-slate-200 bg-white p-6 shadow-sm">
-                        <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
-                            Navigasi
-                        </p>
-
-                        <div class="mt-5 grid gap-2">
-                            @foreach ($sections as $section)
-                                <a
-                                    href="#"
-                                    class="rounded-2xl px-4 py-3 text-sm font-bold text-slate-600 transition hover:bg-brand-paper hover:text-brand-ink"
-                                >
-                                    {{ $section['title'] }}
-                                </a>
-                            @endforeach
-                        </div>
-                    </div>
-
-                    <x-shared.cta-card
-                        eyebrow="Catatan"
-                        title="Gunakan informasi secara bijak."
-                        body="Konten Edulaw Project disusun untuk literasi hukum umum dan tidak menggantikan konsultasi profesional untuk kasus konkret."
-                        :url="url('/kontak')"
-                        label="Hubungi Kami"
-                    />
-                </div>
-            </aside>
-        </div>
-    </section>
-</main>
+<x-legal.document-page
+    title="Syarat & Ketentuan"
+    eyebrow="Ketentuan Layanan"
+    description="Ketentuan penggunaan website Edulaw Project, termasuk akses konten, penggunaan informasi, tautan eksternal, dan kanal komunikasi."
+    :updated-at="$updatedAt"
+    :summary-items="$summaryItems"
+    :sections="$sections"
+    background-image="https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=1800&q=85"
+    background-alt="Syarat dan ketentuan penggunaan website Edulaw Project"
+    aside-eyebrow="Catatan Penggunaan"
+    aside-title="Gunakan informasi secara bijak."
+    aside-body="Konten Edulaw Project disusun untuk literasi hukum umum dan tidak menggantikan konsultasi profesional untuk kasus konkret."
+/>
 @endsection

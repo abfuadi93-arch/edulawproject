@@ -24,13 +24,13 @@
     @if ($isHorizontal) data-home-multimedia @endif
     @if ($isHorizontal) data-home-multimedia-secondary @else data-secondary-media @endif
     {{ $attributes->class([
-        'group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10',
+        'group min-w-0 overflow-hidden rounded-xl border border-[#e7ebf0] bg-white transition duration-300 hover:border-slate-300',
         'h-full' => ! $isHorizontal,
     ]) }}
 >
     <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka {{ $item->title }} di {{ $platformLabel }} (membuka tab baru)" @class(['focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy', 'flex h-full items-center gap-3 p-3' => $isHorizontal, 'flex h-full flex-col' => ! $isHorizontal])>
-        <div @class(['relative shrink-0 overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d]', 'h-20 w-28 rounded-xl' => $isHorizontal, 'aspect-video w-full' => ! $isHorizontal])>
-            <div class="absolute inset-0 grid place-items-center text-white/55" aria-hidden="true">
+        <div @class(['relative shrink-0 overflow-hidden', 'h-20 w-28 rounded-xl bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d]' => $isHorizontal, 'aspect-video w-full bg-white' => ! $isHorizontal])>
+            <div @class(['absolute inset-0 grid place-items-center', 'text-white/55' => $isHorizontal, 'text-brand-navy/35' => ! $isHorizontal]) aria-hidden="true">
                 <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
             </div>
 
@@ -41,7 +41,7 @@
                     onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
                     alt="{{ $item->title }}"
                     loading="lazy"
-                    class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                    @class(['absolute inset-0 h-full w-full transition duration-500 group-hover:scale-[1.03]', 'object-cover' => $isHorizontal, 'object-contain bg-white' => ! $isHorizontal])
                 >
             @endif
 

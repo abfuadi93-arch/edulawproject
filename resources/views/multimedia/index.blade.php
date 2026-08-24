@@ -74,7 +74,7 @@
     $shortPlatform = fn ($item) => $item?->platform === 'youtube' ? 'youtube' : 'instagram';
 @endphp
 
-<main class="overflow-x-clip bg-[#f6f8fb] text-brand-ink">
+<main class="overflow-x-clip bg-transparent text-brand-ink">
     <x-shared.page-header
         title="Multimedia Literasi Hukum Edulaw"
         :compact="true"
@@ -83,49 +83,30 @@
         description="Video, Shorts/Reels, dan dokumentasi kegiatan Edulaw dari kanal resmi kami."
         background-image="https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1800&q=85"
         background-alt="Kegiatan produksi konten dan diskusi Edulaw"
-        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-2 lg:items-center lg:px-8 lg:py-8"
+        grid-class="gap-7 px-5 py-8 sm:w-full sm:px-6 lg:min-h-[240px] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8 lg:py-8"
         title-class="text-3xl sm:text-4xl lg:text-[2.35rem]"
-        description-class="max-w-xl text-sm leading-6 text-white/90 lg:ml-auto lg:text-right"
+        description-class="max-w-xl text-base leading-7 text-white/90 lg:ml-auto lg:text-right"
         :overlay-opacity="0.62"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
             ['label' => 'Multimedia'],
         ]"
     >
-        <div class="flex w-full flex-col gap-2.5 sm:flex-row lg:justify-end">
-            <a href="#video" class="inline-flex min-h-10 items-center justify-center rounded-full bg-brand-amber px-5 py-2 text-sm font-black text-brand-ink shadow-md transition hover:-translate-y-0.5 hover:bg-[#e7a72d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
-                Lihat Video YouTube
-            </a>
-            <a href="#album-foto" class="inline-flex min-h-10 items-center justify-center rounded-full border border-white/35 bg-white/10 px-5 py-2 text-sm font-black text-white backdrop-blur transition hover:-translate-y-0.5 hover:border-brand-amber hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">
-                Jelajahi Dokumentasi
-            </a>
+        <div class="grid w-full gap-1.5 rounded-2xl border border-white/15 bg-white/10 p-1.5 text-left shadow-2xl shadow-black/20 backdrop-blur sm:grid-cols-3 lg:w-auto">
+            @foreach ([
+                ['label' => 'Video', 'meta' => 'YouTube Edulaw', 'href' => '#video', 'icon' => '▶'],
+                ['label' => 'Shorts & Reels', 'meta' => 'Instagram', 'href' => '#shorts-reels', 'icon' => '▯'],
+                ['label' => 'Dokumentasi', 'meta' => 'Google Photos', 'href' => '#album-foto', 'icon' => '▦'],
+            ] as $channel)
+                <a href="{{ $channel['href'] }}" class="flex min-h-14 min-w-0 items-center gap-2.5 rounded-xl px-2.5 py-2 text-white transition hover:bg-white/10 sm:min-w-32">
+                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-sm font-black text-brand-navy">{{ $channel['icon'] }}</span>
+                    <span class="min-w-0"><strong class="block text-xs font-black">{{ $channel['label'] }}</strong><span class="mt-0.5 block truncate text-[11px] font-bold text-white/70">{{ $channel['meta'] }}</span></span>
+                </a>
+            @endforeach
         </div>
     </x-shared.page-header>
 
-    <nav aria-label="Navigasi section Multimedia" class="border-b border-slate-200 bg-white/95">
-        <div class="mx-auto max-w-7xl overflow-x-auto px-5 py-3 sm:px-6 lg:px-8">
-            <div class="flex w-max gap-2 lg:w-auto">
-                @foreach ([
-                    ['label' => 'Video', 'href' => '#video'],
-                    ['label' => 'Shorts & Reels', 'href' => '#shorts-reels'],
-                    ['label' => 'Album Foto', 'href' => '#album-foto'],
-                ] as $tab)
-                    <a
-                        href="{{ $tab['href'] }}"
-                        @class([
-                            'shrink-0 rounded-full border px-4 py-2 text-xs font-black transition focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy',
-                            'border-brand-navy bg-brand-navy text-white' => $loop->first,
-                            'border-slate-200 bg-slate-50 text-slate-600 hover:border-brand-navy hover:text-brand-navy' => ! $loop->first,
-                        ])
-                    >
-                        {{ $tab['label'] }}
-                    </a>
-                @endforeach
-            </div>
-        </div>
-    </nav>
-
-    <section id="video" class="scroll-mt-24 py-14 lg:py-16">
+    <section id="video" class="scroll-mt-24 py-9 sm:py-10 lg:py-11">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <x-multimedia.section-heading
@@ -144,7 +125,8 @@
             </div>
 
             @if ($featuredVideo)
-                <x-multimedia.featured-card :item="$featuredVideo" class="mt-7" />
+                <div class="mt-7 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-brand-navy"><span class="text-[#d99a25]">★</span> Video Utama</div>
+                <x-multimedia.featured-card :item="$featuredVideo" class="mt-4" />
 
                 @if ($youtubeVideos->isNotEmpty())
                     <div class="mt-9 flex items-center justify-between gap-4">
@@ -166,7 +148,7 @@
         </div>
     </section>
 
-    <section id="shorts-reels" class="scroll-mt-24 bg-white py-14 lg:py-16">
+    <section id="shorts-reels" class="scroll-mt-24 bg-white py-9 sm:py-10 lg:py-11">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
@@ -179,8 +161,9 @@
             </div>
 
             @if ($shortItems->isNotEmpty())
-                <div class="mt-7 grid grid-cols-2 gap-4 md:grid-cols-3 lg:gap-5">
-                    @foreach ($shortItems as $item)
+                <div class="mt-7 grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
+                    <div class="grid gap-4 sm:grid-cols-2">
+                    @foreach ($shortItems->take(2) as $item)
                         @php($platform = $shortPlatform($item))
                         <article data-short-media class="group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-[#07111f] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10">
                             <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $platform === 'youtube' ? 'Tonton' : 'Lihat' }} {{ $item->title }} di {{ $platform === 'youtube' ? 'YouTube' : 'Instagram' }} (membuka tab baru)" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
@@ -201,6 +184,19 @@
                             </a>
                         </article>
                     @endforeach
+                    </div>
+
+                    <aside class="flex flex-col justify-center rounded-3xl border border-[#ebdcb9] bg-[#fff8ea] p-7 sm:p-8">
+                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Format Cepat</p>
+                        <h3 class="mt-2 text-2xl font-black leading-tight text-brand-ink sm:text-3xl">Konten pendek untuk memahami hukum dengan lebih cepat.</h3>
+                        <p class="mt-3 text-base leading-7 text-slate-600">Shorts dan Reels dipisahkan dari video panjang agar pembaca dapat memilih format sesuai waktu dan kebutuhan. Visual vertikal tetap dipertahankan tanpa membuat halaman terasa seperti feed media sosial.</p>
+                        <div class="mt-5 flex flex-wrap gap-2.5">
+                            @if ($instagramUrl)
+                                <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-xl bg-brand-navy px-4 text-sm font-black text-white">Lihat Instagram ↗</a>
+                            @endif
+                            <a href="{{ route('multimedia.index') }}" class="inline-flex min-h-11 items-center rounded-xl border border-brand-navy/20 bg-white px-4 text-sm font-black text-brand-navy">Semua Multimedia</a>
+                        </div>
+                    </aside>
                 </div>
             @else
                 <x-multimedia.empty-state platform="instagram" title="Konten pendek segera hadir" description="Nantikan video singkat seputar isu hukum, regulasi, dan kegiatan Edulaw." :url="$instagramUrl" link-label="Kunjungi Instagram" class="mt-7" />
@@ -208,7 +204,7 @@
         </div>
     </section>
 
-    <section id="album-foto" class="scroll-mt-24 py-14 lg:py-16">
+    <section id="album-foto" class="scroll-mt-24 py-9 sm:py-10 lg:py-11">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <x-multimedia.section-heading platform="google_photos" eyebrow="Google Photos" title="Dokumentasi Kegiatan" description="Album diskusi, kelas, kolaborasi, dan kegiatan Edulaw." />
 
@@ -242,19 +238,15 @@
         </div>
     </section>
 
-    <section class="bg-white px-5 py-7 sm:px-6 lg:px-8 lg:py-9">
-        <div class="relative mx-auto grid max-w-7xl items-center gap-6 overflow-hidden rounded-3xl bg-brand-navy px-6 py-8 text-white shadow-lg shadow-brand-navy/12 sm:px-8 lg:grid-cols-[1fr_auto] lg:px-10 lg:py-9">
-            <svg class="pointer-events-none absolute -right-24 top-1/2 h-80 w-80 -translate-y-1/2 text-brand-teal/10" viewBox="0 0 320 320" fill="none" aria-hidden="true"><circle cx="160" cy="160" r="118" stroke="currentColor"/><circle cx="160" cy="160" r="76" stroke="currentColor"/></svg>
-            <div class="relative">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber">Kolaborasi Multimedia</p>
-                <h2 class="mt-2 text-2xl font-black tracking-tight text-white sm:text-3xl">Punya gagasan konten hukum?</h2>
-                <p class="mt-2 max-w-3xl text-sm leading-6 text-white/75">Edulaw membuka ruang kolaborasi untuk video, Shorts/Reels, dokumentasi foto, dan konten edukasi hukum.</p>
-            </div>
-            <div class="relative flex flex-col gap-2.5 sm:flex-row lg:flex-col">
-                <a href="{{ $collaborationUrl }}" class="inline-flex min-h-11 items-center justify-center rounded-full bg-brand-amber px-5 py-2.5 text-sm font-black text-brand-ink transition hover:-translate-y-0.5 hover:bg-[#e7a72d] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">Ajukan Kolaborasi</a>
-                <a href="{{ $contactUrl }}" class="inline-flex min-h-10 items-center justify-center text-sm font-black text-white/85 transition hover:text-brand-amber focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white">Hubungi Edulaw</a>
-            </div>
-        </div>
-    </section>
+    <x-shared.cta-section
+        heading-id="multimedia-collaboration-heading"
+        eyebrow="Kolaborasi Multimedia"
+        title="Punya gagasan konten hukum?"
+        body="Edulaw membuka ruang kolaborasi untuk video, Shorts/Reels, dokumentasi foto, dan konten edukasi hukum."
+        :primary-url="$collaborationUrl"
+        primary-label="Ajukan Kolaborasi"
+        :secondary-url="$contactUrl"
+        secondary-label="Hubungi Edulaw"
+    />
 </main>
 @endsection

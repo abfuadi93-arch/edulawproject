@@ -73,7 +73,7 @@
     $shownResults = $query ? $results : [];
 @endphp
 
-<main class="bg-brand-paper">
+<main class="bg-transparent">
     {{-- Header --}}
     <x-shared.page-header
         title="Temukan Konten Edulaw"

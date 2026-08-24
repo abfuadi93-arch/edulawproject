@@ -36,7 +36,7 @@
         : url('/opportunities');
 @endphp
 
-<main class="bg-white text-brand-ink">
+<main class="bg-transparent text-brand-ink">
     <x-program.hero
         :stats="$stats"
         :background-image="$heroImage"
@@ -44,8 +44,8 @@
 
     <x-program.featured :program="$featuredProgram" />
 
-    <section class="bg-white py-10 sm:py-12 lg:py-14">
-        <div class="mx-auto grid max-w-7xl gap-6 px-5 sm:px-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:px-8 xl:grid-cols-[280px_minmax(0,1fr)_260px]">
+    <section class="home-surface-paper py-9 sm:py-10 lg:py-11">
+        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <x-program.filters
                 :status-options="$statusOptions"
                 :category-options="$filterCategories"
@@ -60,18 +60,17 @@
                 :selected-view="$selectedView"
             />
 
-            <x-program.active-grid
-                :programs="$activePrograms"
-                :total="$activeTotal"
-                :search="$activeSearch"
-                :selected-sort="$selectedSort"
-                :selected-view="$selectedView"
-            />
-
-            <x-program.sidebar
-                :audiences="$audienceOptions"
-                class="lg:col-span-2 xl:col-span-1"
-            />
+            <div class="mt-7">
+                <x-program.active-grid
+                    :programs="$activePrograms"
+                    :total="$activeTotal"
+                    :search="$activeSearch"
+                    :selected-sort="$selectedSort"
+                    :selected-view="$selectedView"
+                    :archive-url="route('programs.archive')"
+                    :opportunities-url="$opportunitiesUrl"
+                />
+            </div>
         </div>
     </section>
 

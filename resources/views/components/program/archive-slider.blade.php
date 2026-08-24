@@ -13,21 +13,17 @@
     $sliderId = 'program-archive-slider';
 @endphp
 
-<section id="program-arsip" class="bg-[#F8FAFC] py-12 sm:py-14">
+<section id="program-arsip" class="home-surface-paper pb-8 pt-1 lg:pb-10">
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-        <div class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)] sm:p-6">
+        <div class="rounded-2xl border border-[#dce5e3] bg-white/90 p-5 sm:p-6">
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.22em] text-brand-navy">
-                        Program Arsip
-                    </p>
-                    <h2 class="mt-2 whitespace-nowrap text-[clamp(1rem,4vw,1.875rem)] font-black leading-tight tracking-normal text-brand-ink">
-                        Dokumentasi seluruh program yang telah selesai.
-                    </h2>
+                    <h2 class="text-base font-black uppercase tracking-[0.14em] text-brand-navy">Program Terdahulu</h2>
+                    <p class="mt-1 text-sm leading-6 text-slate-500">Dokumentasi program yang telah diselenggarakan Edulaw.</p>
                 </div>
 
                 <a href="{{ $archiveUrl }}" class="inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-[#102B4B]">
-                    Lihat Selengkapnya
+                    Lihat Semua Arsip
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
@@ -40,7 +36,7 @@
                         type="button"
                         aria-label="Geser arsip ke kiri"
                         data-program-archive-prev
-                        class="absolute left-0 top-1/2 z-10 grid h-11 w-11 -translate-x-3 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-brand-navy shadow-lg shadow-slate-900/10 transition hover:bg-brand-navy hover:text-white sm:-translate-x-5"
+                        class="absolute left-1 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-brand-navy shadow-sm transition hover:border-brand-navy"
                     >
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m15 18-6-6 6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -63,7 +59,7 @@
                         type="button"
                         aria-label="Geser arsip ke kanan"
                         data-program-archive-next
-                        class="absolute right-0 top-1/2 z-10 grid h-11 w-11 translate-x-3 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-brand-navy shadow-lg shadow-slate-900/10 transition hover:bg-brand-navy hover:text-white sm:translate-x-5"
+                        class="absolute right-1 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full border border-slate-200 bg-white text-brand-navy shadow-sm transition hover:border-brand-navy"
                     >
                         <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m9 18 6-6-6-6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

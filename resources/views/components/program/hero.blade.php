@@ -17,21 +17,21 @@
         <div class="absolute inset-0" style="background-color: rgba(6, 19, 42, 0.72);"></div>
     </div>
 
-    <div class="mx-auto flex max-w-7xl items-center px-5 py-8 sm:px-6 lg:min-h-[240px] lg:px-8 lg:py-8">
+    <div class="mx-auto flex max-w-7xl items-center px-5 py-7 sm:px-6 sm:py-8 lg:min-h-[200px] lg:px-8 lg:py-8">
         <div class="grid w-full items-center gap-6 lg:grid-cols-2">
             <div class="max-w-3xl justify-self-start text-left">
-                <nav class="flex items-center gap-1.5 text-[11px] font-medium text-white/55" aria-label="Breadcrumb">
+                <nav class="flex items-center gap-1.5 text-xs font-medium text-white/60" aria-label="Breadcrumb">
                     <a href="{{ $homeUrl }}" class="rounded-sm transition hover:text-white focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber">Beranda</a>
                     <span aria-hidden="true">/</span>
                     <span class="text-white">Program</span>
                 </nav>
 
-                <p class="mt-2 text-[10px] font-bold uppercase tracking-[0.2em] text-brand-amber">Kanal Program</p>
+                <p class="mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">Kanal Program</p>
 
-                <h1 class="mt-1 max-w-2xl text-3xl font-black leading-[1.08] tracking-normal text-white sm:text-4xl lg:text-[2.45rem]">
+                <h1 class="mt-1 max-w-2xl text-3xl font-black leading-[1.08] tracking-normal text-white sm:text-[2.1rem] lg:text-[2.25rem]">
                     Program Edulaw
                 </h1>
-                <p class="mt-1 max-w-2xl text-pretty text-sm leading-6 text-white/78">
+                <p class="mt-1 max-w-2xl text-pretty text-base leading-7 text-white/82 lg:max-w-xl">
                     Program Edulaw Project dirancang sebagai ruang belajar, diskusi, riset, dan kolaborasi untuk memperkuat literasi hukum publik yang setara, relevan, dan berdampak.
                 </p>
             </div>

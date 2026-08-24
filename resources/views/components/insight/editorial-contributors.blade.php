@@ -57,7 +57,7 @@
                         <span class="min-w-0">
                             <span class="block truncate text-[13px] font-bold leading-5 tracking-[-0.01em] text-brand-ink transition group-hover:text-brand-navy" title="{{ $author->name }}">{{ $author->name }}</span>
                             <span class="mt-0.5 line-clamp-2 block text-[11px] font-medium leading-4 text-slate-500">{{ $publicRoleLabel($author) }}</span>
-                            <span class="mt-1.5 block text-[10px] font-semibold leading-4 tracking-[0.01em] text-brand-coral">{{ $author->published_insights_count }} tulisan terbit</span>
+                            <span class="mt-1.5 block text-[11px] font-semibold leading-4 tracking-[0.01em] text-brand-coral">{{ $author->published_insights_count }} tulisan terbit</span>
                         </span>
                     </a>
                 @endforeach

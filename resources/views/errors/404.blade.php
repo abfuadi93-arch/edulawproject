@@ -1,170 +1,89 @@
 @extends('layouts.app')
 
 @section('title', 'Halaman Tidak Ditemukan | Edulaw Project')
-@section('meta_description', 'Halaman yang Anda cari tidak ditemukan. Kembali ke Edulaw Project untuk menjelajahi insight, riset, publikasi, dan program hukum.')
+@section('meta_description', 'Halaman yang Anda cari tidak ditemukan. Kembali ke Edulaw Project untuk menjelajahi editorial, riset, publikasi, dan program hukum.')
 @section('robots', 'noindex,nofollow')
 
 @section('content')
-<main class="min-h-[calc(100vh-82px)] bg-[#fbf7ef]">
-    <section class="relative isolate overflow-hidden">
-        {{-- Background decoration --}}
-        <div class="pointer-events-none absolute -right-32 -top-32 h-96 w-96 rounded-full bg-amber-200/50 blur-3xl"></div>
-        <div class="pointer-events-none absolute -left-32 bottom-0 h-96 w-96 rounded-full bg-slate-200/70 blur-3xl"></div>
+@php
+    $quickLinks = [
+        [
+            'title' => 'Editorial',
+            'description' => 'Analisis hukum dan pembaruan isu publik.',
+            'url' => route('insights.index'),
+        ],
+        [
+            'title' => 'Riset & Publikasi',
+            'description' => 'Kajian, artikel jurnal, dan buku digital.',
+            'url' => route('publications.index'),
+        ],
+        [
+            'title' => 'Program',
+            'description' => 'Kelas, diskusi, dan pelatihan hukum.',
+            'url' => route('programs.index'),
+        ],
+        [
+            'title' => 'Opportunities',
+            'description' => 'Peluang pengembangan yang masih tersedia.',
+            'url' => route('opportunities.index'),
+        ],
+    ];
+@endphp
 
-        <div class="relative mx-auto grid min-h-[calc(100vh-82px)] max-w-7xl items-center gap-12 px-4 py-16 sm:px-6 lg:grid-cols-[0.95fr_1.05fr] lg:px-8">
-            {{-- Text --}}
-            <div>
-                <div class="edulaw-badge edulaw-badge-lg edulaw-badge-amber">
-                    <span class="h-2 w-2 rounded-full bg-brand-amber"></span>
-                    Error 404
+<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+    <x-shared.page-header
+        title="Halaman tidak ditemukan"
+        :compact="true"
+        eyebrow="Error 404"
+        :channel-header="true"
+        grid-class="gap-5 px-5 py-7 sm:w-full sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:px-8 lg:py-8"
+        description="Alamat yang Anda buka tidak tersedia, telah dipindahkan, atau mungkin belum tepat."
+        :breadcrumbs="[
+            ['label' => 'Beranda', 'url' => route('home')],
+            ['label' => '404'],
+        ]"
+    >
+        <p class="font-display text-7xl font-black leading-none tracking-[-0.06em] text-brand-amber sm:text-8xl" aria-hidden="true">404</p>
+    </x-shared.page-header>
+
+    <section class="py-9 sm:py-10 lg:py-11">
+        <div class="section-shell grid gap-5 lg:grid-cols-[0.42fr_0.58fr] lg:items-stretch">
+            <div class="flex flex-col justify-between rounded-[14px] bg-white p-6 sm:p-7">
+                <div>
+                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">Arah Berikutnya</p>
+                    <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">Mari kembali ke ruang pengetahuan Edulaw.</h2>
+                    <p class="mt-3 text-base leading-7 text-slate-600">Gunakan pencarian untuk menemukan konten tertentu atau kembali ke halaman utama untuk melanjutkan penelusuran.</p>
                 </div>
 
-                <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
-                    Halaman tidak ditemukan.
-                </h1>
-
-                <p class="mt-5 max-w-2xl text-base leading-8 text-slate-600 sm:text-lg">
-                    Maaf, halaman yang Anda cari tidak tersedia, sudah dipindahkan,
-                    atau alamat URL yang dimasukkan belum tepat.
-                </p>
-
-                <div class="mt-8 flex flex-col gap-3 sm:flex-row">
-                    <a
-                        href="{{ url('/') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-amber-500 hover:text-slate-950"
-                    >
-                        Kembali ke Beranda
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                        </svg>
+                <div class="mt-6 flex flex-col gap-3 sm:flex-row">
+                    <a href="{{ route('home') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-[#294f82]">
+                        Kembali ke Beranda <span aria-hidden="true">→</span>
                     </a>
-
-                    <a
-                        href="{{ url('/search') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-extrabold text-slate-950 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
-                    >
+                    <a href="{{ route('search.index') }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-black text-brand-navy transition hover:border-brand-teal/40 hover:bg-brand-teal-soft">
                         Cari Konten
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                            <path d="m21 21-4.3-4.3M10.8 18a7.2 7.2 0 1 1 0-14.4 7.2 7.2 0 0 1 0 14.4Z" stroke="currentColor" stroke-width="1.8" stroke-linecap="round"/>
-                        </svg>
-                    </a>
-                </div>
-
-                <div class="mt-10 grid gap-3 sm:grid-cols-2">
-                    <a
-                        href="{{ url('/insight') }}"
-                        class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
-                    >
-                        <p class="text-sm font-extrabold text-slate-950">
-                            Editorial
-                        </p>
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
-                            Baca analisis hukum dan pembaruan regulasi.
-                        </p>
-                    </a>
-
-                    <a
-                        href="{{ url('/riset-publikasi') }}"
-                        class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
-                    >
-                        <p class="text-sm font-extrabold text-slate-950">
-                            Riset &amp; Publikasi
-                        </p>
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
-                            Jelajahi kajian, policy brief, dan buku digital.
-                        </p>
-                    </a>
-
-                    <a
-                        href="{{ url('/program') }}"
-                        class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
-                    >
-                        <p class="text-sm font-extrabold text-slate-950">
-                            Program
-                        </p>
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
-                            Temukan kelas, diskusi, dan pelatihan hukum.
-                        </p>
-                    </a>
-
-                    <a
-                        href="{{ url('/kolaborasi') }}"
-                        class="group rounded-2xl border border-slate-200 bg-white p-4 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
-                    >
-                        <p class="text-sm font-extrabold text-slate-950">
-                            Kolaborasi
-                        </p>
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
-                            Ajukan kerja sama bersama Edulaw Project.
-                        </p>
                     </a>
                 </div>
             </div>
 
-            {{-- Visual card --}}
-            <div class="relative">
-                <div class="overflow-hidden rounded-4xl bg-slate-950 p-6 text-white shadow-xl shadow-slate-900/10 sm:p-8">
-                    <div class="relative overflow-hidden rounded-3xl bg-linear-to-br from-slate-900 via-slate-800 to-amber-400 p-8">
-                        <div class="pointer-events-none absolute -right-16 -top-16 h-52 w-52 rounded-full bg-white/10 blur-2xl"></div>
-                        <div class="pointer-events-none absolute -left-16 bottom-0 h-52 w-52 rounded-full bg-amber-300/20 blur-2xl"></div>
-
-                        <div class="relative">
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-300">
-                                Page Not Found
-                            </p>
-
-                            <div class="mt-10 flex items-end gap-3">
-                                <span class="text-8xl font-black leading-none tracking-tight text-white sm:text-9xl">
-                                    4
-                                </span>
-
-                                <span class="mb-3 flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-4xl font-black text-amber-300 backdrop-blur sm:h-24 sm:w-24 sm:text-5xl">
-                                    0
-                                </span>
-
-                                <span class="text-8xl font-black leading-none tracking-tight text-white sm:text-9xl">
-                                    4
-                                </span>
-                            </div>
-
-                            <h2 class="mt-8 max-w-md text-2xl font-extrabold leading-tight sm:text-3xl">
-                                Sepertinya Anda tersesat di antara halaman Edulaw.
-                            </h2>
-
-                            <p class="mt-4 max-w-md text-sm leading-6 text-white/70">
-                                Gunakan tautan cepat untuk kembali ke kanal utama atau cari konten
-                                yang Anda butuhkan melalui fitur pencarian.
-                            </p>
-                        </div>
-                    </div>
-
-                    <div class="mt-6 grid gap-4 sm:grid-cols-2">
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">
-                                Saran
-                            </p>
-                            <p class="mt-2 text-sm font-semibold leading-6 text-white/75">
-                                Periksa kembali alamat URL yang Anda masukkan.
-                            </p>
-                        </div>
-
-                        <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">
-                                Bantuan
-                            </p>
-                            <a
-                                href="{{ url('/kontak') }}"
-                                class="mt-2 inline-flex items-center gap-2 text-sm font-extrabold text-white transition hover:text-amber-300"
-                            >
-                                Hubungi Edulaw
-                                <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                                </svg>
-                            </a>
-                        </div>
-                    </div>
+            <nav class="rounded-[14px] bg-brand-navy p-5 sm:p-6" aria-label="Kanal utama Edulaw">
+                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-amber">Jelajahi Kanal</p>
+                <div class="mt-4 grid gap-2 sm:grid-cols-2">
+                    @foreach ($quickLinks as $link)
+                        <a href="{{ $link['url'] }}" class="group rounded-[12px] bg-white/8 p-4 transition hover:bg-white/12">
+                            <span class="flex items-center justify-between gap-4">
+                                <span class="text-base font-black text-white">{{ $link['title'] }}</span>
+                                <span class="text-brand-amber transition group-hover:translate-x-0.5" aria-hidden="true">→</span>
+                            </span>
+                            <span class="mt-1 block text-sm leading-6 text-white/65">{{ $link['description'] }}</span>
+                        </a>
+                    @endforeach
                 </div>
-            </div>
+
+                <div class="mt-4 flex flex-col gap-2 border-t border-white/12 pt-4 text-sm text-white/70 sm:flex-row sm:items-center sm:justify-between">
+                    <span>Masih membutuhkan bantuan?</span>
+                    <a href="{{ route('contact.index') }}" class="font-black text-white transition hover:text-brand-amber">Hubungi Edulaw →</a>
+                </div>
+            </nav>
         </div>
     </section>
 </main>

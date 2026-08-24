@@ -3,42 +3,44 @@
 @php
     $settings = \App\Support\EdulawSite::settings();
     $siteName = $settings['site.name'] ?? 'Edulaw Project';
+    $siteDescription = $settings['site.short_description'] ?? 'Platform literasi hukum untuk pembelajaran, riset, publikasi, dan kolaborasi publik.';
     $brandMark = \App\Support\EdulawSite::assetUrl($settings['site.logo'] ?? null, 'images/logo/edulaw-icon.png');
+    $siteValues = collect(preg_split('/[.·]+/', (string) ($settings['site.tagline'] ?? 'Equal. Educative. Embrace.')))
+        ->map(fn (string $value): string => trim($value))
+        ->filter()
+        ->take(3);
+    $impactStats = collect($stats)->take(6)->values();
 @endphp
 
-<section id="tentang-edulaw" class="scroll-mt-20 bg-[#f4f6f8] py-9 lg:py-12" aria-labelledby="home-about-title">
-    <div class="section-shell grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
-        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-[0_18px_42px_-34px_rgba(15,23,42,.7)] sm:p-8">
-            <div class="flex items-start justify-between gap-5">
-                <div>
-                    <p class="home-section-eyebrow text-[#b18332]">Tentang Edulaw</p>
-                    <h2 id="home-about-title" class="home-section-title mt-3">Ruang belajar dan riset hukum untuk kepentingan publik.</h2>
+<section id="tentang-edulaw" class="home-section home-surface-mist scroll-mt-20" aria-labelledby="home-about-title">
+    <div class="section-shell grid gap-5 lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)]">
+        <article class="relative overflow-hidden rounded-xl border border-[#e7ebf0] bg-white p-6 sm:p-8 lg:p-9">
+            @if ($brandMark)
+                <img src="{{ $brandMark }}" alt="Identitas {{ $siteName }}" width="64" height="64" class="absolute right-6 top-6 hidden size-14 object-contain opacity-90 sm:block" loading="lazy" decoding="async">
+            @endif
+            <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#b77928]">Tentang Edulaw</p>
+            <h2 id="home-about-title" class="mt-3 max-w-lg text-2xl font-extrabold leading-[1.18] tracking-[-0.02em] text-[#102f56] sm:text-3xl">Ruang belajar dan riset hukum untuk kepentingan publik.</h2>
+            <p class="mt-4 max-w-xl text-sm leading-7 text-slate-600">{{ $siteName }} — {{ $siteDescription }}</p>
+            @if ($siteValues->isNotEmpty())
+                <div class="mt-5 flex flex-wrap gap-2" aria-label="Nilai Edulaw">
+                    @foreach ($siteValues as $value)
+                        <span class="rounded-full bg-[#fff0b8] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.09em] text-[#875b12]">{{ $value }}</span>
+                    @endforeach
                 </div>
-                @if ($brandMark)
-                    <img src="{{ $brandMark }}" alt="Identitas {{ $siteName }}" width="64" height="64" class="hidden size-16 object-contain sm:block" loading="lazy" decoding="async">
-                @endif
-            </div>
-            <p class="mt-5 text-[15px] leading-7 text-slate-500">{{ $siteName }} menghubungkan literasi konstitusi, analisis regulasi, program pembelajaran, riset berbasis data, dan kolaborasi publik dalam satu ekosistem pengetahuan yang terbuka.</p>
-            <div class="mt-6 flex flex-wrap gap-2" aria-label="Nilai Edulaw">
-                @foreach (['Equal', 'Educative', 'Embrace'] as $value)
-                    <span class="rounded-full bg-[#fff2cc] px-3 py-1.5 text-[11px] font-extrabold text-[#8b661d]">{{ $value }}</span>
-                @endforeach
-            </div>
-            <a href="{{ route('about') }}" class="mt-7 inline-flex min-h-11 items-center rounded-lg bg-[#1f3c69] px-5 py-3 text-[13px] font-extrabold text-white transition hover:bg-[#142f57]">Kenali Edulaw →</a>
+            @endif
+            <a href="{{ route('about') }}" class="mt-6 inline-flex rounded-lg bg-[#173b68] px-4 py-3 text-xs font-extrabold text-white transition hover:bg-[#102f56]">Kenali Edulaw →</a>
         </article>
 
-        <article class="overflow-hidden rounded-2xl bg-[#0d315e] text-white shadow-[0_22px_52px_-36px_rgba(15,23,42,.9)]">
-            <div class="p-6 sm:p-8">
-                <p class="home-section-eyebrow text-[#f0c55e]">Dampak Edulaw</p>
-                <h2 class="home-subsection-title mt-3 text-white">Pengetahuan yang terus bertumbuh.</h2>
-                <p class="mt-3 text-sm leading-6 text-slate-300">Angka berikut diperbarui langsung dari konten yang telah diterbitkan.</p>
+        <article class="overflow-hidden rounded-xl bg-[linear-gradient(145deg,#0c386b_0%,#155e68_100%)] text-white">
+            <div class="px-6 pb-4 pt-6 sm:px-8 sm:pt-8">
+                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#f5c451]">Dampak Edulaw</p>
+                <h2 class="mt-2 text-xl font-extrabold text-white sm:text-2xl">Pengetahuan yang terus bertumbuh.</h2>
             </div>
-
-            <dl class="grid grid-cols-2 border-t border-white/10 sm:grid-cols-3 lg:grid-cols-2 xl:grid-cols-3" aria-label="Statistik kredibilitas Edulaw Project">
-                @foreach ($stats as $stat)
-                    <div class="border-b border-r border-white/10 p-5" data-home-stat="{{ $stat['label'] }}">
-                        <dd class="font-display text-3xl font-extrabold text-[#f5c451]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
-                        <dt class="mt-1 text-[10px] font-bold uppercase tracking-wider text-slate-300">{{ $stat['label'] }}</dt>
+            <dl class="grid grid-cols-2 border-l border-t border-white/10 sm:grid-cols-3" aria-label="Statistik Edulaw Project">
+                @foreach ($impactStats as $stat)
+                    <div class="flex min-h-24 flex-col justify-center border-b border-r border-white/10 p-5 sm:p-6" data-home-stat="{{ $stat['label'] }}">
+                        <dd class="font-display text-3xl font-extrabold tracking-tight text-[#f5c451]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
+                        <dt class="mt-2 text-[11px] font-extrabold uppercase tracking-[0.09em] text-slate-200">{{ $stat['label'] }}</dt>
                     </div>
                 @endforeach
             </dl>

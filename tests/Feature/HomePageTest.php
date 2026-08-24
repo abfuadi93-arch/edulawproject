@@ -63,7 +63,6 @@ it('shows compact empty states and omits unavailable publication statistics', fu
         ->assertSee('Publikasi sedang disiapkan.')
         ->assertSee('Program terbaru sedang disiapkan.')
         ->assertSee('Belum ada peluang yang sedang dibuka.')
-        ->assertSee('Lihat arsip peluang')
         ->assertDontSee('Peluang aktif dengan tenggat terdekat')
         ->assertDontSee('Belajar Hukum Melalui Beragam Format')
         ->assertDontSee('Total Unduhan')
@@ -201,7 +200,7 @@ it('falls back to the nearest archived programs when no active program exists', 
     expect(substr_count($html, 'data-home-program'))->toBe(3);
 });
 
-it('shows the four latest published insights in chronological order', function () {
+it('shows one featured insight beside programs and four latest editorial items', function () {
     $featured = Insight::query()->create([
         'title' => 'Insight Utama Beranda',
         'slug' => 'insight-utama-beranda',
@@ -243,8 +242,7 @@ it('shows the four latest published insights in chronological order', function (
         ->assertSee(route('insights.index'), false);
 
     expect(substr_count($insightSection, '<article data-home-insight '))->toBe(4)
-        ->and(substr_count($insightSection, 'data-home-insight-featured'))->toBe(1)
-        ->and(substr_count($insightSection, 'data-home-insight-compact'))->toBe(3)
+        ->and(substr_count($html, 'data-home-insight-featured'))->toBe(1)
         ->and($insightSection)->toContain($latest[0]->title)
         ->and($insightSection)->toContain($latest[1]->title)
         ->and($insightSection)->toContain($latest[2]->title)
@@ -302,10 +300,12 @@ it('renders the about section followed by the active collaboration call to actio
     $this->get(route('home'))
         ->assertOk()
         ->assertSeeInOrder([
-            'Untuk Siapa Edulaw',
             'Program Edulaw',
+            'Belajar Hukum secara Kontekstual',
+            'Pilihan Editor',
             'Edulaw Insight Terbaru',
             'Riset &amp; Publikasi Pilihan',
+            'Peluang untuk Tumbuh dan Berkontribusi',
             'Tentang Edulaw',
             'Bangun ruang literasi hukum bersama Edulaw Project.',
         ], false)
@@ -318,7 +318,7 @@ it('renders the about section followed by the active collaboration call to actio
         ->assertDontSee('Kanal pengiriman tulisan belum dibuka.');
 });
 
-it('uses canonical hero calls to action and valid contextual audience anchors', function () {
+it('uses the three canonical hero calls to action', function () {
     Multimedia::query()->create([
         'title' => 'Video untuk Anchor Multimedia',
         'type' => 'video',
@@ -343,16 +343,14 @@ it('uses canonical hero calls to action and valid contextual audience anchors', 
         ->assertSee('id="riset-publikasi"', false)
         ->assertSee('id="multimedia"', false);
 
-    expect($xpath->query('//*[@data-home-hero]//a[@href="'.route('insights.index').'"]')->length)->toBe(1)
+    expect($xpath->query('//*[@data-home-hero]//a')->length)->toBe(3)
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('insights.index').'"]')->length)->toBe(1)
         ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('programs.index').'"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('collaboration.index').'"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#program-edulaw"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#riset-publikasi"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#edulaw-insight"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-audience-card]/a[@href="#multimedia"]')->length)->toBe(1);
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('about').'"]')->length)->toBe(0)
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('collaboration.index').'"]')->length)->toBe(1);
 });
 
-it('shows all dynamic credibility statistics using only the correct public record statuses', function () {
+it('shows all dynamic credibility statistics using only public record statuses', function () {
     Insight::query()->create([
         'title' => 'Insight Kredibilitas',
         'slug' => 'insight-kredibilitas',
@@ -458,6 +456,7 @@ it('keeps every dynamic credibility statistic visible when its value is zero', f
     $response
         ->assertSee('data-home-stat="Insight Terbit"', false)
         ->assertSee('data-home-stat="Riset &amp; Publikasi"', false)
+        ->assertSee('data-home-stat="Kontributor Aktif"', false)
         ->assertSee('data-home-stat="Peluang Aktif"', false);
 });
 
@@ -515,22 +514,19 @@ it('does not fail when optional site identity and contact settings are null', fu
         ->assertDontSee('wa.me', false);
 });
 
-it('shows the four intended audience groups in the final homepage order', function () {
+it('shows the three institutional pillars in the hero', function () {
     $response = $this->get(route('home'));
     $html = $response->getContent();
 
     $response
         ->assertOk()
         ->assertSeeInOrder([
-            'Untuk Siapa Edulaw',
-            'Mahasiswa Hukum',
-            'Peneliti &amp; Akademisi',
-            'Praktisi &amp; Profesional',
-            'Masyarakat &amp; Komunitas',
-            'Program Edulaw',
+            'Belajar',
+            'Memahami',
+            'Berkembang',
         ], false);
 
-    expect(substr_count($html, 'data-home-audience-card'))->toBe(4);
+    expect(substr_count($html, 'data-home-pillar'))->toBe(3);
 });
 
 it('shows at most four active opportunities ordered by nearest deadline in a one plus three hierarchy', function () {
@@ -575,7 +571,6 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
-    $featuredMarkup = Str::between($html, '<article class="oppP-featured"', '</article>');
     $document = new DOMDocument;
     $document->loadHTML($html, LIBXML_NOERROR | LIBXML_NOWARNING);
     $xpath = new DOMXPath($document);
@@ -595,15 +590,12 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->assertDontSee($invalid->title)
         ->assertSee('href="'.route('opportunities.show', $opportunities[0]->slug).'"', false)
         ->assertDontSee('href="https://example.test/apply/1"', false)
-        ->assertSee('class="oppP-featured"', false)
-        ->assertSee('class="oppP-stack"', false)
-        ->assertDontSee('class="oppP-bottom"', false)
         ->assertSee('alt="Poster Peluang Aktif 1"', false)
         ->assertSee('Jakarta')
         ->assertSee('Hybrid')
         ->assertSee('Lihat Detail')
         ->assertDontSee('Lihat Peluang')
-        ->assertSee('Beasiswa, kompetisi, fellowship, program pengembangan, dan peluang kolaborasi pilihan');
+        ->assertSee('Ragam kesempatan untuk belajar, berkembang, dan memberi dampak nyata.');
 
     expect($xpath->query('//*[@data-home-opportunity]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity-featured]')->length)->toBe(1)
@@ -613,14 +605,7 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "/opportunities/")]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank"]')->length)->toBe(0)
-        ->and($xpath->query('//*[@data-home-opportunity-secondary]//div[contains(concat(" ", normalize-space(@class), " "), " oppP-cardfooter ")]')->length)->toBe(3)
-        ->and($featuredMarkup)->not->toContain('oppP-icon')
-        ->and($featuredMarkup)->toContain('oppP-featured-footer')
-        ->and(strpos($featuredMarkup, 'oppP-badge'))->toBeLessThan(strpos($featuredMarkup, 'oppP-mini'))
-        ->and(strpos($featuredMarkup, 'oppP-mini'))->toBeLessThan(strpos($featuredMarkup, '<h3>'))
-        ->and(strpos($featuredMarkup, '<h3>'))->toBeLessThan(strpos($featuredMarkup, 'oppP-context'))
-        ->and(strpos($featuredMarkup, 'oppP-context'))->toBeLessThan(strpos($featuredMarkup, 'oppP-featured-footer'))
-        ->and(strpos($featuredMarkup, 'oppP-deadline'))->toBeLessThan(strpos($featuredMarkup, 'oppP-action'));
+        ->and($xpath->query('//*[@data-home-opportunity-secondary]//*[contains(text(), "Deadline")]')->length)->toBe(3);
 });
 
 it('excludes expired open opportunities and renders the opportunities empty state', function () {
@@ -675,6 +660,10 @@ it('shows one featured and at most three secondary multimedia teasers', function
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
+    $editorialStart = strpos($html, '<section id="edulaw-insight"');
+    $programStart = strpos($html, '<section id="program-edulaw"');
+    $publicationStart = strpos($html, '<section id="riset-publikasi"');
+    $opportunityStart = strpos($html, '<section id="opportunities"');
     $aboutStart = strpos($html, '<section id="tentang-edulaw"');
     $multimediaStart = strpos($html, '<section id="multimedia"');
     $nextSectionStart = strpos($html, '<section', $multimediaStart + 1);
@@ -701,12 +690,16 @@ it('shows one featured and at most three secondary multimedia teasers', function
         $nextSectionStart - $multimediaStart,
     );
 
-    expect($aboutStart)->toBeLessThan($multimediaStart)
+    expect($programStart)->toBeLessThan($editorialStart)
+        ->and($editorialStart)->toBeLessThan($publicationStart)
+        ->and($publicationStart)->toBeLessThan($opportunityStart)
+        ->and($opportunityStart)->toBeLessThan($aboutStart)
+        ->and($aboutStart)->toBeLessThan($multimediaStart)
         ->and(substr_count($html, 'data-home-multimedia '))->toBe(4)
         ->and(substr_count($html, 'data-home-multimedia-featured'))->toBe(1)
         ->and(substr_count($html, 'data-home-multimedia-secondary'))->toBe(3)
         ->and($multimediaSection)->toContain('from-slate-950/95')
-        ->and($multimediaSection)->toContain('bg-slate-950/55')
+        ->and($multimediaSection)->toContain('Tonton Video')
         ->and($multimediaSection)->toContain('h-20 w-28')
         ->and($multimediaSection)->not->toContain('home-empty-state');
 });

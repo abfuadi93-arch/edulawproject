@@ -60,6 +60,9 @@ class InsightController extends Controller
         $author = $request->query('author');
         $search = trim((string) $request->query('q', ''));
         $featuredOnly = $request->boolean('featured');
+        $sort = in_array($request->query('sort'), ['latest', 'oldest', 'title'], true)
+            ? (string) $request->query('sort')
+            : 'latest';
 
         if ($category && blank($author) && $search === '' && ! $featuredOnly) {
             $categoryPageSlug = $this->categoryPageSlug((string) $category);
@@ -130,23 +133,20 @@ class InsightController extends Controller
         $categorySections = $this->categorySections($insightChannels, $shownIds);
 
         $latestEditorials = $latestInsights
-            ->whereNotIn('id', $shownIds->all())
-            ->take(6)
+            ->whereNotIn('id', [$featuredMain?->id])
+            ->take(4)
             ->values();
 
         $popularInsights = $this->popularInsights();
         $popularEditorials = $popularInsights->isNotEmpty()
-            ? $popularInsights->take(5)->values()
-            : $latestInsights->take(5)->values();
+            ? $popularInsights->take(10)->values()
+            : $latestInsights->take(10)->values();
 
-        $recentSidebarEditorials = $latestInsights
-            ->whereNotIn('id', $popularEditorials->pluck('id')->all())
-            ->take(5)
-            ->values();
-
-        if ($recentSidebarEditorials->isEmpty()) {
-            $recentSidebarEditorials = $latestInsights->take(5)->values();
-        }
+        $query = match ($sort) {
+            'oldest' => $query->orderBy('published_at')->orderBy('id'),
+            'title' => $query->orderBy('title')->orderBy('id'),
+            default => $query->orderByDesc('published_at')->latest('id'),
+        };
 
         return view('insights.index', [
             'latestInsights' => $latestInsights,
@@ -156,21 +156,21 @@ class InsightController extends Controller
             'latestEditorials' => $latestEditorials,
             'popularEditorials' => $popularEditorials,
             'popularHasViews' => $popularInsights->isNotEmpty(),
-            'recentSidebarEditorials' => $recentSidebarEditorials,
             'insightChannels' => $insightChannels,
             'popularInsights' => $popularInsights,
             'popularTags' => $this->popularTags(),
             'editorialContributors' => $this->editorialContributors(),
             'insights' => $query
-                ->orderByDesc('published_at')
-                ->latest('id')
                 ->paginate(9)
                 ->withQueryString(),
+            'publishedEditorialCount' => Insight::query()->published()->count(),
+            'editorialCategoryCount' => $insightCategories->count(),
             'insightCategories' => $insightCategories,
             'selectedCategory' => $category,
             'selectedAuthor' => $author,
             'search' => $search,
             'featuredOnly' => $featuredOnly,
+            'selectedSort' => $sort,
             'showFilteredArchive' => $search !== '' || filled($category) || filled($author) || $featuredOnly || $request->filled('archive') || (int) $request->query('page', 1) > 1,
         ]);
     }
@@ -497,6 +497,7 @@ class InsightController extends Controller
                 return [
                     'title' => $channel['label'],
                     'description' => $channel['category']?->description ?: ($channel['description'] ?? null),
+                    'article_count' => (int) ($channel['article_count'] ?? $allArticles->count()),
                     'items' => $articles,
                     'url' => ($channel['url'] ?? route('insights.index')).'#insight-archive',
                 ];

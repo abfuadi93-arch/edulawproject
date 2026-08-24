@@ -13,109 +13,78 @@
 ])
 
 @php
-    $indexUrl = \Illuminate\Support\Facades\Route::has('programs.index') ? route('programs.index') : url('/program');
+    $indexUrl = Route::has('programs.index') ? route('programs.index') : url('/program');
+    $selectedStatus = collect($selectedStatuses)->first();
+    $selectedCategory = collect($selectedCategories)->first();
+    $selectedFormat = collect($selectedFormats)->first();
+    $selectedLevel = collect($selectedLevels)->first();
 @endphp
 
-<aside {{ $attributes->merge(['class' => 'lg:sticky lg:top-24 lg:self-start']) }}>
-    <form action="{{ $indexUrl }}" method="GET" class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-        @if (filled($search))
-            <input type="hidden" name="q" value="{{ $search }}">
-        @endif
-        <input type="hidden" name="sort" value="{{ $selectedSort }}">
-        <input type="hidden" name="view" value="{{ $selectedView }}">
+<form action="{{ $indexUrl }}" method="GET" class="rounded-xl border border-[#dce5e3] bg-white/90 p-3" data-program-filter-bar>
+    <input type="hidden" name="sort" value="{{ $selectedSort }}">
+    <input type="hidden" name="view" value="{{ $selectedView }}">
 
-        <div class="mb-5 flex items-center justify-between gap-4">
-            <h2 class="text-[11px] font-black uppercase tracking-[0.22em] text-brand-navy">
-                Filter Program
-            </h2>
+    <div class="grid min-w-0 gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(190px,1.4fr)_repeat(4,minmax(125px,.72fr))_auto_auto]">
+        <label class="relative min-w-0 sm:col-span-2 lg:col-span-1">
+            <span class="sr-only">Cari program</span>
+            <input
+                type="search"
+                name="q"
+                value="{{ $search }}"
+                placeholder="Cari program..."
+                class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white pl-3 pr-10 text-sm font-semibold text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
+            >
+            <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+            </svg>
+        </label>
 
-            <a href="{{ $indexUrl }}" class="text-xs font-black text-slate-500 transition hover:text-brand-navy">
-                Reset
-            </a>
-        </div>
+        <label class="min-w-0">
+            <span class="sr-only">Status program</span>
+            <select name="status" class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-navy outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10">
+                <option value="">Status</option>
+                @foreach ($statusOptions as $option)
+                    <option value="{{ $option['value'] }}" @selected($selectedStatus === $option['value'])>{{ $option['label'] }} ({{ $option['count'] ?? 0 }})</option>
+                @endforeach
+            </select>
+        </label>
 
-        <div class="space-y-6">
-            <fieldset>
-                <legend class="text-sm font-black text-brand-ink">Status Program</legend>
-                <div class="mt-3 space-y-2">
-                    @foreach ($statusOptions as $option)
-                        <label class="flex cursor-pointer items-center gap-3 text-sm font-semibold text-slate-600">
-                            <input
-                                type="checkbox"
-                                name="status[]"
-                                value="{{ $option['value'] }}"
-                                @checked(in_array($option['value'], $selectedStatuses, true))
-                                class="h-4 w-4 rounded border-slate-300 text-brand-navy focus:ring-brand-navy"
-                            >
-                            <span>{{ $option['label'] }} <span class="text-slate-400">({{ $option['count'] ?? 0 }})</span></span>
-                        </label>
-                    @endforeach
-                </div>
-            </fieldset>
+        <label class="min-w-0">
+            <span class="sr-only">Kategori program</span>
+            <select name="category" class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-navy outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10">
+                <option value="">Kategori</option>
+                @foreach ($categoryOptions as $option)
+                    <option value="{{ $option['value'] }}" @selected($selectedCategory === $option['value'])>{{ $option['label'] }} ({{ $option['count'] ?? 0 }})</option>
+                @endforeach
+            </select>
+        </label>
 
-            <fieldset class="border-t border-slate-200 pt-5">
-                <legend class="text-sm font-black text-brand-ink">Kategori</legend>
-                <div class="mt-3 space-y-2">
-                    @foreach ($categoryOptions as $option)
-                        <label class="flex cursor-pointer items-center gap-3 text-sm font-semibold text-slate-600">
-                            <input
-                                type="checkbox"
-                                name="category[]"
-                                value="{{ $option['value'] }}"
-                                @checked(in_array($option['value'], $selectedCategories, true))
-                                class="h-4 w-4 rounded border-slate-300 text-brand-navy focus:ring-brand-navy"
-                            >
-                            <span>{{ $option['label'] }} <span class="text-slate-400">({{ $option['count'] ?? 0 }})</span></span>
-                        </label>
-                    @endforeach
-                </div>
-            </fieldset>
+        <label class="min-w-0">
+            <span class="sr-only">Format program</span>
+            <select name="format" class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-navy outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10">
+                <option value="">Format</option>
+                @foreach ($formatOptions as $option)
+                    <option value="{{ $option['value'] }}" @selected($selectedFormat === $option['value'])>{{ $option['label'] }} ({{ $option['count'] ?? 0 }})</option>
+                @endforeach
+            </select>
+        </label>
 
-            <fieldset class="border-t border-slate-200 pt-5">
-                <legend class="text-sm font-black text-brand-ink">Format</legend>
-                <div class="mt-3 space-y-2">
-                    @foreach ($formatOptions as $option)
-                        <label class="flex cursor-pointer items-center gap-3 text-sm font-semibold text-slate-600">
-                            <input
-                                type="checkbox"
-                                name="format[]"
-                                value="{{ $option['value'] }}"
-                                @checked(in_array($option['value'], $selectedFormats, true))
-                                class="h-4 w-4 rounded border-slate-300 text-brand-navy focus:ring-brand-navy"
-                            >
-                            <span>{{ $option['label'] }} <span class="text-slate-400">({{ $option['count'] ?? 0 }})</span></span>
-                        </label>
-                    @endforeach
-                </div>
-            </fieldset>
+        <label class="min-w-0">
+            <span class="sr-only">Level program</span>
+            <select name="level" class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-navy outline-none focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10">
+                <option value="">Level</option>
+                @foreach ($levelOptions as $option)
+                    <option value="{{ $option['value'] }}" @selected($selectedLevel === $option['value'])>{{ $option['label'] }} ({{ $option['count'] ?? 0 }})</option>
+                @endforeach
+            </select>
+        </label>
 
-            <fieldset class="border-t border-slate-200 pt-5">
-                <legend class="text-sm font-black text-brand-ink">Level</legend>
-                <div class="mt-3 space-y-2">
-                    @foreach ($levelOptions as $option)
-                        <label class="flex cursor-pointer items-center gap-3 text-sm font-semibold text-slate-600">
-                            <input
-                                type="checkbox"
-                                name="level[]"
-                                value="{{ $option['value'] }}"
-                                @checked(in_array($option['value'], $selectedLevels, true))
-                                class="h-4 w-4 rounded border-slate-300 text-brand-navy focus:ring-brand-navy"
-                            >
-                            <span>{{ $option['label'] }} <span class="text-slate-400">({{ $option['count'] ?? 0 }})</span></span>
-                        </label>
-                    @endforeach
-                </div>
-            </fieldset>
-        </div>
+        <button type="submit" class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-black text-white transition hover:bg-[#102B4B]">
+            Terapkan
+        </button>
 
-        <div class="mt-7 space-y-3">
-            <button type="submit" class="inline-flex min-h-11 w-full items-center justify-center rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-black text-white shadow-lg shadow-brand-navy/18 transition hover:-translate-y-0.5 hover:bg-[#102B4B]">
-                Terapkan Filter
-            </button>
-
-            <a href="{{ $indexUrl }}" class="inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-slate-300 bg-white px-4 py-2.5 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">
-                Reset Filter
-            </a>
-        </div>
-    </form>
-</aside>
+        <a href="{{ $indexUrl }}" class="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-black text-slate-500 transition hover:bg-slate-50 hover:text-brand-navy">
+            Reset
+        </a>
+    </div>
+</form>

@@ -129,7 +129,7 @@
     @stack('styles')
 </head>
 
-<body class="min-h-screen overflow-x-hidden bg-white text-brand-ink antialiased">
+<body class="min-h-screen overflow-x-hidden bg-[#f4f8f7] text-brand-ink antialiased">
     <a
         href="#main-content"
         class="fixed left-4 top-4 z-[100] -translate-y-24 rounded-lg bg-brand-navy px-4 py-3 text-sm font-bold text-white shadow-lg transition focus:translate-y-0"
@@ -142,7 +142,7 @@
         <x-layout.navbar />
 
         {{-- Main content --}}
-        <main id="main-content" class="flex-1" tabindex="-1">
+        <main id="main-content" class="site-surface-base flex-1" tabindex="-1">
             @yield('content')
         </main>
 

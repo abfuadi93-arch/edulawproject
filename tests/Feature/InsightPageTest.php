@@ -27,14 +27,14 @@ test('published insight index and detail pages render', function () {
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
         ->assertSee('Edulaw Insight')
-        ->assertSee('Jelajahi Artikel')
-        ->assertSee('href="#editorial-terbaru"', false)
+        ->assertSee('Artikel Terbit')
+        ->assertSee('Kategori Editorial')
         ->assertSee('Ajukan Kolaborasi')
         ->assertSee(route('collaboration.index'), false)
         ->assertDontSee('Jelajahi Arsip')
         ->assertDontSee('Baca Editorial Terbaru')
         ->assertSee('Editorial Edulaw')
-        ->assertSee('Baca Selengkapnya');
+        ->assertSee('Baca Editorial');
 
     $html = $this->get(route('insights.show', $insight->slug))
         ->assertOk()
@@ -305,8 +305,9 @@ test('editorial category section is capped to four compact blocks', function () 
 
     $html = $this->get(route('insights.index'))
         ->assertOk()
-        ->assertSee('Jelajahi Berdasarkan Kategori')
-        ->assertSee('Lihat Semua Kategori')
+        ->assertSee('Jelajahi Berdasarkan Tema')
+        ->assertSee('Semua Kategori')
+        ->assertSee('5 artikel')
         ->getContent();
 
     expect(substr_count($html, 'data-editorial-category-block='))
@@ -577,6 +578,41 @@ test('editorial archive pagination remains available', function () {
         ->assertViewHas('insights', fn ($insights) => $insights->currentPage() === 2 && $insights->count() === 1);
 });
 
+test('editorial archive supports publication sorting and list presentation', function () {
+    $category = InsightCategory::query()->create([
+        'name' => 'Edulaw Insight',
+        'slug' => 'edulaw-insight',
+        'is_active' => true,
+    ]);
+
+    $newest = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Paling Baru',
+        'slug' => 'editorial-paling-baru',
+        'content' => '<p>Konten terbaru.</p>',
+        'status' => 'published',
+        'published_at' => now(),
+    ]);
+    $oldest = Insight::query()->create([
+        'insight_category_id' => $category->id,
+        'title' => 'Editorial Paling Lama',
+        'slug' => 'editorial-paling-lama',
+        'content' => '<p>Konten terdahulu.</p>',
+        'status' => 'published',
+        'published_at' => now()->subWeek(),
+    ]);
+
+    $response = $this->get(route('insights.index', [
+        'archive' => 'latest',
+        'sort' => 'oldest',
+        'view' => 'list',
+    ]))->assertOk()
+        ->assertSee('Tampilan daftar')
+        ->assertSee('sm:grid-cols-[190px_minmax(0,1fr)]', false);
+
+    $response->assertViewHas('insights', fn ($insights): bool => $insights->pluck('id')->all() === [$oldest->id, $newest->id]);
+});
+
 test('active editorial contributor links to public profile with published count', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
@@ -604,7 +640,6 @@ test('active editorial contributor links to public profile with published count'
     $this->get(route('insights.index'))
         ->assertOk()
         ->assertSee('Kontributor Editorial')
-        ->assertSee('Peneliti Hukum')
         ->assertSee('1 tulisan terbit')
         ->assertSee('Lihat Semua Kontributor')
         ->assertSee('onerror="this.remove()"', false)
@@ -612,7 +647,7 @@ test('active editorial contributor links to public profile with published count'
         ->assertSee(route('profiles.show', $author->slug), false);
 });
 
-test('editorial contributor labels use public author position instead of auth roles', function () {
+test('productive author panel omits internal and secondary role labels', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
         'slug' => 'edulaw-insight',
@@ -652,10 +687,10 @@ test('editorial contributor labels use public author position instead of auth ro
     $html = $response->getContent();
 
     expect($html)
-        ->toContain('Tim Editorial')
-        ->toContain('Tim Riset Edulaw')
         ->not->toContain('>admin<')
-        ->not->toContain('>Kontributoe<');
+        ->not->toContain('>Kontributoe<')
+        ->not->toContain('>Redaksi Edulaw<')
+        ->not->toContain('>Tim Riset<');
 
     $authors->each(fn (Author $author) => $response->assertSee(route('profiles.show', $author->slug), false));
 });
@@ -717,7 +752,7 @@ test('editorial contributors prioritize published writing count before optional 
         ->toBeLessThan(strpos($html, 'data-editorial-contributor="'.$manualSecond->id.'"'));
 });
 
-test('editorial contributor grid is capped to ten profiles in five desktop columns', function () {
+test('productive author panel is capped to five editorial profiles', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
         'slug' => 'edulaw-insight',
@@ -754,12 +789,12 @@ test('editorial contributor grid is capped to ten profiles in five desktop colum
         ->getContent();
 
     expect($html)
-        ->toContain('lg:grid-cols-5')
+        ->toContain('Penulis Terproduktif')
         ->and(substr_count($html, 'data-editorial-contributor='))
-        ->toBe(10)
+        ->toBe(5)
         ->and($html)
-        ->toContain('data-editorial-contributor="'.$authors[9]->id.'"')
-        ->not->toContain('data-editorial-contributor="'.$authors[10]->id.'"');
+        ->toContain('data-editorial-contributor="'.$authors[4]->id.'"')
+        ->not->toContain('data-editorial-contributor="'.$authors[5]->id.'"');
 });
 
 test('empty optional editorial sections stay hidden and featured article is not repeated in latest list', function () {
