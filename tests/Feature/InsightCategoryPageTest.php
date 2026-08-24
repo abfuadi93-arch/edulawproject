@@ -153,6 +153,8 @@ test('category pagination is indexable with a self canonical and navigable previ
         ->assertSee('<link rel="prev" href="'.$baseUrl.'">', false)
         ->assertSee('<link rel="next" href="'.$baseUrl.'?page=3">', false)
         ->assertSee('Halaman 2 dari 3')
+        ->assertSee('aria-label="Navigasi halaman kategori editorial"', false)
+        ->assertSee('class="mt-7 flex flex-wrap items-center justify-center gap-2"', false)
         ->assertViewHas('insights', fn ($insights): bool => $insights->perPage() === 12 && $insights->count() === 12)
         ->getContent();
 

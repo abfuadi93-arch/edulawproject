@@ -14,6 +14,9 @@ test('publication catalog paginates grid and list views in complete sets of twel
 
     $this->get(route('publications.index', ['view' => $view]))
         ->assertOk()
+        ->assertSee('aria-label="Navigasi halaman riset dan publikasi"', false)
+        ->assertSee('class="mt-7 flex flex-wrap items-center justify-center gap-2"', false)
+        ->assertSee('#publication-catalog', false)
         ->assertViewHas('publications', fn ($publications): bool => $publications->perPage() === 12
             && $publications->currentPage() === 1
             && $publications->count() === 12

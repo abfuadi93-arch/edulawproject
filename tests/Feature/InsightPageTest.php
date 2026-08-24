@@ -582,6 +582,9 @@ test('editorial archive pagination remains available', function () {
     $this->get(route('insights.index', ['archive' => 'latest', 'page' => 2]))
         ->assertOk()
         ->assertSee('Halaman 2 dari 2')
+        ->assertSee('aria-label="Navigasi halaman arsip"', false)
+        ->assertSee('class="mt-7 flex flex-wrap items-center justify-center gap-2"', false)
+        ->assertSee('#insight-archive', false)
         ->assertViewHas('insights', fn ($insights) => $insights->perPage() === 12
             && $insights->currentPage() === 2
             && $insights->count() === 1);

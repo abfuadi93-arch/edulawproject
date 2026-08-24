@@ -95,7 +95,7 @@
                 @endforelse
             </div>
 
-            {{ $multimediaItems->links() }}
+            <x-shared.pagination :paginator="$multimediaItems" label="Navigasi halaman multimedia" />
         </div>
     </section>
 </main>

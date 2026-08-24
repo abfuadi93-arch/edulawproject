@@ -84,7 +84,7 @@
                 @endforelse
             </div>
 
-            {{ $publications->links() }}
+            <x-shared.pagination :paginator="$publications" label="Navigasi halaman riset dan publikasi" />
         </div>
     </section>
 </main>

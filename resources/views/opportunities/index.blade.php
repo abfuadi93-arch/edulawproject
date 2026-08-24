@@ -243,8 +243,8 @@
 
                 <div class="mt-8 flex flex-col gap-5 border-t border-slate-200 pt-6 text-sm text-slate-500 sm:flex-row sm:items-center sm:justify-between">
                     <p class="font-bold">Menampilkan {{ $opportunities->firstItem() }}–{{ $opportunities->lastItem() }} dari {{ $opportunities->total() }} peluang</p>
-                    {{ $opportunities->onEachSide(1)->links() }}
                 </div>
+                <x-shared.pagination :paginator="$opportunities" fragment="opportunity-finder" label="Navigasi halaman opportunities" />
             @else
                 <div class="mt-6 rounded-[14px] border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
                     <h3 class="font-display text-xl font-black text-brand-navy">Belum ada peluang yang sesuai</h3>

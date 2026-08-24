@@ -130,7 +130,7 @@
 
         @if ($insights->hasPages())
             <div class="mt-12 border-t border-slate-200 pt-8">
-                {{ $insights->onEachSide(1)->links() }}
+                <x-shared.pagination :paginator="$insights" label="Navigasi halaman kategori editorial" />
             </div>
         @endif
     </section>

@@ -221,22 +221,7 @@
                 </div>
 
                 @if ($insights instanceof AbstractPaginator && $insights->hasPages())
-                    @php
-                        $firstPage = max(1, $insights->currentPage() - 2);
-                        $lastPage = min($insights->lastPage(), $insights->currentPage() + 2);
-                    @endphp
-                    <nav aria-label="Navigasi halaman arsip" class="mt-7 flex flex-wrap items-center justify-center gap-2">
-                        @if (! $insights->onFirstPage())
-                            <a href="{{ $insights->previousPageUrl() }}#insight-archive" aria-label="Halaman sebelumnya" class="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-sm font-bold text-brand-navy">←</a>
-                        @endif
-                        @foreach (range($firstPage, $lastPage) as $page)
-                            <a href="{{ $insights->url($page) }}#insight-archive" aria-current="{{ $page === $insights->currentPage() ? 'page' : 'false' }}" class="grid h-9 min-w-9 place-items-center rounded-lg px-2 text-xs font-extrabold {{ $page === $insights->currentPage() ? 'bg-brand-navy text-white' : 'border border-slate-200 bg-white text-brand-navy' }}">{{ $page }}</a>
-                        @endforeach
-                        @if ($insights->hasMorePages())
-                            <a href="{{ $insights->nextPageUrl() }}#insight-archive" aria-label="Halaman berikutnya" class="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-sm font-bold text-brand-navy">→</a>
-                        @endif
-                        <span class="ml-2 text-xs font-semibold text-slate-500">Halaman {{ $insights->currentPage() }} dari {{ $insights->lastPage() }}</span>
-                    </nav>
+                    <x-shared.pagination :paginator="$insights" fragment="insight-archive" />
                 @endif
             </div>
         </section>

@@ -91,7 +91,7 @@
         </div>
     </section>
 
-    <section class="py-10 sm:py-12 lg:py-14">
+    <section id="program-archive" class="scroll-mt-24 py-10 sm:py-12 lg:py-14">
         <div class="mx-auto max-w-[1320px] px-5 sm:px-6 lg:px-8">
             @if ($items->isNotEmpty())
                 <div class="grid gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
@@ -107,27 +107,7 @@
             @endif
 
             @if ($archivePrograms instanceof \Illuminate\Pagination\AbstractPaginator && $archivePrograms->hasPages())
-                <nav class="mt-8 flex flex-wrap items-center justify-center gap-2" aria-label="Pagination Arsip Program">
-                    @if ($archivePrograms->onFirstPage())
-                        <span class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-400">Previous</span>
-                    @else
-                        <a href="{{ $archivePrograms->previousPageUrl() }}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white">Previous</a>
-                    @endif
-
-                    @foreach ($archivePrograms->getUrlRange(1, $archivePrograms->lastPage()) as $page => $url)
-                        @if ($page === $archivePrograms->currentPage())
-                            <span class="grid h-10 min-w-10 place-items-center rounded-xl bg-brand-navy px-3 text-sm font-black text-white">{{ $page }}</span>
-                        @else
-                            <a href="{{ $url }}" class="grid h-10 min-w-10 place-items-center rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white">{{ $page }}</a>
-                        @endif
-                    @endforeach
-
-                    @if ($archivePrograms->hasMorePages())
-                        <a href="{{ $archivePrograms->nextPageUrl() }}" class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white">Next</a>
-                    @else
-                        <span class="rounded-xl border border-slate-200 bg-white px-4 py-2 text-sm font-black text-slate-400">Next</span>
-                    @endif
-                </nav>
+                <x-shared.pagination :paginator="$archivePrograms" fragment="program-archive" label="Navigasi halaman arsip program" />
             @endif
         </div>
     </section>

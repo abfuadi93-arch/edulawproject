@@ -53,3 +53,24 @@ it('renders compact archive cards without a large archive button', function () {
         ->and($xpath->query('.//a', $card)->length)->toBe(1)
         ->and($card->textContent)->not->toContain('Lihat Arsip');
 });
+
+it('uses the shared pagination navigation for the program archive', function () {
+    foreach (range(1, 13) as $position) {
+        Program::query()->create([
+            'name' => "Program Arsip Halaman {$position}",
+            'slug' => "program-arsip-halaman-{$position}",
+            'publication_status' => 'published',
+            'event_date' => now()->subDays($position)->toDateString(),
+        ]);
+    }
+
+    $response = $this->get(route('programs.archive'))->assertOk();
+
+    expect(substr_count($response->getContent(), 'data-program-archive-card'))->toBe(12);
+
+    $response
+        ->assertSee('aria-label="Navigasi halaman arsip program"', false)
+        ->assertSee('class="mt-7 flex flex-wrap items-center justify-center gap-2"', false)
+        ->assertSee('#program-archive', false)
+        ->assertSee('Halaman 1 dari 2');
+});

@@ -349,7 +349,9 @@ test('youtube grid paginates six videos with video_page and keeps the video anch
         ->and($firstSection)->toContain($gridVideos[0]->title)
         ->not->toContain($gridVideos[6]->title)
         ->toContain('video_page=2#video')
-        ->toContain('aria-label="Pagination video YouTube"');
+        ->toContain('aria-label="Pagination video YouTube"')
+        ->toContain('class="mt-7 flex flex-wrap items-center justify-center gap-2"')
+        ->toContain('Halaman 1 dari 2');
 
     $secondPage = $this->get(route('multimedia.index', ['video_page' => 2]))->assertOk();
     $secondSection = Str::between($secondPage->getContent(), '<section id="video"', '<section id="shorts-reels"');

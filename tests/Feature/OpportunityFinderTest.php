@@ -168,6 +168,9 @@ test('finder paginates twelve results and preserves query parameters', function 
     $response
         ->assertOk()
         ->assertViewHas('opportunities', fn ($items): bool => $items->perPage() === 12 && $items->count() === 12 && $items->total() === 13)
+        ->assertSee('aria-label="Navigasi halaman opportunities"', false)
+        ->assertSee('class="mt-7 flex flex-wrap items-center justify-center gap-2"', false)
+        ->assertSee('#opportunity-finder', false)
         ->assertSee('q=Kompetisi', false)
         ->assertSee('sort=deadline', false)
         ->assertSee('Menampilkan 1–12 dari 13 peluang');

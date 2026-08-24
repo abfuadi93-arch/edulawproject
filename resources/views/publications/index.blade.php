@@ -365,7 +365,7 @@
 
             @if ($publicationPaginator instanceof AbstractPaginator && $publicationPaginator->hasPages())
                 <div class="mt-8 border-t border-slate-200 pt-6">
-                    {{ $publicationPaginator->withQueryString()->onEachSide(1)->links() }}
+                    <x-shared.pagination :paginator="$publicationPaginator" fragment="publication-catalog" label="Navigasi halaman riset dan publikasi" />
                 </div>
             @endif
         </div>
