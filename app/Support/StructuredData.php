@@ -40,7 +40,7 @@ class StructuredData
 
     public static function website(): array
     {
-        return [
+        return self::clean([
             '@context' => 'https://schema.org',
             '@type' => 'WebSite',
             '@id' => self::siteUrl().'#website',
@@ -49,15 +49,7 @@ class StructuredData
             'description' => config('edulaw.site.meta_description'),
             'inLanguage' => 'id-ID',
             'publisher' => self::organizationReference(),
-            'potentialAction' => [
-                '@type' => 'SearchAction',
-                'target' => [
-                    '@type' => 'EntryPoint',
-                    'urlTemplate' => self::siteUrl().'/search?q={search_term_string}',
-                ],
-                'query-input' => 'required name=search_term_string',
-            ],
-        ];
+        ]);
     }
 
     /**
@@ -127,7 +119,7 @@ class StructuredData
                 ? [$insight->og_image_url]
                 : null,
             'datePublished' => $insight->published_at?->toIso8601String(),
-            'dateModified' => $insight->updated_at?->toIso8601String(),
+            'dateModified' => self::modifiedDate($insight),
             'mainEntityOfPage' => [
                 '@type' => 'WebPage',
                 '@id' => route('insights.show', $insight->slug),
@@ -152,8 +144,7 @@ class StructuredData
             'affiliation' => filled($author->institution) ? [
                 '@type' => 'Organization',
                 'name' => $author->institution,
-            ] : self::organizationReference(),
-            'worksFor' => self::organizationReference(),
+            ] : null,
             'knowsAbout' => $author->interests ?: null,
             'sameAs' => collect($author->socialLinksMap())
                 ->values()
@@ -250,7 +241,7 @@ class StructuredData
             'mainEntityOfPage' => route('publications.show', $publication->slug),
             'image' => $publication->cover_image_url,
             'datePublished' => $publication->published_at?->toIso8601String(),
-            'dateModified' => $publication->updated_at?->toIso8601String(),
+            'dateModified' => self::modifiedDate($publication),
             'author' => $authors ?: [self::organizationReference()],
             'publisher' => self::publisher(),
             'pagination' => $publication->page_count ? (string) $publication->page_count : null,
@@ -303,6 +294,15 @@ class StructuredData
                 'url' => self::siteAsset('images/logo/edulaw-logo.png'),
             ],
         ];
+    }
+
+    private static function modifiedDate(Insight|Publication $model): ?string
+    {
+        if (! $model->updated_at || ! $model->created_at || $model->updated_at->lessThanOrEqualTo($model->created_at)) {
+            return null;
+        }
+
+        return $model->updated_at->toIso8601String();
     }
 
     private static function siteUrl(): string

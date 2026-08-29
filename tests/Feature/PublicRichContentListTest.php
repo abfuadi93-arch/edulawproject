@@ -19,7 +19,6 @@ test('all public TinyMCE content containers use the readable content class', fun
         resource_path('views/insights/show.blade.php'),
         resource_path('views/programs/show.blade.php'),
         resource_path('views/publications/show.blade.php'),
-        resource_path('views/opportunities/show.blade.php'),
     ] as $view) {
         expect(file_get_contents($view))->toContain('edulaw-readable');
     }

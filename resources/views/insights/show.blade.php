@@ -42,6 +42,10 @@
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorPhoto = $primaryAuthor?->photo_url;
     $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
+    $editorName = $insight->reviewer?->name ?: $insight->assignedEditor?->name;
+    $updatedDate = $insight->updated_at && $insight->published_at && $insight->updated_at->gt($insight->published_at)
+        ? $insight->updated_at->translatedFormat('d F Y')
+        : null;
     $additionalAuthorsCount = max($insight->authors->count() - 1, 0);
     $authorInitials = \Illuminate\Support\Str::of($authorName)
         ->explode(' ')
@@ -132,7 +136,7 @@
 
                 @if ($articleFootnotes->isNotEmpty())
                     <section class="insight-footnotes" aria-labelledby="insight-footnotes-heading">
-                        <h2 id="insight-footnotes-heading">Catatan Kaki</h2>
+                        <h2 id="insight-footnotes-heading">Sumber &amp; Rujukan</h2>
 
                         <ol>
                             @foreach ($articleFootnotes as $item)
@@ -148,6 +152,34 @@
                         </ol>
                     </section>
                 @endif
+
+                <section class="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="insight-editorial-metadata-heading">
+                    <h2 id="insight-editorial-metadata-heading" class="text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
+                    <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-2">
+                        <div>
+                            <dt class="font-bold text-slate-500">Ditulis oleh</dt>
+                            <dd class="mt-1 font-black text-brand-navy">{{ $authorName }}</dd>
+                        </div>
+                        @if ($editorName)
+                            <div>
+                                <dt class="font-bold text-slate-500">Disunting oleh</dt>
+                                <dd class="mt-1 font-black text-brand-navy">{{ $editorName }}</dd>
+                            </div>
+                        @endif
+                        @if ($insight->published_at)
+                            <div>
+                                <dt class="font-bold text-slate-500">Tanggal terbit</dt>
+                                <dd class="mt-1 font-black text-brand-navy">{{ $publishedDate }}</dd>
+                            </div>
+                        @endif
+                        @if ($updatedDate)
+                            <div>
+                                <dt class="font-bold text-slate-500">Terakhir diperbarui</dt>
+                                <dd class="mt-1 font-black text-brand-navy">{{ $updatedDate }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+                </section>
 
                 @if ($insight->tags->isNotEmpty())
                     <div class="mt-12 border-t border-slate-200 pt-6">

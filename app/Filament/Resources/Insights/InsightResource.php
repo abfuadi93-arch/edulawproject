@@ -135,13 +135,13 @@ class InsightResource extends Resource
                                     })
                                     ->columnSpanFull(),
                                 Repeater::make('footnotes')
-                                    ->label('Daftar Catatan Kaki')
-                                    ->helperText('Catatan baru dibuat melalui tombol Catatan Kaki pada toolbar. Simpan artikel agar catatan baru muncul di daftar ini.')
+                                    ->label('Sumber & Rujukan')
+                                    ->helperText('Cantumkan peraturan, putusan, jurnal, buku, atau URL resmi yang benar-benar digunakan. Catatan baru dibuat melalui tombol Catatan Kaki pada toolbar.')
                                     ->relationship('footnotes')
                                     ->defaultItems(0)
                                     ->schema([
                                         Textarea::make('content')
-                                            ->label('Isi Catatan Kaki')
+                                            ->label('Rujukan')
                                             ->rows(4)
                                             ->required()
                                             ->maxLength(10000)
@@ -154,6 +154,7 @@ class InsightResource extends Resource
                                     ->reorderable(false)
                                     ->orderColumn('sort_order')
                                     ->collapsible()
+                                    ->collapsed()
                                     ->columnSpanFull(),
                             ]),
                         Section::make('Metadata')
@@ -173,7 +174,8 @@ class InsightResource extends Resource
                                     ->maxSize(4096)
                                     ->columnSpanFull(),
                             ])
-                            ->collapsible(),
+                            ->collapsible()
+                            ->collapsed(),
                     ])->columnSpan(['xl' => 8]),
                     Group::make()->schema([
                         Section::make('Editorial')
@@ -206,7 +208,8 @@ class InsightResource extends Resource
                                 TextInput::make('sort_order')->label('Urutan')->numeric()->minValue(0)->default(0),
                             ])
                             ->visible(fn (): bool => static::canManageEditorialWorkflow())
-                            ->collapsible(),
+                            ->collapsible()
+                            ->collapsed(),
                     ])->columnSpan(['xl' => 4]),
                 ])
                 ->columnSpanFull(),

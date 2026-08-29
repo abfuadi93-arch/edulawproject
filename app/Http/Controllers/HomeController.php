@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Insight;
+use App\Models\InsightCategory;
 use App\Models\Multimedia;
 use App\Models\Opportunity;
 use App\Models\Program;
@@ -15,19 +16,70 @@ class HomeController extends Controller
 {
     public function index(): View
     {
-        $latestInsights = Insight::with(['categoryRelation', 'authors.user', 'tags'])
-            ->published()
-            ->orderByDesc('published_at')
-            ->orderByDesc('id')
-            ->limit(4)
-            ->get();
-
         $featuredInsight = Insight::with(['categoryRelation', 'authors.user', 'tags'])
             ->published()
             ->featured()
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->first() ?: $latestInsights->first();
+            ->first();
+
+        $latestInsights = Insight::with(['categoryRelation', 'authors.user', 'tags'])
+            ->published()
+            ->when($featuredInsight, fn ($query) => $query->whereKeyNot($featuredInsight->id))
+            ->orderByDesc('published_at')
+            ->orderByDesc('id')
+            ->limit($featuredInsight ? 6 : 7)
+            ->get();
+
+        $featuredInsight ??= $latestInsights->first();
+
+        if ($featuredInsight) {
+            $latestInsights = $latestInsights
+                ->where('id', '!=', $featuredInsight->id)
+                ->take(6)
+                ->values();
+        }
+
+        $topicDefinitions = collect([
+            ['slug' => 'law-governance', 'name' => 'Law & Governance', 'description' => 'Tata kelola, kelembagaan, dan kebijakan publik.', 'aliases' => ['law-governance', 'law governance', 'law and governance']],
+            ['slug' => 'legal-101', 'name' => 'Legal 101', 'description' => 'Memahami konsep, asas, dan istilah hukum.', 'aliases' => ['legal-101', 'legal 101', 'law 101']],
+            ['slug' => 'regulatory-update', 'name' => 'Regulatory Update', 'description' => 'Perkembangan regulasi dan kebijakan terbaru.', 'aliases' => ['regulatory-update', 'regulatory update', 'regulation update']],
+            ['slug' => 'edulaw-insight', 'name' => 'Edulaw Insight', 'description' => 'Analisis isu hukum dan kebijakan kontemporer.', 'aliases' => ['edulaw-insight', 'edulaw insight', 'insight', 'editorial']],
+        ]);
+        $topicCategories = InsightCategory::query()
+            ->where('is_active', true)
+            ->withCount(['insights as published_insights_count' => fn ($query) => $query->published()])
+            ->get();
+        $homeTopics = $topicDefinitions->map(function (array $definition) use ($topicCategories): array {
+            $aliases = collect($definition['aliases'])->map(fn (string $value): string => str($value)->lower()->replace('-', ' ')->squish()->toString());
+            $category = $topicCategories->first(function (InsightCategory $category) use ($aliases): bool {
+                $keys = collect([$category->slug, $category->getRawOriginal('name')])
+                    ->map(fn ($value): string => str((string) $value)->lower()->replace('-', ' ')->squish()->toString());
+
+                return $keys->intersect($aliases)->isNotEmpty();
+            });
+
+            return [
+                'name' => $definition['name'],
+                'description' => $definition['description'],
+                'url' => route('insights.categories.show', $definition['slug']),
+                'count' => (int) ($category?->published_insights_count ?? 0),
+            ];
+        });
+
+        $homeAuthors = Author::query()
+            ->publicProfile()
+            ->visibleInContributorSection()
+            ->withPublicContribution()
+            ->withCount([
+                'insights as published_insights_count' => fn ($query) => $query->published(),
+                'publications as published_publications_count' => fn ($query) => $query->published(),
+            ])
+            ->orderByDesc('published_insights_count')
+            ->orderByDesc('published_publications_count')
+            ->orderBy('sort_order')
+            ->limit(5)
+            ->get();
 
         $latestPublications = Publication::with(['type', 'authors.user', 'tags'])
             ->published()
@@ -138,11 +190,15 @@ class HomeController extends Controller
             ],
             [
                 'label' => 'Kontributor Aktif',
-                'value' => Author::query()->where('is_active', true)->count(),
+                'value' => Author::query()
+                    ->publicProfile()
+                    ->visibleInContributorSection()
+                    ->withPublicContribution()
+                    ->count(),
             ],
             [
                 'label' => 'Peluang Aktif',
-                'value' => Opportunity::query()->active()->count(),
+                'value' => Opportunity::query()->active()->withExternalLink()->count(),
             ],
         ]);
 
@@ -153,6 +209,8 @@ class HomeController extends Controller
         return view('home', compact(
             'featuredInsight',
             'latestInsights',
+            'homeTopics',
+            'homeAuthors',
             'latestPublications',
             'latestPrograms',
             'latestOpportunities',

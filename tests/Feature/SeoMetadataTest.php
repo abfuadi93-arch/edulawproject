@@ -146,7 +146,7 @@ test('robots file protects internal routes while allowing meta robots and pagina
         ->assertOk()
         ->assertHeader('content-type', 'text/plain; charset=UTF-8')
         ->assertSee('Disallow: /admin', false)
-        ->assertDontSee('Disallow: /search', false)
+        ->assertSee('Disallow: /search', false)
         ->assertDontSee('Disallow: /*?page=', false)
         ->assertDontSee('Disallow: /*?sort=', false)
         ->assertDontSee('Disallow: /*?author=', false)

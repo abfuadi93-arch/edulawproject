@@ -664,7 +664,7 @@
         ->filter()
         ->values();
 
-    $joinedAt = $author->created_at ? $author->created_at->translatedFormat('M Y') : null;
+    $joinedAt = $author->joined_at ? $author->joined_at->translatedFormat('M Y') : null;
 
     $parseTopics = function ($value) {
         if (is_array($value)) {

@@ -4,6 +4,7 @@ namespace App\Filament\Resources\Publications\Schemas;
 
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -23,6 +24,41 @@ class PublicationForm
                 TextInput::make('slug')
                     ->required(),
                 Textarea::make('description')
+                    ->label('Ringkasan')
+                    ->rows(10)
+                    ->helperText('Sasaran 200–400 kata. Jelaskan masalah, konteks, pendekatan, dan hasil utama tanpa menyalin abstrak secara berlebihan.')
+                    ->columnSpanFull(),
+                Repeater::make('research_questions')
+                    ->label('Pertanyaan / Fokus Penelitian')
+                    ->schema([
+                        Textarea::make('item')->label('Fokus')->rows(2)->required(),
+                    ])
+                    ->defaultItems(0)
+                    ->minItems(0)
+                    ->maxItems(4)
+                    ->addActionLabel('Tambah fokus penelitian')
+                    ->columnSpanFull(),
+                Repeater::make('key_findings')
+                    ->label('Temuan Utama')
+                    ->schema([
+                        Textarea::make('item')->label('Temuan')->rows(2)->required(),
+                    ])
+                    ->defaultItems(0)
+                    ->minItems(0)
+                    ->maxItems(6)
+                    ->addActionLabel('Tambah temuan')
+                    ->columnSpanFull(),
+                Textarea::make('methodology')
+                    ->label('Metode')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('contribution')
+                    ->label('Kontribusi Akademik / Praktis')
+                    ->rows(5)
+                    ->columnSpanFull(),
+                Textarea::make('implications')
+                    ->label('Implikasi')
+                    ->rows(5)
                     ->columnSpanFull(),
                 FileUpload::make('pdf_file')
                     ->label('PDF File')

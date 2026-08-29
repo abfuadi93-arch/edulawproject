@@ -78,6 +78,22 @@
         ->map(fn ($paragraph) => trim($paragraph))
         ->filter()
         ->values();
+    $normalizeList = fn ($value) => collect(is_array($value) ? $value : [])
+        ->map(fn ($item) => is_array($item) ? ($item['item'] ?? $item['text'] ?? $item['value'] ?? null) : $item)
+        ->map(fn ($item): string => trim(strip_tags((string) $item)))
+        ->filter()
+        ->values();
+    $paragraphsFor = fn ($value) => collect(preg_split('/\R{2,}/', trim(strip_tags((string) $value))) ?: [])
+        ->map(fn ($paragraph): string => trim($paragraph))
+        ->filter()
+        ->values();
+    $researchQuestions = $normalizeList($publication->research_questions);
+    $keyFindings = $normalizeList($publication->key_findings);
+    $substantiveSections = collect([
+        ['id' => 'metode', 'title' => 'Metode', 'body' => $publication->methodology],
+        ['id' => 'kontribusi', 'title' => 'Kontribusi', 'body' => $publication->contribution],
+        ['id' => 'implikasi', 'title' => 'Implikasi', 'body' => $publication->implications],
+    ])->filter(fn (array $section): bool => filled($section['body']))->values();
 
     $tags = collect($publication->tags ?? []);
     $relatedCollection = collect($relatedPublications ?? $related ?? collect());
@@ -160,59 +176,6 @@
         <div class="bg-[#f8fafc] py-10 lg:py-14">
             <div class="mx-auto grid max-w-7xl gap-8 px-5 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8">
                 <div class="space-y-7">
-                    <article id="preview-pdf" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
-                        <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
-                            <div>
-                                <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
-                                    Preview PDF
-                                </p>
-                                <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy sm:text-3xl">
-                                    Baca dokumen langsung dari halaman ini.
-                                </h2>
-                            </div>
-
-                            @if ($pdfUrl)
-                                <a
-                                    href="{{ $pdfUrl }}"
-                                    class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]"
-                                >
-                                    Unduh Publikasi
-                                </a>
-                            @elseif ($externalUrl)
-                                <a
-                                    href="{{ $externalUrl }}"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-black"
-                                >
-                                    Buka Sumber Publikasi
-                                </a>
-                            @endif
-                        </div>
-
-                        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
-                            @if ($pdfPreviewUrl)
-                                <iframe
-                                    src="{{ $pdfPreviewUrl }}"
-                                    title="Preview dokumen {{ $publication->title }}"
-                                    loading="lazy"
-                                    class="h-[520px] w-full bg-white lg:h-[720px]"
-                                ></iframe>
-                            @else
-                                <div class="flex min-h-[320px] items-center justify-center bg-linear-to-br from-brand-navy via-[#102f55] to-brand-teal/80 p-8 text-center text-white">
-                                    <div class="max-w-md">
-                                        <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-amber">
-                                            Dokumen PDF belum tersedia.
-                                        </p>
-                                        <p class="mt-4 text-base font-semibold leading-7 text-white/78">
-                                            Gunakan sumber publikasi jika tersedia, atau kembali ke katalog untuk membaca publikasi lain.
-                                        </p>
-                                    </div>
-                                </div>
-                            @endif
-                        </div>
-                    </article>
-
                     @if (! $summaryIsGeneric)
                         <article id="ringkasan" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                             <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
@@ -230,6 +193,78 @@
                             </div>
                         </article>
                     @endif
+
+                    @if ($researchQuestions->isNotEmpty())
+                        <section id="fokus-penelitian" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Pertanyaan / Fokus Penelitian</p>
+                            <ul class="mt-5 space-y-3 text-base leading-7 text-slate-700">
+                                @foreach ($researchQuestions as $question)
+                                    <li class="flex gap-3"><span class="mt-2 size-2 shrink-0 rounded-full bg-brand-amber" aria-hidden="true"></span><span>{{ $question }}</span></li>
+                                @endforeach
+                            </ul>
+                        </section>
+                    @endif
+
+                    @if ($keyFindings->isNotEmpty())
+                        <section id="temuan-utama" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Temuan Utama</p>
+                            <ol class="mt-5 space-y-4">
+                                @foreach ($keyFindings as $finding)
+                                    <li class="grid grid-cols-[36px_minmax(0,1fr)] gap-3 text-base leading-7 text-slate-700">
+                                        <span class="grid size-9 place-items-center rounded-full bg-brand-amber-soft text-xs font-black text-brand-navy">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                        <span class="pt-1">{{ $finding }}</span>
+                                    </li>
+                                @endforeach
+                            </ol>
+                        </section>
+                    @endif
+
+                    @foreach ($substantiveSections as $section)
+                        <section id="{{ $section['id'] }}" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">{{ $section['title'] }}</p>
+                            <div class="edulaw-readable mt-5 max-w-3xl text-slate-700">
+                                @foreach ($paragraphsFor($section['body']) as $paragraph)
+                                    <p>{{ $paragraph }}</p>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endforeach
+
+                    @if ($tags->isNotEmpty())
+                        <section id="kata-kunci" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
+                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Kata Kunci</p>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                @foreach ($tags as $tag)
+                                    <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-black text-brand-navy">#{{ $tag->name }}</span>
+                                @endforeach
+                            </div>
+                        </section>
+                    @endif
+
+                    <article id="preview-pdf" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
+                        <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
+                            <div>
+                                <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Dokumen</p>
+                                <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy sm:text-3xl">Preview PDF</h2>
+                            </div>
+
+                            @if ($pdfUrl)
+                                <a href="{{ $pdfUrl }}" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]">Unduh Publikasi</a>
+                            @elseif ($externalUrl)
+                                <a href="{{ $externalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-black">Buka Sumber Publikasi</a>
+                            @endif
+                        </div>
+
+                        <div class="mt-6 overflow-hidden rounded-2xl border border-slate-200 bg-slate-100">
+                            @if ($pdfPreviewUrl)
+                                <iframe src="{{ $pdfPreviewUrl }}" title="Preview dokumen {{ $publication->title }}" loading="lazy" class="h-[520px] w-full bg-white lg:h-[720px]"></iframe>
+                            @else
+                                <div class="flex min-h-[240px] items-center justify-center bg-linear-to-br from-brand-navy via-[#102f55] to-brand-teal/80 p-8 text-center text-white">
+                                    <div class="max-w-md"><p class="text-xs font-black uppercase tracking-[0.24em] text-brand-amber">Dokumen PDF belum tersedia.</p><p class="mt-4 text-base font-semibold leading-7 text-white/78">Gunakan sumber publikasi jika tersedia, atau kembali ke katalog untuk membaca publikasi lain.</p></div>
+                                </div>
+                            @endif
+                        </div>
+                    </article>
 
                     @if ($relatedCollection->isNotEmpty())
                         <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">

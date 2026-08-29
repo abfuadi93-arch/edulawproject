@@ -6,7 +6,7 @@ use App\Models\Opportunity;
 use App\Models\Program;
 use App\Models\Publication;
 
-test('sitemap contains public opportunity detail routes', function () {
+test('sitemap contains substantive indexes but excludes opportunity detail routes', function () {
     $opportunity = Opportunity::query()->create([
         'title' => 'Fellowship Riset Hukum',
         'slug' => 'fellowship-riset-hukum',
@@ -24,7 +24,9 @@ test('sitemap contains public opportunity detail routes', function () {
         ->assertSee(route('insights.categories.show', 'legal-101'), false)
         ->assertSee(route('insights.categories.show', 'regulatory-update'), false)
         ->assertSee(route('insights.categories.show', 'edulaw-insight'), false)
-        ->assertSee(route('opportunities.show', $opportunity->slug), false);
+        ->assertSee(route('editorial-standards'), false)
+        ->assertSee(route('corrections-policy'), false)
+        ->assertDontSee(route('opportunities.show', $opportunity->slug), false);
 });
 
 test('sitemap contains only public content and contributing public authors', function () {

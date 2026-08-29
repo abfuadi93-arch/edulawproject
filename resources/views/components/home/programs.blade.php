@@ -1,13 +1,12 @@
-@props(['programs' => collect(), 'featuredInsight' => null])
+@props(['programs' => collect()])
 
 @php
     $programCollection = collect($programs)->take(3)->values();
 @endphp
 
-<section id="program-edulaw" class="home-surface-warm scroll-mt-20 py-8 sm:py-9 lg:py-10" aria-labelledby="home-programs-title">
+<section id="program-edulaw" class="home-surface-warm scroll-mt-20 py-7 sm:py-8 lg:py-9" aria-labelledby="home-programs-title">
     <div class="section-shell">
-        <div class="grid gap-8 xl:grid-cols-[1.55fr_.75fr]">
-            <div>
+        <div>
                 <div class="flex items-end justify-between gap-4">
                     <div>
                         <p class="home-section-eyebrow text-[#b18332]">Program Edulaw</p>
@@ -56,37 +55,6 @@
                 </div>
 
                 <a href="{{ route('programs.index') }}" class="home-section-link mt-6 sm:hidden">Semua Program →</a>
-            </div>
-
-            <div>
-                <div class="flex items-end justify-between gap-4">
-                    <div>
-                        <p class="home-section-eyebrow text-[#e57b66]">Pilihan Editor</p>
-                        <h2 class="home-subsection-title">Perspektif Utama</h2>
-                    </div>
-                    <a href="{{ route('insights.index') }}" class="home-section-link">Editorial →</a>
-                </div>
-
-                @if ($featuredInsight)
-                    <article data-home-insight-featured class="group relative mt-7 flex min-h-[338px] items-end overflow-hidden rounded-xl bg-[linear-gradient(145deg,#142f57,#155e68)] p-6 text-white">
-                        @if ($featuredInsight->cover_image_url)
-                            <x-responsive-image :src="$featuredInsight->cover_image_url" alt="Sampul {{ $featuredInsight->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1280px) 380px, 100vw" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
-                        @endif
-                        <div class="absolute inset-0 bg-linear-to-t from-[#07172e]/95 via-[#142f57]/45 to-transparent"></div>
-                        <span class="absolute left-5 top-5 rounded bg-[#f8bd38] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-wide text-[#142f57]">Editor's Pick</span>
-                        <div class="relative">
-                            <p class="home-card-kicker text-[#f0c55e]">{{ $featuredInsight->display_category }}</p>
-                            <h3 class="mt-3 line-clamp-4 text-2xl font-extrabold leading-[1.22] tracking-[-0.015em] text-white">{{ $featuredInsight->title }}</h3>
-                            <p class="mt-3 text-[13px] leading-5 text-slate-300">{{ $featuredInsight->display_author }}{{ $featuredInsight->reading_time ? ' · '.$featuredInsight->reading_time.' menit baca' : '' }}</p>
-                            <a href="{{ route('insights.show', $featuredInsight->slug) }}" class="mt-5 inline-flex text-[13px] font-extrabold text-white">Baca Editorial →</a>
-                        </div>
-                    </article>
-                @else
-                    <div class="mt-7 flex min-h-[338px] items-end rounded-xl bg-[linear-gradient(145deg,#142f57,#155e68)] p-6 text-white">
-                        <div><p class="text-[11px] font-extrabold uppercase tracking-wider text-[#f0c55e]">Editorial Edulaw</p><p class="mt-3 text-xl font-extrabold text-white">Pilihan editor sedang disiapkan.</p></div>
-                    </div>
-                @endif
-            </div>
         </div>
     </div>
 </section>

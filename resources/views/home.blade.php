@@ -25,12 +25,14 @@
 
 @section('content')
     <x-home.hero :hero="$homeHero" :values="$homeValues" />
-    <x-home.programs :programs="$latestPrograms" :featured-insight="$featuredInsight" />
-    <x-home.insights :insights="$latestInsights" />
+    <x-home.featured-editorial :insight="$featuredInsight" :insights="$latestInsights" />
+    <x-home.topics :topics="$homeTopics" />
     <x-home.publications :publications="$latestPublications" />
+    <x-home.authors :authors="$homeAuthors" />
+    <x-home.programs :programs="$latestPrograms" />
     <x-home.opportunities :opportunities="$latestOpportunities" />
-    <x-home.about :stats="$credibilityStats" />
     <x-home.multimedia :featured="$homepageFeaturedMultimedia" :items="$homepageSecondaryMultimedia" />
+    <x-home.about :stats="$credibilityStats" />
     <x-home.cta :block="$sharedCta" />
 @endsection
 

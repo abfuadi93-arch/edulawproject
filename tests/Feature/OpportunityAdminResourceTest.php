@@ -48,6 +48,17 @@ test('opportunity admin resource preserves a legacy single poster', function () 
         ->and($data['og_image'])->toBe('opportunities/legacy-poster.jpg');
 });
 
+test('opportunity admin resource preserves a concise curated summary', function () {
+    $data = OpportunityResource::prepareFormDataForPersistence([
+        'title' => 'Peluang dengan Ringkasan Kurasi',
+        'excerpt' => 'Kesempatan bagi mahasiswa hukum untuk mengikuti kompetisi tingkat nasional.',
+        'description' => '<p>Deskripsi promosi lama yang panjang tidak boleh menggantikan ringkasan kurasi.</p>',
+    ]);
+
+    expect($data['excerpt'])->toBe('Kesempatan bagi mahasiswa hukum untuk mengikuti kompetisi tingkat nasional.')
+        ->and($data['seo_description'])->toBe('Kesempatan bagi mahasiswa hukum untuk mengikuti kompetisi tingkat nasional.');
+});
+
 test('opportunity admin resource keeps the primary upload as slide one and appends extra posters', function () {
     $data = OpportunityResource::prepareFormDataForPersistence([
         'title' => 'Peluang dengan Poster Tambahan',

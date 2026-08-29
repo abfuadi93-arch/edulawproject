@@ -17,18 +17,12 @@
             ?: \App\Support\EdulawSite::resolveUrl($item?->embed_url);
     };
 
-    $externalOpportunityUrl = function ($opportunity) {
-        return filled($opportunity?->slug)
-            ? route('opportunities.show', $opportunity->slug)
-            : route('opportunities.index');
-    };
+    $externalOpportunityUrl = fn ($opportunity) => $opportunity?->external_url ?: route('opportunities.index');
 
-    $isExternalOpportunityUrl = function ($opportunity) {
-        return false;
-    };
+    $isExternalOpportunityUrl = fn ($opportunity) => filled($opportunity?->external_url);
 
     $opportunityButtonLabel = function ($opportunity) {
-        return 'Lihat Detail';
+        return 'Lihat Informasi Resmi';
     };
 @endphp
 

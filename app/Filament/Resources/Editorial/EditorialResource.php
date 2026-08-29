@@ -162,13 +162,13 @@ class EditorialResource extends Resource
                                 ->fileAttachmentsMaxSize(4096)
                                 ->columnSpanFull(),
                             Repeater::make('footnotes')
-                                ->label('Daftar Catatan Kaki')
-                                ->helperText('Tambahkan catatan melalui tombol Catatan Kaki pada toolbar. Simpan artikel agar catatan baru muncul di daftar ini.')
+                                ->label('Sumber & Rujukan')
+                                ->helperText('Cantumkan peraturan, putusan, jurnal, buku, atau URL resmi yang benar-benar digunakan. Tambahkan melalui tombol Catatan Kaki pada toolbar.')
                                 ->relationship('footnotes')
                                 ->defaultItems(0)
                                 ->schema([
                                     Textarea::make('content')
-                                        ->label('Isi Catatan Kaki')
+                                        ->label('Rujukan')
                                         ->rows(4)
                                         ->required()
                                         ->maxLength(10000)

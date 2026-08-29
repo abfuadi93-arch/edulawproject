@@ -60,7 +60,7 @@ test('published insight index and detail pages render', function () {
         ->toContain('property="og:url" content="'.route('insights.show', $insight->slug).'"')
         ->toContain('name="twitter:card" content="summary_large_image"')
         ->and(substr_count($html, 'Bagikan Artikel'))->toBe(0)
-        ->and(substr_count($html, now()->translatedFormat('d F Y')))->toBe(1);
+        ->and(substr_count($html, now()->translatedFormat('d F Y')))->toBe(2);
 });
 
 test('insight detail normalizes body headings and renders a useful article outline', function () {

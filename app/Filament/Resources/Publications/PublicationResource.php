@@ -23,6 +23,7 @@ use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
+use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
@@ -237,7 +238,7 @@ class PublicationResource extends Resource
 
                                         TinyMceEditor::make('description')
                                             ->label('Deskripsi Lengkap')
-                                            ->helperText('Opsional, tetapi disarankan untuk memberi konteks lebih lengkap.')
+                                            ->helperText('Opsional. Sasaran 200–400 kata untuk ringkasan mandiri yang menjelaskan masalah, konteks, pendekatan, dan hasil utama.')
                                             ->height(520)
                                             ->fileAttachmentsDisk('public')
                                             ->fileAttachmentsDirectory('publications/content-images')
@@ -299,6 +300,47 @@ class PublicationResource extends Resource
                                             ])
                                             ->columnSpanFull(),
                                     ]),
+
+                                Section::make('Substansi Penelitian')
+                                    ->icon('heroicon-o-magnifying-glass-circle')
+                                    ->description('Opsional untuk data lama. Isi bagian yang tersedia agar halaman publikasi bernilai sebagai halaman HTML mandiri.')
+                                    ->schema([
+                                        Repeater::make('research_questions')
+                                            ->label('Pertanyaan / Fokus Penelitian')
+                                            ->schema([
+                                                Textarea::make('item')->label('Fokus')->rows(2)->required(),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->maxItems(4)
+                                            ->addActionLabel('Tambah fokus penelitian')
+                                            ->columnSpanFull(),
+
+                                        Repeater::make('key_findings')
+                                            ->label('Temuan Utama')
+                                            ->schema([
+                                                Textarea::make('item')->label('Temuan')->rows(2)->required(),
+                                            ])
+                                            ->defaultItems(0)
+                                            ->maxItems(6)
+                                            ->addActionLabel('Tambah temuan')
+                                            ->columnSpanFull(),
+
+                                        Textarea::make('methodology')
+                                            ->label('Metode')
+                                            ->rows(5)
+                                            ->columnSpanFull(),
+
+                                        Textarea::make('contribution')
+                                            ->label('Kontribusi Akademik / Praktis')
+                                            ->rows(5)
+                                            ->columnSpanFull(),
+
+                                        Textarea::make('implications')
+                                            ->label('Implikasi')
+                                            ->rows(5)
+                                            ->columnSpanFull(),
+                                    ])
+                                    ->collapsible(),
 
                                 Section::make('File dan Dokumen')
                                     ->icon('heroicon-o-paper-clip')
@@ -380,7 +422,9 @@ class PublicationResource extends Resource
                                                 'og_image' => $get('og_image'),
                                                 'slug' => $get('slug'),
                                             ])),
-                                    ]),
+                                    ])
+                                    ->collapsible()
+                                    ->collapsed(),
 
                                 Section::make('SEO Publikasi')
                                     ->icon('heroicon-o-magnifying-glass')
@@ -414,7 +458,9 @@ class PublicationResource extends Resource
                                             ->openable()
                                             ->helperText('Opsional. Digunakan khusus sebagai gambar pratinjau saat tautan dibagikan.'),
                                     ])
-                                    ->columns(1),
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
                             ])
                             ->columnSpan(['xl' => 4])
                             ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),

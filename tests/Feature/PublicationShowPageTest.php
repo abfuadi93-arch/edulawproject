@@ -189,3 +189,42 @@ test('missing publication file returns not found without exposing its storage pa
 
     $response->assertDontSee('publications/private/missing.pdf', false);
 });
+
+test('publication detail presents substantive HTML before the document and omits empty headings', function () {
+    $publication = Publication::query()->create([
+        'title' => 'Kajian Tata Kelola Regulasi',
+        'slug' => 'kajian-tata-kelola-regulasi',
+        'status' => 'published',
+        'published_at' => now()->toDateString(),
+        'description' => '<p>Ringkasan kajian yang menjelaskan konteks, persoalan, pendekatan, dan hasil penelitian secara mandiri.</p>',
+        'research_questions' => [
+            ['item' => 'Bagaimana kualitas tata kelola regulasi dinilai?'],
+            ['item' => 'Apa hambatan utama dalam implementasi?'],
+        ],
+        'key_findings' => [
+            ['item' => 'Koordinasi antarlembaga masih perlu diperkuat.'],
+            ['item' => 'Partisipasi publik perlu hadir lebih awal.'],
+            ['item' => 'Evaluasi regulasi memerlukan indikator terukur.'],
+        ],
+        'methodology' => 'Kajian menggunakan analisis dokumen dan studi perbandingan.',
+        'contribution' => 'Kajian menyediakan kerangka evaluasi yang dapat diterapkan oleh pembuat kebijakan.',
+        'implications' => null,
+        'external_url' => 'https://example.test/kajian',
+    ]);
+
+    $html = $this->get(route('publications.show', $publication->slug))
+        ->assertOk()
+        ->assertSee('Ringkasan Publikasi')
+        ->assertSee('Pertanyaan / Fokus Penelitian')
+        ->assertSee('Temuan Utama')
+        ->assertSee('Metode')
+        ->assertSee('Kontribusi')
+        ->assertDontSee('>Implikasi<', false)
+        ->getContent();
+
+    expect(strpos($html, 'id="ringkasan"'))->toBeLessThan(strpos($html, 'id="fokus-penelitian"'))
+        ->and(strpos($html, 'id="fokus-penelitian"'))->toBeLessThan(strpos($html, 'id="temuan-utama"'))
+        ->and(strpos($html, 'id="temuan-utama"'))->toBeLessThan(strpos($html, 'id="metode"'))
+        ->and(strpos($html, 'id="metode"'))->toBeLessThan(strpos($html, 'id="kontribusi"'))
+        ->and(strpos($html, 'id="kontribusi"'))->toBeLessThan(strpos($html, 'id="preview-pdf"'));
+});

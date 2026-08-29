@@ -10,7 +10,7 @@
     ];
 @endphp
 
-<section id="riset-publikasi" class="home-surface-teal scroll-mt-20 py-8 sm:py-9 lg:py-10" aria-labelledby="home-publications-title">
+<section id="riset-publikasi" class="home-surface-teal scroll-mt-20 py-7 sm:py-8 lg:py-9" aria-labelledby="home-publications-title">
     <div class="section-shell">
         <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
             <div class="max-w-3xl">
@@ -28,57 +28,48 @@
         </div>
 
         @if ($publicationCollection->isNotEmpty())
-            <div class="mt-9 grid gap-x-6 gap-y-10 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="mt-7 grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($publicationCollection as $index => $publication)
                     @php
                         $palette = $coverPalettes[$index % count($coverPalettes)];
                         $typeName = $publication->type?->name ?? 'Publikasi';
-                        $documentUrl = $publication->download_url;
+                        $publicationDate = $publication->publication_date_display;
                     @endphp
 
                     <article data-home-publication class="group relative mx-auto w-full max-w-sm">
-                        <a href="{{ route('publications.show', $publication->slug) }}" class="relative z-10 mx-auto flex aspect-[1/1.34] w-[82%] max-w-64 flex-col justify-between overflow-hidden rounded-md p-5 text-white shadow-xl shadow-slate-900/15 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
-                            @if ($publication->cover_image_url)
-                                <x-responsive-image :src="$publication->cover_image_url" alt="Sampul {{ $publication->title }}" :widths="[240, 320, 480]" sizes="(min-width: 1024px) 235px, (min-width: 640px) 41vw, 82vw" width="480" height="640" class="absolute inset-0 size-full object-cover" onerror="this.remove()" />
-                            @endif
-                            <span class="absolute inset-0" style="background: linear-gradient(155deg, {{ $palette['overlay'] }}, {{ $palette['from'] }} 70%, {{ $palette['to'] }});"></span>
-                            <span class="absolute -right-10 -top-10 size-36 rounded-full border border-white/10"></span>
-                            <span class="absolute -bottom-16 -left-12 size-44 rounded-full border border-white/10"></span>
-
-                            <div class="relative">
-                                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#efc66b]">{{ $typeName }}</p>
-                                <h3 class="mt-7 line-clamp-5 text-lg font-extrabold leading-snug tracking-[-0.012em] text-white">{{ $publication->title }}</h3>
-                            </div>
-
-                            <svg class="relative h-20 w-20 self-end text-white/15" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
-                                <path d="M16 4v23M9 8h14M12 27h8M7 12l-4 7h8l-4-7Zm18 0-4 7h8l-4-7Z" />
-                                <path d="M7 12h18" />
-                            </svg>
-                        </a>
-
-                        <div class="-mt-4 rounded-xl border border-[#d9e4e0] bg-white px-5 pb-5 pt-8 shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition group-hover:border-[#d9a24c]/50 sm:-mt-10 sm:pt-14">
-                            <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#b77928]">{{ $typeName }}</p>
-                            <a href="{{ route('publications.show', $publication->slug) }}" class="mt-2 block rounded-sm focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b77928]">
-                                <h3 class="line-clamp-3 min-h-[4.5rem] text-base font-extrabold leading-6 text-[#061b3a] transition group-hover:text-[#174f7d]">{{ $publication->title }}</h3>
-                            </a>
-
-                            <div class="mt-4 flex min-h-6 items-center justify-between gap-3">
-                                <p class="line-clamp-1 text-sm text-slate-500">{{ $publication->publication_date_display }}</p>
-                                @if ($documentUrl)
-                                    <a href="{{ $documentUrl }}" target="_blank" rel="noopener noreferrer" class="grid size-8 shrink-0 place-items-center rounded-full text-[#061b3a] transition hover:bg-[#fff3cf]" aria-label="Buka dokumen {{ $publication->title }}">
-                                        <svg class="size-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
-                                            <path d="M12 3v12" />
-                                            <path d="m7 10 5 5 5-5" />
-                                            <path d="M5 21h14" />
-                                        </svg>
-                                    </a>
+                        <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Lihat publikasi: {{ $publication->title }}" class="block rounded-xl focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#b77928]">
+                            <div class="relative z-10 mx-auto flex aspect-[1/1.34] w-[82%] max-w-64 flex-col justify-between overflow-hidden rounded-md p-5 text-white shadow-xl shadow-slate-900/15 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl">
+                                @if ($publication->cover_image_url)
+                                    <x-responsive-image :src="$publication->cover_image_url" alt="Sampul {{ $publication->title }}" :widths="[240, 320, 480]" sizes="(min-width: 1024px) 235px, (min-width: 640px) 41vw, 82vw" width="480" height="640" class="absolute inset-0 size-full object-cover" onerror="this.remove()" />
                                 @endif
+                                <span class="absolute inset-0" style="background: linear-gradient(155deg, {{ $palette['overlay'] }}, {{ $palette['from'] }} 70%, {{ $palette['to'] }});"></span>
+                                <span class="absolute -right-10 -top-10 size-36 rounded-full border border-white/10"></span>
+                                <span class="absolute -bottom-16 -left-12 size-44 rounded-full border border-white/10"></span>
+
+                                <div class="relative">
+                                    <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#efc66b]">{{ $typeName }}</p>
+                                    <p class="mt-7 line-clamp-5 text-lg font-extrabold leading-snug tracking-[-0.012em] text-white">{{ $publication->title }}</p>
+                                </div>
+
+                                <svg class="relative h-20 w-20 self-end text-white/15" viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.2" aria-hidden="true">
+                                    <path d="M16 4v23M9 8h14M12 27h8M7 12l-4 7h8l-4-7Zm18 0-4 7h8l-4-7Z" />
+                                    <path d="M7 12h18" />
+                                </svg>
                             </div>
 
-                            <a href="{{ route('publications.show', $publication->slug) }}" class="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-md bg-[#001b36] px-4 py-2.5 text-sm font-extrabold text-white transition hover:bg-[#155e68]">
-                                Baca Ringkasan
-                            </a>
-                        </div>
+                            <div class="-mt-4 rounded-xl border border-[#d9e4e0] bg-white px-5 pb-5 pt-8 shadow-[0_14px_34px_-28px_rgba(15,23,42,.7)] transition group-hover:border-[#d9a24c]/50 sm:-mt-10 sm:pt-14">
+                                <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#b77928]">{{ $typeName }}</p>
+                                <h3 class="mt-2 line-clamp-3 min-h-[4.5rem] text-base font-extrabold leading-6 text-[#061b3a] transition group-hover:text-[#174f7d]">{{ $publication->title }}</h3>
+                                <div class="mt-4 min-h-6">
+                                    @if (filled($publicationDate) && $publicationDate !== '-')
+                                        <p class="line-clamp-1 text-sm text-slate-500">{{ $publicationDate }}</p>
+                                    @endif
+                                </div>
+                                <span class="mt-4 inline-flex min-h-10 w-full items-center justify-center rounded-md bg-[#001b36] px-4 py-2.5 text-sm font-extrabold text-white transition group-hover:bg-[#155e68]">
+                                    Lihat Publikasi →
+                                </span>
+                            </div>
+                        </a>
                     </article>
                 @endforeach
             </div>

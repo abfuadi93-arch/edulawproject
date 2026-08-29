@@ -17,6 +17,7 @@ class Opportunity extends Model
         'title',
         'slug',
         'type',
+        'organizer',
         'excerpt',
         'description',
         'poster',
@@ -84,6 +85,22 @@ class Opportunity extends Model
         $primaryPoster = $this->poster_paths[0] ?? null;
 
         return EdulawSite::assetUrl($primaryPoster);
+    }
+
+    public function getExternalUrlAttribute(): ?string
+    {
+        $url = trim((string) ($this->attributes['application_link'] ?? ''));
+
+        return Str::startsWith($url, ['https://', 'http://']) ? $url : null;
+    }
+
+    public function getTargetAudienceAttribute(): ?string
+    {
+        return collect($this->eligibility ?? [])
+            ->map(fn ($item) => is_array($item) ? ($item['item'] ?? $item['text'] ?? $item['value'] ?? null) : $item)
+            ->map(fn ($item): string => trim(strip_tags((string) $item)))
+            ->filter()
+            ->first();
     }
 
     /** @return list<string> */

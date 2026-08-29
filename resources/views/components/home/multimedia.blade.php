@@ -17,9 +17,9 @@
             </div>
 
             <div @class([
-                'mt-8 grid items-stretch gap-6',
+                'mt-6 grid items-stretch gap-5',
                 'mx-auto max-w-3xl' => $items->isEmpty(),
-                'lg:grid-cols-[minmax(0,1.85fr)_minmax(320px,1fr)]' => $items->isNotEmpty(),
+                'lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]' => $items->isNotEmpty(),
             ])>
                 <x-multimedia.featured-card :item="$featured" variant="home" />
 

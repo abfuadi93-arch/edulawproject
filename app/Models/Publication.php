@@ -21,6 +21,11 @@ class Publication extends Model
         'slug',
         'excerpt',
         'description',
+        'research_questions',
+        'key_findings',
+        'methodology',
+        'contribution',
+        'implications',
         'cover_image',
         'pdf_file',
         'external_url',
@@ -45,6 +50,8 @@ class Publication extends Model
         'published_at' => 'date',
         'featured' => 'boolean',
         'page_count' => 'integer',
+        'research_questions' => 'array',
+        'key_findings' => 'array',
     ];
 
     protected static function booted(): void

@@ -17,6 +17,13 @@
         default => 'YouTube',
     };
     $date = $item->published_at?->locale('id')->translatedFormat('d M Y') ?: $item->display_type;
+    $meta = collect([$date, filled($item->duration) ? $item->duration : null])->filter()->join(' · ');
+    $ctaLabel = match (true) {
+        $platform === 'instagram' => 'Lihat di Instagram →',
+        $platform === 'google_photos' => 'Buka Album →',
+        $type === 'podcast' => 'Dengarkan Podcast →',
+        default => 'Tonton Video →',
+    };
     $fallbackThumbnail = $platform === 'youtube' ? $item->youtube_thumbnail_fallback_url : null;
 @endphp
 
@@ -29,7 +36,7 @@
     ]) }}
 >
     <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka {{ $item->title }} di {{ $platformLabel }} (membuka tab baru)" @class(['focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy', 'flex h-full items-center gap-3 p-3' => $isHorizontal, 'flex h-full flex-col' => ! $isHorizontal])>
-        <div @class(['relative shrink-0 overflow-hidden', 'h-20 w-28 rounded-xl bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d]' => $isHorizontal, 'aspect-video w-full bg-white' => ! $isHorizontal])>
+        <div @class(['relative shrink-0 overflow-hidden', 'aspect-video w-28 rounded-xl bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d]' => $isHorizontal, 'aspect-video w-full bg-white' => ! $isHorizontal])>
             <div @class(['absolute inset-0 grid place-items-center', 'text-white/55' => $isHorizontal, 'text-brand-navy/35' => ! $isHorizontal]) aria-hidden="true">
                 <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
             </div>
@@ -57,7 +64,8 @@
                     <x-multimedia.platform-badge :platform="$platform" :label="$platformLabel" class="mb-1.5" />
                 @endif
                 <h3 class="line-clamp-2 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $item->title }}</h3>
-                <p class="mt-1.5 text-xs font-bold text-slate-500">{{ $date }}</p>
+                <p class="mt-1.5 text-xs font-bold text-slate-500">{{ $meta }}</p>
+                <p class="mt-2 text-[11px] font-extrabold text-brand-navy">{{ $ctaLabel }}</p>
             </div>
             <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-navy transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
         </div>

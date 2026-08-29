@@ -10,5 +10,6 @@ Disallow: /reset-password
 Disallow: /password/
 Disallow: /email/
 Disallow: /filament/
+Disallow: /search
 
 Sitemap: https://edulawproject.id/sitemap.xml

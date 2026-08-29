@@ -37,6 +37,8 @@
     ])->filter(fn (array $link): bool => filled($link['url']));
 
     $legalLinks = collect([
+        ['label' => 'Standar Editorial', 'route' => 'editorial-standards'],
+        ['label' => 'Kebijakan Koreksi', 'route' => 'corrections-policy'],
         ['label' => 'Kebijakan Privasi', 'route' => 'privacy'],
         ['label' => 'Syarat & Ketentuan', 'route' => 'terms'],
     ])->filter(fn (array $link): bool => Route::has($link['route']));
@@ -148,16 +150,13 @@
     </div>
 
     <div class="border-t border-white/10 bg-[#f8bd38]">
-        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 text-xs text-[#142f57] sm:px-6 lg:px-8">
+        <div class="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 text-[13px] leading-5 text-[#142f57] sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
                 <p>© {{ now()->year }} {{ $siteName }}. Hak cipta dilindungi.</p>
 
                 @if ($legalLinks->isNotEmpty())
                     <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
                         @foreach ($legalLinks as $link)
-                            @if (! $loop->first)
-                                <span class="text-[#142f57]/35" aria-hidden="true">|</span>
-                            @endif
                             <a href="{{ route($link['route']) }}" class="font-medium hover:underline focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#142f57]">
                                 {{ $link['label'] }}
                             </a>

@@ -257,7 +257,7 @@
     */
 
     .home-section {
-        @apply py-8 sm:py-9 lg:py-10;
+        @apply py-7 sm:py-8 lg:py-9;
     }
 
     .home-surface-paper {

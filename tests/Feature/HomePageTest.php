@@ -225,7 +225,7 @@ it('falls back to the nearest archived programs when no active program exists', 
     expect(substr_count($html, 'data-home-program'))->toBe(3);
 });
 
-it('shows one featured insight beside programs and four latest editorial items', function () {
+it('combines one featured insight and six latest editorial items without duplicates', function () {
     $featured = Insight::query()->create([
         'title' => 'Insight Utama Beranda',
         'slug' => 'insight-utama-beranda',
@@ -234,7 +234,7 @@ it('shows one featured insight beside programs and four latest editorial items',
         'featured' => true,
     ]);
 
-    $latest = collect(range(1, 4))->map(fn (int $position) => Insight::query()->create([
+    $latest = collect(range(1, 7))->map(fn (int $position) => Insight::query()->create([
         'title' => "Insight Published {$position}",
         'slug' => "insight-published-{$position}",
         'status' => 'published',
@@ -257,7 +257,8 @@ it('shows one featured insight beside programs and four latest editorial items',
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
-    $insightSection = Str::between($html, '<section id="edulaw-insight"', '</section>');
+    $editorialSection = Str::between($html, '<section id="editorial-pilihan"', '</section>');
+    $latestEditorials = Str::before($editorialSection, 'aria-labelledby="home-featured-editorial-title"');
 
     $response
         ->assertOk()
@@ -266,16 +267,43 @@ it('shows one featured insight beside programs and four latest editorial items',
         ->assertDontSee($reviewed->title)
         ->assertSee(route('insights.index'), false);
 
-    expect(substr_count($insightSection, '<article data-home-insight '))->toBe(4)
-        ->and(substr_count($html, 'data-home-insight-featured'))->toBe(1)
-        ->and($insightSection)->toContain($latest[0]->title)
-        ->and($insightSection)->toContain($latest[1]->title)
-        ->and($insightSection)->toContain($latest[2]->title)
-        ->and($insightSection)->toContain($latest[3]->title)
-        ->and($insightSection)->not->toContain($featured->title)
-        ->and(strpos($insightSection, $latest[0]->title))->toBeLessThan(strpos($insightSection, $latest[1]->title))
-        ->and(strpos($insightSection, $latest[1]->title))->toBeLessThan(strpos($insightSection, $latest[2]->title))
-        ->and(strpos($insightSection, $latest[2]->title))->toBeLessThan(strpos($insightSection, $latest[3]->title));
+    expect(substr_count($editorialSection, '<article data-home-insight '))->toBe(6)
+        ->and(substr_count($editorialSection, 'data-home-insight-featured'))->toBe(1)
+        ->and(substr_count($html, 'id="editorial-pilihan"'))->toBe(1)
+        ->and($html)->not->toContain('id="edulaw-insight"')
+        ->and($editorialSection)->toContain($latest[0]->title)
+        ->and($editorialSection)->toContain($latest[1]->title)
+        ->and($editorialSection)->toContain($latest[2]->title)
+        ->and($editorialSection)->toContain($latest[3]->title)
+        ->and($editorialSection)->toContain($latest[4]->title)
+        ->and($editorialSection)->toContain($latest[5]->title)
+        ->and($editorialSection)->not->toContain($latest[6]->title)
+        ->and($latestEditorials)->not->toContain($featured->title)
+        ->and(strpos($editorialSection, $latest[0]->title))->toBeLessThan(strpos($editorialSection, $latest[1]->title))
+        ->and(strpos($editorialSection, $latest[4]->title))->toBeLessThan(strpos($editorialSection, $latest[5]->title));
+});
+
+it('keeps six latest editorial items when the featured story uses the newest fallback', function () {
+    $insights = collect(range(1, 7))->map(fn (int $position) => Insight::query()->create([
+        'title' => "Insight Fallback {$position}",
+        'slug' => "insight-fallback-{$position}",
+        'status' => 'published',
+        'published_at' => now()->subDays($position),
+    ]));
+
+    $html = $this->get(route('home'))->assertOk()->getContent();
+    $editorialSection = Str::between($html, '<section id="editorial-pilihan"', '</section>');
+    $latestEditorials = Str::before($editorialSection, 'aria-labelledby="home-featured-editorial-title"');
+
+    expect(substr_count($editorialSection, '<article data-home-insight '))->toBe(6)
+        ->and(substr_count($editorialSection, 'data-home-insight-featured'))->toBe(1)
+        ->and($latestEditorials)->not->toContain($insights[0]->title)
+        ->and($latestEditorials)->toContain($insights[1]->title)
+        ->and($latestEditorials)->toContain($insights[2]->title)
+        ->and($latestEditorials)->toContain($insights[3]->title)
+        ->and($latestEditorials)->toContain($insights[4]->title)
+        ->and($latestEditorials)->toContain($insights[5]->title)
+        ->and($latestEditorials)->toContain($insights[6]->title);
 });
 
 it('limits publications to four published records and excludes non-published records', function () {
@@ -317,19 +345,22 @@ it('limits publications to four published records and excludes non-published rec
         ->assertSee(route('publications.show', $published[0]->slug), false);
 
     expect(substr_count($html, 'data-home-publication'))->toBe(4)
-        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(8)
-        ->and($xpath->query('//article[@data-home-publication]//div/a/h3[contains(@class, "line-clamp-3")]')->length)->toBe(4);
+        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(4)
+        ->and($xpath->query('//article[@data-home-publication]/a')->length)->toBe(4)
+        ->and($xpath->query('//article[@data-home-publication]//a//a')->length)->toBe(0);
 });
 
 it('renders the about section followed by the active collaboration call to action', function () {
     $this->get(route('home'))
         ->assertOk()
         ->assertSeeInOrder([
+            'Edulaw Insight Terbaru',
+            'Pilihan Editor',
+            'Jelajahi Topik',
+            'Riset &amp; Publikasi Pilihan',
+            'Penulis dan Peneliti Edulaw',
             'Program Edulaw',
             'Belajar Hukum secara Kontekstual',
-            'Pilihan Editor',
-            'Edulaw Insight Terbaru',
-            'Riset &amp; Publikasi Pilihan',
             'Peluang untuk Tumbuh dan Berkontribusi',
             'Tentang Edulaw',
             'Bangun ruang literasi hukum bersama Edulaw Project.',
@@ -343,7 +374,7 @@ it('renders the about section followed by the active collaboration call to actio
         ->assertDontSee('Kanal pengiriman tulisan belum dibuka.');
 });
 
-it('uses the three canonical hero calls to action', function () {
+it('uses the two canonical hero calls to action', function () {
     Multimedia::query()->create([
         'title' => 'Video untuk Anchor Multimedia',
         'type' => 'video',
@@ -361,22 +392,21 @@ it('uses the three canonical hero calls to action', function () {
     $response
         ->assertOk()
         ->assertSee('Jelajahi Editorial')
-        ->assertSee('Lihat Program')
-        ->assertSee('Ajukan Kolaborasi')
+        ->assertSee('Lihat Riset &amp; Publikasi', false)
         ->assertSee('id="program-edulaw"', false)
-        ->assertSee('id="edulaw-insight"', false)
+        ->assertSee('id="editorial-pilihan"', false)
+        ->assertDontSee('id="edulaw-insight"', false)
         ->assertSee('id="riset-publikasi"', false)
         ->assertSee('id="multimedia"', false);
 
-    expect($xpath->query('//*[@data-home-hero]//a')->length)->toBe(3)
+    expect($xpath->query('//*[@data-home-hero]//a')->length)->toBe(2)
         ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('insights.index').'"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('programs.index').'"]')->length)->toBe(1)
-        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('about').'"]')->length)->toBe(0)
-        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('collaboration.index').'"]')->length)->toBe(1);
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('publications.index').'"]')->length)->toBe(1)
+        ->and($xpath->query('//*[@data-home-hero]//a[@href="'.route('collaboration.index').'"]')->length)->toBe(0);
 });
 
 it('shows all dynamic credibility statistics using only public record statuses', function () {
-    Insight::query()->create([
+    $publishedInsight = Insight::query()->create([
         'title' => 'Insight Kredibilitas',
         'slug' => 'insight-kredibilitas',
         'status' => 'published',
@@ -429,11 +459,13 @@ it('shows all dynamic credibility statistics using only public record statuses',
         'publication_status' => 'draft',
     ]);
 
-    Author::query()->create([
+    $activeAuthor = Author::query()->create([
         'name' => 'Kontributor Aktif Statistik',
         'slug' => 'kontributor-aktif-statistik',
         'is_active' => true,
+        'show_in_contributor_section' => true,
     ]);
+    $activeAuthor->insights()->attach($publishedInsight->id, ['author_order' => 1, 'role' => 'Penulis']);
     Author::query()->create([
         'name' => 'Kontributor Nonaktif Statistik',
         'slug' => 'kontributor-nonaktif-statistik',
@@ -445,6 +477,7 @@ it('shows all dynamic credibility statistics using only public record statuses',
         'slug' => 'peluang-statistik-aktif',
         'status' => 'open',
         'deadline' => today()->addWeek(),
+        'application_link' => 'https://example.test/opportunity-statistik',
     ]);
     Opportunity::query()->create([
         'title' => 'Peluang Statistik Kedaluwarsa',
@@ -483,6 +516,94 @@ it('keeps every dynamic credibility statistic visible when its value is zero', f
         ->assertSee('data-home-stat="Riset &amp; Publikasi"', false)
         ->assertSee('data-home-stat="Kontributor Aktif"', false)
         ->assertSee('data-home-stat="Peluang Aktif"', false);
+});
+
+it('shows author identity and published contribution counts without role or expertise text', function () {
+    $author = Author::query()->create([
+        'name' => 'Siti Zahra',
+        'slug' => 'siti-zahra-homepage',
+        'position' => 'Managing Program',
+        'institution' => 'Edulaw Project',
+        'interests' => ['Constitutional Law', 'Human Rights'],
+        'is_active' => true,
+        'show_in_contributor_section' => true,
+    ]);
+    $insight = Insight::query()->create([
+        'title' => 'Tulisan Siti Zahra',
+        'slug' => 'tulisan-siti-zahra',
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+    $publication = Publication::query()->create([
+        'title' => 'Publikasi Siti Zahra',
+        'slug' => 'publikasi-siti-zahra',
+        'status' => 'published',
+        'published_at' => today(),
+    ]);
+    $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
+    $author->publications()->attach($publication->id, ['author_order' => 1, 'role' => 'Author']);
+
+    $response = $this->get(route('home'))->assertOk();
+
+    $response
+        ->assertSee('Siti Zahra')
+        ->assertDontSee('Managing Program · Edulaw Project')
+        ->assertDontSee('Constitutional Law · Human Rights')
+        ->assertSee('1 tulisan · 1 publikasi')
+        ->assertSee(route('profiles.show', $author->slug), false)
+        ->assertDontSee('bergabung sejak');
+});
+
+it('shows at most five ordered contributors with valid profile cards', function () {
+    $authors = collect(range(1, 6))->map(function (int $position): Author {
+        $author = Author::query()->create([
+            'name' => "Kontributor Beranda {$position}",
+            'slug' => "kontributor-beranda-{$position}",
+            'position' => "Peran {$position}",
+            'interests' => $position % 2 === 0 ? [] : ["Keahlian {$position}"],
+            'is_active' => true,
+            'show_in_contributor_section' => true,
+            'sort_order' => $position,
+        ]);
+        $insight = Insight::query()->create([
+            'title' => "Tulisan Kontributor {$position}",
+            'slug' => "tulisan-kontributor-{$position}",
+            'status' => 'published',
+            'published_at' => now()->subDays($position),
+        ]);
+        $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
+
+        return $author;
+    });
+
+    $response = $this->get(route('home'))->assertOk();
+    $contributorSection = Str::between($response->getContent(), '<section id="kontributor"', '</section>');
+    $document = new DOMDocument;
+    $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $xpath = new DOMXPath($document);
+
+    foreach ($authors->take(5) as $author) {
+        expect($contributorSection)
+            ->toContain($author->name)
+            ->toContain(route('profiles.show', $author->slug));
+    }
+
+    expect($contributorSection)
+        ->not->toContain($authors[5]->name)
+        ->not->toContain(route('profiles.show', $authors[5]->slug));
+
+    expect($xpath->query('//section[@id="kontributor"]//article[@data-home-author]')->length)->toBe(5)
+        ->and($xpath->query('//section[@id="kontributor"]//article[@data-home-author]/a')->length)->toBe(5)
+        ->and($xpath->query('//section[@id="kontributor"]//article[@data-home-author]//a//a')->length)->toBe(0);
+});
+
+it('gives every editorial theme a concise managed description', function () {
+    $this->get(route('home'))
+        ->assertOk()
+        ->assertSee('Tata kelola, kelembagaan, dan kebijakan publik.')
+        ->assertSee('Memahami konsep, asas, dan istilah hukum.')
+        ->assertSee('Perkembangan regulasi dan kebijakan terbaru.')
+        ->assertSee('Analisis isu hukum dan kebijakan kontemporer.');
 });
 
 it('keeps identity, SEO, footer legal links, and dynamic copyright robust', function () {
@@ -548,7 +669,7 @@ it('shows the three institutional pillars in the hero', function () {
         ->assertSeeInOrder([
             'Belajar',
             'Memahami',
-            'Berkembang',
+            'Berkontribusi',
         ], false);
 
     expect(substr_count($html, 'data-home-pillar'))->toBe(3);
@@ -613,12 +734,12 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->assertDontSee($expired->title)
         ->assertDontSee($closed->title)
         ->assertDontSee($invalid->title)
-        ->assertSee('href="'.route('opportunities.show', $opportunities[0]->slug).'"', false)
-        ->assertDontSee('href="https://example.test/apply/1"', false)
+        ->assertSee('href="https://example.test/apply/1"', false)
+        ->assertDontSee('href="'.route('opportunities.show', $opportunities[0]->slug).'"', false)
         ->assertSee('alt="Poster Peluang Aktif 1"', false)
         ->assertSee('Jakarta')
         ->assertSee('Hybrid')
-        ->assertSee('Lihat Detail')
+        ->assertSee('Informasi Resmi ↗')
         ->assertDontSee('Lihat Peluang')
         ->assertSee('Ragam kesempatan untuk belajar, berkembang, dan memberi dampak nyata.');
 
@@ -628,8 +749,8 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->and($xpath->query('//*[@data-home-opportunity-bottom]')->length)->toBe(0)
         ->and($xpath->query('//*[@data-home-opportunity]//img')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
-        ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "/opportunities/")]')->length)->toBe(4)
-        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank"]')->length)->toBe(0)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "example.test/apply/")]')->length)->toBe(4)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity-secondary]//*[contains(text(), "Deadline")]')->length)->toBe(3);
 });
 
@@ -685,7 +806,9 @@ it('shows one featured and at most three secondary multimedia teasers', function
 
     $response = $this->get(route('home'));
     $html = $response->getContent();
-    $editorialStart = strpos($html, '<section id="edulaw-insight"');
+    $featuredEditorialStart = strpos($html, '<section id="editorial-pilihan"');
+    $topicsStart = strpos($html, '<section id="topik-editorial"');
+    $authorsStart = strpos($html, '<section id="kontributor"');
     $programStart = strpos($html, '<section id="program-edulaw"');
     $publicationStart = strpos($html, '<section id="riset-publikasi"');
     $opportunityStart = strpos($html, '<section id="opportunities"');
@@ -702,8 +825,8 @@ it('shows one featured and at most three secondary multimedia teasers', function
         ->assertSee('Belajar Hukum Melalui Beragam Format')
         ->assertSee('Lihat Semua Multimedia')
         ->assertSeeInOrder([
-            'Tentang Edulaw',
             'Belajar Hukum Melalui Beragam Format',
+            'Tentang Edulaw',
             'Bangun ruang literasi hukum bersama Edulaw Project.',
         ])
         ->assertDontSee('<iframe', false)
@@ -715,17 +838,19 @@ it('shows one featured and at most three secondary multimedia teasers', function
         $nextSectionStart - $multimediaStart,
     );
 
-    expect($programStart)->toBeLessThan($editorialStart)
-        ->and($editorialStart)->toBeLessThan($publicationStart)
-        ->and($publicationStart)->toBeLessThan($opportunityStart)
-        ->and($opportunityStart)->toBeLessThan($aboutStart)
-        ->and($aboutStart)->toBeLessThan($multimediaStart)
+    expect($featuredEditorialStart)->toBeLessThan($topicsStart)
+        ->and($topicsStart)->toBeLessThan($publicationStart)
+        ->and($publicationStart)->toBeLessThan($authorsStart)
+        ->and($authorsStart)->toBeLessThan($programStart)
+        ->and($programStart)->toBeLessThan($opportunityStart)
+        ->and($opportunityStart)->toBeLessThan($multimediaStart)
+        ->and($multimediaStart)->toBeLessThan($aboutStart)
         ->and(substr_count($html, 'data-home-multimedia '))->toBe(4)
         ->and(substr_count($html, 'data-home-multimedia-featured'))->toBe(1)
         ->and(substr_count($html, 'data-home-multimedia-secondary'))->toBe(3)
         ->and($multimediaSection)->toContain('from-slate-950/95')
         ->and($multimediaSection)->toContain('Tonton Video')
-        ->and($multimediaSection)->toContain('h-20 w-28')
+        ->and($multimediaSection)->toContain('aspect-video w-28')
         ->and($multimediaSection)->not->toContain('home-empty-state');
 });
 
@@ -764,11 +889,13 @@ it('provides semantic landmarks, a single page heading, and accessible mobile na
         ->assertSee('data-mobile-navigation', false)
         ->assertSee('focus-visible:outline', false)
         ->assertSee('fetchpriority="high"', false)
+        ->assertSee('loading="eager"', false)
         ->assertSee('decoding="async"', false);
 
     expect(substr_count($html, '<h1'))->toBe(1)
         ->and(substr_count($html, '<main'))->toBe(1)
         ->and(substr_count($html, '<header'))->toBe(1)
         ->and(substr_count($html, '<footer'))->toBe(1)
-        ->and($xpath->query('//img[not(@alt) or normalize-space(@alt) = ""]')->length)->toBe(0);
+        ->and($xpath->query('//img[not(@alt) or normalize-space(@alt) = ""]')->length)->toBe(0)
+        ->and($xpath->query('//a//a')->length)->toBe(0);
 });

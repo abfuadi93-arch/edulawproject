@@ -38,6 +38,8 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::post('/kontak', [ContactController::class, 'store'])->name('contact.store');
     Route::view('/kebijakan-privasi', 'pages.privacy')->name('privacy');
     Route::view('/syarat-ketentuan', 'pages.terms')->name('terms');
+    Route::view('/standar-editorial', 'pages.editorial-standards')->name('editorial-standards');
+    Route::view('/kebijakan-koreksi', 'pages.corrections-policy')->name('corrections-policy');
 
     Route::get('/insight', [InsightController::class, 'index'])->name('insights.index');
     Route::get('/insight/kategori/{categorySlug}', [InsightController::class, 'category'])
@@ -57,7 +59,7 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/program/{slug}', [ProgramController::class, 'show'])->name('programs.show');
 
     Route::get('/opportunities', [OpportunityController::class, 'index'])->name('opportunities.index');
-    Route::get('/opportunities/{slug}', [OpportunityController::class, 'show'])->name('opportunities.show');
+    Route::get('/opportunities/{slug}', [OpportunityController::class, 'retired'])->name('opportunities.show');
     Route::redirect('/peluang', '/opportunities', 301);
 
     Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');

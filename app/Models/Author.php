@@ -54,6 +54,7 @@ class Author extends Model
         'institution',
         'position',
         'location',
+        'joined_at',
         'profile_type',
         'organization_group',
         'sort_order',
@@ -71,6 +72,7 @@ class Author extends Model
         'show_in_organization' => 'boolean',
         'show_in_contributor_section' => 'boolean',
         'sort_order' => 'integer',
+        'joined_at' => 'date',
     ];
 
     public static function uniqueSlugFor(string $name, ?int $ignoreId = null): string

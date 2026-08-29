@@ -13,6 +13,7 @@ use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
@@ -109,6 +110,11 @@ class AuthorResource extends Resource
                                                     ->label('Lokasi')
                                                     ->maxLength(255)
                                                     ->placeholder('Jakarta, Indonesia'),
+
+                                                DatePicker::make('joined_at')
+                                                    ->label('Bergabung sejak')
+                                                    ->native(false)
+                                                    ->helperText('Opsional. Kosongkan jika tanggal bergabung tidak dapat diverifikasi.'),
 
                                                 Select::make('profile_type')
                                                     ->label('Peran Publik')
@@ -242,7 +248,9 @@ class AuthorResource extends Resource
                                             ->maxLength(255),
 
                                     ])
-                                    ->columns(1),
+                                    ->columns(1)
+                                    ->collapsible()
+                                    ->collapsed(),
 
                                 Section::make('Tautan Sosial')
                                     ->icon('heroicon-o-link')

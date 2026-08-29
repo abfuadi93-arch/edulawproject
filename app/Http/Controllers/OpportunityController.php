@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Opportunity;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -193,27 +194,8 @@ class OpportunityController extends Controller
         };
     }
 
-    public function show(string $slug): View
+    public function retired(string $slug): RedirectResponse
     {
-        $opportunity = Opportunity::query()
-            ->active()
-            ->withExternalLink()
-            ->where('slug', $slug)
-            ->firstOrFail();
-
-        $relatedOpportunities = Opportunity::query()
-            ->active()
-            ->withExternalLink()
-            ->whereKeyNot($opportunity->id)
-            ->when(
-                filled($opportunity->type),
-                fn ($query) => $query->where('type', $opportunity->type),
-            )
-            ->orderByRaw('CASE WHEN deadline IS NULL THEN 1 ELSE 0 END')
-            ->orderBy('deadline')
-            ->limit(3)
-            ->get();
-
-        return view('opportunities.show', compact('opportunity', 'relatedOpportunities'));
+        return redirect()->route('opportunities.index', status: 301);
     }
 }

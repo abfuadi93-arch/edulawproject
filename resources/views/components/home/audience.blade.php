@@ -2,7 +2,7 @@
     $audiences = [
         ['title' => 'Mahasiswa Hukum', 'description' => 'Materi dan ruang belajar hukum yang terbuka.', 'symbol' => '◆', 'accent' => 'bg-[#fff2cc] text-[#b98213]', 'label' => 'Jelajahi Program', 'url' => '#program-edulaw'],
         ['title' => 'Peneliti & Akademisi', 'description' => 'Pengetahuan hukum berbasis bukti dan kajian.', 'symbol' => '●', 'accent' => 'bg-[#ddf7ed] text-[#168565]', 'label' => 'Jelajahi Riset', 'url' => '#riset-publikasi'],
-        ['title' => 'Praktisi & Profesional', 'description' => 'Analisis yang relevan untuk praktik dan kebijakan.', 'symbol' => '■', 'accent' => 'bg-[#e8f1ff] text-[#32689c]', 'label' => 'Baca Editorial', 'url' => '#edulaw-insight'],
+        ['title' => 'Praktisi & Profesional', 'description' => 'Analisis yang relevan untuk praktik dan kebijakan.', 'symbol' => '■', 'accent' => 'bg-[#e8f1ff] text-[#32689c]', 'label' => 'Baca Editorial', 'url' => '#editorial-pilihan'],
         ['title' => 'Masyarakat & Komunitas', 'description' => 'Literasi hukum yang dekat dengan kebutuhan publik.', 'symbol' => '✦', 'accent' => 'bg-[#fde8e2] text-[#a85c4b]', 'label' => 'Lihat Multimedia', 'url' => '#multimedia'],
     ];
 @endphp

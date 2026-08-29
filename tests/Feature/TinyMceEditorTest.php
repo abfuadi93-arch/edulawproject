@@ -100,7 +100,6 @@ test('every primary Filament content form uses self hosted TinyMCE', function ()
     foreach ([
         [CreateProgram::class, 'programs/content-images'],
         [CreatePublication::class, 'publications/content-images'],
-        [CreateOpportunity::class, 'opportunities/content-images'],
     ] as [$page, $directory]) {
         Livewire::test($page)
             ->assertFormFieldExists('description', null, fn (Field $field): bool => $field instanceof TinyMceEditor
@@ -108,6 +107,10 @@ test('every primary Filament content form uses self hosted TinyMCE', function ()
                 && $field->getFileAttachmentsDirectory() === $directory
                 && $field->getFileAttachmentsMaxSize() === 4096);
     }
+
+    Livewire::test(CreateOpportunity::class)
+        ->assertFormFieldExists('excerpt')
+        ->assertFormFieldDoesNotExist('description');
 
     $insight = Insight::query()->create([
         'title' => 'Naskah TinyMCE Editorial',

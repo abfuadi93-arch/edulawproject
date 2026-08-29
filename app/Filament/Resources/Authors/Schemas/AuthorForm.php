@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Authors\Schemas;
 
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -41,6 +42,10 @@ class AuthorForm
                     ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
                 TextInput::make('institution'),
                 TextInput::make('position'),
+                DatePicker::make('joined_at')
+                    ->label('Bergabung sejak')
+                    ->native(false)
+                    ->helperText('Opsional. Kosongkan jika tanggal bergabung tidak dapat diverifikasi.'),
                 Textarea::make('social_links')
                     ->columnSpanFull(),
                 Toggle::make('is_active')

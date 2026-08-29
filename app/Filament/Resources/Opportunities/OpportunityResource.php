@@ -2,7 +2,6 @@
 
 namespace App\Filament\Resources\Opportunities;
 
-use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
 use App\Filament\Resources\Opportunities\Pages\EditOpportunity;
 use App\Filament\Resources\Opportunities\Pages\ListOpportunities;
@@ -63,7 +62,7 @@ class OpportunityResource extends Resource
                             ->schema([
                                 Section::make('Konten Opportunity')
                                     ->icon('heroicon-o-sparkles')
-                                    ->description('Isi peluang utama: judul, jenis, deskripsi, tautan pendaftaran, format, dan lokasi.')
+                                    ->description('Cukup isi identitas singkat dan tautan resmi. Hindari menyalin ulang deskripsi promosi panjang milik penyelenggara.')
                                     ->schema([
                                         TextInput::make('title')
                                             ->label('Judul')
@@ -94,25 +93,24 @@ class OpportunityResource extends Resource
                                                     ->searchable()
                                                     ->required(),
 
+                                                TextInput::make('organizer')
+                                                    ->label('Penyelenggara')
+                                                    ->maxLength(255),
+
                                                 TextInput::make('application_link')
-                                                    ->label('Link Pendaftaran')
+                                                    ->label('URL Informasi Resmi')
                                                     ->url()
                                                     ->maxLength(255)
-                                                    ->placeholder('https://...'),
+                                                    ->placeholder('https://...')
+                                                    ->helperText('Card publik akan langsung membuka URL resmi ini.'),
                                             ])
                                             ->columnSpanFull(),
 
-                                        TinyMceEditor::make('description')
-                                            ->label('Deskripsi')
-                                            ->height(520)
-                                            ->fileAttachmentsDisk('public')
-                                            ->fileAttachmentsDirectory('opportunities/content-images')
-                                            ->fileAttachmentsVisibility('public')
-                                            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-                                            ->fileAttachmentsMaxSize(4096)
-                                            ->editorConfig([
-                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
-                                            ])
+                                        Textarea::make('excerpt')
+                                            ->label('Ringkasan Kurasi')
+                                            ->rows(3)
+                                            ->maxLength(500)
+                                            ->helperText('Opsional dan ringkas. Jelaskan relevansi peluang dalam 1–2 kalimat; detail lengkap tetap dibaca di situs resmi.')
                                             ->columnSpanFull(),
 
                                         Grid::make([
@@ -150,8 +148,7 @@ class OpportunityResource extends Resource
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                static::listRepeater('eligibility', 'Eligibility', 'Tambah Eligibility'),
-                                                static::listRepeater('benefits', 'Benefits', 'Tambah Benefit'),
+                                                static::listRepeater('eligibility', 'Target Peserta', 'Tambah Target Peserta'),
                                             ])
                                             ->columnSpanFull(),
                                     ])
@@ -161,7 +158,7 @@ class OpportunityResource extends Resource
 
                                 Section::make('SEO & Pratinjau')
                                     ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster pertama.')
+                                    ->description('Opsional. Jika kosong, sistem memakai judul, ringkasan kurasi, dan poster pertama.')
                                     ->schema([
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
@@ -173,7 +170,7 @@ class OpportunityResource extends Resource
                                             ->label('SEO Description')
                                             ->rows(3)
                                             ->maxLength(180)
-                                            ->placeholder('Otomatis dari deskripsi')
+                                            ->placeholder('Otomatis dari ringkasan kurasi')
                                             ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
 
                                         FileUpload::make('og_image')
@@ -279,7 +276,9 @@ class OpportunityResource extends Resource
         }
 
         $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
-        $data['excerpt'] = static::excerptFromDescription($data['description'] ?? null);
+        $data['excerpt'] = filled($data['excerpt'] ?? null)
+            ? static::excerptFromDescription((string) $data['excerpt'])
+            : static::excerptFromDescription($data['description'] ?? null);
 
         $posterState = array_key_exists('additional_posters', $data)
             ? collect([$data['poster'] ?? null])

@@ -23,7 +23,14 @@ class OpportunityForm
                 TextInput::make('type')
                     ->required()
                     ->default('open_collaboration'),
-                Textarea::make('description')
+                TextInput::make('organizer')
+                    ->label('Penyelenggara')
+                    ->maxLength(255),
+                Textarea::make('excerpt')
+                    ->label('Ringkasan Kurasi')
+                    ->rows(3)
+                    ->maxLength(500)
+                    ->helperText('Ringkas relevansi peluang; detail lengkap tetap dibaca di situs resmi.')
                     ->columnSpanFull(),
                 FileUpload::make('poster')
                     ->label('Poster Slide 1')
@@ -55,12 +62,13 @@ class OpportunityForm
                     ->addActionLabel('Tambah Poster')
                     ->reorderable(),
                 DatePicker::make('deadline'),
-                TextInput::make('application_link'),
+                TextInput::make('application_link')
+                    ->label('URL Informasi Resmi')
+                    ->url(),
                 TextInput::make('format'),
                 TextInput::make('location'),
                 Textarea::make('eligibility')
-                    ->columnSpanFull(),
-                Textarea::make('benefits')
+                    ->label('Target Peserta')
                     ->columnSpanFull(),
                 TextInput::make('status')
                     ->required()

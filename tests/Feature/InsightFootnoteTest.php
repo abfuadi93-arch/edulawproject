@@ -101,7 +101,7 @@ test('public insight renders linked academic footnotes and escapes their plain t
 
     $this->get(route('insights.show', $insight->slug))
         ->assertOk()
-        ->assertSee('Catatan Kaki')
+        ->assertSee('Sumber &amp; Rujukan', false)
         ->assertSee('href="#fn-1"', false)
         ->assertSee('id="fn-1"', false)
         ->assertSee('href="#fnref-1"', false)

@@ -49,7 +49,7 @@ test('organization is global and homepage exposes website structured data', func
         )
         ->and($website)
         ->not->toBeNull()
-        ->and($website['potentialAction']['@type'])->toBe('SearchAction');
+        ->and($website)->not->toHaveKey('potentialAction');
 });
 
 test('insight pages expose item list article authors and breadcrumbs', function () {
@@ -91,6 +91,7 @@ test('insight pages expose item list article authors and breadcrumbs', function 
         ->and($article['author'][0]['name'])->toBe($author->name)
         ->and($article['author'][0]['url'])->toBe(route('profiles.show', $author->slug))
         ->and($article['datePublished'])->toBe($insight->published_at->toIso8601String())
+        ->and($article)->not->toHaveKey('dateModified')
         ->and($breadcrumbs['itemListElement'])->toHaveCount(3)
         ->and($breadcrumbs['itemListElement'][2]['name'])->toBe($insight->title);
 });
@@ -118,6 +119,24 @@ test('profile pages expose person and breadcrumb data from public fields', funct
         ->and($person['knowsAbout'])->toBe(['Konstitusi', 'Kebijakan Publik'])
         ->and($person['sameAs'])->toBe(['https://www.linkedin.com/in/aulia-rahman'])
         ->and(structuredDataOfType($schemas, 'BreadcrumbList'))->not->toBeNull();
+});
+
+test('person schema does not infer an affiliation when the profile has none', function () {
+    $author = Author::query()->create([
+        'name' => 'Kontributor Independen',
+        'slug' => 'kontributor-independen-schema',
+        'position' => 'Peneliti',
+        'is_active' => true,
+    ]);
+
+    $schemas = structuredDataSchemas(
+        $this->get(route('profiles.show', $author->slug))->assertOk()->getContent(),
+    );
+    $person = structuredDataOfType($schemas, 'Person');
+
+    expect($person)
+        ->not->toHaveKey('affiliation')
+        ->not->toHaveKey('worksFor');
 });
 
 test('dated programs expose event data only when a real location is available', function () {
@@ -178,6 +197,7 @@ test('publication schema type follows the real publication type', function () {
         ->not->toBeNull()
         ->and($report['name'])->toBe($publication->title)
         ->and($report['pagination'])->toBe('24')
+        ->and($report)->not->toHaveKey('dateModified')
         ->and(structuredDataOfType($schemas, 'BreadcrumbList'))->not->toBeNull();
 });
 

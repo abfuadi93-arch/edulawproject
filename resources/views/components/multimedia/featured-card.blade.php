@@ -6,6 +6,7 @@
 @php
     $isHome = $variant === 'home';
     $date = $item->published_at?->locale('id')->translatedFormat('d M Y') ?: 'Kanal resmi Edulaw';
+    $meta = collect([$date, filled($item->duration) ? $item->duration : null])->filter()->join(' · ');
     $summary = trim(strip_tags((string) $item->description)) ?: 'Pembahasan hukum pilihan dari kanal resmi Edulaw Project.';
     $fallbackThumbnail = $item->youtube_thumbnail_fallback_url;
 @endphp
@@ -13,7 +14,7 @@
 @if ($isHome)
     <article data-home-multimedia data-home-multimedia-featured {{ $attributes->class('group min-w-0 overflow-hidden rounded-xl bg-brand-navy shadow-[0_22px_54px_-36px_rgba(15,23,42,.65)]') }}>
         <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Tonton {{ $item->title }} di YouTube (membuka tab baru)" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
-            <div class="relative min-h-[390px] h-full overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] sm:min-h-[410px] lg:min-h-[360px]">
+            <div class="relative aspect-video h-full overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] lg:aspect-auto lg:min-h-[340px]">
                 <div class="absolute inset-0 grid place-items-center text-white/55" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
                 </div>
@@ -41,7 +42,7 @@
                 <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8">
                     <p class="text-[11px] font-extrabold uppercase tracking-[0.12em] text-[#f0c55e]">Video Pilihan</p>
                     <h3 class="mt-2 line-clamp-2 text-2xl font-black leading-[1.2] text-white drop-shadow-sm sm:text-3xl">{{ $item->title }}</h3>
-                    <p class="mt-3 text-xs font-bold text-white/75">{{ $date }}</p>
+                    <p class="mt-3 text-xs font-bold text-white/75">{{ $meta }}</p>
                     <span class="mt-4 inline-flex text-sm font-black text-white">Tonton Video →</span>
                 </div>
             </div>

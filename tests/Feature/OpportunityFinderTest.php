@@ -38,8 +38,10 @@ test('finder separates featured opportunity from the paginated results', functio
     $response
         ->assertViewHas('featuredOpportunity', fn (?Opportunity $item): bool => $item?->is($featured) === true)
         ->assertViewHas('opportunities', fn ($items): bool => $items->total() === 1 && $items->first()->is($regular))
-        ->assertSee(route('opportunities.show', $featured->slug), false)
-        ->assertSee(route('opportunities.show', $regular->slug), false);
+        ->assertSee($featured->application_link, false)
+        ->assertSee($regular->application_link, false)
+        ->assertDontSee(route('opportunities.show', $featured->slug), false)
+        ->assertDontSee(route('opportunities.show', $regular->slug), false);
 });
 
 test('finder renders its advanced filters without a public Alpine dependency', function () {
