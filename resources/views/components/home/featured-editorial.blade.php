@@ -8,12 +8,12 @@
         ->filter()
         ->when($insight, fn ($collection) => $collection->where('id', '!=', $insight->id))
         ->unique('id')
-        ->take(6)
+        ->take(2)
         ->values();
 @endphp
 
 <section id="editorial-pilihan" class="home-surface-warm scroll-mt-20 py-8 sm:py-9 lg:py-10">
-    <div class="section-shell grid gap-8 xl:grid-cols-[minmax(0,2fr)_minmax(340px,1fr)] xl:gap-10">
+    <div class="section-shell grid gap-8 xl:grid-cols-[minmax(0,65fr)_minmax(380px,45fr)] xl:gap-10">
         <div class="flex min-w-0 flex-col" aria-labelledby="home-insights-title">
             <div class="flex flex-col items-start gap-3 sm:flex-row sm:items-end sm:justify-between sm:gap-4">
                 <div>
@@ -24,18 +24,21 @@
             </div>
 
             @if ($items->isNotEmpty())
-                <div class="mt-7 grid flex-1 auto-rows-fr grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2 xl:grid-cols-3">
+                <div class="mt-7 grid flex-1 auto-rows-fr grid-cols-1 gap-x-4 gap-y-5 sm:grid-cols-2">
                     @foreach ($items as $index => $item)
                         <article data-home-insight @if ($index === 0) data-home-insight-latest @endif class="group flex h-full flex-col overflow-hidden rounded-xl border border-[#e7ebf0] bg-white transition hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm">
                             <a href="{{ route('insights.show', $item->slug) }}" class="flex h-full flex-1 flex-col focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                                 <div class="relative aspect-[16/9] overflow-hidden bg-[linear-gradient(135deg,#173b63,#4a8796)]">
                                     @if ($item->cover_image_url)
-                                        <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1280px) 260px, (min-width: 640px) 50vw, 100vw" width="520" height="292" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" onerror="this.remove()" />
+                                        <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1280px) 340px, (min-width: 640px) 50vw, 100vw" width="520" height="292" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" onerror="this.remove()" />
                                     @endif
                                 </div>
                                 <div class="flex flex-1 flex-col p-4">
                                     <p class="home-card-kicker">{{ $item->display_category }}</p>
                                     <h3 class="home-card-title line-clamp-3 min-h-[4.3rem]">{{ $item->title }}</h3>
+                                    @if (filled($item->excerpt))
+                                        <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{{ $item->excerpt }}</p>
+                                    @endif
                                     <div class="home-card-meta mt-auto flex flex-wrap gap-x-2 gap-y-1 pt-4">
                                         @if ($item->published_at)<span>{{ $item->published_at->translatedFormat('d M Y') }}</span>@endif
                                         @if ($item->published_at && $item->reading_time)<span>·</span>@endif
@@ -67,7 +70,7 @@
             @if ($insight)
                 <article data-home-insight-featured class="group relative mt-7 flex min-h-[420px] flex-1 overflow-hidden rounded-xl bg-[linear-gradient(145deg,#142f57,#155e68)] text-white sm:min-h-[460px]">
                     @if ($insight->cover_image_url)
-                        <x-responsive-image :src="$insight->cover_image_url" alt="Sampul {{ $insight->title }}" :widths="[480, 640, 960]" sizes="(min-width: 1280px) 400px, 100vw" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
+                        <x-responsive-image :src="$insight->cover_image_url" alt="Sampul {{ $insight->title }}" :widths="[480, 640, 960]" sizes="(min-width: 1280px) 490px, 100vw" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
                     @endif
                     <div class="absolute inset-0 bg-linear-to-t from-[#07172e]/95 via-[#142f57]/60 to-[#142f57]/10"></div>
                     <a href="{{ route('insights.show', $insight->slug) }}" aria-label="Baca editorial: {{ $insight->title }}" class="relative flex flex-1 flex-col justify-end p-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand-amber sm:p-8">

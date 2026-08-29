@@ -225,7 +225,7 @@ it('falls back to the nearest archived programs when no active program exists', 
     expect(substr_count($html, 'data-home-program'))->toBe(3);
 });
 
-it('combines one featured insight and six latest editorial items without duplicates', function () {
+it('combines one featured insight and two latest editorial items without duplicates', function () {
     $featured = Insight::query()->create([
         'title' => 'Insight Utama Beranda',
         'slug' => 'insight-utama-beranda',
@@ -237,6 +237,7 @@ it('combines one featured insight and six latest editorial items without duplica
     $latest = collect(range(1, 7))->map(fn (int $position) => Insight::query()->create([
         'title' => "Insight Published {$position}",
         'slug' => "insight-published-{$position}",
+        'excerpt' => "Ringkasan Insight Published {$position}",
         'status' => 'published',
         'published_at' => now()->subDays($position),
     ]));
@@ -267,23 +268,20 @@ it('combines one featured insight and six latest editorial items without duplica
         ->assertDontSee($reviewed->title)
         ->assertSee(route('insights.index'), false);
 
-    expect(substr_count($editorialSection, '<article data-home-insight '))->toBe(6)
+    expect(substr_count($editorialSection, '<article data-home-insight '))->toBe(2)
         ->and(substr_count($editorialSection, 'data-home-insight-featured'))->toBe(1)
         ->and(substr_count($html, 'id="editorial-pilihan"'))->toBe(1)
         ->and($html)->not->toContain('id="edulaw-insight"')
         ->and($editorialSection)->toContain($latest[0]->title)
         ->and($editorialSection)->toContain($latest[1]->title)
-        ->and($editorialSection)->toContain($latest[2]->title)
-        ->and($editorialSection)->toContain($latest[3]->title)
-        ->and($editorialSection)->toContain($latest[4]->title)
-        ->and($editorialSection)->toContain($latest[5]->title)
-        ->and($editorialSection)->not->toContain($latest[6]->title)
+        ->and($editorialSection)->toContain($latest[0]->excerpt)
+        ->and($editorialSection)->toContain($latest[1]->excerpt)
+        ->and($editorialSection)->not->toContain($latest[2]->title)
         ->and($latestEditorials)->not->toContain($featured->title)
-        ->and(strpos($editorialSection, $latest[0]->title))->toBeLessThan(strpos($editorialSection, $latest[1]->title))
-        ->and(strpos($editorialSection, $latest[4]->title))->toBeLessThan(strpos($editorialSection, $latest[5]->title));
+        ->and(strpos($editorialSection, $latest[0]->title))->toBeLessThan(strpos($editorialSection, $latest[1]->title));
 });
 
-it('keeps six latest editorial items when the featured story uses the newest fallback', function () {
+it('keeps two latest editorial items when the featured story uses the newest fallback', function () {
     $insights = collect(range(1, 7))->map(fn (int $position) => Insight::query()->create([
         'title' => "Insight Fallback {$position}",
         'slug' => "insight-fallback-{$position}",
@@ -295,15 +293,12 @@ it('keeps six latest editorial items when the featured story uses the newest fal
     $editorialSection = Str::between($html, '<section id="editorial-pilihan"', '</section>');
     $latestEditorials = Str::before($editorialSection, 'aria-labelledby="home-featured-editorial-title"');
 
-    expect(substr_count($editorialSection, '<article data-home-insight '))->toBe(6)
+    expect(substr_count($editorialSection, '<article data-home-insight '))->toBe(2)
         ->and(substr_count($editorialSection, 'data-home-insight-featured'))->toBe(1)
         ->and($latestEditorials)->not->toContain($insights[0]->title)
         ->and($latestEditorials)->toContain($insights[1]->title)
         ->and($latestEditorials)->toContain($insights[2]->title)
-        ->and($latestEditorials)->toContain($insights[3]->title)
-        ->and($latestEditorials)->toContain($insights[4]->title)
-        ->and($latestEditorials)->toContain($insights[5]->title)
-        ->and($latestEditorials)->toContain($insights[6]->title);
+        ->and($latestEditorials)->not->toContain($insights[3]->title);
 });
 
 it('limits publications to four published records and excludes non-published records', function () {
