@@ -67,20 +67,6 @@ class HomeController extends Controller
             ];
         });
 
-        $homeAuthors = Author::query()
-            ->publicProfile()
-            ->visibleInContributorSection()
-            ->withPublicContribution()
-            ->withCount([
-                'insights as published_insights_count' => fn ($query) => $query->published(),
-                'publications as published_publications_count' => fn ($query) => $query->published(),
-            ])
-            ->orderByDesc('published_insights_count')
-            ->orderByDesc('published_publications_count')
-            ->orderBy('sort_order')
-            ->limit(5)
-            ->get();
-
         $latestPublications = Publication::with(['type', 'authors.user', 'tags'])
             ->published()
             ->orderByDesc('featured')
@@ -210,7 +196,6 @@ class HomeController extends Controller
             'featuredInsight',
             'latestInsights',
             'homeTopics',
-            'homeAuthors',
             'latestPublications',
             'latestPrograms',
             'latestOpportunities',

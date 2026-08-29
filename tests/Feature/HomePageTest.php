@@ -353,7 +353,6 @@ it('renders the about section followed by the active collaboration call to actio
             'Pilihan Editor',
             'Jelajahi Topik',
             'Riset &amp; Publikasi Pilihan',
-            'Penulis dan Peneliti Edulaw',
             'Program Edulaw',
             'Belajar Hukum secara Kontekstual',
             'Peluang untuk Tumbuh dan Berkontribusi',
@@ -513,7 +512,7 @@ it('keeps every dynamic credibility statistic visible when its value is zero', f
         ->assertSee('data-home-stat="Peluang Aktif"', false);
 });
 
-it('shows author identity and published contribution counts without role or expertise text', function () {
+it('keeps contributor profile cards off the homepage', function () {
     $author = Author::query()->create([
         'name' => 'Siti Zahra',
         'slug' => 'siti-zahra-homepage',
@@ -529,67 +528,14 @@ it('shows author identity and published contribution counts without role or expe
         'status' => 'published',
         'published_at' => now()->subDay(),
     ]);
-    $publication = Publication::query()->create([
-        'title' => 'Publikasi Siti Zahra',
-        'slug' => 'publikasi-siti-zahra',
-        'status' => 'published',
-        'published_at' => today(),
-    ]);
     $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
-    $author->publications()->attach($publication->id, ['author_order' => 1, 'role' => 'Author']);
 
     $response = $this->get(route('home'))->assertOk();
 
     $response
-        ->assertSee('Siti Zahra')
-        ->assertDontSee('Managing Program · Edulaw Project')
-        ->assertDontSee('Constitutional Law · Human Rights')
-        ->assertSee('1 tulisan · 1 publikasi')
-        ->assertSee(route('profiles.show', $author->slug), false)
-        ->assertDontSee('bergabung sejak');
-});
-
-it('shows at most five ordered contributors with valid profile cards', function () {
-    $authors = collect(range(1, 6))->map(function (int $position): Author {
-        $author = Author::query()->create([
-            'name' => "Kontributor Beranda {$position}",
-            'slug' => "kontributor-beranda-{$position}",
-            'position' => "Peran {$position}",
-            'interests' => $position % 2 === 0 ? [] : ["Keahlian {$position}"],
-            'is_active' => true,
-            'show_in_contributor_section' => true,
-            'sort_order' => $position,
-        ]);
-        $insight = Insight::query()->create([
-            'title' => "Tulisan Kontributor {$position}",
-            'slug' => "tulisan-kontributor-{$position}",
-            'status' => 'published',
-            'published_at' => now()->subDays($position),
-        ]);
-        $author->insights()->attach($insight->id, ['author_order' => 1, 'role' => 'Penulis']);
-
-        return $author;
-    });
-
-    $response = $this->get(route('home'))->assertOk();
-    $contributorSection = Str::between($response->getContent(), '<section id="kontributor"', '</section>');
-    $document = new DOMDocument;
-    $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
-    $xpath = new DOMXPath($document);
-
-    foreach ($authors->take(5) as $author) {
-        expect($contributorSection)
-            ->toContain($author->name)
-            ->toContain(route('profiles.show', $author->slug));
-    }
-
-    expect($contributorSection)
-        ->not->toContain($authors[5]->name)
-        ->not->toContain(route('profiles.show', $authors[5]->slug));
-
-    expect($xpath->query('//section[@id="kontributor"]//article[@data-home-author]')->length)->toBe(5)
-        ->and($xpath->query('//section[@id="kontributor"]//article[@data-home-author]/a')->length)->toBe(5)
-        ->and($xpath->query('//section[@id="kontributor"]//article[@data-home-author]//a//a')->length)->toBe(0);
+        ->assertDontSee('id="kontributor"', false)
+        ->assertDontSee('data-home-author', false)
+        ->assertDontSee(route('profiles.show', $author->slug), false);
 });
 
 it('gives every editorial theme a concise managed description', function () {
@@ -803,7 +749,6 @@ it('shows one featured and at most three secondary multimedia teasers', function
     $html = $response->getContent();
     $featuredEditorialStart = strpos($html, '<section id="editorial-pilihan"');
     $topicsStart = strpos($html, '<section id="topik-editorial"');
-    $authorsStart = strpos($html, '<section id="kontributor"');
     $programStart = strpos($html, '<section id="program-edulaw"');
     $publicationStart = strpos($html, '<section id="riset-publikasi"');
     $opportunityStart = strpos($html, '<section id="opportunities"');
@@ -835,8 +780,7 @@ it('shows one featured and at most three secondary multimedia teasers', function
 
     expect($featuredEditorialStart)->toBeLessThan($topicsStart)
         ->and($topicsStart)->toBeLessThan($publicationStart)
-        ->and($publicationStart)->toBeLessThan($authorsStart)
-        ->and($authorsStart)->toBeLessThan($programStart)
+        ->and($publicationStart)->toBeLessThan($programStart)
         ->and($programStart)->toBeLessThan($opportunityStart)
         ->and($opportunityStart)->toBeLessThan($multimediaStart)
         ->and($multimediaStart)->toBeLessThan($aboutStart)

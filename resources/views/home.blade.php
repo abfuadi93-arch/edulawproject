@@ -28,7 +28,6 @@
     <x-home.featured-editorial :insight="$featuredInsight" :insights="$latestInsights" />
     <x-home.topics :topics="$homeTopics" />
     <x-home.publications :publications="$latestPublications" />
-    <x-home.authors :authors="$homeAuthors" />
     <x-home.programs :programs="$latestPrograms" />
     <x-home.opportunities :opportunities="$latestOpportunities" />
     <x-home.multimedia :featured="$homepageFeaturedMultimedia" :items="$homepageSecondaryMultimedia" />
