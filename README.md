@@ -45,6 +45,35 @@ Expected result:
 public_html/storage -> /home/u815125696/domains/edulawproject.id/laravel/storage/app/public
 ```
 
+## Data terstruktur acara (Google Search Console)
+
+Setelah menerapkan perubahan kode, jalankan `php artisan migrate --force` pada server
+untuk menambahkan kolom opsional `programs.ticket_price`, lalu `php artisan view:clear`.
+Migrasi tidak mengisi atau mengubah data acara lama.
+
+Di admin **Program**, periksa acara pada URL yang dilaporkan Search Console:
+
+- **Narasumber**: isi nama yang sudah dikonfirmasi; diterbitkan sebagai `performer`.
+- **Tanggal Selesai**: isi tanggal sebenarnya. Acara satu hari memakai tanggal yang
+  sama dengan tanggal mulai. Tanggal kosong tidak otomatis disamakan dengan tanggal
+  mulai. Karena input menyimpan tanggal tanpa jam, JSON-LD menggunakan `YYYY-MM-DD`.
+- **Link Pendaftaran**: gunakan URL HTTP/HTTPS khusus pendaftaran acara tersebut.
+- **Harga Tiket (IDR)**: isi harga terendah termasuk biaya layanan, atau `0` untuk
+  acara gratis. Jika nominal kosong, hanya label jenis biaya `Gratis` atau `free`
+  yang dianggap bernilai nol. Label `Berbayar` saja tidak cukup untuk mengetahui
+  nominal. Nominal yang diisi menjadi sumber biaya di halaman publik dan schema.
+
+`offers` hanya diterbitkan jika URL pendaftaran dan harga diketahui. Nama narasumber,
+harga, ketersediaan tiket, tanggal penjualan, dan tanggal selesai tidak dibuat-buat
+demi menghilangkan peringatan. Karena itu, acara dengan data yang belum lengkap
+masih dapat memiliki peringatan non-kritis setelah kode diterapkan.
+
+Uji URL publik di [Rich Results Test](https://search.google.com/test/rich-results),
+lalu gunakan **Validasi perbaikan** pada laporan Acara di Search Console. Perubahan
+lokal atau tes otomatis tidak berarti laporan Google sudah divalidasi; Google perlu
+merayapi ulang halaman yang telah diperbarui. Rujukan:
+[panduan Event Google](https://developers.google.com/search/docs/appearance/structured-data/event).
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.

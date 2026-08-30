@@ -1,8 +1,57 @@
 <?php
 
 use App\Filament\Resources\ProgramResource;
+use App\Filament\Resources\ProgramResource\Pages\CreateProgram;
 use App\Models\Program;
+use App\Models\ProgramCategory;
+use App\Models\User;
+use Filament\Facades\Filament;
 use Illuminate\Support\Carbon;
+use Livewire\Livewire;
+use Spatie\Permission\Models\Role;
+
+test('program admin validates and saves ticket price and the actual end date', function () {
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    $user = User::query()->create([
+        'name' => 'Admin Program',
+        'email' => 'program-admin@example.test',
+        'password' => 'secret-password',
+        'is_active' => true,
+    ]);
+    $user->assignRole(Role::findOrCreate('super_admin'));
+    $category = ProgramCategory::query()->create([
+        'name' => 'Kelas Publik',
+        'slug' => 'kelas-publik-admin-schema',
+        'is_active' => true,
+    ]);
+
+    Livewire::actingAs($user)
+        ->test(CreateProgram::class)
+        ->fillForm([
+            'name' => 'Kelas Publik dengan Tiket',
+            'slug' => 'kelas-publik-dengan-tiket',
+            'program_category_id' => $category->id,
+            'description' => '<p>Kelas edukasi publik.</p>',
+            'speakers' => [['name' => 'Narasumber Terverifikasi']],
+            'format' => 'offline',
+            'event_date' => '2026-09-05',
+            'end_date' => '2026-09-04',
+            'ticket_price' => -1,
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['ticket_price', 'end_date'])
+        ->fillForm([
+            'end_date' => '2026-09-05',
+            'ticket_price' => '75000.50',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $program = Program::query()->where('slug', 'kelas-publik-dengan-tiket')->firstOrFail();
+
+    expect($program->ticket_price)->toBe('75000.50')
+        ->and($program->end_date->toDateString())->toBe('2026-09-05');
+});
 
 test('program admin resource derives short description seo and cta fallback', function () {
     $description = '<p>Diskusi ini membahas kemerdekaan kekuasaan kehakiman dalam negara hukum demokratis serta tantangan independensi peradilan dalam praktik ketatanegaraan Indonesia.</p>';

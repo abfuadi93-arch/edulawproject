@@ -194,6 +194,7 @@ class ProgramResource extends Resource
 
                                         Repeater::make('speakers')
                                             ->label('Narasumber')
+                                            ->helperText('Nama narasumber juga digunakan sebagai performer pada data terstruktur acara. Isi hanya narasumber yang sudah dikonfirmasi.')
                                             ->schema([
                                                 Grid::make([
                                                     'default' => 1,
@@ -330,6 +331,15 @@ class ProgramResource extends Resource
                                                     ->maxLength(255)
                                                     ->placeholder('Gratis / Berbayar'),
 
+                                                TextInput::make('ticket_price')
+                                                    ->label('Harga Tiket (IDR)')
+                                                    ->numeric()
+                                                    ->minValue(0)
+                                                    ->maxValue(9999999999.99)
+                                                    ->step(0.01)
+                                                    ->prefix('Rp')
+                                                    ->helperText('Harga terendah termasuk biaya layanan. Isi 0 untuk gratis; kosongkan jika belum diketahui. Nominal ini ditampilkan pada halaman program dan data terstruktur.'),
+
                                                 Toggle::make('certificate_available')
                                                     ->label('Sertifikat Tersedia')
                                                     ->default(false),
@@ -345,6 +355,7 @@ class ProgramResource extends Resource
                                                     ->label('Link Pendaftaran')
                                                     ->url()
                                                     ->maxLength(255)
+                                                    ->helperText('Gunakan tautan pendaftaran acara ini. Data offers diterbitkan jika tautan dan harga diketahui, termasuk jenis biaya Gratis / free.')
                                                     ->placeholder('https://...'),
 
                                                 TextInput::make('youtube_url')
@@ -471,7 +482,9 @@ class ProgramResource extends Resource
 
                                         DatePicker::make('end_date')
                                             ->label('Tanggal Selesai')
-                                            ->minDate(fn (Get $get) => $get('event_date')),
+                                            ->minDate(fn (Get $get) => $get('event_date'))
+                                            ->afterOrEqual('event_date')
+                                            ->helperText('Diperlukan untuk endDate di Google. Untuk acara satu hari, isi tanggal yang sama dengan tanggal mulai. Jangan menebak jika belum diketahui.'),
 
                                         Select::make('format')
                                             ->label('Format')

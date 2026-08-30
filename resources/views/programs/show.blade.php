@@ -126,15 +126,17 @@
     $sidebarRows = collect([
         ['label' => 'Kategori', 'value' => $categoryLabel],
         ['label' => 'Tanggal Mulai', 'value' => $eventDateLabel],
+        ['label' => 'Tanggal Selesai', 'value' => $program->end_date?->translatedFormat('d F Y')],
         ['label' => 'Format', 'value' => $formatLabel],
         ['label' => 'Lokasi', 'value' => $program->location],
         ['label' => 'Target Peserta', 'value' => $program->audience !== $heroAudienceLabel ? $program->audience : null],
-        ['label' => 'Biaya', 'value' => $program->price_type],
+        ['label' => 'Biaya', 'value' => $program->display_price],
         ['label' => 'Sertifikat', 'value' => $program->certificate_available ? 'Tersedia' : null],
         ['label' => 'Bahasa', 'value' => $languageLabel],
     ])->filter(fn ($row) => filled($row['value']))->values();
 
     $supportLinks = collect([
+        ['label' => 'Pendaftaran', 'url' => ! in_array($registrationUrl, [$primaryButtonUrl, $secondaryButtonUrl], true) ? $registrationUrl : null],
         ['label' => 'Dokumentasi YouTube', 'url' => $program->youtube_url],
         ['label' => 'Materi Program', 'url' => $program->material_link],
     ])->filter(fn ($link) => filled($link['url']))->values();

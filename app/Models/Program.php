@@ -52,6 +52,7 @@ class Program extends Model
         'secondary_button_url',
         'location',
         'price_type',
+        'ticket_price',
         'certificate_available',
         'status',
         'publication_status',
@@ -70,6 +71,7 @@ class Program extends Model
         'speakers' => 'array',
         'event_date' => 'datetime',
         'end_date' => 'datetime',
+        'ticket_price' => 'decimal:2',
         'certificate_available' => 'boolean',
         'featured' => 'boolean',
         'show_on_homepage' => 'boolean',
@@ -350,6 +352,33 @@ class Program extends Model
     public function getRegistrationUrlAttribute(): ?string
     {
         return $this->attributes['registration_link'] ?? null;
+    }
+
+    public function getRegistrationPriceAttribute(): ?string
+    {
+        if ($this->ticket_price !== null) {
+            return is_numeric($this->ticket_price) && (float) $this->ticket_price >= 0
+                ? $this->ticket_price
+                : null;
+        }
+
+        // Only explicit free labels are safe to interpret as a zero ticket price.
+        return in_array(Str::lower(trim((string) $this->price_type)), ['free', 'gratis'], true)
+            ? '0.00'
+            : null;
+    }
+
+    public function getDisplayPriceAttribute(): ?string
+    {
+        $price = $this->registration_price;
+
+        if ($price === null) {
+            return $this->price_type;
+        }
+
+        return (float) $price === 0.0
+            ? 'Gratis'
+            : 'Rp '.number_format((float) $price, 2, ',', '.');
     }
 
     public function getIsFeaturedAttribute(): bool

@@ -8,6 +8,7 @@ use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\Publication;
 use App\Models\PublicationType;
+use App\Support\StructuredData;
 
 function structuredDataSchemas(string $html): array
 {
@@ -151,8 +152,10 @@ test('dated programs expose event data only when a real location is available', 
         'slug' => 'kelas-kebijakan-publik-schema',
         'short_description' => 'Kelas untuk memahami proses penyusunan dan evaluasi kebijakan publik.',
         'format' => 'hybrid',
-        'event_date' => now()->addWeek(),
-        'end_date' => now()->addWeek()->addHours(2),
+        'event_date' => now()->addWeek()->toDateString(),
+        'end_date' => now()->addWeek()->addDay()->toDateString(),
+        'speakers' => [['name' => 'Aulia Rahman'], 'Nabila Rahma', ['name' => '  '], ['title' => 'Belum diumumkan'], null],
+        'price_type' => 'Gratis',
         'registration_link' => 'https://example.test/daftar',
         'location' => 'Jakarta',
         'status' => 'upcoming',
@@ -168,8 +171,116 @@ test('dated programs expose event data only when a real location is available', 
         ->not->toBeNull()
         ->and($event['eventAttendanceMode'])->toBe('https://schema.org/MixedEventAttendanceMode')
         ->and($event['location'])->toHaveCount(2)
-        ->and($event['startDate'])->toBe($program->event_date->toIso8601String())
+        ->and($event['startDate'])->toBe($program->event_date->toDateString())
+        ->and($event['endDate'])->toBe($program->end_date->toDateString())
+        ->and($event['performer'])->toBe([
+            ['@type' => 'Person', 'name' => 'Aulia Rahman'],
+            ['@type' => 'Person', 'name' => 'Nabila Rahma'],
+        ])
+        ->and($event['offers'])->toBe([
+            '@type' => 'Offer',
+            'url' => 'https://example.test/daftar',
+            'price' => '0.00',
+            'priceCurrency' => 'IDR',
+        ])
         ->and(structuredDataOfType($schemas, 'BreadcrumbList'))->not->toBeNull();
+});
+
+test('paid event price end date and registration link agree with the public page', function () {
+    $program = Program::query()->create([
+        'name' => 'Kelas Berbayar',
+        'slug' => 'kelas-berbayar-schema',
+        'event_date' => '2026-09-05',
+        'end_date' => '2026-09-05',
+        'format' => 'offline',
+        'location' => 'Jakarta',
+        'price_type' => 'Berbayar',
+        'ticket_price' => '150000.50',
+        'registration_link' => 'https://example.test/tiket',
+        'primary_button_url' => 'https://example.test/materi',
+        'publication_status' => 'published',
+    ]);
+
+    $html = $this->get(route('programs.show', $program->slug))
+        ->assertOk()
+        ->assertSee('Rp 150.000,50')
+        ->assertSee('Tanggal Selesai')
+        ->assertSee('href="https://example.test/tiket"', false)
+        ->getContent();
+    $event = structuredDataOfType(structuredDataSchemas($html), 'Event');
+
+    expect($event['offers']['price'])->toBe('150000.50')
+        ->and($event['offers']['priceCurrency'])->toBe('IDR')
+        ->and($event['startDate'])->toBe('2026-09-05')
+        ->and($event['endDate'])->toBe('2026-09-05');
+});
+
+test('event schema does not invent missing performers prices or end dates', function () {
+    $program = new Program([
+        'event_date' => '2026-09-05',
+        'slug' => 'incomplete-event',
+        'format' => 'offline',
+        'location' => 'Jakarta',
+        'price_type' => 'Berbayar',
+        'registration_link' => 'https://example.test/daftar',
+        'speakers' => [null, 12, ['title' => 'Narasumber'], ['name' => '   ']],
+        'moderator_name' => 'Moderator Bukan Narasumber',
+    ]);
+
+    expect(StructuredData::event($program))
+        ->not->toHaveKey('performer')
+        ->not->toHaveKey('offers')
+        ->not->toHaveKey('endDate');
+
+    $program->end_date = '2026-09-04';
+    expect(StructuredData::event($program))->not->toHaveKey('endDate');
+});
+
+test('event offers require an explicit price and a valid registration url', function ($priceType, $ticketPrice, $url, $expectedPrice) {
+    $program = new Program([
+        'slug' => 'event-offer',
+        'event_date' => '2026-09-05',
+        'format' => 'offline',
+        'location' => 'Jakarta',
+        'price_type' => $priceType,
+        'ticket_price' => $ticketPrice,
+        'registration_link' => $url,
+    ]);
+    $event = StructuredData::event($program);
+
+    if ($expectedPrice === null) {
+        expect($event)->not->toHaveKey('offers');
+    } else {
+        expect($event['offers']['price'])->toBe($expectedPrice)
+            ->and($event['offers'])->not->toHaveKey('availability')->not->toHaveKey('validFrom');
+    }
+})->with([
+    'legacy free label' => ['free', null, 'https://example.test/daftar', '0.00'],
+    'normalized free label' => [' GRATIS ', null, 'https://example.test/daftar', '0.00'],
+    'explicit zero price' => [null, '0', 'https://example.test/daftar', '0.00'],
+    'explicit price overrides label' => ['Gratis', '100000', 'https://example.test/daftar', '100000.00'],
+    'unknown price' => [null, null, 'https://example.test/daftar', null],
+    'free service is not free admission' => ['Sertifikat gratis', null, 'https://example.test/daftar', null],
+    'negative price' => ['Berbayar', '-1', 'https://example.test/daftar', null],
+    'missing registration' => ['Gratis', null, null, null],
+    'invalid registration' => ['Gratis', null, 'javascript:alert(1)', null],
+]);
+
+test('archived events keep real dates without an unsupported completed status or invented ticket availability', function () {
+    $program = new Program([
+        'slug' => 'past-event',
+        'event_date' => '2020-01-05',
+        'end_date' => '2020-01-05',
+        'format' => 'offline',
+        'location' => 'Jakarta',
+        'price_type' => 'free',
+        'registration_link' => 'https://example.test/daftar',
+    ]);
+    $event = StructuredData::event($program);
+
+    expect($event['eventStatus'])->toBe('https://schema.org/EventScheduled')
+        ->and($event['endDate'])->toBe('2020-01-05')
+        ->and($event['offers'])->not->toHaveKey('availability');
 });
 
 test('publication schema type follows the real publication type', function () {

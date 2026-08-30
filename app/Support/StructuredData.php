@@ -193,21 +193,37 @@ class StructuredData
             default => 'https://schema.org/OfflineEventAttendanceMode',
         };
 
+        $performers = collect($program->speakers ?? [])
+            ->map(fn ($speaker) => is_array($speaker) ? ($speaker['name'] ?? null) : $speaker)
+            ->filter(fn ($name): bool => is_string($name) && trim($name) !== '')
+            ->map(fn (string $name): array => ['@type' => 'Person', 'name' => trim($name)])
+            ->values()
+            ->all();
+        $price = $program->registration_price;
+
         return self::clean([
             '@context' => 'https://schema.org',
             '@type' => 'Event',
             'name' => $program->display_title,
             'description' => self::description($program->seo_description ?: $program->display_description),
-            'startDate' => $program->event_date->toIso8601String(),
-            'endDate' => $program->end_date?->toIso8601String(),
-            'eventStatus' => $program->is_archived
-                ? 'https://schema.org/EventCompleted'
-                : 'https://schema.org/EventScheduled',
+            // The program form and database store calendar dates, not event times.
+            'startDate' => $program->event_date->toDateString(),
+            'endDate' => $program->end_date && $program->end_date->toDateString() >= $program->event_date->toDateString()
+                ? $program->end_date->toDateString()
+                : null,
+            'eventStatus' => 'https://schema.org/EventScheduled',
             'eventAttendanceMode' => $attendanceMode,
             'location' => $locations->count() === 1 ? $locations->first() : $locations->all(),
             'image' => $program->hero_image_url ? [$program->hero_image_url] : null,
             'url' => route('programs.show', $program->slug),
             'organizer' => self::organizationReference(),
+            'performer' => $performers,
+            'offers' => $registrationUrl && $price !== null ? [
+                '@type' => 'Offer',
+                'url' => $registrationUrl,
+                'price' => $price,
+                'priceCurrency' => 'IDR',
+            ] : null,
             'inLanguage' => 'id-ID',
         ]);
     }
