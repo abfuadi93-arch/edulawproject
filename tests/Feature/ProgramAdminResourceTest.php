@@ -2,6 +2,7 @@
 
 use App\Filament\Resources\ProgramResource;
 use App\Filament\Resources\ProgramResource\Pages\CreateProgram;
+use App\Filament\Resources\ProgramResource\Pages\EditProgram;
 use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\User;
@@ -43,6 +44,22 @@ test('program admin validates and saves ticket price and the actual end date', f
         ->fillForm([
             'end_date' => '2026-09-05',
             'ticket_price' => '75000.50',
+            'event_time' => '19:00',
+            'end_time' => '18:00',
+        ])
+        ->call('create')
+        ->assertHasFormErrors(['end_time'])
+        ->fillForm([
+            'end_time' => '21:00',
+            'event_timezone' => 'Asia/Makassar',
+            'ticket_currency' => 'IDR',
+            'ticket_availability' => 'PreOrder',
+            'registration_opens_at' => '2026-09-01 10:00:00',
+            'venue_address' => 'Jalan Pendidikan 1',
+            'venue_city' => 'Makassar',
+            'venue_country' => 'id',
+            'organizer_name' => 'Komunitas Hukum',
+            'organizer_url' => 'https://example.test/komunitas',
         ])
         ->call('create')
         ->assertHasNoFormErrors();
@@ -50,7 +67,16 @@ test('program admin validates and saves ticket price and the actual end date', f
     $program = Program::query()->where('slug', 'kelas-publik-dengan-tiket')->firstOrFail();
 
     expect($program->ticket_price)->toBe('75000.50')
-        ->and($program->end_date->toDateString())->toBe('2026-09-05');
+        ->and($program->end_date->toDateString())->toBe('2026-09-05')
+        ->and($program->eventDateValue())->toBe('2026-09-05T19:00:00+08:00')
+        ->and($program->eventDateValue(true))->toBe('2026-09-05T21:00:00+08:00')
+        ->and($program->registration_opens_date->toIso8601String())->toBe('2026-09-01T10:00:00+08:00')
+        ->and($program->venue_country)->toBe('ID');
+
+    Livewire::actingAs($user)->test(EditProgram::class, ['record' => $program->getRouteKey()])
+        ->assertFormSet(['event_time' => '19:00', 'end_time' => '21:00', 'event_timezone' => 'Asia/Makassar'])
+        ->call('save')->assertHasNoFormErrors();
+    expect($program->fresh()->eventDateValue())->toBe('2026-09-05T19:00:00+08:00');
 });
 
 test('program admin resource derives short description seo and cta fallback', function () {

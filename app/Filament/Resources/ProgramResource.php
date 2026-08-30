@@ -6,6 +6,7 @@ use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\ProgramResource\Pages;
 use App\Models\Program;
 use BackedEnum;
+use Closure;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\BulkActionGroup;
@@ -14,6 +15,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ReplicateAction;
 use Filament\Forms\Components\DatePicker;
+use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\FileUpload;
 use Filament\Forms\Components\Placeholder;
 use Filament\Forms\Components\Repeater;
@@ -21,6 +23,7 @@ use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TagsInput;
 use Filament\Forms\Components\Textarea;
 use Filament\Forms\Components\TextInput;
+use Filament\Forms\Components\TimePicker;
 use Filament\Forms\Components\Toggle;
 use Filament\Resources\Resource;
 use Filament\Schemas\Components\Grid;
@@ -195,7 +198,12 @@ class ProgramResource extends Resource
                                         Repeater::make('speakers')
                                             ->label('Narasumber')
                                             ->helperText('Nama narasumber juga digunakan sebagai performer pada data terstruktur acara. Isi hanya narasumber yang sudah dikonfirmasi.')
+                                            ->defaultItems(0)
                                             ->schema([
+                                                Select::make('type')
+                                                    ->label('Jenis Narasumber')
+                                                    ->options(['Person' => 'Individu', 'PerformingGroup' => 'Kelompok'])
+                                                    ->default('Person'),
                                                 Grid::make([
                                                     'default' => 1,
                                                     'lg' => 2,
@@ -238,7 +246,25 @@ class ProgramResource extends Resource
                                             ->reorderable()
                                             ->collapsible()
                                             ->columnSpanFull(),
+
+                                        FileUpload::make('gallery_images')
+                                            ->label('Galeri Acara')
+                                            ->image()
+                                            ->multiple()
+                                            ->reorderable()
+                                            ->maxFiles(6)
+                                            ->maxSize(4096)
+                                            ->disk('public')
+                                            ->directory('programs/gallery')
+                                            ->visibility('public')
+                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                            ->helperText('Opsional. Foto atau visual acara yang tampil di halaman publik dan JSON-LD. Jika tersedia, sertakan rasio 1:1, 4:3, dan 16:9; jangan gunakan gambar contoh.')
+                                            ->columnSpanFull(),
                                     ]),
+
+                                static::eventLocationSection(),
+                                static::eventRegistrationSection(),
+                                static::eventOrganizerSection(),
 
                                 Section::make('Detail Tambahan')
                                     ->icon('heroicon-o-clipboard-document-list')
@@ -326,20 +352,6 @@ class ProgramResource extends Resource
                                                     ->label('Target Peserta')
                                                     ->maxLength(255),
 
-                                                TextInput::make('price_type')
-                                                    ->label('Jenis Biaya')
-                                                    ->maxLength(255)
-                                                    ->placeholder('Gratis / Berbayar'),
-
-                                                TextInput::make('ticket_price')
-                                                    ->label('Harga Tiket (IDR)')
-                                                    ->numeric()
-                                                    ->minValue(0)
-                                                    ->maxValue(9999999999.99)
-                                                    ->step(0.01)
-                                                    ->prefix('Rp')
-                                                    ->helperText('Harga terendah termasuk biaya layanan. Isi 0 untuk gratis; kosongkan jika belum diketahui. Nominal ini ditampilkan pada halaman program dan data terstruktur.'),
-
                                                 Toggle::make('certificate_available')
                                                     ->label('Sertifikat Tersedia')
                                                     ->default(false),
@@ -351,13 +363,6 @@ class ProgramResource extends Resource
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                TextInput::make('registration_link')
-                                                    ->label('Link Pendaftaran')
-                                                    ->url()
-                                                    ->maxLength(255)
-                                                    ->helperText('Gunakan tautan pendaftaran acara ini. Data offers diterbitkan jika tautan dan harga diketahui, termasuk jenis biaya Gratis / free.')
-                                                    ->placeholder('https://...'),
-
                                                 TextInput::make('youtube_url')
                                                     ->label('Link Dokumentasi YouTube')
                                                     ->url()
@@ -472,37 +477,112 @@ class ProgramResource extends Resource
                                     ])
                                     ->columns(1),
 
-                                Section::make('Pelaksanaan')
-                                    ->icon('heroicon-o-calendar-days')
-                                    ->description('Status kegiatan ditentukan otomatis dari tanggal mulai dan tanggal selesai.')
-                                    ->schema([
-                                        DatePicker::make('event_date')
-                                            ->label('Tanggal Mulai')
-                                            ->required(),
-
-                                        DatePicker::make('end_date')
-                                            ->label('Tanggal Selesai')
-                                            ->minDate(fn (Get $get) => $get('event_date'))
-                                            ->afterOrEqual('event_date')
-                                            ->helperText('Diperlukan untuk endDate di Google. Untuk acara satu hari, isi tanggal yang sama dengan tanggal mulai. Jangan menebak jika belum diketahui.'),
-
-                                        Select::make('format')
-                                            ->label('Format')
-                                            ->options(static::formatOptions())
-                                            ->required(),
-
-                                        TextInput::make('location')
-                                            ->label('Lokasi')
-                                            ->maxLength(255)
-                                            ->placeholder('Online / Kampus / Kota / Hybrid'),
-                                    ])
-                                    ->columns(1),
+                                static::eventScheduleSection(),
                             ])
                             ->columnSpan(['xl' => 4])
                             ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
                     ])
                     ->columnSpanFull()
                     ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
+            ]);
+    }
+
+    private static function eventScheduleSection(): Section
+    {
+        return Section::make('Jadwal & Status Acara')
+            ->icon('heroicon-o-calendar-days')
+            ->description('Isi jadwal sebenarnya. Jam yang belum diketahui boleh kosong; tanggal lama tetap dipertahankan.')
+            ->schema([
+                DatePicker::make('event_date')->label('Tanggal Mulai')->required()->live(),
+                TimePicker::make('event_time')->label('Jam Mulai')->seconds(false)->format('H:i')
+                    ->rules(['nullable', 'date_format:H:i'])->live(),
+                DatePicker::make('end_date')->label('Tanggal Selesai')->live()
+                    ->requiredWith('end_time')->afterOrEqual('event_date')
+                    ->helperText('Untuk acara satu hari, isi tanggal yang sama dengan tanggal mulai. Kosongkan jika belum diketahui.'),
+                TimePicker::make('end_time')->label('Jam Selesai')->seconds(false)->format('H:i')
+                    ->rules(fn (Get $get): array => ['nullable', 'date_format:H:i', function (string $attribute, $value, Closure $fail) use ($get): void {
+                        $schedule = [$get('event_date'), $get('end_date'), $get('event_time'), $value];
+                        if (validator($schedule, [0 => 'required|date_format:Y-m-d', 1 => 'required|date_format:Y-m-d', 2 => 'required|date_format:H:i', 3 => 'required|date_format:H:i'])->fails()) {
+                            return;
+                        }
+
+                        if (Carbon::parse($schedule[1].' '.$schedule[3])->lessThan(Carbon::parse($schedule[0].' '.$schedule[2]))) {
+                            $fail('Waktu selesai tidak boleh sebelum waktu mulai. Untuk acara melewati tengah malam, sesuaikan tanggal selesai.');
+                        }
+                    }]),
+                Select::make('event_timezone')->label('Zona Waktu')
+                    ->options(collect(timezone_identifiers_list())->mapWithKeys(fn ($zone) => [$zone => $zone])->all())
+                    ->default(config('edulaw.timezone', 'Asia/Jakarta'))->searchable()
+                    ->helperText('Berlaku untuk jam acara dan waktu pendaftaran dibuka. Asia/Jakarta = WIB.'),
+                Select::make('event_status')->label('Status Penyelenggaraan')
+                    ->options([
+                        'EventScheduled' => 'Terjadwal',
+                        'EventCancelled' => 'Dibatalkan',
+                        'EventPostponed' => 'Ditunda (tanggal baru belum pasti)',
+                        'EventRescheduled' => 'Dijadwalkan ulang',
+                    ])->default('EventScheduled')
+                    ->helperText('Jika dibatalkan atau ditunda, jangan hapus tanggal semula. Untuk jadwal ulang, isi tanggal baru yang sudah pasti. Status arsip tetap mengikuti tanggal.'),
+            ]);
+    }
+
+    private static function eventLocationSection(): Section
+    {
+        return Section::make('Lokasi Acara')->icon('heroicon-o-map-pin')
+            ->description('Alamat lokasi fisik dan tautan acara daring dipisahkan dari tautan pendaftaran.')
+            ->columns(2)->schema([
+                Select::make('format')->label('Format')->options(static::formatOptions())->required()->live()->columnSpanFull(),
+                TextInput::make('location')->label(fn (Get $get): string => $get('format') === 'online' ? 'Nama Platform Daring' : 'Nama Tempat Fisik')->maxLength(255)
+                    ->placeholder('Nama gedung, ruang pertemuan, atau platform daring')
+                    ->helperText('Untuk offline/hybrid, isi tempat fisik yang sebenarnya. Nama platform daring hanya digunakan untuk acara online.')
+                    ->columnSpanFull(),
+                TextInput::make('online_url')->label('URL Acara Daring (Publik)')->url()->rules(['regex:~^https?://~'])
+                    ->maxLength(255)->columnSpanFull()
+                    ->helperText('Untuk online/hybrid, isi halaman akses acara yang aman untuk dipublikasikan. Jangan isi URL rapat privat atau link pendaftaran.'),
+                Textarea::make('venue_address')->label('Alamat Jalan')->rows(2)->maxLength(255)->columnSpanFull(),
+                TextInput::make('venue_city')->label('Kota / Kabupaten')->maxLength(255),
+                TextInput::make('venue_region')->label('Provinsi / Wilayah')->maxLength(255),
+                TextInput::make('venue_postal_code')->label('Kode Pos')->maxLength(20),
+                TextInput::make('venue_country')->label('Kode Negara')->length(2)->placeholder('ID')
+                    ->rules(['nullable', 'regex:/^[A-Za-z]{2}$/'])->dehydrateStateUsing(fn ($state) => filled($state) ? strtoupper($state) : null)
+                    ->helperText('Kode dua huruf, misalnya ID. Isi hanya jika alamat sudah diketahui.'),
+            ]);
+    }
+
+    private static function eventRegistrationSection(): Section
+    {
+        return Section::make('Pendaftaran & Tiket')->icon('heroicon-o-ticket')
+            ->description('Data yang diisi tampil di halaman publik dan offers. Jangan menebak harga, kuota, atau tanggal pembukaan.')
+            ->columns(2)->schema([
+                TextInput::make('registration_link')->label('Link Pendaftaran')->url()->rules(['regex:~^https?://~'])
+                    ->maxLength(255)->columnSpanFull()->placeholder('https://...'),
+                TextInput::make('price_type')->label('Jenis Biaya')->maxLength(255)->placeholder('Gratis / Berbayar')
+                    ->helperText('Label Gratis atau free dianggap nol jika nominal tiket kosong.'),
+                TextInput::make('ticket_price')->label('Harga Tiket')->numeric()->minValue(0)->maxValue(9999999999.99)->step(0.01)
+                    ->rules(['nullable', 'decimal:0,2'])
+                    ->helperText('Harga terendah termasuk biaya layanan. Isi 0 untuk gratis; kosongkan jika belum diketahui.'),
+                Select::make('ticket_currency')->label('Mata Uang')->default('IDR')
+                    ->options(['IDR' => 'IDR — Rupiah', 'USD' => 'USD — Dolar AS', 'EUR' => 'EUR — Euro', 'GBP' => 'GBP — Pound', 'SGD' => 'SGD — Dolar Singapura', 'MYR' => 'MYR — Ringgit', 'AUD' => 'AUD — Dolar Australia']),
+                Select::make('ticket_availability')->label('Ketersediaan Pendaftaran')
+                    ->placeholder('Belum dikonfirmasi')
+                    ->options(['InStock' => 'Dibuka / kuota tersedia', 'SoldOut' => 'Kuota habis', 'PreOrder' => 'Prapendaftaran']),
+                DateTimePicker::make('registration_opens_at')->label('Pendaftaran Dibuka Pada')->seconds(false)
+                    ->helperText('Opsional. Mengikuti zona waktu acara. Jangan memakai tanggal dibuatnya artikel sebagai tanggal penjualan.')
+                    ->columnSpanFull(),
+            ]);
+    }
+
+    private static function eventOrganizerSection(): Section
+    {
+        return Section::make('Penyelenggara')->icon('heroicon-o-building-office-2')
+            ->description('Kosongkan nama dan URL jika diselenggarakan oleh Edulaw Project.')
+            ->columns(2)->schema([
+                Select::make('organizer_type')->label('Jenis Penyelenggara')
+                    ->options(['Organization' => 'Organisasi', 'Person' => 'Individu'])->default('Organization')->live(),
+                TextInput::make('organizer_name')->label('Nama Penyelenggara')->maxLength(255)
+                    ->required(fn (Get $get): bool => $get('organizer_type') === 'Person')
+                    ->placeholder(config('edulaw.site.name', 'Edulaw Project')),
+                TextInput::make('organizer_url')->label('Website Penyelenggara')->url()->rules(['regex:~^https?://~'])
+                    ->maxLength(255)->columnSpanFull()->placeholder('https://...'),
             ]);
     }
 

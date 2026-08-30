@@ -163,11 +163,12 @@ class StructuredData
         $locations = collect();
         $format = Str::lower((string) $program->format);
         $registrationUrl = self::isHttpUrl($program->registration_url) ? $program->registration_url : null;
+        $onlineUrl = self::isHttpUrl($program->online_url) ? $program->online_url : null;
 
-        if (in_array($format, ['online', 'hybrid'], true) && $registrationUrl) {
+        if (in_array($format, ['online', 'hybrid'], true) && $onlineUrl) {
             $locations->push([
                 '@type' => 'VirtualLocation',
-                'url' => $registrationUrl,
+                'url' => $onlineUrl,
             ]);
         }
 
@@ -175,11 +176,14 @@ class StructuredData
             $locations->push([
                 '@type' => 'Place',
                 'name' => $program->location,
-                'address' => [
+                'address' => $program->venue_address_label ? self::clean([
                     '@type' => 'PostalAddress',
-                    'streetAddress' => $program->location,
-                    'addressCountry' => config('edulaw.contact.address_country', 'ID'),
-                ],
+                    'streetAddress' => $program->venue_address,
+                    'addressLocality' => $program->venue_city,
+                    'addressRegion' => $program->venue_region,
+                    'postalCode' => $program->venue_postal_code,
+                    'addressCountry' => $program->venue_country,
+                ]) : $program->location,
             ]);
         }
 
@@ -194,9 +198,12 @@ class StructuredData
         };
 
         $performers = collect($program->speakers ?? [])
-            ->map(fn ($speaker) => is_array($speaker) ? ($speaker['name'] ?? null) : $speaker)
-            ->filter(fn ($name): bool => is_string($name) && trim($name) !== '')
-            ->map(fn (string $name): array => ['@type' => 'Person', 'name' => trim($name)])
+            ->map(fn ($speaker) => is_string($speaker) ? ['name' => $speaker] : $speaker)
+            ->filter(fn ($speaker): bool => is_array($speaker) && is_string($speaker['name'] ?? null) && trim($speaker['name']) !== '')
+            ->map(fn (array $speaker): array => [
+                '@type' => ($speaker['type'] ?? null) === 'PerformingGroup' ? 'PerformingGroup' : 'Person',
+                'name' => trim($speaker['name']),
+            ])
             ->values()
             ->all();
         $price = $program->registration_price;
@@ -204,26 +211,31 @@ class StructuredData
         return self::clean([
             '@context' => 'https://schema.org',
             '@type' => 'Event',
-            'name' => $program->display_title,
+            'name' => $program->name,
             'description' => self::description($program->seo_description ?: $program->display_description),
-            // The program form and database store calendar dates, not event times.
-            'startDate' => $program->event_date->toDateString(),
-            'endDate' => $program->end_date && $program->end_date->toDateString() >= $program->event_date->toDateString()
-                ? $program->end_date->toDateString()
-                : null,
-            'eventStatus' => 'https://schema.org/EventScheduled',
+            'startDate' => $program->eventDateValue(),
+            'endDate' => $program->eventDateValue(true),
+            'eventStatus' => 'https://schema.org/'.(in_array($program->event_status, ['EventCancelled', 'EventPostponed', 'EventRescheduled'], true) ? $program->event_status : 'EventScheduled'),
             'eventAttendanceMode' => $attendanceMode,
             'location' => $locations->count() === 1 ? $locations->first() : $locations->all(),
-            'image' => $program->hero_image_url ? [$program->hero_image_url] : null,
+            'image' => $program->event_image_urls,
             'url' => route('programs.show', $program->slug),
-            'organizer' => self::organizationReference(),
+            'organizer' => self::clean([
+                '@type' => $program->organizer_type === 'Person' ? 'Person' : 'Organization',
+                'name' => $program->organizer,
+                'url' => self::isHttpUrl($program->organizer_website) ? $program->organizer_website : null,
+            ]),
             'performer' => $performers,
-            'offers' => $registrationUrl && $price !== null ? [
+            'offers' => $registrationUrl && $price !== null ? self::clean([
                 '@type' => 'Offer',
                 'url' => $registrationUrl,
                 'price' => $price,
-                'priceCurrency' => 'IDR',
-            ] : null,
+                'priceCurrency' => $program->currency,
+                'availability' => ! $program->registration_unavailable && in_array($program->ticket_availability, ['InStock', 'PreOrder'], true)
+                    ? 'https://schema.org/'.$program->ticket_availability
+                    : ($program->ticket_availability === 'SoldOut' ? 'https://schema.org/SoldOut' : null),
+                'validFrom' => $program->registration_opens_date?->toIso8601String(),
+            ]) : null,
             'inLanguage' => 'id-ID',
         ]);
     }

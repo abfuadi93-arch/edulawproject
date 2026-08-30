@@ -48,20 +48,38 @@ public_html/storage -> /home/u815125696/domains/edulawproject.id/laravel/storage
 ## Data terstruktur acara (Google Search Console)
 
 Setelah menerapkan perubahan kode, jalankan `php artisan migrate --force` pada server
-untuk menambahkan kolom opsional `programs.ticket_price`, lalu `php artisan view:clear`.
+untuk menambahkan kolom harga tiket dan detail acara, lalu `php artisan view:clear`.
+Jalankan `npm run build` jika menerapkan dari source tanpa aset hasil build.
 Migrasi tidak mengisi atau mengubah data acara lama.
 
 Di admin **Program**, periksa acara pada URL yang dilaporkan Search Console:
 
-- **Narasumber**: isi nama yang sudah dikonfirmasi; diterbitkan sebagai `performer`.
+- **Narasumber**: isi nama dan jenis (individu/kelompok) yang sudah dikonfirmasi;
+  diterbitkan sebagai `performer`.
 - **Tanggal Selesai**: isi tanggal sebenarnya. Acara satu hari memakai tanggal yang
   sama dengan tanggal mulai. Tanggal kosong tidak otomatis disamakan dengan tanggal
-  mulai. Karena input menyimpan tanggal tanpa jam, JSON-LD menggunakan `YYYY-MM-DD`.
+  mulai. Jam mulai dan selesai bersifat opsional. Tanpa jam, JSON-LD menggunakan
+  `YYYY-MM-DD`; jika jam diketahui, sistem menyertakan offset zona waktu acara.
+- **Zona Waktu**: berlaku untuk jam acara dan waktu pendaftaran dibuka. Data lama
+  tetap menggunakan zona waktu situs (Asia/Jakarta), tanpa menambahkan jam fiktif.
+- **Status Penyelenggaraan**: bedakan terjadwal, dibatalkan, ditunda, dan dijadwalkan
+  ulang. Status arsip berdasarkan tanggal tidak dianggap sebagai pembatalan.
+- **Lokasi Acara**: isi nama tempat dan komponen alamat sebenarnya. Untuk online
+  atau hybrid, gunakan URL acara daring publik yang terpisah dari link pendaftaran.
+  Jangan memublikasikan URL rapat privat. Acara online tanpa URL akses publik tidak
+  diterbitkan sebagai `Event`; tautan pendaftaran bukan lokasi virtual.
 - **Link Pendaftaran**: gunakan URL HTTP/HTTPS khusus pendaftaran acara tersebut.
-- **Harga Tiket (IDR)**: isi harga terendah termasuk biaya layanan, atau `0` untuk
+- **Harga Tiket / Mata Uang**: isi harga terendah termasuk biaya layanan, atau `0` untuk
   acara gratis. Jika nominal kosong, hanya label jenis biaya `Gratis` atau `free`
   yang dianggap bernilai nol. Label `Berbayar` saja tidak cukup untuk mengetahui
   nominal. Nominal yang diisi menjadi sumber biaya di halaman publik dan schema.
+- **Ketersediaan / Pendaftaran Dibuka Pada**: isi jika sudah diketahui. `availability`
+  tidak diasumsikan tersedia pada acara yang sudah selesai, batal, ditunda, atau
+  belum membuka pendaftaran. `validFrom` berasal dari waktu pembukaan pendaftaran.
+- **Penyelenggara**: nama dan website Edulaw digunakan jika kolom kosong. Penyelenggara
+  lain tidak otomatis memakai website Edulaw. Data ini juga terlihat di halaman publik.
+- **Galeri Acara**: gambar yang diunggah tampil di galeri dan `image` JSON-LD, bersama
+  poster dan hero. Gunakan gambar acara sebenarnya; contoh rasio 1:1, 4:3, dan 16:9.
 
 `offers` hanya diterbitkan jika URL pendaftaran dan harga diketahui. Nama narasumber,
 harga, ketersediaan tiket, tanggal penjualan, dan tanggal selesai tidak dibuat-buat

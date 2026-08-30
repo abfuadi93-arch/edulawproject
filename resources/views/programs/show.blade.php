@@ -23,13 +23,13 @@
     use Illuminate\Support\Facades\Route;
     use Illuminate\Support\Str;
 
-    $programTitle = $program->display_title ?: $program->name;
+    $programTitle = $program->name ?: $program->display_title;
     $categoryLabel = $program->display_category ?: 'Program Edulaw';
     $statusLabel = $program->display_status ?: 'Terjadwal';
     $durationLabel = $program->duration ?: null;
     $formatLabel = $program->display_format;
     $levelLabel = $program->display_level ?: $program->level;
-    $eventDateLabel = $program->started_at ? $program->started_at->translatedFormat('d F Y') : null;
+    $eventDateLabel = $program->eventDateLabel();
     $languageLabel = $program->language ?: 'Indonesia';
     $subtitle = $program->subtitle;
     $shortDescription = Str::limit(strip_tags((string) $program->short_description), 240);
@@ -49,9 +49,14 @@
     $registrationUrl = $program->registration_url ?: null;
     $primaryButtonLabel = $program->primary_button_text ?: ($registrationUrl ? 'Daftar Program' : 'Diskusikan Kolaborasi');
     $primaryButtonUrl = $program->primary_button_url ?: ($registrationUrl ?: $collaborationUrl);
+    if (($program->registration_unavailable && ($primaryButtonUrl === $registrationUrl || $primaryButtonLabel === 'Daftar Program'))
+        || (! $registrationUrl && $primaryButtonLabel === 'Daftar Program' && rtrim(url($primaryButtonUrl), '/') === rtrim(route('programs.show', $program->slug), '/'))) {
+        $primaryButtonLabel = $program->youtube_url ? 'Lihat Dokumentasi' : 'Diskusikan Kolaborasi';
+        $primaryButtonUrl = $program->youtube_url ?: $collaborationUrl;
+    }
     $secondaryButtonLabel = $program->secondary_button_text ?: 'Diskusikan Kolaborasi';
     $secondaryButtonUrl = $program->secondary_button_url ?: $collaborationUrl;
-    $showSecondaryButton = $secondaryButtonUrl !== $primaryButtonUrl || $secondaryButtonLabel !== $primaryButtonLabel;
+    $showSecondaryButton = rtrim(url($secondaryButtonUrl), '/') !== rtrim(url($primaryButtonUrl), '/');
 
     $statusClass = function ($status) {
         return match ($status) {
@@ -61,6 +66,8 @@
             'Selesai' => 'edulaw-badge-muted',
             'Portofolio' => 'edulaw-badge-amber',
             'Arsip' => 'edulaw-badge-muted',
+            'Dibatalkan' => 'edulaw-badge-muted',
+            'Ditunda' => 'edulaw-badge-amber',
             default => 'edulaw-badge-muted',
         };
     };
@@ -87,6 +94,7 @@
                     'title' => null,
                     'image' => null,
                     'bio' => null,
+                    'type' => 'Person',
                 ];
             }
 
@@ -102,6 +110,7 @@
 
             return [
                 'name' => $speaker['name'] ?? null,
+                'type' => $speaker['type'] ?? 'Person',
                 'title' => $speaker['title'] ?? $speaker['role'] ?? $speaker['position'] ?? null,
                 'image' => $resolveImageUrl($image),
                 'bio' => filled($speaker['bio'] ?? null) ? trim(strip_tags((string) $speaker['bio'])) : null,
@@ -125,18 +134,14 @@
 
     $sidebarRows = collect([
         ['label' => 'Kategori', 'value' => $categoryLabel],
-        ['label' => 'Tanggal Mulai', 'value' => $eventDateLabel],
-        ['label' => 'Tanggal Selesai', 'value' => $program->end_date?->translatedFormat('d F Y')],
         ['label' => 'Format', 'value' => $formatLabel],
-        ['label' => 'Lokasi', 'value' => $program->location],
         ['label' => 'Target Peserta', 'value' => $program->audience !== $heroAudienceLabel ? $program->audience : null],
-        ['label' => 'Biaya', 'value' => $program->display_price],
         ['label' => 'Sertifikat', 'value' => $program->certificate_available ? 'Tersedia' : null],
         ['label' => 'Bahasa', 'value' => $languageLabel],
     ])->filter(fn ($row) => filled($row['value']))->values();
 
     $supportLinks = collect([
-        ['label' => 'Pendaftaran', 'url' => ! in_array($registrationUrl, [$primaryButtonUrl, $secondaryButtonUrl], true) ? $registrationUrl : null],
+        ['label' => $program->registration_unavailable ? 'Informasi Pendaftaran' : 'Pendaftaran', 'url' => ! in_array($registrationUrl, [$primaryButtonUrl, $secondaryButtonUrl], true) ? $registrationUrl : null],
         ['label' => 'Dokumentasi YouTube', 'url' => $program->youtube_url],
         ['label' => 'Materi Program', 'url' => $program->material_link],
     ])->filter(fn ($link) => filled($link['url']))->values();
@@ -235,6 +240,8 @@
 
     <div class="mx-auto grid max-w-7xl gap-8 px-5 py-10 sm:px-6 lg:grid-cols-[minmax(0,1fr)_360px] lg:px-8 lg:py-14">
         <div class="space-y-7">
+            <x-program.event-details :program="$program" />
+
             @if ($detailDescription)
                 <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                     <p class="text-xs font-black uppercase tracking-[0.26em] text-brand-teal">
@@ -316,7 +323,7 @@
                                                 {{ $speaker['name'] }}
                                             </h3>
                                             <p class="mt-1 text-sm font-semibold leading-6 text-slate-500">
-                                                {{ $speaker['title'] ?: 'Narasumber' }}
+                                                {{ $speaker['title'] ?: ($speaker['type'] === 'PerformingGroup' ? 'Kelompok' : 'Narasumber') }}
                                             </p>
                                         </div>
                                     </div>
@@ -396,6 +403,19 @@
                 </section>
             @endif
 
+            @if (filled($program->gallery_images))
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="program-gallery-title">
+                    <h2 id="program-gallery-title" class="text-2xl font-black text-brand-navy">Galeri Acara</h2>
+                    <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
+                        @foreach ($program->gallery_images as $galleryImage)
+                            <a href="{{ edulaw_file_url($galleryImage) }}" target="_blank" rel="noopener" class="overflow-hidden rounded-xl bg-slate-100">
+                                <img src="{{ edulaw_file_url($galleryImage) }}" alt="{{ $programTitle }} — foto {{ $loop->iteration }}" class="aspect-[4/3] w-full object-cover" loading="lazy">
+                            </a>
+                        @endforeach
+                    </div>
+                </section>
+            @endif
+
             @if ($program->notes)
                 <aside class="rounded-2xl border border-brand-amber/25 bg-brand-amber-soft/70 p-5">
                     <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-navy">
@@ -463,13 +483,27 @@
                             Informasi Program
                         </p>
                         <h2 class="mt-2 text-lg font-black text-brand-navy">
-                            Detail singkat
+                            Pendaftaran & tiket
                         </h2>
                     </div>
 
                     <span class="edulaw-badge edulaw-badge-md {{ $statusClass($statusLabel) }}">
                         {{ $statusLabel }}
                     </span>
+                </div>
+
+                <div class="border-b border-slate-100 py-5">
+                    <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Biaya</p>
+                    <p class="mt-2 text-2xl font-black text-brand-navy">{{ $program->display_price ?: 'Belum diumumkan' }}</p>
+                    @if ($program->registration_status_label)
+                        <p class="mt-3 rounded-xl bg-brand-mist px-3 py-2 text-sm font-bold text-brand-navy">{{ $program->registration_status_label }}</p>
+                    @endif
+                    @if ($program->registration_opens_date)
+                        <p class="mt-3 text-sm leading-6 text-slate-600">
+                            Pendaftaran dibuka pada
+                            <time datetime="{{ $program->registration_opens_date->toIso8601String() }}" class="font-bold text-brand-navy">{{ $program->registration_opens_date->locale('id')->translatedFormat('d F Y, H:i') }} {{ $program->timezone_label }}</time>.
+                        </p>
+                    @endif
                 </div>
 
                 @if ($sidebarRows->isNotEmpty())

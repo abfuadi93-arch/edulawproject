@@ -40,6 +40,23 @@ class Program extends Model
         'audience',
         'event_date',
         'end_date',
+        'event_time',
+        'end_time',
+        'event_timezone',
+        'event_status',
+        'venue_address',
+        'venue_city',
+        'venue_region',
+        'venue_postal_code',
+        'venue_country',
+        'online_url',
+        'ticket_currency',
+        'ticket_availability',
+        'registration_opens_at',
+        'organizer_name',
+        'organizer_url',
+        'organizer_type',
+        'gallery_images',
         'speakers',
         'moderator_name',
         'moderator_affiliation',
@@ -69,6 +86,7 @@ class Program extends Model
     protected $casts = [
         'learning_points' => 'array',
         'speakers' => 'array',
+        'gallery_images' => 'array',
         'event_date' => 'datetime',
         'end_date' => 'datetime',
         'ticket_price' => 'decimal:2',
@@ -265,6 +283,14 @@ class Program extends Model
 
     public function getDisplayStatusAttribute(): string
     {
+        if ($this->event_status === 'EventCancelled') {
+            return 'Dibatalkan';
+        }
+
+        if ($this->event_status === 'EventPostponed') {
+            return 'Ditunda';
+        }
+
         return match ($this->status) {
             'upcoming' => 'Segera Dibuka',
             'ongoing' => 'Berjalan',
@@ -331,7 +357,12 @@ class Program extends Model
 
     public function getOrganizerAttribute(): string
     {
-        return 'Edulaw Project';
+        return $this->organizer_name ?: config('edulaw.site.name', 'Edulaw Project');
+    }
+
+    public function getOrganizerWebsiteAttribute(): ?string
+    {
+        return $this->organizer_url ?: (blank($this->organizer_name) ? config('edulaw.site.url') : null);
     }
 
     public function getLanguageAttribute(): string
@@ -378,7 +409,105 @@ class Program extends Model
 
         return (float) $price === 0.0
             ? 'Gratis'
-            : 'Rp '.number_format((float) $price, 2, ',', '.');
+            : ($this->currency === 'IDR' ? 'Rp' : $this->currency).' '.number_format((float) $price, 2, ',', '.');
+    }
+
+    public function getCurrencyAttribute(): string
+    {
+        return $this->ticket_currency ?: 'IDR';
+    }
+
+    public function getScheduleTimezoneAttribute(): string
+    {
+        return $this->event_timezone ?: config('edulaw.timezone', 'Asia/Jakarta');
+    }
+
+    public function eventDateTime(bool $end = false): ?Carbon
+    {
+        $date = $end ? $this->end_date : $this->event_date;
+        $time = $end ? $this->end_time : $this->event_time;
+
+        return $date ? Carbon::parse($date->toDateString().' '.($time ?: '00:00:00'), $this->schedule_timezone) : null;
+    }
+
+    public function eventDateValue(bool $end = false): ?string
+    {
+        $date = $this->eventDateTime($end);
+
+        if (! $date || ($end && $this->event_date && $date->toDateString() < $this->event_date->toDateString())) {
+            return null;
+        }
+
+        if ($end && $this->event_time && $this->end_time && $date->lessThan($this->eventDateTime())) {
+            return null;
+        }
+
+        return filled($end ? $this->end_time : $this->event_time) ? $date->toIso8601String() : $date->toDateString();
+    }
+
+    public function eventDateLabel(bool $end = false): ?string
+    {
+        $date = $this->eventDateTime($end);
+
+        if (! $date) {
+            return null;
+        }
+
+        $label = $date->locale('id')->translatedFormat('d F Y');
+
+        return filled($end ? $this->end_time : $this->event_time)
+            ? $label.', '.$date->format('H:i').' '.$this->timezone_label
+            : $label;
+    }
+
+    public function getTimezoneLabelAttribute(): string
+    {
+        return match ($this->schedule_timezone) {
+            'Asia/Jakarta' => 'WIB',
+            'Asia/Makassar' => 'WITA',
+            'Asia/Jayapura' => 'WIT',
+            default => $this->schedule_timezone,
+        };
+    }
+
+    public function getRegistrationOpensDateAttribute(): ?Carbon
+    {
+        return filled($this->registration_opens_at)
+            ? Carbon::parse($this->registration_opens_at, $this->schedule_timezone)
+            : null;
+    }
+
+    public function getRegistrationStatusLabelAttribute(): ?string
+    {
+        return match (true) {
+            $this->event_status === 'EventCancelled' => 'Acara dibatalkan',
+            $this->event_status === 'EventPostponed' => 'Pendaftaran ditunda',
+            $this->is_archived || ($this->end_time && $this->eventDateTime(true)?->isPast()) => 'Pendaftaran ditutup',
+            $this->ticket_availability === 'SoldOut' => 'Kuota habis',
+            $this->registration_opens_date?->isFuture() === true => 'Belum dibuka',
+            $this->ticket_availability === 'PreOrder' => 'Prapendaftaran',
+            $this->ticket_availability === 'InStock' => 'Pendaftaran dibuka',
+            default => null,
+        };
+    }
+
+    public function getRegistrationUnavailableAttribute(): bool
+    {
+        return in_array($this->registration_status_label, [
+            'Acara dibatalkan', 'Pendaftaran ditunda', 'Pendaftaran ditutup', 'Kuota habis', 'Belum dibuka',
+        ], true);
+    }
+
+    public function getVenueAddressLabelAttribute(): ?string
+    {
+        return collect([$this->venue_address, $this->venue_city, $this->venue_region, $this->venue_postal_code, $this->venue_country])
+            ->filter()->implode(', ') ?: null;
+    }
+
+    public function getEventImageUrlsAttribute(): array
+    {
+        return collect([$this->image_url, $this->hero_image_url, ...collect($this->gallery_images ?? [])->map(fn ($path) => edulaw_file_url($path))])
+            ->filter()->unique()->values()->all();
     }
 
     public function getIsFeaturedAttribute(): bool
