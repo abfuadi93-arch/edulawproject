@@ -156,7 +156,7 @@
             </div>
 
             @if ($shortItems->isNotEmpty())
-                <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach ($shortItems as $item)
                         @php($platform = $shortPlatform($item))
                         <article data-short-media class="group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-[#07111f] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10">

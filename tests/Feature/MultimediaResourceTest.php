@@ -334,7 +334,7 @@ test('shorts and reels use the full grid without the description panel', functio
     $shortSection = Str::between($html, '<section id="shorts-reels"', '<section id="album-foto"');
 
     expect(substr_count($shortSection, 'data-short-media'))->toBe(6)
-        ->and($shortSection)->toContain('grid gap-4 sm:grid-cols-2 lg:grid-cols-3')
+        ->and($shortSection)->toContain('grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4')
         ->not->toContain('Format Cepat')
         ->not->toContain('Konten pendek untuk memahami hukum dengan lebih cepat.');
 });
