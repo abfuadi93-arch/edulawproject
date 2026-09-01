@@ -320,6 +320,25 @@ test('public layout adapts a single nullable video without repeated placeholders
         ->and($html)->toContain('overflow-x-clip');
 });
 
+test('shorts and reels use the full grid without the description panel', function () {
+    collect(range(1, 6))->each(fn (int $position) => Multimedia::query()->create([
+        'title' => "Reel Edulaw {$position}",
+        'type' => 'reels',
+        'platform' => 'instagram',
+        'media_url' => "https://www.instagram.com/reel/example{$position}",
+        'status' => 'published',
+        'published_at' => now()->subMinutes($position),
+    ]));
+
+    $html = $this->get(route('multimedia.index'))->assertOk()->getContent();
+    $shortSection = Str::between($html, '<section id="shorts-reels"', '<section id="album-foto"');
+
+    expect(substr_count($shortSection, 'data-short-media'))->toBe(6)
+        ->and($shortSection)->toContain('grid gap-4 sm:grid-cols-2 lg:grid-cols-3')
+        ->not->toContain('Format Cepat')
+        ->not->toContain('Konten pendek untuk memahami hukum dengan lebih cepat.');
+});
+
 test('youtube grid paginates six videos with video_page and keeps the video anchor', function () {
     $featured = Multimedia::query()->create([
         'title' => 'Featured Tetap di Atas',

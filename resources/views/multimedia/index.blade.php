@@ -156,9 +156,8 @@
             </div>
 
             @if ($shortItems->isNotEmpty())
-                <div class="mt-7 grid gap-5 lg:grid-cols-[1.05fr_.95fr]">
-                    <div class="grid gap-4 sm:grid-cols-2">
-                    @foreach ($shortItems->take(2) as $item)
+                <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                    @foreach ($shortItems as $item)
                         @php($platform = $shortPlatform($item))
                         <article data-short-media class="group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-[#07111f] shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10">
                             <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="{{ $platform === 'youtube' ? 'Tonton' : 'Lihat' }} {{ $item->title }} di {{ $platform === 'youtube' ? 'YouTube' : 'Instagram' }} (membuka tab baru)" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
@@ -179,19 +178,6 @@
                             </a>
                         </article>
                     @endforeach
-                    </div>
-
-                    <aside class="flex flex-col justify-center rounded-3xl border border-[#ebdcb9] bg-[#fff8ea] p-7 sm:p-8">
-                        <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#a8660a]">Format Cepat</p>
-                        <h3 class="mt-2 text-2xl font-black leading-tight text-brand-ink sm:text-3xl">Konten pendek untuk memahami hukum dengan lebih cepat.</h3>
-                        <p class="mt-3 text-base leading-7 text-slate-600">Shorts dan Reels dipisahkan dari video panjang agar pembaca dapat memilih format sesuai waktu dan kebutuhan. Visual vertikal tetap dipertahankan tanpa membuat halaman terasa seperti feed media sosial.</p>
-                        <div class="mt-5 flex flex-wrap gap-2.5">
-                            @if ($instagramUrl)
-                                <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center rounded-xl bg-brand-navy px-4 text-sm font-black text-white">Lihat Instagram ↗</a>
-                            @endif
-                            <a href="{{ route('multimedia.index') }}" class="inline-flex min-h-11 items-center rounded-xl border border-brand-navy/20 bg-white px-4 text-sm font-black text-brand-navy">Semua Multimedia</a>
-                        </div>
-                    </aside>
                 </div>
             @else
                 <x-multimedia.empty-state platform="instagram" title="Konten pendek segera hadir" description="Nantikan video singkat seputar isu hukum, regulasi, dan kegiatan Edulaw." :url="$instagramUrl" link-label="Kunjungi Instagram" class="mt-7" />
