@@ -42,7 +42,7 @@
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorPhoto = $primaryAuthor?->photo_url;
     $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
-    $editorName = $insight->reviewer?->name ?: $insight->assignedEditor?->name;
+    $editorName = $insight->assignedEditor?->name;
     $updatedDate = $insight->updated_at && $insight->published_at && $insight->updated_at->gt($insight->published_at)
         ? $insight->updated_at->translatedFormat('d F Y')
         : null;
