@@ -624,7 +624,7 @@
 */
 
 .article-lead {
-    max-width: 68ch;
+    max-width: 100%;
     margin: 0 0 2rem;
     padding: 1.15rem 1.25rem;
     border-left: 4px solid #e78b72;
