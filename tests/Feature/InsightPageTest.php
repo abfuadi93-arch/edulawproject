@@ -4,6 +4,76 @@ use App\Models\Author;
 use App\Models\Insight;
 use App\Models\InsightCategory;
 use App\Models\PageVisit;
+use App\Models\Tag;
+
+test('article topics link to an exact tag filter and exclude unpublished articles', function () {
+    $tag = Tag::query()->create(['name' => 'Mahkamah Konstitusi', 'slug' => 'mahkamah-konstitusi']);
+    $category = InsightCategory::query()->create(['name' => 'Legal 101', 'slug' => 'legal-101', 'is_active' => true]);
+    $matching = Insight::query()->create([
+        'title' => 'Kewenangan Pengujian Undang-Undang',
+        'slug' => 'kewenangan-pengujian',
+        'insight_category_id' => $category->id,
+        'content' => '<p>Pembahasan kewenangan pengujian.</p>',
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+    $matching->tags()->attach($tag);
+
+    foreach (['draft', 'scheduled', 'untagged'] as $variant) {
+        $article = Insight::query()->create([
+            'title' => 'Mahkamah Konstitusi '.$variant,
+            'slug' => 'mahkamah-konstitusi-'.$variant,
+            'insight_category_id' => $category->id,
+            'content' => '<p>Mahkamah Konstitusi.</p>',
+            'status' => $variant === 'draft' ? 'draft' : 'published',
+            'published_at' => $variant === 'scheduled' ? now()->addDay() : now()->subDay(),
+        ]);
+        if ($variant !== 'untagged') {
+            $article->tags()->attach($tag);
+        }
+    }
+
+    $this->get(route('insights.show', $matching->slug))
+        ->assertOk()
+        ->assertSee('href="'.route('insights.index', ['tag' => $tag->slug]).'#insight-archive"', false)
+        ->assertSee('rel="tag"', false);
+
+    foreach ([['tag' => $tag->slug], ['tag' => $tag->slug, 'category' => $category->slug, 'sort' => 'oldest']] as $filters) {
+        $this->get(route('insights.index', $filters))
+            ->assertOk()
+            ->assertViewHas('insights', fn ($insights) => $insights->pluck('id')->all() === [$matching->id])
+            ->assertSee('Topik: Mahkamah Konstitusi')
+            ->assertSee('name="tag" value="mahkamah-konstitusi"', false)
+            ->assertSee('Atur ulang');
+    }
+
+    $this->get(route('insights.index', ['tag' => 'unknown-tag']))
+        ->assertOk()
+        ->assertViewHas('insights', fn ($insights) => $insights->isEmpty());
+});
+
+test('tag archive preserves its filter when paginating or switching view', function () {
+    $tag = Tag::query()->create(['name' => 'Konstitusi', 'slug' => 'konstitusi']);
+    foreach (range(1, 13) as $number) {
+        $article = Insight::query()->create([
+            'title' => 'Artikel bertopik '.$number,
+            'slug' => 'artikel-bertopik-'.$number,
+            'content' => '<p>Isi artikel.</p>',
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+        $article->tags()->attach($tag);
+    }
+
+    $this->get(route('insights.index', ['tag' => $tag->slug]))
+        ->assertOk()
+        ->assertViewHas('insights', fn ($insights) => $insights->total() === 13 && str_contains($insights->nextPageUrl(), 'tag=konstitusi'))
+        ->assertSee(e(route('insights.index', ['archive' => 'latest', 'tag' => $tag->slug, 'view' => 'list']).'#insight-archive'), false);
+
+    $this->get(route('insights.index', ['tag' => $tag->slug, 'page' => 2, 'view' => 'list']))
+        ->assertOk()
+        ->assertViewHas('insights', fn ($insights) => $insights->count() === 1 && $insights->total() === 13);
+});
 
 test('published insight index and detail pages render', function () {
     $category = InsightCategory::query()->create([
@@ -39,7 +109,6 @@ test('published insight index and detail pages render', function () {
     $html = $this->get(route('insights.show', $insight->slug))
         ->assertOk()
         ->assertSee('Membaca Hukum Secara Publik')
-        ->assertSee('Artikel Editorial')
         ->assertSee('Tentang Artikel')
         ->assertDontSee('Bagikan Artikel')
         ->assertSee('insight-sidebar grid w-full grid-cols-1 gap-5 self-start', false)

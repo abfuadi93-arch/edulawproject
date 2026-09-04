@@ -5,6 +5,7 @@
     'featuredOnly',
     'selectedSort' => 'latest',
     'selectedView' => 'grid',
+    'selectedTag' => null,
 ])
 
 @php
@@ -13,6 +14,7 @@
         'archive' => 'latest',
         'q' => $search ?: null,
         'category' => $selectedCategory ?: null,
+        'tag' => $selectedTag,
         'featured' => $featuredOnly ? 1 : null,
         'sort' => $selectedSort !== 'latest' ? $selectedSort : null,
         'view' => 'grid',
@@ -24,6 +26,9 @@
     <form method="GET" action="{{ route('insights.index') }}#insight-archive" class="grid gap-2 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_190px_150px_auto_auto]">
         <input type="hidden" name="archive" value="latest">
         <input type="hidden" name="view" value="{{ $selectedView }}">
+        @if (filled($selectedTag))
+            <input type="hidden" name="tag" value="{{ $selectedTag }}">
+        @endif
         @if ($featuredOnly)
             <input type="hidden" name="featured" value="1">
         @endif
@@ -66,11 +71,11 @@
 
     @if ($channels->isNotEmpty())
         <nav aria-label="Kategori editorial" class="mt-2 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-            <a href="{{ route('insights.index', ['archive' => 'latest']) }}#insight-archive" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ blank($selectedCategory) ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">Semua</a>
+            <a href="{{ route('insights.index', ['archive' => 'latest', 'tag' => $selectedTag]) }}#insight-archive" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ blank($selectedCategory) ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">Semua</a>
             @foreach ($channels as $channel)
                 @php($category = $channel['category'] ?? null)
                 @if ($category)
-                    <a href="{{ route('insights.index', ['archive' => 'latest', 'category' => $category->slug]) }}#insight-archive" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ $selectedCategory === $category->slug ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">{{ $channel['label'] }}</a>
+                    <a href="{{ route('insights.index', ['archive' => 'latest', 'category' => $category->slug, 'tag' => $selectedTag]) }}#insight-archive" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ $selectedCategory === $category->slug ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">{{ $channel['label'] }}</a>
                 @endif
             @endforeach
         </nav>

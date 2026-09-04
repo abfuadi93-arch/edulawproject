@@ -32,12 +32,13 @@
     $orderedChannels = collect($insightChannels ?? [])->values();
     $archiveItems = $insights instanceof AbstractPaginator ? $insights->getCollection() : collect($insights ?? []);
     $selectedCategory = $selectedCategory ?? request('category');
+    $selectedTag = $selectedTag ?? request('tag');
     $search = $search ?? request('q', '');
     $featuredOnly = (bool) ($featuredOnly ?? request()->boolean('featured'));
     $selectedSort = $selectedSort ?? request('sort', 'latest');
     $selectedView = request('view') === 'list' ? 'list' : 'grid';
     $showFilteredArchive = true;
-    $hasEditorialFilters = filled($selectedCategory) || filled($search) || $featuredOnly || request()->filled('author') || $selectedSort !== 'latest';
+    $hasEditorialFilters = filled($selectedCategory) || filled($selectedTag) || filled($search) || $featuredOnly || request()->filled('author') || $selectedSort !== 'latest';
 
     $categoryName = fn ($article): string => $article?->display_category
         ?? $article?->categoryRelation?->name
@@ -160,6 +161,9 @@
                         <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy">Arsip Editorial</p>
                         <h2 class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">{{ $featuredOnly ? 'Semua Pilihan Editor' : ($hasEditorialFilters ? 'Hasil Jelajah Editorial' : 'Semua Editorial') }}</h2>
                         <p class="mt-1.5 text-base leading-7 text-slate-600">Cari dan telusuri artikel berdasarkan kategori, kata kunci, dan urutan publikasi.</p>
+                        @if (filled($selectedTag))
+                            <p class="mt-2 text-sm font-bold text-brand-teal">Topik: {{ $selectedTagName ?? $selectedTag }}</p>
+                        @endif
                     </div>
                     @if ($hasEditorialFilters)
                         <a href="{{ route('insights.index', ['archive' => 'latest']) }}#insight-archive" class="text-sm font-extrabold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Atur ulang</a>
@@ -169,6 +173,7 @@
                 <x-insight.editorial-toolbar
                     :channels="$orderedChannels"
                     :selected-category="$selectedCategory"
+                    :selected-tag="$selectedTag"
                     :search="$search"
                     :featured-only="$featuredOnly"
                     :selected-sort="$selectedSort"

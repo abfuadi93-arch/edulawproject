@@ -60,13 +60,14 @@ class InsightController extends Controller
     {
         $category = $request->query('category');
         $author = $request->query('author');
+        $tag = $request->query('tag');
         $search = trim((string) $request->query('q', ''));
         $featuredOnly = $request->boolean('featured');
         $sort = in_array($request->query('sort'), ['latest', 'oldest', 'title'], true)
             ? (string) $request->query('sort')
             : 'latest';
 
-        if ($category && blank($author) && $search === '' && ! $featuredOnly) {
+        if ($category && blank($author) && blank($tag) && $search === '' && ! $featuredOnly) {
             $categoryPageSlug = $this->categoryPageSlug((string) $category);
 
             if ($categoryPageSlug) {
@@ -85,6 +86,7 @@ class InsightController extends Controller
             ->published()
             ->when($category, fn ($query) => $query->whereHas('categoryRelation', fn ($categoryQuery) => $categoryQuery->where('slug', $category)))
             ->when($author, fn ($query) => $query->whereHas('authors', fn ($authorQuery) => $authorQuery->where('slug', $author)))
+            ->when(filled($tag), fn ($query) => $query->whereHas('tags', fn ($tagQuery) => $tagQuery->where('slug', $tag)))
             ->when($featuredOnly, fn ($query) => $query->featured())
             ->when($search !== '', function ($query) use ($search) {
                 $query->where(function ($inner) use ($search) {
@@ -170,10 +172,12 @@ class InsightController extends Controller
             'insightCategories' => $insightCategories,
             'selectedCategory' => $category,
             'selectedAuthor' => $author,
+            'selectedTag' => $tag,
+            'selectedTagName' => filled($tag) ? Tag::query()->where('slug', $tag)->value('name') : null,
             'search' => $search,
             'featuredOnly' => $featuredOnly,
             'selectedSort' => $sort,
-            'showFilteredArchive' => $search !== '' || filled($category) || filled($author) || $featuredOnly || $request->filled('archive') || (int) $request->query('page', 1) > 1,
+            'showFilteredArchive' => $search !== '' || filled($category) || filled($author) || filled($tag) || $featuredOnly || $request->filled('archive') || (int) $request->query('page', 1) > 1,
         ]);
     }
 

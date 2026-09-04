@@ -152,84 +152,40 @@
                         </ol>
                     </section>
                 @endif
-
-                <section class="mt-10 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6" aria-labelledby="insight-editorial-metadata-heading">
-                    <h2 id="insight-editorial-metadata-heading" class="text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
-                    <dl class="mt-4 grid gap-4 text-sm sm:grid-cols-2">
-                        <div>
-                            <dt class="font-bold text-slate-500">Ditulis oleh</dt>
-                            <dd class="mt-1 font-black text-brand-navy">{{ $authorName }}</dd>
-                        </div>
-                        @if ($editorName)
-                            <div>
-                                <dt class="font-bold text-slate-500">Disunting oleh</dt>
-                                <dd class="mt-1 font-black text-brand-navy">{{ $editorName }}</dd>
-                            </div>
-                        @endif
-                        @if ($insight->published_at)
-                            <div>
-                                <dt class="font-bold text-slate-500">Tanggal terbit</dt>
-                                <dd class="mt-1 font-black text-brand-navy">{{ $publishedDate }}</dd>
-                            </div>
-                        @endif
-                        @if ($updatedDate)
-                            <div>
-                                <dt class="font-bold text-slate-500">Terakhir diperbarui</dt>
-                                <dd class="mt-1 font-black text-brand-navy">{{ $updatedDate }}</dd>
-                            </div>
-                        @endif
-                    </dl>
-                </section>
-
-                @if ($insight->tags->isNotEmpty())
-                    <div class="mt-12 border-t border-slate-200 pt-6">
-                        <p class="text-[10px] font-black uppercase tracking-[0.24em] text-brand-navy/60">
-                            Topik
-                        </p>
-
-                        <div class="mt-4 flex flex-wrap gap-2">
-                            @foreach ($insight->tags as $tag)
-                                <span class="edulaw-badge edulaw-badge-lg edulaw-badge-muted normal-case tracking-normal">
-                                    {{ $tag->name }}
-                                </span>
-                            @endforeach
-                        </div>
-                    </div>
-                @endif
             </article>
 
             <aside class="insight-sidebar grid w-full grid-cols-1 gap-5 self-start lg:sticky lg:top-24 lg:block lg:space-y-5" aria-label="Informasi artikel">
                 <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-about-heading">
-                    <p class="text-[10px] font-black uppercase tracking-[0.24em] text-[#a8660a]">
-                        Artikel Editorial
+                    <h2 id="article-about-heading" class="text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Tentang Artikel</h2>
+
+                    <p class="mt-4 text-sm">
+                        <span class="font-bold text-slate-500">Kategori:</span>
+                        @if ($insight->categoryRelation?->slug)
+                            <a href="{{ route('insights.index', ['category' => $insight->categoryRelation->slug]) }}" class="font-black text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal">{{ $categoryName }}</a>
+                        @else
+                            <span class="font-black text-brand-navy">{{ $categoryName }}</span>
+                        @endif
                     </p>
-                    <h2 id="article-about-heading" class="mt-2 text-lg font-black text-brand-navy">Tentang Artikel</h2>
 
-                    <div class="mt-4">
-                        <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">
-                            {{ $categoryName }}
-                        </span>
-                    </div>
+                    <div class="mt-2 border-t border-slate-100 pt-2">
+                        <p class="text-sm font-bold text-slate-500">Penulis</p>
 
-                    <div class="mt-5 border-t border-slate-100 pt-5">
-                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-slate-400">Penulis</p>
-
-                        <div class="mt-3 flex items-center gap-4">
+                        <div class="mt-3 flex items-center gap-3">
                             @if ($authorPhoto)
                                 <img
                                     src="{{ $authorPhoto }}"
                                     alt="Foto profil {{ $authorName }}"
-                                    class="h-14 w-14 shrink-0 rounded-2xl object-cover ring-1 ring-slate-200"
+                                    class="h-12 w-12 shrink-0 rounded-xl object-cover ring-1 ring-slate-200"
                                     loading="lazy"
                                 >
                             @else
-                                <div class="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-brand-navy text-sm font-black text-white">
+                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-navy text-sm font-black text-white">
                                     {{ $authorInitials }}
                                 </div>
                             @endif
 
-                            <div class="min-w-0">
-                                <h3 class="font-black leading-snug text-brand-navy">
+                            <div class="min-w-0 break-words">
+                                <h3 class="text-sm font-black leading-snug text-brand-navy">
                                     @if ($authorProfileUrl)
                                         <a href="{{ $authorProfileUrl }}" class="underline-offset-4 hover:underline">
                                             {{ $authorName }}
@@ -250,6 +206,46 @@
                             </div>
                         </div>
                     </div>
+                </section>
+
+                <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="insight-editorial-metadata-heading">
+                    <h2 id="insight-editorial-metadata-heading" class="text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
+                    <dl class="mt-4 grid gap-4 text-sm">
+                        @if ($editorName)
+                            <div>
+                                <dt class="font-bold text-slate-500">Disunting oleh</dt>
+                                <dd class="mt-1 font-black text-brand-navy">{{ $editorName }}</dd>
+                            </div>
+                        @endif
+                        @if ($insight->published_at)
+                            <div>
+                                <dt class="font-bold text-slate-500">Tanggal terbit</dt>
+                                <dd class="mt-1 font-black text-brand-navy">{{ $publishedDate }}</dd>
+                            </div>
+                        @endif
+                        @if ($updatedDate)
+                            <div>
+                                <dt class="font-bold text-slate-500">Terakhir diperbarui</dt>
+                                <dd class="mt-1 font-black text-brand-navy">{{ $updatedDate }}</dd>
+                            </div>
+                        @endif
+                    </dl>
+
+                    @if ($insight->tags->isNotEmpty())
+                        <div class="mt-5 border-t border-slate-100 pt-5">
+                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-brand-navy/60">
+                                Topik
+                            </p>
+
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                @foreach ($insight->tags as $tag)
+                                    <a href="{{ route('insights.index', ['tag' => $tag->slug]) }}#insight-archive" rel="tag" class="edulaw-badge edulaw-badge-lg edulaw-badge-muted normal-case tracking-normal transition hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal">
+                                        {{ $tag->name }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </section>
 
                 @if ($articleHeadings->isNotEmpty())
