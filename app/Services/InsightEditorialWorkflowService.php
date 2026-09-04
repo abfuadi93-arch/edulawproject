@@ -176,11 +176,11 @@ class InsightEditorialWorkflowService
     public function publish(Insight $insight, User $actor): Insight
     {
         Gate::forUser($actor)->authorize('publish', $insight);
-        $this->validateSubmissionCompleteness($insight);
 
         $insight = DB::transaction(function () use ($insight, $actor): Insight {
             $locked = $this->lock($insight);
-            $this->assertStatus($locked, InsightStatus::Review);
+            Gate::forUser($actor)->authorize('publish', $locked);
+            $this->validateSubmissionCompleteness($locked);
             $publishedAt = $locked->published_at ?: now();
             $description = $publishedAt->isFuture()
                 ? 'Editor menjadwalkan artikel terbit pada '.$publishedAt->copy()->timezone(config('edulaw.timezone'))->translatedFormat('d M Y, H:i').' WIB.'

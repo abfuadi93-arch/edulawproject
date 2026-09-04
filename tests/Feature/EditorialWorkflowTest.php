@@ -76,6 +76,142 @@ test('writer dapat membuat dan mengedit draft miliknya', function () {
         ->and($writer->can('update', $insight))->toBeTrue();
 });
 
+test('editor dapat menerbitkan langsung draft yang ditugaskan kepadanya', function () {
+    $writer = simpleEditorialUser('writer');
+    $editor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($writer, ['assigned_editor_id' => $editor->id]);
+
+    expect($editor->can('update', $insight))->toBeTrue();
+
+    $published = app(InsightEditorialWorkflowService::class)->publish($insight, $editor);
+
+    expect($published->status)->toBe(InsightStatus::Published)
+        ->and($published->submitted_at)->toBeNull()
+        ->and($published->reviewed_by)->toBe($editor->id)
+        ->and($published->reviewed_at)->not->toBeNull()
+        ->and($published->published_at)->not->toBeNull()
+        ->and($published->statusHistories()->where('from_status', 'draft')->where('to_status', 'published')->count())->toBe(1)
+        ->and($published->editorialActivities()->where('event', 'published')->count())->toBe(1)
+        ->and($writer->notifications()->latest()->first()?->data['notification_type'] ?? null)->toBe('published');
+
+    $this->get(route('insights.show', $published->slug))->assertOk();
+});
+
+test('editor tidak dapat menerbitkan naskah sendiri meskipun ditugaskan atau memiliki role writer', function (InsightStatus $status, bool $assigned, bool $alsoWriter) {
+    $editor = simpleEditorialUser('editor');
+    if ($alsoWriter) {
+        $editor->assignRole('writer');
+    }
+    $insight = simpleEditorialInsight($editor, [
+        'status' => $status,
+        'assigned_editor_id' => $assigned ? $editor->id : null,
+    ]);
+
+    expect($editor->can('publish', $insight))->toBeFalse()
+        ->and(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $editor))
+        ->toThrow(AuthorizationException::class);
+
+    expect($insight->fresh()->status)->toBe($status)
+        ->and($insight->statusHistories()->count())->toBe(0)
+        ->and($insight->editorialActivities()->count())->toBe(0);
+})->with([InsightStatus::Draft, InsightStatus::Review])->with([false, true])->with([false, true]);
+
+test('editor yang tercantum sebagai penulis tidak dapat menerbitkan meskipun naskah dibuat orang lain', function () {
+    $writer = simpleEditorialUser('writer');
+    $editor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($writer, ['assigned_editor_id' => $editor->id]);
+    $insight->authors()->attach($editor->ensureProfile(), ['author_order' => 2, 'role' => 'Penulis']);
+
+    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $editor))
+        ->toThrow(AuthorizationException::class);
+});
+
+test('workspace menyembunyikan Terbitkan untuk naskah sendiri yang ditugaskan kepada editor', function (InsightStatus $status) {
+    $editor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($editor, ['status' => $status, 'assigned_editor_id' => $editor->id]);
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->assertActionHidden('publish');
+})->with([InsightStatus::Draft, InsightStatus::Review]);
+
+test('izin publish tetap diperlukan untuk menerbitkan draft tugas editor', function () {
+    $editor = simpleEditorialUser('editor');
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer, ['assigned_editor_id' => $editor->id]);
+    $editor->roles()->firstOrFail()->revokePermissionTo(['publish insights', 'publish_insight']);
+    app(PermissionRegistrar::class)->forgetCachedPermissions();
+    $editor->unsetRelation('roles')->unsetRelation('permissions');
+
+    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $editor))
+        ->toThrow(AuthorizationException::class);
+});
+
+test('editor tidak dapat menerbitkan artikel orang lain tanpa penugasan', function (InsightStatus $status) {
+    $writer = simpleEditorialUser('writer');
+    $editor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($writer, ['status' => $status]);
+
+    expect($editor->can('update', $insight))->toBeFalse()
+        ->and(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $editor))
+        ->toThrow(AuthorizationException::class);
+})->with([InsightStatus::Draft, InsightStatus::Review]);
+
+test('editor tidak dapat menerbitkan ulang atau menerbitkan arsip tugasnya', function (InsightStatus $status) {
+    $editor = simpleEditorialUser('editor');
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer, ['status' => $status, 'assigned_editor_id' => $editor->id]);
+
+    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $editor))
+        ->toThrow(AuthorizationException::class);
+})->with([InsightStatus::Published, InsightStatus::Archived]);
+
+test('draft tugas editor tetap wajib lengkap sebelum diterbitkan', function () {
+    $editor = simpleEditorialUser('editor');
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer, ['cover_image' => null, 'assigned_editor_id' => $editor->id]);
+
+    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $editor))
+        ->toThrow(ValidationException::class, 'Cover wajib diisi.');
+
+    expect($insight->fresh()->status)->toBe(InsightStatus::Draft)
+        ->and($insight->statusHistories()->count())->toBe(0)
+        ->and($insight->editorialActivities()->count())->toBe(0);
+});
+
+test('penerbitan memeriksa ulang penugasan dan status terbaru di database', function (array $changes) {
+    $editor = simpleEditorialUser('editor');
+    $writer = simpleEditorialUser('writer');
+    $insight = simpleEditorialInsight($writer, ['assigned_editor_id' => $editor->id]);
+    $stale = $insight->fresh();
+    $insight->update($changes);
+
+    expect(fn () => app(InsightEditorialWorkflowService::class)->publish($stale, $editor))
+        ->toThrow(AuthorizationException::class);
+
+    expect($insight->statusHistories()->count())->toBe(0);
+})->with([
+    'assignment removed' => [['assigned_editor_id' => null]],
+    'archived' => [['status' => InsightStatus::Archived]],
+    'already published' => [['status' => InsightStatus::Published]],
+]);
+
+test('workspace menyediakan Terbitkan untuk draft tugas editor', function () {
+    $writer = simpleEditorialUser('writer');
+    $editor = simpleEditorialUser('editor');
+    $insight = simpleEditorialInsight($writer, ['assigned_editor_id' => $editor->id]);
+    $this->actingAs($editor);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->assertActionVisible('publish')
+        ->callAction('publish')
+        ->assertHasNoActionErrors();
+
+    expect($insight->fresh()->status)->toBe(InsightStatus::Published);
+});
+
 test('writer dapat mengirim draft ke review dan mengirim ulang setelah perbaikan', function () {
     $writer = simpleEditorialUser('writer');
     $admin = simpleEditorialUser('super_admin');
@@ -112,13 +248,13 @@ test('pengiriman ganda dari state halaman lama tetap aman dan tidak mencatat ula
         ->and($insight->editorialActivities()->where('event', 'submitted_for_review')->count())->toBe(1);
 });
 
-test('writer tidak dapat menerbitkan insight', function () {
+test('writer tidak dapat menerbitkan insight', function (InsightStatus $status) {
     $writer = simpleEditorialUser('writer');
-    $insight = simpleEditorialInsight($writer, ['status' => InsightStatus::Review]);
+    $insight = simpleEditorialInsight($writer, ['status' => $status]);
 
     expect(fn () => app(InsightEditorialWorkflowService::class)->publish($insight, $writer))
         ->toThrow(AuthorizationException::class);
-});
+})->with([InsightStatus::Draft, InsightStatus::Review]);
 
 test('writer tidak dapat mengedit insight orang lain atau insight yang sedang review', function () {
     $writer = simpleEditorialUser('writer');

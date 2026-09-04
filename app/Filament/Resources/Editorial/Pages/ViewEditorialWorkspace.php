@@ -90,10 +90,10 @@ class ViewEditorialWorkspace extends EditRecord
                 ->requiresConfirmation()
                 ->modalHeading('Terbitkan artikel?')
                 ->modalDescription('Jika Jadwal Terbit kosong, artikel langsung tayang. Jika diisi waktu mendatang, artikel akan tayang otomatis sesuai jadwal.')
-                ->visible(fn (): bool => $this->getRecord()->status->canonical() === InsightStatus::Review
-                    && (Auth::user()?->can('publish', $this->getRecord()) ?? false))
+                ->visible(fn (): bool => Auth::user()?->can('publish', $this->getRecord()) ?? false)
                 ->action(fn () => $this->runWorkflowAction(
                     function (): Insight {
+                        Gate::authorize('publish', $this->getRecord()->refresh());
                         $formData = $this->getSchema('form')?->getState() ?? [];
                         $this->getRecord()->update([
                             'published_at' => $formData['published_at'] ?? null,

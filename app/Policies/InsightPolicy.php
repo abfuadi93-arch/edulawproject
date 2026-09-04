@@ -37,7 +37,7 @@ class InsightPolicy extends ResourcePermissionPolicy
 
         if ((int) $record->assigned_editor_id === (int) $user->id
             && $user->can('review insights')
-            && in_array($record->status->canonical(), [InsightStatus::Review, InsightStatus::Published], true)) {
+            && in_array($record->status->canonical(), [InsightStatus::Draft, InsightStatus::Review, InsightStatus::Published], true)) {
             return true;
         }
 
@@ -123,9 +123,12 @@ class InsightPolicy extends ResourcePermissionPolicy
 
     public function publish(User $user, Insight $insight): bool
     {
-        return $insight->status->canonical() === InsightStatus::Review
+        return in_array($insight->status->canonical(), [InsightStatus::Draft, InsightStatus::Review], true)
             && ($user->can('publish_insight') || $user->can('publish insights'))
-            && ($this->isSuperAdmin($user) || (int) $insight->assigned_editor_id === (int) $user->id);
+            && ($this->isSuperAdmin($user)
+                || ((int) $insight->assigned_editor_id === (int) $user->id
+                    && (int) $insight->created_by !== (int) $user->id
+                    && ! $insight->authors()->where('authors.user_id', $user->id)->exists()));
     }
 
     public function archive(User $user, Insight $insight): bool
