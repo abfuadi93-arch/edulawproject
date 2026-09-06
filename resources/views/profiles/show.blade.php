@@ -38,7 +38,6 @@
         ? "{$author->name} merupakan bagian dari Edulaw Project yang berkontribusi dalam produksi editorial, pembaruan regulasi, dan tulisan literasi hukum."
         : 'Profil penulis akan diperbarui secara berkala seiring dengan publikasi dan kontribusi penulis di Edulaw Project.';
     $bio = trim(strip_tags((string) $author->bio));
-    $bioSummary = Str::limit($bio !== '' ? $bio : $bioFallback, 210);
     $metaDescription = Str::limit(
         $author->meta_description ?: ($bio !== '' ? $bio : collect([$publicPosition, $publicInstitution])->filter()->join(' - ')),
         180
@@ -66,6 +65,7 @@
 <style>
     .profile-page {
         --profile-navy: #102a4c;
+        --profile-navy-deep: #081b33;
         --profile-paper: #f6f8fb;
         --profile-white: #ffffff;
         --profile-gold: #d99a25;
@@ -79,30 +79,52 @@
     }
 
     .profile-hero {
-        position: relative;
-        overflow: hidden;
-        background: var(--profile-navy);
+        background-color: var(--profile-navy-deep);
+        background-image: url("{{ asset('images/hero/hero-edulaw.jpg') }}");
+        background-position: center;
+        background-repeat: no-repeat;
+        background-size: cover;
         color: var(--profile-white);
+        overflow: hidden;
+        position: relative;
     }
 
-    .profile-hero::after {
+    .profile-hero::before {
         background:
-            linear-gradient(90deg, rgba(217, 154, 37, .18), transparent 38%),
-            linear-gradient(180deg, rgba(255, 255, 255, .08), transparent 54%);
+            radial-gradient(circle at 78% 22%, rgba(217, 154, 37, .2), transparent 26rem),
+            linear-gradient(90deg, rgba(8, 27, 51, .98) 0%, rgba(8, 27, 51, .93) 46%, rgba(16, 42, 76, .78) 100%);
         content: "";
         inset: 0;
         pointer-events: none;
         position: absolute;
     }
 
+    .profile-hero::after {
+        background:
+            linear-gradient(90deg, rgba(255, 255, 255, .045) 1px, transparent 1px),
+            linear-gradient(rgba(255, 255, 255, .035) 1px, transparent 1px);
+        background-size: 72px 72px;
+        content: "";
+        inset: 0;
+        mask-image: linear-gradient(90deg, transparent 10%, #000 72%, transparent);
+        opacity: .65;
+        pointer-events: none;
+        position: absolute;
+    }
+
     .profile-hero__inner {
+        align-items: center;
         display: grid;
-        gap: 2rem;
-        grid-template-columns: minmax(0, 1.08fr) minmax(300px, .92fr);
-        min-height: 520px;
-        padding-block: 4.75rem;
+        gap: clamp(3rem, 8vw, 7rem);
+        grid-template-columns: minmax(0, 1fr) minmax(300px, 380px);
+        padding-block: clamp(3.5rem, 6vw, 5.25rem) clamp(4.25rem, 7vw, 6.5rem);
         position: relative;
         z-index: 1;
+    }
+
+    .profile-hero__content {
+        min-width: 0;
+        padding-bottom: 1rem;
     }
 
     .profile-breadcrumb {
@@ -113,6 +135,7 @@
         font-size: .78rem;
         font-weight: 800;
         gap: .55rem;
+        letter-spacing: .02em;
     }
 
     .profile-breadcrumb a {
@@ -123,17 +146,24 @@
         color: var(--profile-white);
     }
 
+    .profile-hero__intro {
+        border-left: 2px solid rgba(217, 154, 37, .78);
+        margin-top: clamp(2.5rem, 5vw, 4.5rem);
+        padding-left: clamp(1.25rem, 3vw, 2.15rem);
+    }
+
     .profile-badge {
         align-items: center;
-        border: 1px solid rgba(217, 154, 37, .45);
+        background: rgba(217, 154, 37, .09);
+        border: 1px solid rgba(217, 154, 37, .5);
         border-radius: 999px;
         color: rgba(255, 255, 255, .9);
         display: inline-flex;
-        font-size: .68rem;
+        font-size: .75rem;
         font-weight: 900;
         gap: .45rem;
-        letter-spacing: .16em;
-        padding: .48rem .78rem;
+        letter-spacing: .14em;
+        padding: .52rem .85rem;
         text-transform: uppercase;
         width: max-content;
     }
@@ -148,50 +178,64 @@
 
     .profile-hero__title {
         color: var(--profile-white);
-        font-size: clamp(2.55rem, 6vw, 5.5rem);
+        font-size: clamp(3rem, 5.8vw, 5.25rem);
         font-weight: 950;
-        letter-spacing: 0;
-        line-height: .92;
-        margin-top: 1.15rem;
-        max-width: 800px;
+        letter-spacing: -.04em;
+        line-height: .96;
+        margin-top: 1.35rem;
+        max-width: 760px;
         text-shadow: 0 14px 34px rgba(0, 0, 0, .2);
+        text-wrap: balance;
     }
 
     .profile-hero__meta {
+        align-items: center;
         color: rgba(255, 255, 255, .9);
-        font-size: 1rem;
+        display: flex;
+        flex-wrap: wrap;
+        font-size: .95rem;
         font-weight: 800;
-        line-height: 1.7;
-        margin-top: 1.15rem;
+        gap: .6rem .75rem;
+        line-height: 1.5;
+        margin-top: 1.5rem;
     }
 
     .profile-hero__position {
         color: var(--profile-gold);
     }
 
-    .profile-hero__summary {
-        color: rgba(255, 255, 255, .74);
-        font-size: 1.05rem;
-        line-height: 1.85;
-        margin-top: 1.15rem;
-        max-width: 660px;
+    .profile-hero__meta-divider {
+        background: rgba(255, 255, 255, .32);
+        border-radius: 999px;
+        height: 1rem;
+        width: 1px;
     }
 
     .profile-photo-panel {
         align-self: center;
         margin-left: auto;
-        max-width: 430px;
+        max-width: 380px;
         position: relative;
         width: 100%;
+    }
+
+    .profile-photo-panel::before {
+        border: 1px solid rgba(217, 154, 37, .55);
+        border-radius: 1.5rem;
+        content: "";
+        inset: 1.25rem -1rem -1rem 1.25rem;
+        pointer-events: none;
+        position: absolute;
     }
 
     .profile-photo-frame {
         aspect-ratio: 4 / 5;
         background: rgba(255, 255, 255, .08);
-        border: 1px solid rgba(255, 255, 255, .18);
-        border-radius: 1.75rem;
-        box-shadow: 0 28px 70px rgba(0, 0, 0, .28);
+        border: 1px solid rgba(255, 255, 255, .22);
+        border-radius: 1.35rem;
+        box-shadow: 0 30px 70px rgba(0, 0, 0, .32);
         overflow: hidden;
+        position: relative;
     }
 
     .profile-photo-frame img,
@@ -199,6 +243,7 @@
         display: block;
         height: 100%;
         object-fit: cover;
+        object-position: center top;
         width: 100%;
     }
 
@@ -212,28 +257,31 @@
     }
 
     .profile-stats {
-        bottom: -1.25rem;
+        background: rgba(255, 255, 255, .97);
+        border: 1px solid rgba(255, 255, 255, .7);
+        border-radius: 1rem;
+        box-shadow: 0 16px 36px rgba(0, 0, 0, .2);
         display: grid;
-        gap: .65rem;
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        left: 1.25rem;
-        position: absolute;
-        right: 1.25rem;
+        margin: -2.15rem .85rem 0;
+        overflow: hidden;
+        position: relative;
     }
 
     .profile-stat {
-        background: rgba(255, 255, 255, .94);
-        border: 1px solid rgba(255, 255, 255, .55);
-        border-radius: .9rem;
-        box-shadow: 0 12px 28px rgba(0, 0, 0, .14);
         min-width: 0;
-        padding: .72rem .68rem;
+        padding: 1rem .65rem;
+        text-align: center;
+    }
+
+    .profile-stat + .profile-stat {
+        border-left: 1px solid rgba(16, 42, 76, .1);
     }
 
     .profile-stat strong {
         color: var(--profile-navy);
         display: block;
-        font-size: 1.28rem;
+        font-size: 1.2rem;
         font-weight: 950;
         line-height: 1;
     }
@@ -241,10 +289,10 @@
     .profile-stat span {
         color: rgba(16, 42, 76, .58);
         display: block;
-        font-size: .68rem;
+        font-size: .75rem;
         font-weight: 900;
         line-height: 1.25;
-        margin-top: .35rem;
+        margin-top: .4rem;
         text-transform: uppercase;
     }
 
@@ -552,19 +600,24 @@
         max-width: 520px;
     }
 
-    @media (max-width: 980px) {
+    @media (max-width: 900px) {
         .profile-hero__inner,
         .profile-layout {
             grid-template-columns: 1fr;
         }
 
         .profile-hero__inner {
-            min-height: auto;
-            padding-block: 3rem 4.25rem;
+            gap: 3.5rem;
+            padding-block: 3rem 4.5rem;
+        }
+
+        .profile-hero__content {
+            max-width: 720px;
+            padding-bottom: 0;
         }
 
         .profile-photo-panel {
-            margin-left: 0;
+            margin-inline: auto;
             max-width: 360px;
         }
 
@@ -574,40 +627,63 @@
     }
 
     @media (max-width: 720px) {
+        .profile-hero {
+            background-position: 58% center;
+        }
+
+        .profile-hero::before {
+            background: linear-gradient(180deg, rgba(8, 27, 51, .96), rgba(16, 42, 76, .86));
+        }
+
         .profile-shell {
             width: min(100% - 1.25rem, 1180px);
         }
 
         .profile-hero__inner {
-            gap: 1.6rem;
-            padding-block: 2.35rem 3.9rem;
+            gap: 2.75rem;
+            padding-block: 2rem 3.5rem;
+        }
+
+        .profile-hero__intro {
+            margin-top: 2.25rem;
+            padding-left: 1rem;
         }
 
         .profile-hero__title {
-            font-size: clamp(2.4rem, 17vw, 4rem);
+            font-size: clamp(2.6rem, 13vw, 4rem);
+            line-height: .98;
+            margin-top: 1.1rem;
         }
 
-        .profile-hero__summary {
-            font-size: .96rem;
+        .profile-hero__meta {
+            align-items: flex-start;
+            flex-direction: column;
+            gap: .3rem;
+            margin-top: 1.15rem;
+        }
+
+        .profile-hero__meta-divider {
+            display: none;
+        }
+
+        .profile-photo-panel {
+            max-width: min(330px, calc(100% - 1.25rem));
+        }
+
+        .profile-photo-panel::before {
+            inset: .85rem -.65rem -.65rem .85rem;
         }
 
         .profile-stats {
-            gap: .5rem;
-            left: .75rem;
-            right: .75rem;
+            margin: -1.75rem .55rem 0;
         }
 
         .profile-stat {
-            border-radius: .85rem;
-            padding: .75rem .58rem;
+            padding: .85rem .45rem;
         }
 
         .profile-stat strong {
-            font-size: 1.05rem;
-        }
-
-        .profile-stat span {
-            font-size: .6rem;
+            font-size: 1.1rem;
         }
 
         .profile-section {
@@ -738,33 +814,34 @@
 <div class="profile-page">
     <section class="profile-hero">
         <div class="profile-shell profile-hero__inner">
-            <div class="self-center">
+            <div class="profile-hero__content">
                 <nav class="profile-breadcrumb" aria-label="Breadcrumb">
                     <a href="{{ route('home') }}">Beranda</a>
-                    <span>/</span>
+                    <span aria-hidden="true">/</span>
                     <span>Profil</span>
-                    <span>/</span>
-                    <span>{{ $author->name }}</span>
+                    <span aria-hidden="true">/</span>
+                    <span aria-current="page">{{ $author->name }}</span>
                 </nav>
 
-                <div class="mt-8">
+                <div class="profile-hero__intro">
                     <span class="profile-badge">{{ $heroBadge }}</span>
                     <h1 class="profile-hero__title">{{ $author->name }}</h1>
-                    <p class="profile-hero__meta">
+                    <div class="profile-hero__meta">
                         @if ($author->title)
-                            <span>{{ $author->title }}</span><br>
+                            <span>{{ $author->title }}</span>
+                            <span class="profile-hero__meta-divider" aria-hidden="true"></span>
                         @endif
-                        <span class="profile-hero__position">{{ $publicPosition }}</span><br>
-                        {{ $publicInstitution }}
-                    </p>
-                    <p class="profile-hero__summary">{{ $bioSummary }}</p>
+                        <span class="profile-hero__position">{{ $publicPosition }}</span>
+                        <span class="profile-hero__meta-divider" aria-hidden="true"></span>
+                        <span>{{ $publicInstitution }}</span>
+                    </div>
                 </div>
             </div>
 
             <div class="profile-photo-panel">
                 <div class="profile-photo-frame">
                     @if ($photoUrl)
-                        <img src="{{ $photoUrl }}" alt="Foto profil {{ $author->name }}">
+                        <img src="{{ $photoUrl }}" alt="Foto profil {{ $author->name }}" fetchpriority="high">
                     @else
                         <div class="profile-photo-initials">{{ $initials }}</div>
                     @endif
