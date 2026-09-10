@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
+@php
+    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::insight($insight);
+@endphp
+
 @section('title', $insight->seo_title ?: $insight->title)
 @section('meta_description', $insight->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($insight->excerpt ?: ($insight->content ?? '')), 160) ?: 'Editorial Edulaw Project menyajikan analisis hukum yang relevan, jernih, dan mudah dipahami.')
 @section('canonical_url', route('insights.show', $insight->slug))
+@section('robots', $indexReady ? '' : 'noindex,follow')
 @section('og_type', 'article')
 @section('og_image', edulaw_file_url($insight->og_image ?: $insight->cover_image, 'images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', $insight->title)
@@ -42,7 +47,7 @@
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorPhoto = $primaryAuthor?->photo_url;
     $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
-    $editorName = $insight->assignedEditor?->name;
+    $editorName = $insight->assignedEditor?->name ?: $insight->reviewer?->name;
     $updatedDate = $insight->updated_at && $insight->published_at && $insight->updated_at->gt($insight->published_at)
         ? $insight->updated_at->translatedFormat('d F Y')
         : null;

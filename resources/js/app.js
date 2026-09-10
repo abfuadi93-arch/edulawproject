@@ -127,6 +127,12 @@ function initializePosterSliders() {
 }
 
 function initializeDeferredAds() {
+    const adSlots = document.querySelectorAll('ins.adsbygoogle');
+
+    if (adSlots.length === 0) {
+        return;
+    }
+
     let loaded = false;
     const engagementEvents = ['pointerdown', 'keydown', 'scroll'];
 
@@ -148,12 +154,6 @@ function initializeDeferredAds() {
     engagementEvents.forEach((eventName) => {
         window.addEventListener(eventName, load, { once: true, passive: true });
     });
-
-    const adSlots = document.querySelectorAll('ins.adsbygoogle');
-
-    if (adSlots.length === 0) {
-        return;
-    }
 
     if (!('IntersectionObserver' in window)) {
         load();

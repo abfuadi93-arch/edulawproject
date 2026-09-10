@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Multimedia;
+use App\Support\PublicContentQuality;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\View\View;
@@ -14,7 +15,10 @@ class MultimediaController extends Controller
         $video = Multimedia::query()->published()->youtubeVideos()->where('slug', $slug)->firstOrFail();
         abort_unless($video->watch_url, 404);
 
-        return view('multimedia.show', compact('video'));
+        return view('multimedia.show', [
+            'video' => $video,
+            'isIndexable' => PublicContentQuality::multimedia($video),
+        ]);
     }
 
     public function index(Request $request): View
@@ -50,6 +54,8 @@ class MultimediaController extends Controller
             ->paginate(perPage: 6, pageName: 'video_page')
             ->withQueryString()
             ->fragment('video');
+
+        abort_if($youtubeVideos->currentPage() > $youtubeVideos->lastPage(), 404);
 
         $shortsReels = Multimedia::query()
             ->published()

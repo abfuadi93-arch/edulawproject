@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
+@php
+    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::program($program);
+@endphp
+
 @section('title', $program->seo_title ?: $program->display_title)
 @section('meta_description', $program->seo_description ?: \Illuminate\Support\Str::limit(strip_tags($program->short_description ?: ($program->description ?: 'Program Edulaw Project.')), 160))
 @section('canonical_url', route('programs.show', $program->slug))
+@section('robots', $indexReady ? '' : 'noindex,follow')
 @section('og_type', 'article')
 @section('og_image', edulaw_file_url($program->og_image ?: ($program->hero_image ?: $program->image), 'images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', $program->display_title)

@@ -145,11 +145,13 @@ test('published publication pdf can be previewed and downloaded with safe dispos
     $this->get(route('publications.preview', $publication->slug))
         ->assertOk()
         ->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('x-robots-tag', 'noindex, noarchive')
         ->assertHeader('content-disposition', 'inline; filename=kajian-akses-publik.pdf');
 
     $download = $this->get(route('publications.download', $publication->slug))
         ->assertOk()
         ->assertHeader('content-type', 'application/pdf')
+        ->assertHeader('x-robots-tag', 'noindex, noarchive')
         ->assertHeader('content-disposition', 'attachment; filename=kajian-akses-publik.pdf');
 
     expect($download->headers->get('content-disposition'))

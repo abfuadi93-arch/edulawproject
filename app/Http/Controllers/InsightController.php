@@ -7,6 +7,7 @@ use App\Models\Insight;
 use App\Models\InsightCategory;
 use App\Models\PageVisit;
 use App\Models\Tag;
+use App\Support\PublicContentQuality;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
@@ -142,6 +143,12 @@ class InsightController extends Controller
             default => $query->orderByDesc('published_at')->latest('id'),
         };
 
+        $insights = $query
+            ->paginate(self::ITEMS_PER_PAGE)
+            ->withQueryString();
+
+        abort_if($insights->currentPage() > $insights->lastPage(), 404);
+
         return view('insights.index', [
             'latestInsights' => $latestInsights,
             'featuredEditorials' => $featuredEditorials,
@@ -154,9 +161,7 @@ class InsightController extends Controller
             'popularInsights' => $popularInsights,
             'popularTags' => $this->popularTags(),
             'editorialContributors' => $this->editorialContributors(),
-            'insights' => $query
-                ->paginate(self::ITEMS_PER_PAGE)
-                ->withQueryString(),
+            'insights' => $insights,
             'publishedEditorialCount' => Insight::query()->published()->count(),
             'editorialCategoryCount' => $insightCategories->count(),
             'insightCategories' => $insightCategories,
@@ -227,6 +232,7 @@ class InsightController extends Controller
             'previousPageUrl' => $previousPageUrl,
             'nextPageUrl' => $nextPageUrl,
             'relatedCategories' => $relatedCategories,
+            'isIndexable' => $insights->total() > 0,
         ]);
     }
 
@@ -275,6 +281,7 @@ class InsightController extends Controller
         return view('insights.show', [
             'insight' => $insight,
             'relatedInsights' => $relatedInsights,
+            'isIndexable' => PublicContentQuality::insight($insight),
         ]);
     }
 

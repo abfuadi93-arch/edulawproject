@@ -70,7 +70,7 @@ test('insight pages expose item list article authors and breadcrumbs', function 
         'title' => 'Kerugian Konstitusional dalam Pengujian Undang-Undang',
         'slug' => 'kerugian-konstitusional-schema',
         'excerpt' => 'Analisis konsep kerugian konstitusional dan penerapannya dalam pengujian undang-undang.',
-        'content' => '<p>Isi analisis hukum.</p>',
+        'content' => '<p>'.str_repeat('Analisis hukum menguraikan sumber primer, konteks kebijakan, argumentasi, dan dampaknya bagi masyarakat. ', 40).'</p>',
         'status' => 'published',
         'published_at' => now(),
     ]);
@@ -319,7 +319,7 @@ test('youtube entries expose video object and multimedia item list', function ()
         'slug' => 'memahami-putusan-mk-schema',
         'type' => 'video',
         'platform' => 'youtube',
-        'description' => 'Video edukasi untuk memahami struktur dan dampak putusan Mahkamah Konstitusi.',
+        'description' => str_repeat('Video edukasi ini menguraikan struktur putusan, dasar hukum, konteks perkara, dan dampaknya bagi masyarakat. ', 15),
         'media_url' => 'https://www.youtube.com/watch?v=oMjVH5Rbn5k',
         'embed_url' => 'https://www.youtube.com/embed/oMjVH5Rbn5k',
         'duration' => '12:30',

@@ -54,7 +54,7 @@ test('insight editorial metadata uses existing records and never invents an edit
     $this->get(route('insights.show', $insight->slug))
         ->assertOk()
         ->assertSee('Metadata Editorial')
-        ->assertSee('Ditulis oleh')
+        ->assertSee('Penulis')
         ->assertSee('Penulis Terverifikasi')
         ->assertSee('Disunting oleh')
         ->assertSee('Editor Terverifikasi')

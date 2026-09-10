@@ -7,13 +7,15 @@
     $isHome = $variant === 'home';
     $date = $item->published_at?->locale('id')->translatedFormat('d M Y') ?: 'Kanal resmi Edulaw';
     $meta = collect([$date, filled($item->duration) ? $item->duration : null])->filter()->join(' · ');
-    $summary = trim(strip_tags((string) $item->description)) ?: 'Pembahasan hukum pilihan dari kanal resmi Edulaw Project.';
+    $summary = trim(strip_tags((string) $item->description));
     $fallbackThumbnail = $item->youtube_thumbnail_fallback_url;
+    $itemUrl = $item->public_url;
+    $opensExternally = $item->opens_externally;
 @endphp
 
 @if ($isHome)
     <article data-home-multimedia data-home-multimedia-featured {{ $attributes->class('group min-w-0 overflow-hidden rounded-xl bg-brand-navy shadow-[0_22px_54px_-36px_rgba(15,23,42,.65)]') }}>
-        <a href="{{ $item->watch_url ?: $item->media_url }}" @if (! $item->watch_url) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $item->watch_url ? '' : 'di YouTube (membuka tab baru)' }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
             <div class="relative aspect-video h-full overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] lg:aspect-auto lg:min-h-[340px]">
                 <div class="absolute inset-0 grid place-items-center text-white/55" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
@@ -50,7 +52,7 @@
     </article>
 @else
     <article data-featured-media {{ $attributes->class('group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10') }}>
-        <a href="{{ $item->watch_url ?: $item->media_url }}" @if (! $item->watch_url) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $item->watch_url ? '' : 'di YouTube (membuka tab baru)' }}" class="grid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
             <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:min-h-[390px]">
                 <div class="absolute inset-0 grid place-items-center text-brand-navy/35" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
@@ -78,7 +80,9 @@
             <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
                 <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-coral">Video Utama</p>
                 <h3 class="line-clamp-3 mt-2 text-2xl font-black leading-tight text-brand-ink lg:text-[1.75rem]">{{ $item->title }}</h3>
-                <p class="line-clamp-3 mt-3 text-base leading-7 text-slate-600">{{ $summary }}</p>
+                @if ($summary !== '')
+                    <p class="line-clamp-3 mt-3 text-base leading-7 text-slate-600">{{ $summary }}</p>
+                @endif
                 <p class="mt-4 text-xs font-bold text-slate-500">{{ $date }}</p>
                 <span class="mt-5 inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-brand-amber px-5 py-2.5 text-sm font-black text-brand-ink transition group-hover:bg-brand-navy group-hover:text-white">
                     Tonton Video

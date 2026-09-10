@@ -2,11 +2,28 @@
 
 use App\Models\Author;
 use App\Models\Insight;
+use App\Models\InsightCategory;
 use App\Models\Opportunity;
 use App\Models\Program;
 use App\Models\Publication;
 
 test('sitemap contains substantive indexes but excludes opportunity detail routes', function () {
+    foreach (['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'] as $categorySlug) {
+        $category = InsightCategory::query()->create([
+            'name' => str($categorySlug)->headline()->toString(),
+            'slug' => $categorySlug,
+            'is_active' => true,
+        ]);
+        Insight::query()->create([
+            'insight_category_id' => $category->id,
+            'title' => 'Editorial Substantif '.str($categorySlug)->headline(),
+            'slug' => 'editorial-substantif-'.$categorySlug,
+            'content' => str_repeat('Analisis hukum berbasis sumber primer dan konteks kebijakan publik. ', 45),
+            'status' => 'published',
+            'published_at' => now()->subDay(),
+        ]);
+    }
+
     $opportunity = Opportunity::query()->create([
         'title' => 'Fellowship Riset Hukum',
         'slug' => 'fellowship-riset-hukum',
@@ -33,6 +50,7 @@ test('sitemap contains only public content and contributing public authors', fun
     $publishedInsight = Insight::query()->create([
         'title' => 'Insight Publik untuk Sitemap',
         'slug' => 'insight-publik-untuk-sitemap',
+        'content' => str_repeat('Analisis hukum yang menjelaskan konteks aturan dan dampaknya bagi publik. ', 45),
         'status' => 'published',
         'published_at' => now()->subDay(),
     ]);
@@ -55,6 +73,7 @@ test('sitemap contains only public content and contributing public authors', fun
         'slug' => 'penulis-publik',
         'is_active' => true,
         'show_in_contributor_section' => true,
+        'bio' => str_repeat('Penulis meneliti hukum dan kebijakan publik untuk memperluas literasi masyarakat. ', 8),
     ]);
     $publicAuthor->insights()->attach($publishedInsight, ['author_order' => 1, 'role' => 'Author']);
 
@@ -95,6 +114,7 @@ test('sitemap contains only public content and contributing public authors', fun
         'slug' => 'arsip-program-publik',
         'status' => 'archived',
         'publication_status' => 'published',
+        'description' => str_repeat('Dokumentasi program menjelaskan konteks kegiatan, materi, peserta, dan hasil pembelajaran. ', 20),
     ]);
 
     $internalProgram = Program::query()->create([
@@ -124,6 +144,7 @@ test('every sitemap location is a direct indexable canonical response', function
     $insight = Insight::query()->create([
         'title' => 'Editorial Canonical Sitemap',
         'slug' => 'editorial-canonical-sitemap',
+        'content' => str_repeat('Analisis hukum yang menguraikan sumber primer, argumentasi, dan dampak kebijakan. ', 45),
         'status' => 'published',
         'published_at' => now()->subDay(),
     ]);
@@ -131,6 +152,9 @@ test('every sitemap location is a direct indexable canonical response', function
     Publication::query()->create([
         'title' => 'Publikasi Canonical Sitemap',
         'slug' => 'publikasi-canonical-sitemap',
+        'description' => str_repeat('Ringkasan penelitian menjelaskan masalah, konteks hukum, pendekatan, dan hasil kajian. ', 20),
+        'methodology' => str_repeat('Metode penelitian menggunakan analisis dokumen hukum dan perbandingan. ', 8),
+        'contribution' => str_repeat('Kontribusi kajian menyediakan kerangka evaluasi untuk pembuat kebijakan. ', 8),
         'status' => 'published',
         'published_at' => now()->subDay(),
     ]);
@@ -140,6 +164,7 @@ test('every sitemap location is a direct indexable canonical response', function
         'slug' => 'program-canonical-sitemap',
         'status' => 'ongoing',
         'publication_status' => 'published',
+        'description' => str_repeat('Dokumentasi program menjelaskan konteks kegiatan, materi, peserta, dan hasil pembelajaran. ', 20),
     ]);
 
     Opportunity::query()->create([
@@ -155,6 +180,7 @@ test('every sitemap location is a direct indexable canonical response', function
         'slug' => 'kontributor-canonical-sitemap',
         'is_active' => true,
         'show_in_contributor_section' => true,
+        'bio' => str_repeat('Kontributor menulis analisis hukum dan riset kebijakan untuk kepentingan publik. ', 8),
     ]);
     $author->insights()->attach($insight, ['author_order' => 1, 'role' => 'Author']);
 

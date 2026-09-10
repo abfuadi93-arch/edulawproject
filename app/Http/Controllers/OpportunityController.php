@@ -96,6 +96,8 @@ class OpportunityController extends Controller
 
         $opportunities = $query->paginate(self::ITEMS_PER_PAGE)->withQueryString();
 
+        abort_if($opportunities->currentPage() > $opportunities->lastPage(), 404);
+
         $relevantOpportunities = Opportunity::query()
             ->withExternalLink()
             ->whereIn('status', ['open', 'closed']);

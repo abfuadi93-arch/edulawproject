@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Publication;
 use App\Models\PublicationType;
+use App\Support\PublicContentQuality;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -39,9 +40,15 @@ class PublicationController extends Controller
             ->orderByDesc('published_at')
             ->first();
 
+        $publications = $query
+            ->paginate(self::ITEMS_PER_PAGE)
+            ->withQueryString();
+
+        abort_if($publications->currentPage() > $publications->lastPage(), 404);
+
         return view('publications.index', [
             'featuredPublication' => $featuredPublication,
-            'publications' => $query->paginate(self::ITEMS_PER_PAGE)->withQueryString(),
+            'publications' => $publications,
             'publicationTypes' => PublicationType::query()->where('is_active', true)->orderBy('sort_order')->get(),
             'selectedType' => $type,
             'search' => $search,
@@ -65,7 +72,12 @@ class PublicationController extends Controller
 
         $hasPdfFile = $this->publicPdfPath($publication) !== null;
 
-        return view('publications.show', compact('publication', 'relatedPublications', 'hasPdfFile'));
+        return view('publications.show', [
+            'publication' => $publication,
+            'relatedPublications' => $relatedPublications,
+            'hasPdfFile' => $hasPdfFile,
+            'isIndexable' => PublicContentQuality::publication($publication),
+        ]);
     }
 
     public function preview(string $slug): StreamedResponse
@@ -91,12 +103,16 @@ class PublicationController extends Controller
 
         $filename = (Str::slug($publication->title) ?: 'publikasi-edulaw').'.pdf';
 
-        return Storage::disk('public')->response(
+        $response = Storage::disk('public')->response(
             $path,
             $filename,
             ['Content-Type' => 'application/pdf'],
             $disposition,
         );
+
+        $response->headers->set('X-Robots-Tag', 'noindex, noarchive');
+
+        return $response;
     }
 
     private function publicPdfPath(Publication $publication): ?string

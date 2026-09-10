@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\EdulawSite;
+use App\Support\PublicContentQuality;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -238,6 +239,20 @@ class Multimedia extends Model
             && $this->slug && preg_match('/^[A-Za-z0-9_-]{11}$/', $this->youtube_video_id ?? '')
             ? route('multimedia.show', $this->slug)
             : null;
+    }
+
+    public function getPublicUrlAttribute(): ?string
+    {
+        if (PublicContentQuality::multimedia($this)) {
+            return $this->watch_url;
+        }
+
+        return EdulawSite::resolveUrl($this->attributes['media_url'] ?? null);
+    }
+
+    public function getOpensExternallyAttribute(): bool
+    {
+        return filled($this->public_url) && $this->public_url !== $this->watch_url;
     }
 
     public function getThumbnailUrlAttribute(): ?string

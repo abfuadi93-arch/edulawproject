@@ -264,11 +264,11 @@ test('public multimedia page uses explicit type and platform mappings', function
         ->assertSee($video->title)
         ->assertSee($reel->title)
         ->assertSee($album->title)
-        ->assertSee('href="'.($video->watch_url ?: $video->media_url).'"', false)
+        ->assertSee('href="'.$video->public_url.'"', false)
         ->assertSee('href="'.$reel->media_url.'"', false)
         ->assertSee('href="'.$album->media_url.'"', false)
-        ->assertSee('href="'.($video->watch_url ?: $video->media_url).'"', false)
-        ->assertSee('href="'.($reel->watch_url ?: $reel->media_url).'"', false)
+        ->assertSee('href="'.$video->public_url.'"', false)
+        ->assertSee('href="'.$reel->public_url.'"', false)
         ->assertSee('href="'.$album->media_url.'" target="_blank" rel="noopener noreferrer"', false)
         ->assertDontSee('Video Draft Tersembunyi')
         ->assertDontSee('Podcast Lama Tidak Dipetakan')
@@ -406,8 +406,8 @@ test('two youtube videos render one featured and one secondary external card', f
 
     expect(substr_count($videoSection, 'data-featured-media'))->toBe(1)
         ->and(substr_count($videoSection, 'data-secondary-media'))->toBe(1)
-        ->and($videoSection)->toContain('href="'.($featured->watch_url ?: $featured->media_url).'"')
-        ->and($videoSection)->toContain('href="'.($secondary->watch_url ?: $secondary->media_url).'"')
+        ->and($videoSection)->toContain('href="'.$featured->public_url.'"')
+        ->and($videoSection)->toContain('href="'.$secondary->public_url.'"')
         ->and(strpos($videoSection, $featured->title))->toBeLessThan(strpos($videoSection, $secondary->title));
 });
 

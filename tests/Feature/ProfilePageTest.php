@@ -113,7 +113,8 @@ test('public profile hides technical user data', function () {
         ->assertSee('Nabila Publik')
         ->assertSee('Contributor')
         ->assertSee('Edulaw Project')
-        ->assertSee('Nabila Publik merupakan bagian dari Edulaw Project')
+        ->assertDontSee('merupakan bagian dari Edulaw Project yang berkontribusi')
+        ->assertSee('<meta name="robots" content="noindex,follow">', false)
         ->assertDontSeeText('user')
         ->assertDontSee('login-internal@example.test');
 });

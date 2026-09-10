@@ -34,7 +34,7 @@
             ->concat($photoAlbums)
             ->unique('id')
             ->map(function ($item): ?array {
-                $itemUrl = $item->watch_url ?: \App\Support\EdulawSite::resolveUrl($item->media_url);
+                $itemUrl = $item->public_url;
 
                 return $itemUrl ? [
                     'name' => $item->title,

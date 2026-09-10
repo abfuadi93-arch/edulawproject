@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Insight;
+use App\Models\InsightCategory;
 use App\Models\Multimedia;
 use App\Models\Program;
 use App\Models\Publication;
+use App\Support\PublicContentQuality;
 use Illuminate\Http\Response;
 
 class SitemapController extends Controller
@@ -16,6 +18,12 @@ class SitemapController extends Controller
      */
     public function index(): Response
     {
+        $indexableCategorySlugs = InsightCategory::query()
+            ->where('is_active', true)
+            ->whereIn('slug', ['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'])
+            ->whereHas('insights', fn ($query) => $query->published())
+            ->pluck('slug');
+
         $staticPages = collect([
             [
                 'url' => route('home'),
@@ -30,6 +38,7 @@ class SitemapController extends Controller
                 'priority' => '0.9',
             ],
             ...collect(['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'])
+                ->filter(fn (string $category): bool => $indexableCategorySlugs->contains($category))
                 ->map(fn (string $category): array => [
                     'url' => route('insights.categories.show', $category),
                     'lastmod' => null,
@@ -91,15 +100,28 @@ class SitemapController extends Controller
                 'changefreq' => 'monthly',
                 'priority' => '0.5',
             ],
+            [
+                'url' => route('privacy'),
+                'lastmod' => null,
+                'changefreq' => 'yearly',
+                'priority' => '0.4',
+            ],
+            [
+                'url' => route('terms'),
+                'lastmod' => null,
+                'changefreq' => 'yearly',
+                'priority' => '0.4',
+            ],
         ]);
 
         $insights = Insight::query()
             ->published()
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
-            ->select(['slug', 'updated_at'])
+            ->select(['title', 'slug', 'content', 'updated_at'])
             ->latest('published_at')
             ->get()
+            ->filter(fn (Insight $insight): bool => PublicContentQuality::insight($insight))
             ->map(fn (Insight $insight): array => [
                 'url' => route('insights.show', $insight->slug),
                 'lastmod' => $insight->updated_at,
@@ -111,9 +133,9 @@ class SitemapController extends Controller
             ->published()
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
-            ->select(['slug', 'updated_at'])
             ->latest('published_at')
             ->get()
+            ->filter(fn (Publication $publication): bool => PublicContentQuality::publication($publication))
             ->map(fn (Publication $publication): array => [
                 'url' => route('publications.show', $publication->slug),
                 'lastmod' => $publication->updated_at,
@@ -125,9 +147,9 @@ class SitemapController extends Controller
             ->visible()
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
-            ->select(['slug', 'updated_at'])
             ->latest('updated_at')
             ->get()
+            ->filter(fn (Program $program): bool => PublicContentQuality::program($program))
             ->map(fn (Program $program): array => [
                 'url' => route('programs.show', $program->slug),
                 'lastmod' => $program->updated_at,
@@ -139,9 +161,18 @@ class SitemapController extends Controller
             ->publicProfile()
             ->where('show_in_contributor_section', true)
             ->withPublicContribution()
-            ->select(['slug', 'updated_at'])
+            ->select(['id', 'name', 'slug', 'bio', 'updated_at'])
+            ->withCount([
+                'insights as published_insights_count' => fn ($query) => $query->published(),
+                'publications as published_publications_count' => fn ($query) => $query->published(),
+            ])
             ->orderBy('name')
             ->get()
+            ->filter(fn (Author $author): bool => PublicContentQuality::author(
+                $author,
+                (int) $author->published_insights_count,
+                (int) $author->published_publications_count,
+            ))
             ->map(fn (Author $author): array => [
                 'url' => route('profiles.show', $author->slug),
                 'lastmod' => $author->updated_at,
@@ -150,9 +181,9 @@ class SitemapController extends Controller
             ]);
 
         $videos = Multimedia::query()->published()->youtubeVideos()->get()
-            ->filter(fn (Multimedia $video) => $video->watch_url !== null)
+            ->filter(fn (Multimedia $video): bool => PublicContentQuality::multimedia($video))
             ->map(fn (Multimedia $video): array => [
-                'url' => $video->watch_url,
+                'url' => route('multimedia.show', $video->slug),
                 'lastmod' => $video->updated_at,
                 'changefreq' => 'monthly',
                 'priority' => '0.7',

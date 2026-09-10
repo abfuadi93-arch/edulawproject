@@ -9,8 +9,10 @@
     $pageTitle = $definition['seo_title'].$pageSuffix;
     $pageDescription = $definition['seo_description'].($currentPage > 1 ? " Halaman {$currentPage}." : '');
     $categoryArticleCount = (int) ($category?->published_insights_count ?? 0);
+    $indexReady = $isIndexable ?? $insights->total() > 0;
     $categoryHeroImage = asset('images/hero/insight-category-pattern.webp');
     $itemListSchemaItems = collect($insights->items())
+        ->filter(fn ($item): bool => \App\Support\PublicContentQuality::insight($item))
         ->map(fn ($item): array => [
             'name' => $item->title,
             'url' => route('insights.show', $item->slug),
@@ -22,6 +24,7 @@
 @section('title', $pageTitle)
 @section('meta_description', $pageDescription)
 @section('canonical_url', $canonicalUrl)
+@section('robots', $indexReady ? '' : 'noindex,follow')
 
 @push('head')
     @if ($previousPageUrl)

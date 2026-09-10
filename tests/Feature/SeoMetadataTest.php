@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\RedirectWwwToCanonicalHost;
+use App\Models\Insight;
 use Illuminate\Http\Request;
 
 dataset('indexable public pages', [
@@ -60,6 +61,15 @@ test('filter parameters are noindex and canonicalize to the clean index URL', fu
 });
 
 test('valid pagination is indexable and canonicalizes to itself', function () {
+    foreach (range(1, 13) as $index) {
+        Insight::query()->create([
+            'title' => "Editorial Pagination {$index}",
+            'slug' => "editorial-pagination-{$index}",
+            'status' => 'published',
+            'published_at' => now()->subMinutes($index),
+        ]);
+    }
+
     $pageTwoUrl = route('insights.index', ['page' => 2]);
 
     $this->get($pageTwoUrl)
@@ -154,6 +164,15 @@ test('robots file protects internal routes while allowing meta robots and pagina
 });
 
 test('presentation and tracking variants use indexable canonical pagination', function () {
+    foreach (range(1, 37) as $index) {
+        Insight::query()->create([
+            'title' => "Editorial Tracking {$index}",
+            'slug' => "editorial-tracking-{$index}",
+            'status' => 'published',
+            'published_at' => now()->subMinutes($index),
+        ]);
+    }
+
     $this->get(route('insights.index', ['archive' => 'latest', 'view' => 'grid', 'page' => 4, 'utm_source' => 'test']))
         ->assertOk()
         ->assertSee('<meta name="robots" content="index,follow">', false)

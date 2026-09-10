@@ -34,20 +34,23 @@
         default => 'Tim Edulaw',
     };
     $heroBadge = $publicRole === 'Tim Edulaw' ? 'TIM EDULAW' : 'PROFIL PENULIS';
-    $bioFallback = $publicRole === 'Tim Edulaw'
-        ? "{$author->name} merupakan bagian dari Edulaw Project yang berkontribusi dalam produksi editorial, pembaruan regulasi, dan tulisan literasi hukum."
-        : 'Profil penulis akan diperbarui secara berkala seiring dengan publikasi dan kontribusi penulis di Edulaw Project.';
     $bio = trim(strip_tags((string) $author->bio));
     $metaDescription = Str::limit(
         $author->meta_description ?: ($bio !== '' ? $bio : collect([$publicPosition, $publicInstitution])->filter()->join(' - ')),
         180
     );
     $profileTitle = $author->seo_title ?: $author->name . ' - Profil';
+    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::author(
+        $author,
+        (int) ($totalInsights ?? 0),
+        (int) ($totalPublications ?? 0),
+    );
 @endphp
 
 @section('title', $profileTitle)
 @section('meta_description', $metaDescription)
 @section('canonical_url', route('profiles.show', $author->slug))
+@section('robots', $indexReady ? '' : 'noindex,follow')
 @section('og_type', 'profile')
 @section('og_image', $photoUrl ?: asset('images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', 'Foto profil ' . $author->name)
@@ -806,7 +809,7 @@
     };
 
     $excerpt = fn ($value, int $limit = 150): string => Str::limit(
-        trim(strip_tags((string) $value)) ?: 'Ringkasan konten sedang disiapkan.',
+        trim(strip_tags((string) $value)),
         $limit
     );
 @endphp
@@ -934,20 +937,17 @@
             </aside>
 
             <div class="profile-main">
-                <section class="profile-card profile-card__pad">
-                    <p class="profile-kicker">Biografi</p>
-                    <h2 class="profile-heading mt-2">Tentang {{ $author->name }}</h2>
-
-                    @if ($bioParagraphs->isNotEmpty())
+                @if ($bioParagraphs->isNotEmpty())
+                    <section class="profile-card profile-card__pad">
+                        <p class="profile-kicker">Biografi</p>
+                        <h2 class="profile-heading mt-2">Tentang {{ $author->name }}</h2>
                         <div class="edulaw-readable profile-copy mt-5">
                             @foreach ($bioParagraphs as $paragraph)
                                 <p>{{ $paragraph }}</p>
                             @endforeach
                         </div>
-                    @else
-                        <p class="edulaw-readable profile-copy mt-5">{{ $bioFallback }}</p>
-                    @endif
-                </section>
+                    </section>
+                @endif
 
                 <section id="tulisan" class="profile-card profile-card__pad">
                     <div class="profile-section-head">

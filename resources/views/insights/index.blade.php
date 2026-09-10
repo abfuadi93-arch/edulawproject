@@ -6,6 +6,7 @@
 @push('head')
     @php
         $insightListSchemaItems = collect($insights->items())
+            ->filter(fn ($item): bool => \App\Support\PublicContentQuality::insight($item))
             ->map(fn ($item): array => [
                 'name' => $item->title,
                 'url' => route('insights.show', $item->slug),

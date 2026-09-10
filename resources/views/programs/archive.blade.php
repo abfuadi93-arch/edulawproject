@@ -6,6 +6,7 @@
 @push('head')
     @php
         $archiveListSchemaItems = collect($archivePrograms->items())
+            ->filter(fn ($item): bool => \App\Support\PublicContentQuality::program($item))
             ->map(fn ($item): array => [
                 'name' => $item->display_title,
                 'url' => route('programs.show', $item->slug),

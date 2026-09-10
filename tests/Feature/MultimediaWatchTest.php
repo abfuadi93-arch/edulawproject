@@ -6,6 +6,7 @@ test('reported videos have discoverable indexable watch pages', function (string
     $video = Multimedia::create([
         'title' => 'Diskusi Hukum '.$id, 'type' => 'video', 'platform' => 'youtube',
         'media_url' => 'https://www.youtube.com/watch?v='.$id,
+        'description' => str_repeat('Video ini membahas aturan, konteks kebijakan, contoh penerapan, dan dampaknya bagi masyarakat. ', 15),
         'status' => 'published', 'published_at' => now()->subDay(),
     ]);
     $html = $this->get($video->watch_url)->assertOk()
@@ -22,6 +23,31 @@ test('reported videos have discoverable indexable watch pages', function (string
     $this->get($video->watch_url)->assertNotFound();
     $this->get(route('sitemap'))->assertDontSee($video->watch_url, false);
 })->with(['oMjVH5Rbn5k', '2ATZEA_sqdQ']);
+
+test('thin youtube entries link to the source and stay out of the sitemap', function () {
+    $video = Multimedia::create([
+        'title' => 'Video Tanpa Ringkasan Editorial',
+        'type' => 'video',
+        'platform' => 'youtube',
+        'media_url' => 'https://www.youtube.com/watch?v=oMjVH5Rbn5k',
+        'status' => 'published',
+        'published_at' => now()->subDay(),
+    ]);
+
+    $this->get(route('multimedia.index'))
+        ->assertOk()
+        ->assertSee('href="'.$video->media_url.'"', false)
+        ->assertSee('target="_blank" rel="noopener noreferrer"', false)
+        ->assertDontSee('href="'.$video->watch_url.'"', false);
+
+    $this->get($video->watch_url)
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex,follow">', false);
+
+    $this->get(route('sitemap'))
+        ->assertOk()
+        ->assertDontSee($video->watch_url, false);
+});
 
 test('future and invalid videos do not have public watch pages', function () {
     foreach (['future', 'invalid'] as $kind) {

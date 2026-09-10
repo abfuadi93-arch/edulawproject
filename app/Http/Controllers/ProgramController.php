@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Program;
 use App\Models\ProgramCategory;
+use App\Support\PublicContentQuality;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -181,8 +182,14 @@ class ProgramController extends Controller
             $archiveQuery->whereYear('event_date', $archiveYear);
         }
 
+        $archivePrograms = $archiveQuery
+            ->paginate(12)
+            ->withQueryString();
+
+        abort_if($archivePrograms->currentPage() > $archivePrograms->lastPage(), 404);
+
         return view('programs.archive', [
-            'archivePrograms' => $archiveQuery->paginate(12)->withQueryString(),
+            'archivePrograms' => $archivePrograms,
             'programCategories' => $programCategories,
             'archiveSearch' => $archiveSearch,
             'archiveCategory' => $archiveCategory,
@@ -204,7 +211,11 @@ class ProgramController extends Controller
             ->limit(3)
             ->get();
 
-        return view('programs.show', compact('program', 'relatedPrograms'));
+        return view('programs.show', [
+            'program' => $program,
+            'relatedPrograms' => $relatedPrograms,
+            'isIndexable' => PublicContentQuality::program($program),
+        ]);
     }
 
     private function queryArray(mixed $value): array

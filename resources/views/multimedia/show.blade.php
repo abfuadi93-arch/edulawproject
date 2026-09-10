@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
+@php
+    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::multimedia($video);
+@endphp
+
 @section('title', $video->title)
 @section('meta_description', trim(strip_tags($video->description ?: $video->title)))
 @section('canonical_url', $video->watch_url)
+@section('robots', $indexReady ? '' : 'noindex,follow')
 @section('og_type', 'video.other')
 @section('og_image', $video->thumbnail_url)
 

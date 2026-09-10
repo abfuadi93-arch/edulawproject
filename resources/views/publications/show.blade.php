@@ -1,8 +1,13 @@
 @extends('layouts.app')
 
+@php
+    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::publication($publication);
+@endphp
+
 @section('title', $publication->share_preview_title)
 @section('meta_description', $publication->share_preview_description)
 @section('canonical_url', route('publications.show', $publication->slug))
+@section('robots', $indexReady ? '' : 'noindex,follow')
 @section('og_type', 'article')
 @section('og_image', $publication->share_preview_image_url ?: asset('images/hero/hero-edulaw.jpg'))
 @section('og_image_alt', $publication->title)

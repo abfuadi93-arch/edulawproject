@@ -6,6 +6,7 @@
 @push('head')
     @php
         $publicationListSchemaItems = collect($publications->items())
+            ->filter(fn ($item): bool => \App\Support\PublicContentQuality::publication($item))
             ->map(fn ($item): array => [
                 'name' => $item->title,
                 'url' => route('publications.show', $item->slug),
