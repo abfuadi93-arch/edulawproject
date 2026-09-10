@@ -158,11 +158,15 @@
 
 <main class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
-        <img
-            src="{{ $heroBackground }}"
-            alt="{{ $programTitle }}"
+        <x-responsive-image
+            :src="$heroBackground"
+            :alt="$programTitle"
+            :widths="[480, 768, 960, 1280, 1600]"
+            sizes="100vw"
+            loading="eager"
+            fetchpriority="high"
             class="absolute inset-0 z-0 h-full w-full object-cover"
-        >
+        />
         <div class="absolute inset-0 z-0 bg-linear-to-r from-[#06132a]/96 via-[#06132a]/78 to-[#06132a]/24"></div>
         <div class="absolute inset-0 z-0 bg-linear-to-t from-[#06132a]/78 via-transparent to-[#06132a]/24"></div>
 

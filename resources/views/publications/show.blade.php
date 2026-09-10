@@ -121,11 +121,15 @@
 <main class="publication-show">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
         @if ($coverImage)
-            <img
-                src="{{ $coverImage }}"
-                alt="{{ $publication->title }}"
+            <x-responsive-image
+                :src="$coverImage"
+                :alt="$publication->title"
+                :widths="[480, 768, 960, 1280, 1600]"
+                sizes="100vw"
+                loading="eager"
+                fetchpriority="high"
                 class="absolute inset-0 z-0 h-full w-full object-cover"
-            >
+            />
         @else
             <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_18%_24%,rgba(245,185,67,0.22),transparent_30%),radial-gradient(circle_at_82%_22%,rgba(37,183,160,0.18),transparent_28%),linear-gradient(135deg,#071427,#1f3c69_54%,#10243f)]"></div>
         @endif

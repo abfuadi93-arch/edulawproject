@@ -70,12 +70,16 @@
 <main class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
         @if ($coverImage)
-            <img
-                src="{{ $coverImage }}"
-                alt="{{ $insight->title }}"
+            <x-responsive-image
+                :src="$coverImage"
+                :alt="$insight->title"
+                :widths="[480, 768, 960, 1280, 1600]"
+                sizes="100vw"
+                loading="eager"
+                fetchpriority="high"
                 class="absolute inset-0 z-0 h-full w-full object-cover"
                 onerror="this.onerror=null;this.src='{{ asset('images/hero/hero-edulaw.jpg') }}';"
-            >
+            />
         @else
             <div class="absolute inset-0 z-0 bg-linear-to-br from-brand-navy via-slate-900 to-brand-navy"></div>
         @endif
@@ -323,13 +327,15 @@
                     @foreach ($displayRelatedInsights as $item)
                         <article class="group flex h-full min-h-[25rem] flex-col overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition hover:-translate-y-1 hover:border-brand-amber/60 hover:shadow-lg hover:shadow-slate-900/10">
                             <a href="{{ route('insights.show', $item->slug) }}" class="relative block aspect-[16/10] shrink-0 overflow-hidden bg-slate-100">
-                                <img
-                                    src="{{ $item->cover_image_url }}"
+                                <x-responsive-image
+                                    :src="$item->cover_image_url"
                                     alt="{{ $item->title }}"
                                     class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105"
                                     loading="lazy"
+                                    :widths="[320, 480, 640, 960]"
+                                    sizes="(min-width: 1024px) 400px, (min-width: 768px) 50vw, 100vw"
                                     onerror="this.onerror=null;this.src='{{ asset('images/hero/hero-edulaw.jpg') }}';"
-                                >
+                                />
                             </a>
 
                             <div class="flex flex-1 flex-col p-5 sm:p-6">

@@ -92,6 +92,29 @@ lokal atau tes otomatis tidak berarti laporan Google sudah divalidasi; Google pe
 merayapi ulang halaman yang telah diperbarui. Rujukan:
 [panduan Event Google](https://developers.google.com/search/docs/appearance/structured-data/event).
 
+## Core Web Vitals (Laporan UX Chrome)
+
+Gambar hero detail insight, program, dan publikasi memakai varian WebP responsif
+berukuran 480–1600 piksel, `loading="eager"`, dan `fetchpriority="high"`.
+Gambar editorial terkait memakai varian sesuai lebar kartu dan lazy loading.
+Gambar eksternal tetap menggunakan sumber asli; generator hanya mengolah gambar lokal.
+
+Setelah deploy, jalankan `php artisan view:clear`. Pastikan server memiliki GD dengan
+WebP atau Imagick dengan WebP, direktori `storage/app/private/image-variants` dapat
+ditulis, dan URL `/media/image/...` merespons 200 dengan tipe `image/webp`.
+Varian dibuat saat pertama kali diminta lalu disimpan dalam cache.
+
+Periksa contoh URL bermasalah di PageSpeed Insights untuk seluler dan desktop.
+Catat metrik yang gagal (LCP, INP, atau CLS) sebelum menyimpulkan akar masalah;
+jumlah URL buruk saja tidak menunjukkan metrik penyebabnya. Target persentil ke-75:
+LCP ≤2,5 detik, INP ≤200 milidetik, CLS ≤0,1. Tes aplikasi memverifikasi rendering,
+bukan kelulusan Core Web Vitals pengguna produksi.
+
+Setelah perubahan tersedia di produksi, gunakan **Validasi perbaikan** pada kelompok
+masalah Search Console. Laporan menggunakan data pengguna selama 28 hari, sehingga
+status tidak langsung berubah setelah deploy. Rujukan:
+[Laporan Core Web Vitals Google](https://support.google.com/webmasters/answer/9205520?hl=id).
+
 ## Learning Laravel
 
 Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
