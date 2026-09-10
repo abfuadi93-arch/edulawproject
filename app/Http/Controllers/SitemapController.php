@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Author;
 use App\Models\Insight;
+use App\Models\Multimedia;
 use App\Models\Program;
 use App\Models\Publication;
 use Illuminate\Http\Response;
@@ -148,11 +149,21 @@ class SitemapController extends Controller
                 'priority' => '0.6',
             ]);
 
+        $videos = Multimedia::query()->published()->youtubeVideos()->get()
+            ->filter(fn (Multimedia $video) => $video->watch_url !== null)
+            ->map(fn (Multimedia $video): array => [
+                'url' => $video->watch_url,
+                'lastmod' => $video->updated_at,
+                'changefreq' => 'monthly',
+                'priority' => '0.7',
+            ]);
+
         $urls = $staticPages
             ->concat($insights)
             ->concat($publications)
             ->concat($programs)
             ->concat($authors)
+            ->concat($videos)
             ->unique('url')
             ->values();
 

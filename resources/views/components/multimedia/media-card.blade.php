@@ -35,7 +35,7 @@
         'h-full' => ! $isHorizontal,
     ]) }}
 >
-    <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka {{ $item->title }} di {{ $platformLabel }} (membuka tab baru)" @class(['focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy', 'flex h-full items-center gap-3 p-3' => $isHorizontal, 'flex h-full flex-col' => ! $isHorizontal])>
+    <a href="{{ $item->watch_url ?: $item->media_url }}" @if (! $item->watch_url) target="_blank" rel="noopener noreferrer" @endif aria-label="Buka {{ $item->title }} {{ $item->watch_url ? '' : 'di '.$platformLabel.' (membuka tab baru)' }}" @class(['focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy', 'flex h-full items-center gap-3 p-3' => $isHorizontal, 'flex h-full flex-col' => ! $isHorizontal])>
         <div @class(['relative shrink-0 overflow-hidden', 'aspect-video w-28 rounded-xl bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d]' => $isHorizontal, 'aspect-video w-full bg-white' => ! $isHorizontal])>
             <div @class(['absolute inset-0 grid place-items-center', 'text-white/55' => $isHorizontal, 'text-brand-navy/35' => ! $isHorizontal]) aria-hidden="true">
                 <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>

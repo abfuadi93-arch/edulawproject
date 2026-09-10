@@ -34,7 +34,7 @@
             ->concat($photoAlbums)
             ->unique('id')
             ->map(function ($item): ?array {
-                $itemUrl = \App\Support\EdulawSite::resolveUrl($item->media_url);
+                $itemUrl = $item->watch_url ?: \App\Support\EdulawSite::resolveUrl($item->media_url);
 
                 return $itemUrl ? [
                     'name' => $item->title,
@@ -51,11 +51,6 @@
         <x-structured-data :data="\App\Support\StructuredData::itemList($multimediaSchemaItems, 'Multimedia Edukasi Hukum')" />
     @endif
 
-    @foreach ($youtubeSchemaVideos as $youtubeVideo)
-        @if ($videoSchema = \App\Support\StructuredData::video($youtubeVideo))
-            <x-structured-data :data="$videoSchema" />
-        @endif
-    @endforeach
 @endpush
 
 @section('content')

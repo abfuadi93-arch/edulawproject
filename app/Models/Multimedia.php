@@ -108,7 +108,7 @@ class Multimedia extends Model
     protected static function booted(): void
     {
         static::saving(function (Multimedia $multimedia): void {
-            if (blank($multimedia->slug) || $multimedia->isDirty('title')) {
+            if (blank($multimedia->slug)) {
                 $multimedia->slug = static::uniqueSlug($multimedia->title, $multimedia->getKey());
             }
 
@@ -230,6 +230,14 @@ class Multimedia extends Model
     public function updater(): BelongsTo
     {
         return $this->belongsTo(User::class, 'updated_by');
+    }
+
+    public function getWatchUrlAttribute(): ?string
+    {
+        return $this->type === 'video' && $this->platform === 'youtube'
+            && $this->slug && preg_match('/^[A-Za-z0-9_-]{11}$/', $this->youtube_video_id ?? '')
+            ? route('multimedia.show', $this->slug)
+            : null;
     }
 
     public function getThumbnailUrlAttribute(): ?string

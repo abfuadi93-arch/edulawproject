@@ -9,6 +9,14 @@ use Illuminate\View\View;
 
 class MultimediaController extends Controller
 {
+    public function show(string $slug): View
+    {
+        $video = Multimedia::query()->published()->youtubeVideos()->where('slug', $slug)->firstOrFail();
+        abort_unless($video->watch_url, 404);
+
+        return view('multimedia.show', compact('video'));
+    }
+
     public function index(Request $request): View
     {
         $search = $request->query('q');

@@ -169,3 +169,27 @@ redirect melalui Inspeksi URL Search Console. Validasi sudah dimulai pada
 08/09/26; perubahan lokal tidak mengubah status validasi Google. Google perlu
 merayapi ulang. URL duplikat dapat berpindah ke kategori redirect atau canonical
 alternatif, sedangkan URL filter dapat tetap dikecualikan oleh noindex.
+
+## Pengindeksan video: halaman tonton
+
+Video YouTube bertipe `video` yang sudah dipublikasikan kini memiliki halaman
+`/multimedia/{slug}`. Pemutar tersedia langsung di HTML bagian atas, disertai
+judul, deskripsi, canonical, dan VideoObject. Daftar multimedia memakai ItemList
+serta tautan ke halaman tonton; VideoObject tidak lagi ditempatkan pada daftar.
+Halaman tonton juga masuk sitemap.xml. Draft dan video terjadwal tidak tersedia.
+
+Setelah deploy jalankan `npm run build` dan `php artisan view:clear` serta
+`php artisan route:clear` jika menggunakan route cache (buat ulang route cache
+sesuai alur deployment). Tidak ada migrasi database baru.
+
+Di admin Multimedia, pastikan video `oMjVH5Rbn5k` dan `2ATZEA_sqdQ` memiliki URL
+YouTube yang benar, jenis Video, platform YouTube, status published, serta judul,
+deskripsi, dan tanggal publikasi yang benar. Pastikan video masih publik dan
+pemutaran embed diizinkan oleh YouTube. Jangan mengarang tanggal upload untuk schema.
+Uji halaman tonton dengan Rich Results Test dan Inspeksi URL; kirim sitemap yang
+sudah diperbarui. Validasi Google yang dimulai 04/09/26 tidak berubah otomatis
+karena perbaikan lokal. Halaman /multimedia tetap merupakan daftar; target hasil
+video adalah halaman tonton masing-masing. Google menentukan pengindeksan setelah
+merayapi halaman baru, tanpa jaminan bahwa semua video akan diindeks.
+
+Rujukan: https://developers.google.com/search/docs/appearance/video

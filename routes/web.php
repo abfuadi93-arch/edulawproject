@@ -63,6 +63,7 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::redirect('/peluang', '/opportunities', 301);
 
     Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');
+    Route::get('/multimedia/{slug}', [MultimediaController::class, 'show'])->name('multimedia.show');
     Route::get('/search', [SearchController::class, 'index'])->name('search.index');
 
     Route::get('/sitemap.xml', [SitemapController::class, 'index'])

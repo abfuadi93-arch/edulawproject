@@ -320,8 +320,8 @@ test('youtube entries expose video object and multimedia item list', function ()
         'type' => 'video',
         'platform' => 'youtube',
         'description' => 'Video edukasi untuk memahami struktur dan dampak putusan Mahkamah Konstitusi.',
-        'media_url' => 'https://www.youtube.com/watch?v=abc123XYZ_9',
-        'embed_url' => 'https://www.youtube.com/embed/abc123XYZ_9',
+        'media_url' => 'https://www.youtube.com/watch?v=oMjVH5Rbn5k',
+        'embed_url' => 'https://www.youtube.com/embed/oMjVH5Rbn5k',
         'duration' => '12:30',
         'published_at' => now(),
         'status' => 'published',
@@ -330,12 +330,15 @@ test('youtube entries expose video object and multimedia item list', function ()
     $schemas = structuredDataSchemas(
         $this->get(route('multimedia.index'))->assertOk()->getContent(),
     );
-    $videoObject = structuredDataOfType($schemas, 'VideoObject');
+    expect(structuredDataOfType($schemas, 'VideoObject'))->toBeNull();
+    $videoObject = structuredDataOfType(structuredDataSchemas(
+        $this->get($video->watch_url)->assertOk()->getContent(),
+    ), 'VideoObject');
     $itemList = structuredDataOfType($schemas, 'ItemList');
 
     expect($videoObject)
         ->not->toBeNull()
-        ->and($videoObject['embedUrl'])->toBe('https://www.youtube.com/embed/abc123XYZ_9')
+        ->and($videoObject['embedUrl'])->toBe('https://www.youtube.com/embed/oMjVH5Rbn5k')
         ->and($videoObject['duration'])->toBe('PT12M30S')
         ->and($videoObject['uploadDate'])->toBe($video->published_at->toIso8601String())
         ->and($itemList['itemListElement'][0]['item']['name'])->toBe($video->title);

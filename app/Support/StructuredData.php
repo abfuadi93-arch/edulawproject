@@ -288,10 +288,13 @@ class StructuredData
         return self::clean([
             '@context' => 'https://schema.org',
             '@type' => 'VideoObject',
+            '@id' => $media->watch_url ? $media->watch_url.'#video' : null,
+            'url' => $media->watch_url,
+            'mainEntityOfPage' => $media->watch_url,
             'name' => $media->title,
             'description' => self::description($media->description ?: $media->title),
             'thumbnailUrl' => [
-                $media->thumbnail_url ?: "https://i.ytimg.com/vi/{$youtubeId}/hqdefault.jpg",
+                EdulawSite::assetUrl($media->thumbnail) ?: "https://i.ytimg.com/vi/{$youtubeId}/hqdefault.jpg",
             ],
             'uploadDate' => $media->published_at->toIso8601String(),
             'duration' => self::isoDuration($media->duration),
