@@ -70,9 +70,8 @@ test('valid pagination is indexable and canonicalizes to itself', function () {
 
 test('page one query is treated as a duplicate of the clean index URL', function () {
     $this->get(route('insights.index', ['page' => 1]))
-        ->assertOk()
-        ->assertSee('<meta name="robots" content="noindex,follow">', false)
-        ->assertSee('<link rel="canonical" href="'.route('insights.index').'">', false);
+        ->assertMovedPermanently()
+        ->assertRedirect(route('insights.index'));
 });
 
 test('administrative html is excluded from crawling and indexing', function () {
@@ -152,4 +151,18 @@ test('robots file protects internal routes while allowing meta robots and pagina
         ->assertDontSee('Disallow: /*?author=', false)
         ->assertDontSee('Disallow: /*?category=', false)
         ->assertSee('Sitemap: https://edulawproject.id/sitemap.xml', false);
+});
+
+test('presentation and tracking variants use indexable canonical pagination', function () {
+    $this->get(route('insights.index', ['archive' => 'latest', 'view' => 'grid', 'page' => 4, 'utm_source' => 'test']))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="index,follow">', false)
+        ->assertSee('<link rel="canonical" href="'.route('insights.index', ['page' => 4]).'">', false);
+    $this->get(route('programs.index', ['view' => 'list']))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="index,follow">', false)
+        ->assertSee('<link rel="canonical" href="'.route('programs.index').'">', false);
+    $this->get(route('opportunities.index', ['type' => 'scholarship', 'view' => 'grid']))
+        ->assertOk()
+        ->assertSee('<meta name="robots" content="noindex,follow">', false);
 });

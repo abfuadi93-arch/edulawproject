@@ -60,6 +60,16 @@
             default => null,
         };
         $queryParameters = request()->query();
+        // Presentation and campaign parameters do not change indexable content.
+        $queryParameters = array_filter($queryParameters, fn ($value, $key) =>
+            ! in_array($key, ['view', 'source', 'gclid', 'fbclid'], true)
+            && ! str_starts_with($key, 'utm_'), ARRAY_FILTER_USE_BOTH);
+        if (($queryParameters[$paginationParameter] ?? null) === '1') {
+            unset($queryParameters[$paginationParameter]);
+        }
+        if ($routeName === 'insights.index' && ($queryParameters['archive'] ?? null) === 'latest') {
+            unset($queryParameters['archive']);
+        }
         $isIndexablePagination = $paginationParameter !== null
             && array_keys($queryParameters) === [$paginationParameter]
             && filter_var(
@@ -68,7 +78,7 @@
                 ['options' => ['min_range' => 2]],
             ) !== false;
         $canonicalUrl = $isIndexablePagination
-            ? request()->fullUrl()
+            ? url()->current().'?'.http_build_query($queryParameters)
             : $absoluteUrl($section('canonical_url', url()->current()));
         $canonicalUrl = \Illuminate\Support\Str::before($canonicalUrl, '#');
 

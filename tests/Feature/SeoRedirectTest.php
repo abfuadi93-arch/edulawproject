@@ -79,3 +79,26 @@ test('legacy insight slug with a trailing slash redirects directly to its live c
 
     $this->get('/insight/'.$canonicalSlug)->assertOk();
 });
+
+test('reported redundant parameters redirect while preserving meaningful filters', function (string $path, string $target) {
+    $request = Request::create('https://edulawproject.id'.$path);
+    $response = app(RedirectWwwToCanonicalHost::class)->handle($request, fn () => response('next'));
+    expect($response->getStatusCode())->toBe(301)
+        ->and($response->headers->get('Location'))->toBe('https://edulawproject.id'.$target);
+})->with([
+    ['/insight?page=1', '/insight'],
+    ['/insight?featured=1&page=1', '/insight?featured=1'],
+    ['/multimedia?video_page=1', '/multimedia'],
+    ['/riset-publikasi?type=semua&view=list', '/riset-publikasi?view=list'],
+    ['/insight/example?source=home-highlight', '/insight/example'],
+    ['/insight/example?source=home-editor-pick&utm_source=test', '/insight/example?utm_source=test'],
+]);
+
+test('www trailing slash and tracking parameters normalize in one hop', function () {
+    config(['edulaw.site.url' => 'https://edulawproject.id']);
+    $request = Request::create('http://www.edulawproject.id/insight/example/?source=home-highlight&utm_source=test');
+    $response = app(RedirectWwwToCanonicalHost::class)->handle($request, fn () => response('next'));
+    expect($response->getStatusCode())->toBe(301)
+        ->and($response->headers->get('Location'))
+        ->toBe('https://edulawproject.id/insight/example?utm_source=test');
+});

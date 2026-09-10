@@ -30,9 +30,34 @@ class RedirectWwwToCanonicalHost
             ? $this->legacyDestination($requestPath)
             : null;
 
+        $normalizedPath = $legacyPath ?? rtrim($requestPath, '/');
+        $normalizedQuery = $request->query();
+        $originalQuery = $normalizedQuery;
+
+        if ($request->isMethodSafe()) {
+            if (preg_match('#^/insight/[^/]+$#', $normalizedPath) === 1
+                && in_array($normalizedQuery['source'] ?? null, ['home-highlight', 'home-editor-pick'], true)) {
+                unset($normalizedQuery['source']);
+            }
+
+            $pageKey = match ($normalizedPath) {
+                '/insight', '/opportunities', '/riset-publikasi', '/program/arsip' => 'page',
+                '/multimedia' => 'video_page',
+                default => null,
+            };
+            if ($pageKey !== null && ($normalizedQuery[$pageKey] ?? null) === '1') {
+                unset($normalizedQuery[$pageKey]);
+            }
+            if ($normalizedPath === '/riset-publikasi' && ($normalizedQuery['type'] ?? null) === 'semua') {
+                unset($normalizedQuery['type']);
+            }
+        }
+        $hasRedundantQuery = $normalizedQuery !== $originalQuery;
+
         if (($canonicalHost === '' || (! $isWwwAlias && ! $hasWrongScheme))
             && ! $hasTrailingSlash
-            && $legacyPath === null) {
+            && $legacyPath === null
+            && ! $hasRedundantQuery) {
             return $next($request);
         }
 
@@ -52,6 +77,11 @@ class RedirectWwwToCanonicalHost
         } elseif ($hasTrailingSlash) {
             [$path, $query] = array_pad(explode('?', $requestUri, 2), 2, null);
             $requestUri = rtrim($path, '/').($query !== null ? '?'.$query : '');
+        }
+
+        if ($hasRedundantQuery) {
+            $requestUri = explode('?', $requestUri, 2)[0];
+            $requestUri .= $normalizedQuery !== [] ? '?'.http_build_query($normalizedQuery) : '';
         }
 
         $target = $scheme.'://'.$targetHost.$port.$requestUri;

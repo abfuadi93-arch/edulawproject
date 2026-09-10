@@ -150,3 +150,22 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Pengindeksan URL berparameter
+
+Parameter tampilan `view`, sumber kunjungan `source`, `utm_*`, `gclid`, dan `fbclid`
+tidak lagi otomatis memicu noindex. Canonical mengabaikan parameter tersebut;
+pagination sah tetap memakai canonical halaman bersangkutan (misalnya `?page=4`).
+`archive=latest` pada insight juga menunjuk arsip dengan nomor halaman yang sama.
+
+URL `page=1`, `video_page=1`, publikasi `type=semua`, dan artikel dengan
+`source=home-highlight` / `source=home-editor-pick` diarahkan permanen ke URL
+setara yang lebih bersih. Filter nyata seperti `type`, `featured`, pencarian,
+dan kombinasi filter tetap noindex; tidak semua URL dalam laporan perlu diindeks.
+Pilihan list/grid tetap bekerja.
+
+Setelah deploy jalankan `php artisan view:clear`, lalu uji URL lama dan tujuan
+redirect melalui Inspeksi URL Search Console. Validasi sudah dimulai pada
+08/09/26; perubahan lokal tidak mengubah status validasi Google. Google perlu
+merayapi ulang. URL duplikat dapat berpindah ke kategori redirect atau canonical
+alternatif, sedangkan URL filter dapat tetap dikecualikan oleh noindex.
