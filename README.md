@@ -193,3 +193,22 @@ video adalah halaman tonton masing-masing. Google menentukan pengindeksan setela
 merayapi halaman baru, tanpa jaminan bahwa semua video akan diindeks.
 
 Rujukan: https://developers.google.com/search/docs/appearance/video
+
+## Laporan “Halaman dengan pengalihan”
+
+HTTP dan www, /publikasi, /peluang, serta alias kategori lama memang mengembalikan
+301 ke URL utama. Status ini normal untuk URL sumber; yang perlu diindeks adalah
+halaman tujuan. Alias kategori kini menggabungkan normalisasi host, protokol,
+trailing slash, dan pagination dalam satu redirect. Halaman kategori di luar
+rentang pagination tetap 404, bukan diarahkan ke halaman pertama.
+
+Detail peluang lama yang masih tercatat tetap diarahkan ke direktori sesuai desain
+situs yang memakai tautan informasi resmi. Slug peluang yang tidak dikenal kini
+mengembalikan 404, bukan redirect massal ke direktori. Sitemap dan template publik
+tidak menautkan URL detail peluang yang sudah dipensiunkan.
+
+Setelah deploy, buat ulang cache route/view sesuai prosedur server dan periksa
+Location serta respons akhir URL contoh. Validasi yang dimulai 10/09/26 tidak
+mengharuskan semua URL sumber menjadi terindeks. Jangan menghapus redirect domain
+atau URL lama hanya untuk mengurangi angka laporan Search Console.
+Rujukan: https://support.google.com/webmasters/answer/7440203

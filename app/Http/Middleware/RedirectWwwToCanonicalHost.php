@@ -2,6 +2,7 @@
 
 namespace App\Http\Middleware;
 
+use App\Http\Controllers\InsightController;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -41,7 +42,7 @@ class RedirectWwwToCanonicalHost
             }
 
             $pageKey = match ($normalizedPath) {
-                '/insight', '/opportunities', '/riset-publikasi', '/program/arsip' => 'page',
+                '/insight', '/opportunities', '/riset-publikasi', '/program/archive' => 'page',
                 '/multimedia' => 'video_page',
                 default => null,
             };
@@ -52,12 +53,16 @@ class RedirectWwwToCanonicalHost
                 unset($normalizedQuery['type']);
             }
         }
+        $categoryDestination = $request->isMethodSafe() && $normalizedPath === '/insight'
+            ? app(InsightController::class)->legacyCategoryDestination($request)
+            : null;
         $hasRedundantQuery = $normalizedQuery !== $originalQuery;
 
         if (($canonicalHost === '' || (! $isWwwAlias && ! $hasWrongScheme))
             && ! $hasTrailingSlash
             && $legacyPath === null
-            && ! $hasRedundantQuery) {
+            && ! $hasRedundantQuery
+            && $categoryDestination === null) {
             return $next($request);
         }
 
@@ -82,6 +87,10 @@ class RedirectWwwToCanonicalHost
         if ($hasRedundantQuery) {
             $requestUri = explode('?', $requestUri, 2)[0];
             $requestUri .= $normalizedQuery !== [] ? '?'.http_build_query($normalizedQuery) : '';
+        }
+
+        if ($categoryDestination !== null) {
+            $requestUri = $categoryDestination;
         }
 
         $target = $scheme.'://'.$targetHost.$port.$requestUri;

@@ -16,10 +16,8 @@ test('legacy opportunity detail URLs permanently redirect to the directory', fun
         ->assertStatus(301);
 });
 
-test('unknown legacy opportunity detail URLs also retire safely without a thin page', function () {
-    $this->get('/opportunities/peluang-yang-tidak-ada')
-        ->assertRedirect(route('opportunities.index'))
-        ->assertStatus(301);
+test('unknown legacy opportunity detail URLs return not found', function () {
+    $this->get('/opportunities/peluang-yang-tidak-ada')->assertNotFound();
 });
 
 test('opportunity poster accessors retain multiple posters and legacy fallback', function () {

@@ -67,18 +67,8 @@ class InsightController extends Controller
             ? (string) $request->query('sort')
             : 'latest';
 
-        if ($category && blank($author) && blank($tag) && $search === '' && ! $featuredOnly) {
-            $categoryPageSlug = $this->categoryPageSlug((string) $category);
-
-            if ($categoryPageSlug) {
-                $parameters = ['categorySlug' => $categoryPageSlug];
-
-                if ((int) $request->query('page', 1) > 1) {
-                    $parameters['page'] = (int) $request->query('page');
-                }
-
-                return redirect()->route('insights.categories.show', $parameters, 301);
-            }
+        if ($destination = $this->legacyCategoryDestination($request)) {
+            return redirect($destination, 301);
         }
 
         $query = Insight::query()
@@ -527,6 +517,28 @@ class InsightController extends Controller
                 || $normalizedAliases->contains($slug)
                 || $normalizedAliases->contains(fn (string $alias): bool => Str::contains($name, $alias) || Str::contains($slug, $alias));
         });
+    }
+
+    public function legacyCategoryDestination(Request $request): ?string
+    {
+        $category = $request->query('category');
+        if (! is_string($category) || $category === ''
+            || filled($request->query('author')) || filled($request->query('tag'))
+            || filled($request->query('q')) || $request->boolean('featured')) {
+            return null;
+        }
+
+        $slug = $this->categoryPageSlug($category);
+        if ($slug === null) {
+            return null;
+        }
+
+        $parameters = ['categorySlug' => $slug];
+        if ((int) $request->query('page', 1) > 1) {
+            $parameters['page'] = (int) $request->query('page');
+        }
+
+        return route('insights.categories.show', $parameters, false);
     }
 
     private function categoryPageSlug(string $category): ?string

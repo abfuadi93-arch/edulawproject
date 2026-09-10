@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\RedirectWwwToCanonicalHost;
 use App\Models\Insight;
+use App\Models\InsightCategory;
 use App\Models\Publication;
 use Illuminate\Http\Request;
 
@@ -102,3 +103,28 @@ test('www trailing slash and tracking parameters normalize in one hop', function
         ->and($response->headers->get('Location'))
         ->toBe('https://edulawproject.id/insight/example?utm_source=test');
 });
+
+test('reported category aliases normalize host path and pagination in one redirect', function (string $alias, string $canonical) {
+    config(['edulaw.site.url' => 'https://edulawproject.id']);
+    $request = Request::create('http://www.edulawproject.id/insight/?archive=latest&category='.$alias.'&page=2');
+    $response = app(RedirectWwwToCanonicalHost::class)->handle($request, fn () => response('next'));
+    expect($response->getStatusCode())->toBe(301)
+        ->and($response->headers->get('Location'))
+        ->toBe('https://edulawproject.id/insight/kategori/'.$canonical.'?page=2');
+    $category = InsightCategory::create([
+        'name' => $canonical, 'slug' => $canonical, 'is_active' => true,
+    ]);
+    foreach (range(1, 13) as $number) {
+        Insight::create([
+            'title' => 'Artikel '.$number, 'slug' => 'artikel-'.$number,
+            'insight_category_id' => $category->id,
+            'status' => 'published', 'published_at' => now()->subDay(),
+        ]);
+    }
+    $this->get('/insight/kategori/'.$canonical.'?page=2')->assertOk();
+})->with([
+    ['legal-101', 'legal-101'], ['law-101', 'legal-101'],
+    ['law-governance', 'law-governance'], ['constitution-governance', 'law-governance'],
+    ['legal-insight', 'edulaw-insight'], ['edulaw-insight', 'edulaw-insight'],
+    ['regulatory-update', 'regulatory-update'],
+]);

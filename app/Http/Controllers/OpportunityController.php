@@ -196,6 +196,8 @@ class OpportunityController extends Controller
 
     public function retired(string $slug): RedirectResponse
     {
+        Opportunity::query()->where('slug', $slug)->firstOrFail();
+
         return redirect()->route('opportunities.index', status: 301);
     }
 }
