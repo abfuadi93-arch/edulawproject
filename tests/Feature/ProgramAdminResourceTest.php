@@ -32,6 +32,7 @@ test('program admin validates and saves ticket price and the actual end date', f
             'name' => 'Kelas Publik dengan Tiket',
             'slug' => 'kelas-publik-dengan-tiket',
             'program_category_id' => $category->id,
+            'short_description' => 'Kelas edukasi publik dengan materi hukum yang praktis.',
             'description' => '<p>Kelas edukasi publik.</p>',
             'speakers' => [['name' => 'Narasumber Terverifikasi']],
             'format' => 'offline',
@@ -79,12 +80,127 @@ test('program admin validates and saves ticket price and the actual end date', f
     expect($program->fresh()->eventDateValue())->toBe('2026-09-05T19:00:00+08:00');
 });
 
+test('program create form presents a simplified primary flow', function () {
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    $user = User::query()->create([
+        'name' => 'Admin Form Program Ringkas',
+        'email' => 'program-form-ringkas@example.test',
+        'password' => 'secret-password',
+        'is_active' => true,
+    ]);
+    $user->assignRole(Role::findOrCreate('super_admin'));
+
+    $this->actingAs($user)
+        ->get(ProgramResource::getUrl('create'))
+        ->assertOk()
+        ->assertSeeInOrder([
+            'Informasi Program',
+            'Pembelajaran &amp; Fasilitator',
+            'Pelaksanaan Program',
+            'Detail Pelaksanaan (Opsional)',
+            'Pengaturan Opsional',
+            'Jadwal Program',
+            'Tampilan Publik',
+        ], false)
+        ->assertSee('Nama Program')
+        ->assertSee('Ringkasan')
+        ->assertSee('Level')
+        ->assertSee('Audiens')
+        ->assertSee('Poin Pembelajaran')
+        ->assertSee('Deskripsi Program')
+        ->assertSee('Link Pendaftaran')
+        ->assertSee('Jenis Biaya')
+        ->assertSee('Sertifikat Tersedia')
+        ->assertSee('Meta Title')
+        ->assertSee('Meta Description')
+        ->assertSee('Jadwal Lanjutan (Opsional)')
+        ->assertSee('Tampilkan sebagai Unggulan');
+});
+
+test('program admin accepts an upcoming virtual internship without announced dates', function () {
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    $user = User::query()->create([
+        'name' => 'Admin Virtual Internship',
+        'email' => 'virtual-internship-admin@example.test',
+        'password' => 'secret-password',
+        'is_active' => true,
+    ]);
+    $user->assignRole(Role::findOrCreate('super_admin'));
+    $category = ProgramCategory::query()->create([
+        'name' => 'Magang / Internship',
+        'slug' => 'magang-internship',
+        'is_active' => true,
+    ]);
+    $summary = 'Program magang virtual Edulaw Project sebagai ruang belajar, berkontribusi, dan berkembang melalui riset, penulisan hukum, serta produksi konten edukatif.';
+    $learningPoints = [
+        'Melatih kemampuan riset hukum dasar dan penelusuran sumber hukum yang relevan.',
+        'Mengembangkan keterampilan legal writing, penulisan artikel, dan penyusunan konten edukasi hukum.',
+        'Memahami proses kerja kolaboratif dalam pengelolaan platform edukasi hukum digital.',
+        'Membangun portofolio akademik dan profesional melalui kontribusi pada program Edulaw Project.',
+    ];
+
+    Livewire::actingAs($user)
+        ->test(CreateProgram::class)
+        ->fillForm([
+            'name' => 'Virtual Internship Edulaw Project',
+            'slug' => 'virtual-internship-edulaw-project',
+            'program_category_id' => $category->id,
+            'level' => ['Beginner', 'Intermediate'],
+            'audience' => 'Mahasiswa hukum, fresh graduate, peneliti muda, kontributor muda',
+            'short_description' => $summary,
+            'learning_points' => $learningPoints,
+            'speakers' => [[
+                'type' => 'PerformingGroup',
+                'name' => 'Tim Edulaw Project',
+                'title' => 'Edulaw Project',
+                'bio' => 'Fasilitator program virtual internship',
+            ]],
+            'format' => 'online',
+            'location' => 'Online',
+            'registration_link' => null,
+            'price_type' => 'Gratis',
+            'certificate_available' => true,
+            'status' => 'upcoming',
+            'event_date' => null,
+            'end_date' => null,
+            'featured' => true,
+            'seo_title' => 'Virtual Internship Edulaw Project',
+            'seo_description' => 'Program magang virtual Edulaw Project untuk belajar riset hukum, legal writing, produksi konten edukatif, dan kerja kolaboratif.',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    $program = Program::query()->where('slug', 'virtual-internship-edulaw-project')->firstOrFail();
+
+    expect($program->program_category_id)->toBe($category->id)
+        ->and($program->level)->toBe('Beginner, Intermediate')
+        ->and($program->audience)->toBe('Mahasiswa hukum, fresh graduate, peneliti muda, kontributor muda')
+        ->and($program->short_description)->toBe($summary)
+        ->and($program->learning_points)->toBe($learningPoints)
+        ->and($program->speakers[0])->toMatchArray([
+            'type' => 'PerformingGroup',
+            'name' => 'Tim Edulaw Project',
+            'title' => 'Edulaw Project',
+            'bio' => 'Fasilitator program virtual internship',
+        ])
+        ->and($program->format)->toBe('online')
+        ->and($program->location)->toBe('Online')
+        ->and($program->price_type)->toBe('Gratis')
+        ->and($program->certificate_available)->toBeTrue()
+        ->and($program->featured)->toBeTrue()
+        ->and($program->event_date)->toBeNull()
+        ->and($program->end_date)->toBeNull()
+        ->and($program->status)->toBe('upcoming')
+        ->and($program->seo_title)->toBe('Virtual Internship Edulaw Project');
+});
+
 test('program admin resource derives short description seo and cta fallback', function () {
     $description = '<p>Diskusi ini membahas kemerdekaan kekuasaan kehakiman dalam negara hukum demokratis serta tantangan independensi peradilan dalam praktik ketatanegaraan Indonesia.</p>';
 
     $data = ProgramResource::prepareFormDataForPersistence([
         'name' => 'Kemerdekaan Kekuasaan Kehakiman',
         'slug' => '',
+        'short_description' => null,
         'description' => $description,
         'registration_link' => 'https://example.test/daftar',
         'primary_button_text' => null,

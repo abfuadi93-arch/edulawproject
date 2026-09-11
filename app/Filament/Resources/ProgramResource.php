@@ -74,15 +74,15 @@ class ProgramResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('Konten Program')
+                                Section::make('Informasi Program')
                                     ->icon('heroicon-o-academic-cap')
-                                    ->description('Fokus utama halaman program: judul, kategori, narasi, poin belajar, poster, dan narasumber.')
+                                    ->description('Isi judul, kategori, dan deskripsi utama program.')
                                     ->schema([
                                         TextInput::make('name')
-                                            ->label('Judul Kegiatan')
+                                            ->label('Nama Program')
                                             ->required()
                                             ->maxLength(255)
-                                            ->placeholder('Diskusi Literasi Konstitusi Seri #13')
+                                            ->placeholder('Virtual Internship Edulaw Project')
                                             ->live(onBlur: true)
                                             ->afterStateUpdated(function ($get, $set, ?string $old, ?string $state): void {
                                                 $currentSlug = (string) ($get('slug') ?? '');
@@ -96,6 +96,14 @@ class ProgramResource extends Resource
                                             })
                                             ->columnSpanFull(),
 
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->helperText('Dibuat otomatis dari nama program.')
+                                            ->columnSpanFull(),
+
                                         Select::make('program_category_id')
                                             ->label('Kategori Program')
                                             ->relationship('programCategory', 'name')
@@ -104,342 +112,392 @@ class ProgramResource extends Resource
                                             ->required()
                                             ->columnSpanFull(),
 
-                                        TinyMceEditor::make('description')
-                                            ->label('Deskripsi Detail')
-                                            ->required()
-                                            ->height(520)
-                                            ->fileAttachmentsDisk('public')
-                                            ->fileAttachmentsDirectory('programs/content-images')
-                                            ->fileAttachmentsVisibility('public')
-                                            ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
-                                            ->fileAttachmentsMaxSize(4096)
-                                            ->editorConfig([
-                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
-                                            ])
-                                            ->columnSpanFull(),
-
-                                        TagsInput::make('learning_points')
-                                            ->label('Apa yang Dipelajari')
-                                            ->placeholder('Ketik poin lalu tekan Enter...')
-                                            ->splitKeys(['Enter'])
-                                            ->reorderable()
-                                            ->afterStateHydrated(static function (TagsInput $component): void {
-                                                $state = $component->getState();
-
-                                                if (blank($state)) {
-                                                    $component->state([]);
-
-                                                    return;
-                                                }
-
-                                                if (is_string($state)) {
-                                                    $state = preg_split('/\r\n|\r|\n/', $state) ?: [];
-                                                }
-
-                                                if (! is_array($state)) {
-                                                    $component->state([]);
-
-                                                    return;
-                                                }
-
-                                                $component->state(
-                                                    collect($state)
-                                                        ->map(fn ($item): ?string => is_array($item)
-                                                            ? ($item['point'] ?? $item['text'] ?? null)
-                                                            : $item)
-                                                        ->map(fn ($item): ?string => is_string($item) ? trim($item) : null)
-                                                        ->filter(fn (?string $item): bool => filled($item))
-                                                        ->values()
-                                                        ->all()
-                                                );
-                                            })
-                                            ->dehydrateStateUsing(fn (?array $state): array => collect($state ?? [])
-                                                ->map(fn ($item): ?string => is_string($item) ? trim($item) : null)
-                                                ->filter(fn (?string $item): bool => filled($item))
-                                                ->values()
-                                                ->all())
-                                            ->helperText('Satu poin per item.')
-                                            ->columnSpanFull(),
-
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                FileUpload::make('image')
-                                                    ->label('Poster Kegiatan')
-                                                    ->image()
-                                                    ->disk('public')
-                                                    ->directory('programs/posters')
-                                                    ->visibility('public')
-                                                    ->imageEditor()
-                                                    ->imagePreviewHeight('180')
-                                                    ->downloadable()
-                                                    ->openable()
-                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                                    ->maxSize(4096),
+                                        ])->schema([
+                                            Select::make('level')
+                                                ->label('Level')
+                                                ->options(static::levelOptions())
+                                                ->multiple()
+                                                ->searchable()
+                                                ->afterStateHydrated(static function (Select $component, mixed $state): void {
+                                                    if (is_string($state)) {
+                                                        $component->state(
+                                                            collect(explode(',', $state))
+                                                                ->map(fn (string $level): string => trim($level))
+                                                                ->filter()
+                                                                ->values()
+                                                                ->all()
+                                                        );
+                                                    }
+                                                })
+                                                ->dehydrateStateUsing(fn (mixed $state): ?string => collect(is_array($state) ? $state : [])
+                                                    ->filter()
+                                                    ->implode(', ') ?: null)
+                                                ->helperText('Boleh memilih lebih dari satu level.'),
 
-                                                FileUpload::make('hero_image')
-                                                    ->label('Gambar Hero')
-                                                    ->image()
-                                                    ->disk('public')
-                                                    ->directory('programs/heroes')
-                                                    ->visibility('public')
-                                                    ->imageEditor()
-                                                    ->imagePreviewHeight('180')
-                                                    ->downloadable()
-                                                    ->openable()
-                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                                    ->maxSize(4096)
-                                                    ->helperText('Kosongkan untuk memakai poster.'),
-                                            ])
+                                            TextInput::make('audience')
+                                                ->label('Audiens')
+                                                ->maxLength(255)
+                                                ->placeholder('Mahasiswa hukum, fresh graduate, peneliti muda'),
+                                        ])->columnSpanFull(),
+
+                                        Textarea::make('short_description')
+                                            ->label('Ringkasan')
+                                            ->required()
+                                            ->rows(4)
+                                            ->maxLength(500)
+                                            ->helperText('Gunakan 1–2 kalimat yang langsung menjelaskan program.')
                                             ->columnSpanFull(),
 
-                                        Repeater::make('speakers')
-                                            ->label('Narasumber')
-                                            ->helperText('Nama narasumber juga digunakan sebagai performer pada data terstruktur acara. Isi hanya narasumber yang sudah dikonfirmasi.')
-                                            ->defaultItems(0)
+                                        Section::make('Deskripsi Lengkap (Opsional)')
                                             ->schema([
-                                                Select::make('type')
-                                                    ->label('Jenis Narasumber')
-                                                    ->options(['Person' => 'Individu', 'PerformingGroup' => 'Kelompok'])
-                                                    ->default('Person'),
+                                                TinyMceEditor::make('description')
+                                                    ->label('Deskripsi Program')
+                                                    ->height(360)
+                                                    ->fileAttachmentsDisk('public')
+                                                    ->fileAttachmentsDirectory('programs/content-images')
+                                                    ->fileAttachmentsVisibility('public')
+                                                    ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
+                                                    ->fileAttachmentsMaxSize(4096)
+                                                    ->editorConfig([
+                                                        'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
+                                                    ])
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->compact()
+                                            ->collapsible()
+                                            ->collapsed()
+                                            ->columnSpanFull(),
+
+                                        Section::make('Pembelajaran & Fasilitator')
+                                            ->description('Tambahkan hasil belajar dan fasilitator program bila tersedia.')
+                                            ->schema([
+                                                TagsInput::make('learning_points')
+                                                    ->label('Poin Pembelajaran')
+                                                    ->placeholder('Ketik poin lalu tekan Enter...')
+                                                    ->splitKeys(['Enter'])
+                                                    ->reorderable()
+                                                    ->afterStateHydrated(static function (TagsInput $component): void {
+                                                        $state = $component->getState();
+
+                                                        if (blank($state)) {
+                                                            $component->state([]);
+
+                                                            return;
+                                                        }
+
+                                                        if (is_string($state)) {
+                                                            $state = preg_split('/\r\n|\r|\n/', $state) ?: [];
+                                                        }
+
+                                                        if (! is_array($state)) {
+                                                            $component->state([]);
+
+                                                            return;
+                                                        }
+
+                                                        $component->state(
+                                                            collect($state)
+                                                                ->map(fn ($item): ?string => is_array($item)
+                                                                    ? ($item['point'] ?? $item['text'] ?? null)
+                                                                    : $item)
+                                                                ->map(fn ($item): ?string => is_string($item) ? trim($item) : null)
+                                                                ->filter(fn (?string $item): bool => filled($item))
+                                                                ->values()
+                                                                ->all()
+                                                        );
+                                                    })
+                                                    ->dehydrateStateUsing(fn (?array $state): array => collect($state ?? [])
+                                                        ->map(fn ($item): ?string => is_string($item) ? trim($item) : null)
+                                                        ->filter(fn (?string $item): bool => filled($item))
+                                                        ->values()
+                                                        ->all())
+                                                    ->helperText('Satu poin per item.')
+                                                    ->columnSpanFull(),
+
+                                                Repeater::make('speakers')
+                                                    ->label('Narasumber / Fasilitator')
+                                                    ->helperText('Tambahkan individu, tim, atau organisasi yang memfasilitasi program.')
+                                                    ->defaultItems(0)
+                                                    ->schema([
+                                                        Select::make('type')
+                                                            ->label('Jenis Fasilitator')
+                                                            ->options(['Person' => 'Individu', 'PerformingGroup' => 'Tim atau Organisasi'])
+                                                            ->default('Person'),
+                                                        Grid::make([
+                                                            'default' => 1,
+                                                            'lg' => 2,
+                                                        ])
+                                                            ->schema([
+                                                                TextInput::make('name')
+                                                                    ->label('Nama Narasumber / Fasilitator')
+                                                                    ->required()
+                                                                    ->maxLength(255),
+
+                                                                TextInput::make('title')
+                                                                    ->label('Institusi / Afiliasi')
+                                                                    ->maxLength(255),
+                                                            ])
+                                                            ->columnSpanFull(),
+
+                                                        FileUpload::make('photo')
+                                                            ->label('Foto')
+                                                            ->image()
+                                                            ->disk('public')
+                                                            ->directory('programs/speakers')
+                                                            ->visibility('public')
+                                                            ->imageEditor()
+                                                            ->imagePreviewHeight('120')
+                                                            ->downloadable()
+                                                            ->openable()
+                                                            ->maxSize(2048)
+                                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
+
+                                                        Textarea::make('bio')
+                                                            ->label('Keterangan')
+                                                            ->rows(3)
+                                                            ->columnSpanFull(),
+                                                    ])
+                                                    ->columns(1)
+                                                    ->itemLabel(fn (array $state): ?string => filled($state['name'] ?? null)
+                                                        ? $state['name']
+                                                        : 'Narasumber')
+                                                    ->addActionLabel('Tambah Fasilitator')
+                                                    ->reorderable()
+                                                    ->collapsible()
+                                                    ->collapsed()
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->compact()
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                static::eventLocationSection(),
+
+                                Section::make('Detail Pelaksanaan (Opsional)')
+                                    ->icon('heroicon-o-adjustments-horizontal')
+                                    ->description('Alamat lengkap, tiket, dan data penyelenggara hanya perlu diisi jika tersedia.')
+                                    ->schema([
+                                        static::eventVenueDetailsSection(),
+                                        static::eventRegistrationSection(),
+                                        static::eventOrganizerSection(),
+                                    ])
+                                    ->compact()
+                                    ->collapsible()
+                                    ->collapsed(),
+
+                                Section::make('Pengaturan Opsional')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->description('Buka untuk mengatur detail konten, CTA, klasifikasi, dan SEO.')
+                                    ->schema([
+                                        Section::make('Detail Konten')
+                                            ->icon('heroicon-o-clipboard-document-list')
+                                            ->description('Orientasi, metode, output, moderator, dan catatan.')
+                                            ->schema([
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'lg' => 3,
+                                                ])
+                                                    ->schema([
+                                                        Textarea::make('orientation')
+                                                            ->label('Orientasi')
+                                                            ->rows(3),
+
+                                                        Textarea::make('method')
+                                                            ->label('Metode')
+                                                            ->rows(3),
+
+                                                        Textarea::make('output')
+                                                            ->label('Output')
+                                                            ->rows(3),
+                                                    ])
+                                                    ->columnSpanFull(),
+
                                                 Grid::make([
                                                     'default' => 1,
                                                     'lg' => 2,
                                                 ])
                                                     ->schema([
-                                                        TextInput::make('name')
-                                                            ->label('Nama')
-                                                            ->required()
+                                                        TextInput::make('moderator_name')
+                                                            ->label('Nama Moderator')
                                                             ->maxLength(255),
 
-                                                        TextInput::make('title')
-                                                            ->label('Jabatan / Afiliasi')
+                                                        TextInput::make('moderator_affiliation')
+                                                            ->label('Afiliasi Moderator')
                                                             ->maxLength(255),
-                                                    ])
-                                                    ->columnSpanFull(),
+                                                    ]),
 
-                                                FileUpload::make('photo')
-                                                    ->label('Foto')
-                                                    ->image()
-                                                    ->disk('public')
-                                                    ->directory('programs/speakers')
-                                                    ->visibility('public')
-                                                    ->imageEditor()
-                                                    ->imagePreviewHeight('120')
-                                                    ->downloadable()
-                                                    ->openable()
-                                                    ->maxSize(2048)
-                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp']),
-
-                                                Textarea::make('bio')
-                                                    ->label('Bio')
+                                                Textarea::make('notes')
+                                                    ->label('Catatan')
                                                     ->rows(3)
                                                     ->columnSpanFull(),
                                             ])
                                             ->columns(1)
-                                            ->itemLabel(fn (array $state): ?string => filled($state['name'] ?? null)
-                                                ? $state['name']
-                                                : 'Narasumber')
-                                            ->addActionLabel('Tambah Narasumber')
-                                            ->reorderable()
-                                            ->collapsible()
-                                            ->columnSpanFull(),
+                                            ->compact(),
 
-                                        FileUpload::make('gallery_images')
-                                            ->label('Galeri Acara')
-                                            ->image()
-                                            ->multiple()
-                                            ->reorderable()
-                                            ->maxFiles(6)
-                                            ->maxSize(4096)
-                                            ->disk('public')
-                                            ->directory('programs/gallery')
-                                            ->visibility('public')
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->helperText('Opsional. Foto atau visual acara yang tampil di halaman publik dan JSON-LD. Jika tersedia, sertakan rasio 1:1, 4:3, dan 16:9; jangan gunakan gambar contoh.')
-                                            ->columnSpanFull(),
-                                    ]),
-
-                                static::eventLocationSection(),
-                                static::eventRegistrationSection(),
-                                static::eventOrganizerSection(),
-
-                                Section::make('Detail Tambahan')
-                                    ->icon('heroicon-o-clipboard-document-list')
-                                    ->description('Opsional untuk memperkaya detail program.')
-                                    ->schema([
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 3,
-                                        ])
+                                        Section::make('Pengaturan Lanjutan')
+                                            ->icon('heroicon-o-cog-6-tooth')
+                                            ->description('Opsional. Teks pendukung, tautan dokumentasi, dan CTA.')
                                             ->schema([
-                                                Textarea::make('orientation')
-                                                    ->label('Orientasi')
-                                                    ->rows(3),
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'lg' => 2,
+                                                ])
+                                                    ->schema([
+                                                        TextInput::make('short_title')
+                                                            ->label('Judul Pendek')
+                                                            ->maxLength(255),
 
-                                                Textarea::make('method')
-                                                    ->label('Metode')
-                                                    ->rows(3),
+                                                        TextInput::make('subtitle')
+                                                            ->label('Tema / Subjudul')
+                                                            ->maxLength(255),
 
-                                                Textarea::make('output')
-                                                    ->label('Output')
-                                                    ->rows(3),
+                                                        TextInput::make('duration')
+                                                            ->label('Durasi')
+                                                            ->maxLength(255)
+                                                            ->placeholder('1 Pertemuan'),
+                                                    ])
+                                                    ->columnSpanFull(),
+
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'lg' => 2,
+                                                ])
+                                                    ->schema([
+                                                        TextInput::make('youtube_url')
+                                                            ->label('Link Dokumentasi YouTube')
+                                                            ->url()
+                                                            ->maxLength(255)
+                                                            ->placeholder('https://...'),
+
+                                                        TextInput::make('material_link')
+                                                            ->label('Link Materi')
+                                                            ->url()
+                                                            ->maxLength(255)
+                                                            ->placeholder('https://...'),
+                                                    ])
+                                                    ->columnSpanFull(),
+
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'lg' => 2,
+                                                ])
+                                                    ->schema([
+                                                        TextInput::make('primary_button_text')
+                                                            ->label('Teks Tombol Utama')
+                                                            ->default('Daftar Program')
+                                                            ->maxLength(255),
+
+                                                        TextInput::make('primary_button_url')
+                                                            ->label('Link Tombol Utama')
+                                                            ->maxLength(255)
+                                                            ->helperText('Kosongkan untuk memakai link pendaftaran atau detail program.'),
+
+                                                        TextInput::make('secondary_button_text')
+                                                            ->label('Teks Tombol Kedua')
+                                                            ->default('Diskusikan Kolaborasi')
+                                                            ->maxLength(255),
+
+                                                        TextInput::make('secondary_button_url')
+                                                            ->label('Link Tombol Kedua')
+                                                            ->default('/kolaborasi')
+                                                            ->maxLength(255)
+                                                            ->helperText('Boleh memakai path internal seperti /kolaborasi.'),
+                                                    ])
+                                                    ->columnSpanFull(),
                                             ])
-                                            ->columnSpanFull(),
+                                            ->columns(1)
+                                            ->compact(),
 
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
+                                        Section::make('Media Program')
+                                            ->icon('heroicon-o-photo')
+                                            ->description('Poster dan gambar pendukung bersifat opsional.')
                                             ->schema([
-                                                TextInput::make('moderator_name')
-                                                    ->label('Nama Moderator')
-                                                    ->maxLength(255),
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'lg' => 2,
+                                                ])->schema([
+                                                    FileUpload::make('image')
+                                                        ->label('Poster Kegiatan')
+                                                        ->image()
+                                                        ->disk('public')
+                                                        ->directory('programs/posters')
+                                                        ->visibility('public')
+                                                        ->imageEditor()
+                                                        ->imagePreviewHeight('180')
+                                                        ->downloadable()
+                                                        ->openable()
+                                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                        ->maxSize(4096),
 
-                                                TextInput::make('moderator_affiliation')
-                                                    ->label('Afiliasi Moderator')
-                                                    ->maxLength(255),
-                                            ]),
+                                                    FileUpload::make('hero_image')
+                                                        ->label('Gambar Hero')
+                                                        ->image()
+                                                        ->disk('public')
+                                                        ->directory('programs/heroes')
+                                                        ->visibility('public')
+                                                        ->imageEditor()
+                                                        ->imagePreviewHeight('180')
+                                                        ->downloadable()
+                                                        ->openable()
+                                                        ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                        ->maxSize(4096)
+                                                        ->helperText('Kosongkan untuk memakai poster.'),
+                                                ]),
 
-                                        Textarea::make('notes')
-                                            ->label('Catatan')
-                                            ->rows(3)
-                                            ->columnSpanFull(),
+                                                FileUpload::make('gallery_images')
+                                                    ->label('Galeri Acara')
+                                                    ->image()
+                                                    ->multiple()
+                                                    ->reorderable()
+                                                    ->maxFiles(6)
+                                                    ->maxSize(4096)
+                                                    ->disk('public')
+                                                    ->directory('programs/gallery')
+                                                    ->visibility('public')
+                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                    ->helperText('Maksimal 6 gambar dokumentasi.')
+                                                    ->columnSpanFull(),
+                                            ])
+                                            ->columns(1)
+                                            ->compact(),
+
+                                        Section::make('SEO & Pratinjau')
+                                            ->icon('heroicon-o-magnifying-glass')
+                                            ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster.')
+                                            ->schema([
+                                                TextInput::make('seo_title')
+                                                    ->label('Meta Title')
+                                                    ->maxLength(300)
+                                                    ->placeholder(fn ($get): string => $get('name') ?: 'Otomatis dari judul')
+                                                    ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
+
+                                                Textarea::make('seo_description')
+                                                    ->label('Meta Description')
+                                                    ->rows(3)
+                                                    ->maxLength(180)
+                                                    ->placeholder('Otomatis dari deskripsi detail')
+                                                    ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
+
+                                                FileUpload::make('og_image')
+                                                    ->label('OG Image')
+                                                    ->image()
+                                                    ->disk('public')
+                                                    ->directory('seo/og-images')
+                                                    ->visibility('public')
+                                                    ->imageEditor()
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                                    ->maxSize(4096)
+                                                    ->helperText('Kosongkan untuk memakai gambar hero atau poster.'),
+                                            ])
+                                            ->columns(1)
+                                            ->compact(),
                                     ])
-                                    ->columns(1)
-                                    ->collapsible()
-                                    ->collapsed(),
-
-                                Section::make('Pengaturan Lanjutan')
-                                    ->icon('heroicon-o-cog-6-tooth')
-                                    ->description('Opsional. Slug, teks singkat, klasifikasi lanjutan, tautan, dan CTA.')
-                                    ->schema([
-                                        TextInput::make('slug')
-                                            ->label('Slug')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(255)
-                                            ->helperText('Otomatis dari judul, boleh diedit sebelum terbit.')
-                                            ->columnSpanFull(),
-
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                TextInput::make('short_title')
-                                                    ->label('Judul Pendek')
-                                                    ->maxLength(255),
-
-                                                TextInput::make('subtitle')
-                                                    ->label('Tema / Subjudul')
-                                                    ->maxLength(255),
-
-                                                TextInput::make('duration')
-                                                    ->label('Durasi')
-                                                    ->maxLength(255)
-                                                    ->placeholder('1 Pertemuan'),
-
-                                                Select::make('level')
-                                                    ->label('Level')
-                                                    ->options(static::levelOptions())
-                                                    ->default('Umum')
-                                                    ->searchable(),
-
-                                                TextInput::make('audience')
-                                                    ->label('Target Peserta')
-                                                    ->maxLength(255),
-
-                                                Toggle::make('certificate_available')
-                                                    ->label('Sertifikat Tersedia')
-                                                    ->default(false),
-                                            ])
-                                            ->columnSpanFull(),
-
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                TextInput::make('youtube_url')
-                                                    ->label('Link Dokumentasi YouTube')
-                                                    ->url()
-                                                    ->maxLength(255)
-                                                    ->placeholder('https://...'),
-
-                                                TextInput::make('material_link')
-                                                    ->label('Link Materi')
-                                                    ->url()
-                                                    ->maxLength(255)
-                                                    ->placeholder('https://...'),
-                                            ])
-                                            ->columnSpanFull(),
-
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                TextInput::make('primary_button_text')
-                                                    ->label('Teks Tombol Utama')
-                                                    ->default('Daftar Program')
-                                                    ->maxLength(255),
-
-                                                TextInput::make('primary_button_url')
-                                                    ->label('Link Tombol Utama')
-                                                    ->maxLength(255)
-                                                    ->helperText('Kosongkan untuk memakai link pendaftaran atau detail program.'),
-
-                                                TextInput::make('secondary_button_text')
-                                                    ->label('Teks Tombol Kedua')
-                                                    ->default('Diskusikan Kolaborasi')
-                                                    ->maxLength(255),
-
-                                                TextInput::make('secondary_button_url')
-                                                    ->label('Link Tombol Kedua')
-                                                    ->default('/kolaborasi')
-                                                    ->maxLength(255)
-                                                    ->helperText('Boleh memakai path internal seperti /kolaborasi.'),
-                                            ])
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columns(1)
-                                    ->collapsible()
-                                    ->collapsed(),
-
-                                Section::make('SEO & Pratinjau')
-                                    ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Opsional. Jika kosong, sistem memakai judul, deskripsi, dan poster.')
-                                    ->schema([
-                                        TextInput::make('seo_title')
-                                            ->label('SEO Title')
-                                            ->maxLength(300)
-                                            ->placeholder(fn ($get): string => $get('name') ?: 'Otomatis dari judul')
-                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
-
-                                        Textarea::make('seo_description')
-                                            ->label('SEO Description')
-                                            ->rows(3)
-                                            ->maxLength(180)
-                                            ->placeholder('Otomatis dari deskripsi detail')
-                                            ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
-
-                                        FileUpload::make('og_image')
-                                            ->label('OG Image')
-                                            ->image()
-                                            ->disk('public')
-                                            ->directory('seo/og-images')
-                                            ->visibility('public')
-                                            ->imageEditor()
-                                            ->downloadable()
-                                            ->openable()
-                                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->maxSize(4096)
-                                            ->helperText('Kosongkan untuk memakai gambar hero atau poster.'),
-                                    ])
-                                    ->columns(1)
+                                    ->compact()
                                     ->collapsible()
                                     ->collapsed(),
                             ])
@@ -448,11 +506,13 @@ class ProgramResource extends Resource
 
                         Group::make()
                             ->schema([
-                                Section::make('Tampilan')
+                                static::eventScheduleSection(),
+
+                                Section::make('Tampilan Publik')
                                     ->icon('heroicon-o-eye')
                                     ->schema([
                                         Toggle::make('featured')
-                                            ->label('Featured')
+                                            ->label('Tampilkan sebagai Unggulan')
                                             ->default(false),
 
                                         Toggle::make('show_on_homepage')
@@ -475,9 +535,8 @@ class ProgramResource extends Resource
                                                 );
                                             }),
                                     ])
-                                    ->columns(1),
-
-                                static::eventScheduleSection(),
+                                    ->columns(1)
+                                    ->collapsible(),
                             ])
                             ->columnSpan(['xl' => 4])
                             ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
@@ -489,84 +548,110 @@ class ProgramResource extends Resource
 
     private static function eventScheduleSection(): Section
     {
-        return Section::make('Jadwal & Status Acara')
+        return Section::make('Jadwal Program')
             ->icon('heroicon-o-calendar-days')
-            ->description('Isi jadwal sebenarnya. Jam yang belum diketahui boleh kosong; tanggal lama tetap dipertahankan.')
+            ->description('Pilih status. Tanggal dapat dikosongkan jika belum diumumkan.')
             ->schema([
-                DatePicker::make('event_date')->label('Tanggal Mulai')->required()->live(),
+                Select::make('status')
+                    ->label('Status')
+                    ->options(static::statusOptions())
+                    ->default('upcoming')
+                    ->required()
+                    ->helperText('Jika tanggal diisi, status akan mengikuti jadwal secara otomatis.'),
+                DatePicker::make('event_date')
+                    ->label('Tanggal Mulai')
+                    ->helperText('Opsional jika jadwal belum dicantumkan.')
+                    ->live(),
                 TimePicker::make('event_time')->label('Jam Mulai')->seconds(false)->format('H:i')
                     ->rules(['nullable', 'date_format:H:i'])->live(),
-                DatePicker::make('end_date')->label('Tanggal Selesai')->live()
-                    ->requiredWith('end_time')->afterOrEqual('event_date')
-                    ->helperText('Untuk acara satu hari, isi tanggal yang sama dengan tanggal mulai. Kosongkan jika belum diketahui.'),
-                TimePicker::make('end_time')->label('Jam Selesai')->seconds(false)->format('H:i')
-                    ->rules(fn (Get $get): array => ['nullable', 'date_format:H:i', function (string $attribute, $value, Closure $fail) use ($get): void {
-                        $schedule = [$get('event_date'), $get('end_date'), $get('event_time'), $value];
-                        if (validator($schedule, [0 => 'required|date_format:Y-m-d', 1 => 'required|date_format:Y-m-d', 2 => 'required|date_format:H:i', 3 => 'required|date_format:H:i'])->fails()) {
-                            return;
-                        }
+                Section::make('Jadwal Lanjutan (Opsional)')
+                    ->schema([
+                        DatePicker::make('end_date')->label('Tanggal Selesai')->live()
+                            ->requiredWith('end_time')->afterOrEqual('event_date')
+                            ->helperText('Kosongkan untuk acara satu hari atau jika belum diketahui.'),
+                        TimePicker::make('end_time')->label('Jam Selesai')->seconds(false)->format('H:i')
+                            ->rules(fn (Get $get): array => ['nullable', 'date_format:H:i', function (string $attribute, $value, Closure $fail) use ($get): void {
+                                $schedule = [$get('event_date'), $get('end_date'), $get('event_time'), $value];
+                                if (validator($schedule, [0 => 'required|date_format:Y-m-d', 1 => 'required|date_format:Y-m-d', 2 => 'required|date_format:H:i', 3 => 'required|date_format:H:i'])->fails()) {
+                                    return;
+                                }
 
-                        if (Carbon::parse($schedule[1].' '.$schedule[3])->lessThan(Carbon::parse($schedule[0].' '.$schedule[2]))) {
-                            $fail('Waktu selesai tidak boleh sebelum waktu mulai. Untuk acara melewati tengah malam, sesuaikan tanggal selesai.');
-                        }
-                    }]),
-                Select::make('event_timezone')->label('Zona Waktu')
-                    ->options(collect(timezone_identifiers_list())->mapWithKeys(fn ($zone) => [$zone => $zone])->all())
-                    ->default(config('edulaw.timezone', 'Asia/Jakarta'))->searchable()
-                    ->helperText('Berlaku untuk jam acara dan waktu pendaftaran dibuka. Asia/Jakarta = WIB.'),
-                Select::make('event_status')->label('Status Penyelenggaraan')
-                    ->options([
-                        'EventScheduled' => 'Terjadwal',
-                        'EventCancelled' => 'Dibatalkan',
-                        'EventPostponed' => 'Ditunda (tanggal baru belum pasti)',
-                        'EventRescheduled' => 'Dijadwalkan ulang',
-                    ])->default('EventScheduled')
-                    ->helperText('Jika dibatalkan atau ditunda, jangan hapus tanggal semula. Untuk jadwal ulang, isi tanggal baru yang sudah pasti. Status arsip tetap mengikuti tanggal.'),
+                                if (Carbon::parse($schedule[1].' '.$schedule[3])->lessThan(Carbon::parse($schedule[0].' '.$schedule[2]))) {
+                                    $fail('Waktu selesai tidak boleh sebelum waktu mulai. Untuk acara melewati tengah malam, sesuaikan tanggal selesai.');
+                                }
+                            }]),
+                        Select::make('event_timezone')->label('Zona Waktu')
+                            ->options(collect(timezone_identifiers_list())->mapWithKeys(fn ($zone) => [$zone => $zone])->all())
+                            ->default(config('edulaw.timezone', 'Asia/Jakarta'))->searchable(),
+                        Select::make('event_status')->label('Status Penyelenggaraan')
+                            ->options([
+                                'EventScheduled' => 'Terjadwal',
+                                'EventCancelled' => 'Dibatalkan',
+                                'EventPostponed' => 'Ditunda',
+                                'EventRescheduled' => 'Dijadwalkan ulang',
+                            ])->default('EventScheduled'),
+                    ])
+                    ->compact()
+                    ->collapsible()
+                    ->collapsed(),
             ]);
     }
 
     private static function eventLocationSection(): Section
     {
-        return Section::make('Lokasi Acara')->icon('heroicon-o-map-pin')
-            ->description('Alamat lokasi fisik dan tautan acara daring dipisahkan dari tautan pendaftaran.')
+        return Section::make('Pelaksanaan Program')->icon('heroicon-o-map-pin')
+            ->description('Tentukan format, lokasi, biaya, dan tautan pendaftaran bila sudah tersedia.')
             ->columns(2)->schema([
                 Select::make('format')->label('Format')->options(static::formatOptions())->required()->live()->columnSpanFull(),
-                TextInput::make('location')->label(fn (Get $get): string => $get('format') === 'online' ? 'Nama Platform Daring' : 'Nama Tempat Fisik')->maxLength(255)
-                    ->placeholder('Nama gedung, ruang pertemuan, atau platform daring')
-                    ->helperText('Untuk offline/hybrid, isi tempat fisik yang sebenarnya. Nama platform daring hanya digunakan untuk acara online.')
+                TextInput::make('location')
+                    ->label(fn (Get $get): string => $get('format') === 'online' ? 'Lokasi / Platform' : 'Lokasi')
+                    ->maxLength(255)
+                    ->placeholder(fn (Get $get): string => $get('format') === 'online' ? 'Online atau nama platform' : 'Nama tempat kegiatan'),
+                TextInput::make('price_type')
+                    ->label('Jenis Biaya')
+                    ->maxLength(255)
+                    ->placeholder('Gratis / Berbayar'),
+                TextInput::make('registration_link')->label('Link Pendaftaran')->url()->rules(['regex:~^https?://~'])
+                    ->maxLength(255)->columnSpanFull()->placeholder('https://...')
+                    ->helperText('Opsional. Kosongkan jika pendaftaran belum dibuka.'),
+                Toggle::make('certificate_available')
+                    ->label('Sertifikat Tersedia')
+                    ->default(false)
                     ->columnSpanFull(),
+            ]);
+    }
+
+    private static function eventVenueDetailsSection(): Section
+    {
+        return Section::make('Detail Lokasi')->icon('heroicon-o-map-pin')
+            ->columns(2)->schema([
                 TextInput::make('online_url')->label('URL Acara Daring (Publik)')->url()->rules(['regex:~^https?://~'])
                     ->maxLength(255)->columnSpanFull()
-                    ->helperText('Untuk online/hybrid, isi halaman akses acara yang aman untuk dipublikasikan. Jangan isi URL rapat privat atau link pendaftaran.'),
+                    ->helperText('Jangan gunakan URL rapat privat atau link pendaftaran.'),
                 Textarea::make('venue_address')->label('Alamat Jalan')->rows(2)->maxLength(255)->columnSpanFull(),
                 TextInput::make('venue_city')->label('Kota / Kabupaten')->maxLength(255),
                 TextInput::make('venue_region')->label('Provinsi / Wilayah')->maxLength(255),
                 TextInput::make('venue_postal_code')->label('Kode Pos')->maxLength(20),
                 TextInput::make('venue_country')->label('Kode Negara')->length(2)->placeholder('ID')
                     ->rules(['nullable', 'regex:/^[A-Za-z]{2}$/'])->dehydrateStateUsing(fn ($state) => filled($state) ? strtoupper($state) : null)
-                    ->helperText('Kode dua huruf, misalnya ID. Isi hanya jika alamat sudah diketahui.'),
+                    ->helperText('Kode dua huruf, misalnya ID.'),
             ]);
     }
 
     private static function eventRegistrationSection(): Section
     {
-        return Section::make('Pendaftaran & Tiket')->icon('heroicon-o-ticket')
-            ->description('Data yang diisi tampil di halaman publik dan offers. Jangan menebak harga, kuota, atau tanggal pembukaan.')
+        return Section::make('Detail Tiket')->icon('heroicon-o-ticket')
+            ->description('Isi hanya jika biaya atau status pendaftaran sudah diketahui.')
             ->columns(2)->schema([
-                TextInput::make('registration_link')->label('Link Pendaftaran')->url()->rules(['regex:~^https?://~'])
-                    ->maxLength(255)->columnSpanFull()->placeholder('https://...'),
-                TextInput::make('price_type')->label('Jenis Biaya')->maxLength(255)->placeholder('Gratis / Berbayar')
-                    ->helperText('Label Gratis atau free dianggap nol jika nominal tiket kosong.'),
                 TextInput::make('ticket_price')->label('Harga Tiket')->numeric()->minValue(0)->maxValue(9999999999.99)->step(0.01)
                     ->rules(['nullable', 'decimal:0,2'])
-                    ->helperText('Harga terendah termasuk biaya layanan. Isi 0 untuk gratis; kosongkan jika belum diketahui.'),
+                    ->helperText('Isi 0 untuk gratis; kosongkan jika belum diketahui.'),
                 Select::make('ticket_currency')->label('Mata Uang')->default('IDR')
                     ->options(['IDR' => 'IDR — Rupiah', 'USD' => 'USD — Dolar AS', 'EUR' => 'EUR — Euro', 'GBP' => 'GBP — Pound', 'SGD' => 'SGD — Dolar Singapura', 'MYR' => 'MYR — Ringgit', 'AUD' => 'AUD — Dolar Australia']),
                 Select::make('ticket_availability')->label('Ketersediaan Pendaftaran')
                     ->placeholder('Belum dikonfirmasi')
                     ->options(['InStock' => 'Dibuka / kuota tersedia', 'SoldOut' => 'Kuota habis', 'PreOrder' => 'Prapendaftaran']),
                 DateTimePicker::make('registration_opens_at')->label('Pendaftaran Dibuka Pada')->seconds(false)
-                    ->helperText('Opsional. Mengikuti zona waktu acara. Jangan memakai tanggal dibuatnya artikel sebagai tanggal penjualan.')
                     ->columnSpanFull(),
             ]);
     }
@@ -602,7 +687,9 @@ class ProgramResource extends Resource
             $data['end_date'] ?? null,
             $data['status'] ?? null,
         );
-        $data['short_description'] = static::excerptFromDescription($data['description'] ?? null);
+        $data['short_description'] = filled($data['short_description'] ?? null)
+            ? static::excerptFromDescription((string) $data['short_description'], 500)
+            : static::excerptFromDescription($data['description'] ?? null);
 
         if (blank($data['primary_button_text'] ?? null)) {
             $data['primary_button_text'] = 'Daftar Program';
