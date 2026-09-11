@@ -56,11 +56,11 @@
                         <div class="mt-4 grid gap-x-5 sm:grid-cols-2">
                             @foreach ($secondaryItems as $item)
                                 <article data-home-insight class="group border-y border-slate-200">
-                                    <a href="{{ route('insights.show', $item->slug) }}" class="grid h-full grid-cols-[92px_minmax(0,1fr)] gap-3 py-3.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber sm:grid-cols-[84px_minmax(0,1fr)]">
-                                        <div class="relative aspect-[4/3] w-[92px] overflow-hidden rounded-lg sm:w-[84px]">
+                                    <a href="{{ route('insights.show', $item->slug) }}" class="grid h-full grid-cols-[72px_minmax(0,1fr)] gap-3 py-3.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                        <div class="relative aspect-[3/4] w-[72px] overflow-hidden rounded-lg">
                                             <x-home.media-fallback kind="editorial" />
                                             @if ($item->cover_image_url)
-                                                <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[160, 240, 320]" sizes="92px" width="320" height="240" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
+                                                <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[96, 160, 240]" sizes="72px" width="144" height="192" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                                             @endif
                                         </div>
                                         <div class="flex min-w-0 flex-col py-0.5">

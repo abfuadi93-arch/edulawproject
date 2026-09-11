@@ -308,7 +308,7 @@ it('keeps three latest editorial items when the editor pick uses the newest fall
         ->and($latestEditorials)->not->toContain($insights[4]->title);
 });
 
-it('limits publications to four published records and excludes non-published records', function () {
+it('limits publications to three published records and excludes non-published records', function () {
     $published = collect(range(1, 5))->map(fn (int $position) => Publication::query()->create([
         'title' => "Publikasi Published {$position}",
         'slug' => "publikasi-published-{$position}",
@@ -339,16 +339,16 @@ it('limits publications to four published records and excludes non-published rec
         ->assertSee($published[0]->title)
         ->assertSee($published[1]->title)
         ->assertSee($published[2]->title)
-        ->assertSee($published[3]->title)
+        ->assertDontSee($published[3]->title)
         ->assertDontSee($published[4]->title)
         ->assertDontSee($draft->title)
         ->assertDontSee($reviewed->title)
         ->assertSee(route('publications.index'), false)
         ->assertSee(route('publications.show', $published[0]->slug), false);
 
-    expect(substr_count($html, 'data-home-publication'))->toBe(4)
-        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(4)
-        ->and($xpath->query('//article[@data-home-publication]/a')->length)->toBe(4)
+    expect(substr_count($html, 'data-home-publication'))->toBe(3)
+        ->and($xpath->query('//article[@data-home-publication]//h3')->length)->toBe(3)
+        ->and($xpath->query('//article[@data-home-publication]/a')->length)->toBe(3)
         ->and($xpath->query('//article[@data-home-publication]//a//a')->length)->toBe(0);
 });
 

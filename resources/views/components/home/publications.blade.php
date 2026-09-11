@@ -1,7 +1,7 @@
 @props(['publications' => collect()])
 
 @php
-    $publicationCollection = collect($publications)->take(4)->values();
+    $publicationCollection = collect($publications)->take(3)->values();
 @endphp
 
 <section id="riset-publikasi" class="scroll-mt-20 bg-white py-6 sm:py-8" aria-labelledby="home-publications-title">
@@ -16,7 +16,7 @@
         </div>
 
         @if ($publicationCollection->isNotEmpty())
-            <div class="mt-7 grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="mt-7 grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-3">
                 @foreach ($publicationCollection as $publication)
                     @php
                         $typeName = $publication->type?->name ?? 'Publikasi';
@@ -30,7 +30,7 @@
                     @endphp
 
                     <article data-home-publication class="group min-w-0 border-y border-slate-200 transition duration-200 hover:border-slate-300 hover:bg-slate-50/70">
-                        <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Lihat publikasi: {{ $publication->title }}" class="flex h-full min-h-36 gap-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                        <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Lihat publikasi: {{ $publication->title }}" class="flex h-full gap-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                             <div class="relative aspect-[3/4] w-[60px] shrink-0 self-start overflow-hidden rounded-md sm:w-16">
                                 <x-home.media-fallback kind="publication" />
                                 @if ($publication->cover_image_url)
@@ -40,10 +40,10 @@
 
                             <div class="flex min-w-0 flex-1 flex-col">
                                 <p class="home-card-kicker">{{ $typeName }}</p>
-                                <h3 class="mt-2 line-clamp-3 text-[15px] font-bold leading-[1.4] text-brand-navy transition group-hover:text-brand-teal">{{ $publication->title }}</h3>
-                                <div class="mt-3 space-y-1 text-xs font-semibold leading-5 text-slate-500">
-                                    @if ($authorNames !== '')<p class="line-clamp-1">{{ $authorNames }}</p>@endif
-                                    @if (filled($publicationDate) && $publicationDate !== 'Belum diketahui' && $publicationDate !== '-')<p>{{ $publicationDate }}</p>@endif
+                                <h3 class="mt-2 line-clamp-2 text-[15px] font-bold leading-[1.4] text-brand-navy transition group-hover:text-brand-teal">{{ $publication->title }}</h3>
+                                <div class="mt-3 flex items-start justify-between gap-3 text-xs font-semibold leading-5 text-slate-500">
+                                    @if ($authorNames !== '')<span class="min-w-0 flex-1 truncate text-left">{{ $authorNames }}</span>@endif
+                                    @if (filled($publicationDate) && $publicationDate !== 'Belum diketahui' && $publicationDate !== '-')<span class="shrink-0 text-right">{{ $publicationDate }}</span>@endif
                                 </div>
                             </div>
                         </a>

@@ -72,7 +72,7 @@ class HomeController extends Controller
             ->orderByDesc('featured')
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit(4)
+            ->limit(3)
             ->get();
 
         $today = now()->toDateString();
