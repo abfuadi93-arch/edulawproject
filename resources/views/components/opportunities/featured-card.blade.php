@@ -66,7 +66,7 @@
                 </p>
             @endif
 
-            <div class="mt-auto grid gap-4 border-y border-slate-100 py-5 lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center">
+            <div class="mt-auto border-y border-slate-100 py-5">
                 <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
                     <div>
                         <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</dt>
@@ -87,7 +87,7 @@
                     </div>
                 </dl>
 
-                <div class="grid gap-2 {{ $additionalLabel ? 'sm:grid-cols-2 lg:min-w-[25rem]' : '' }}">
+                <div class="mt-5 grid gap-2 lg:ml-auto lg:w-full {{ $additionalLabel ? 'sm:grid-cols-2 lg:max-w-[32rem]' : 'lg:max-w-[16rem]' }}">
                     <a
                         href="{{ $officialUrl }}"
                         target="_blank"
