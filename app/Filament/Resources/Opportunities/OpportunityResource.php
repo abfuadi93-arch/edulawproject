@@ -60,9 +60,9 @@ class OpportunityResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('Konten Opportunity')
+                                Section::make('Informasi Peluang')
                                     ->icon('heroicon-o-sparkles')
-                                    ->description('Cukup isi identitas singkat dan tautan resmi. Hindari menyalin ulang deskripsi promosi panjang milik penyelenggara.')
+                                    ->description('Isi informasi utama yang akan tampil pada kartu publik.')
                                     ->schema([
                                         TextInput::make('title')
                                             ->label('Judul')
@@ -99,20 +99,53 @@ class OpportunityResource extends Resource
 
                                                 TextInput::make('application_link')
                                                     ->label('URL Informasi Resmi')
+                                                    ->required()
                                                     ->url()
                                                     ->maxLength(255)
                                                     ->placeholder('https://...')
-                                                    ->helperText('Card publik akan langsung membuka URL resmi ini.'),
+                                                    ->helperText('Tautan utama menuju halaman resmi penyelenggara.')
+                                                    ->columnSpanFull(),
                                             ])
+                                            ->columnSpanFull(),
+
+                                        Section::make('Tautan Tambahan (Opsional)')
+                                            ->description('Buka jika perlu menambahkan tautan pendaftaran, guidebook, atau formulir.')
+                                            ->schema([
+                                                Grid::make([
+                                                    'default' => 1,
+                                                    'lg' => 2,
+                                                ])->schema([
+                                                    TextInput::make('additional_link_label')
+                                                        ->label('Teks Tautan')
+                                                        ->placeholder('Contoh: Pendaftaran / Guidebook')
+                                                        ->requiredWith('additional_link_url')
+                                                        ->maxLength(80),
+
+                                                    TextInput::make('additional_link_url')
+                                                        ->label('URL Tautan')
+                                                        ->url()
+                                                        ->placeholder('https://...')
+                                                        ->requiredWith('additional_link_label')
+                                                        ->maxLength(255),
+                                                ])->columnSpanFull(),
+                                            ])
+                                            ->compact()
+                                            ->collapsible()
+                                            ->collapsed()
                                             ->columnSpanFull(),
 
                                         Textarea::make('excerpt')
                                             ->label('Ringkasan Kurasi')
                                             ->rows(3)
                                             ->maxLength(500)
-                                            ->helperText('Opsional dan ringkas. Jelaskan relevansi peluang dalam 1–2 kalimat; detail lengkap tetap dibaca di situs resmi.')
+                                            ->helperText('Opsional. Cukup 1–2 kalimat; detail lengkap tetap dibaca di situs resmi.')
                                             ->columnSpanFull(),
+                                    ]),
 
+                                Section::make('Pengaturan Lanjutan')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->description('Format, lokasi, target peserta, slug, dan SEO bersifat opsional.')
+                                    ->schema([
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
@@ -129,49 +162,30 @@ class OpportunityResource extends Resource
                                                     ->placeholder('Online / Jakarta / Hybrid'),
                                             ])
                                             ->columnSpanFull(),
-                                    ]),
 
-                                Section::make('Pengaturan Lanjutan')
-                                    ->icon('heroicon-o-cog-6-tooth')
-                                    ->description('Opsional. Slug dan detail tambahan hanya perlu dibuka bila ingin disesuaikan.')
-                                    ->schema([
+                                        static::listRepeater('eligibility', 'Target Peserta', 'Tambah Target Peserta')
+                                            ->columnSpanFull(),
+
                                         TextInput::make('slug')
                                             ->label('Slug')
                                             ->required()
                                             ->unique(ignoreRecord: true)
                                             ->maxLength(255)
-                                            ->helperText('Otomatis dari judul, boleh diedit sebelum dipublikasikan.')
+                                            ->helperText('Dibuat otomatis dari judul.')
                                             ->columnSpanFull(),
 
-                                        Grid::make([
-                                            'default' => 1,
-                                            'lg' => 2,
-                                        ])
-                                            ->schema([
-                                                static::listRepeater('eligibility', 'Target Peserta', 'Tambah Target Peserta'),
-                                            ])
-                                            ->columnSpanFull(),
-                                    ])
-                                    ->columns(1)
-                                    ->collapsible()
-                                    ->collapsed(),
-
-                                Section::make('SEO & Pratinjau')
-                                    ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Opsional. Jika kosong, sistem memakai judul, ringkasan kurasi, dan poster pertama.')
-                                    ->schema([
                                         TextInput::make('seo_title')
                                             ->label('SEO Title')
                                             ->maxLength(300)
                                             ->placeholder(fn ($get): string => $get('title') ?: 'Otomatis dari judul')
-                                            ->helperText('Target 45–65 karakter. Gunakan judul natural; nama situs ditambahkan otomatis.'),
+                                            ->helperText('Kosongkan untuk memakai judul peluang.'),
 
                                         Textarea::make('seo_description')
                                             ->label('SEO Description')
                                             ->rows(3)
                                             ->maxLength(180)
                                             ->placeholder('Otomatis dari ringkasan kurasi')
-                                            ->helperText('Target 120–160 karakter. Jelaskan manfaat dan topik utama secara alami.'),
+                                            ->helperText('Kosongkan untuk memakai ringkasan kurasi.'),
 
                                         FileUpload::make('og_image')
                                             ->label('Gambar OG')
@@ -182,7 +196,7 @@ class OpportunityResource extends Resource
                                             ->imageEditor()
                                             ->maxSize(4096)
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                            ->helperText('Kosongkan untuk memakai poster pertama.'),
+                                            ->helperText('Kosongkan untuk memakai poster utama.'),
                                     ])
                                     ->columns(1)
                                     ->collapsible()
@@ -193,8 +207,9 @@ class OpportunityResource extends Resource
 
                         Group::make()
                             ->schema([
-                                Section::make('Status Peluang')
+                                Section::make('Publikasi')
                                     ->icon('heroicon-o-paper-airplane')
+                                    ->description('Atur status dan batas pendaftaran.')
                                     ->schema([
                                         Select::make('status')
                                             ->label('Status')
@@ -203,7 +218,7 @@ class OpportunityResource extends Resource
                                             ->required(),
 
                                         DatePicker::make('deadline')
-                                            ->label('Deadline'),
+                                            ->label('Batas Pendaftaran'),
 
                                         Toggle::make('featured')
                                             ->label('Tampilkan sebagai unggulan')
@@ -213,10 +228,10 @@ class OpportunityResource extends Resource
 
                                 Section::make('Poster')
                                     ->icon('heroicon-o-photo')
-                                    ->description('Unggah poster utama terlebih dahulu, lalu tambahkan poster lain bila diperlukan.')
+                                    ->description('Unggah satu poster utama. Poster lain bersifat opsional.')
                                     ->schema([
                                         FileUpload::make('poster')
-                                            ->label('Poster Slide 1')
+                                            ->label('Poster Utama')
                                             ->image()
                                             ->live()
                                             ->disk('public')
@@ -227,10 +242,10 @@ class OpportunityResource extends Resource
                                             ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
                                             ->maxSize(4096)
                                             ->required(fn ($get): bool => count($get('additional_posters') ?? []) > 0)
-                                            ->helperText('Poster ini selalu menjadi slide pertama dan gambar utama.'),
+                                            ->helperText('JPG, PNG, atau WebP; maksimal 4 MB.'),
 
                                         Repeater::make('additional_posters')
-                                            ->label('Poster Tambahan')
+                                            ->label('Poster Lain (Opsional)')
                                             ->schema([
                                                 FileUpload::make('image')
                                                     ->label('Poster')
@@ -247,13 +262,14 @@ class OpportunityResource extends Resource
                                             ->defaultItems(0)
                                             ->maxItems(9)
                                             ->addable(fn ($get): bool => filled($get('poster')))
-                                            ->addActionLabel('Tambah Poster')
-                                            ->itemLabel(fn (array $state): string => filled($state['image'] ?? null) ? 'Poster Tambahan' : 'Poster Baru')
+                                            ->addActionLabel('Tambah Poster Lain')
+                                            ->itemLabel(fn (array $state): string => filled($state['image'] ?? null) ? 'Poster Lain' : 'Poster Baru')
                                             ->reorderable()
                                             ->collapsible()
+                                            ->collapsed()
                                             ->helperText(fn ($get): string => filled($get('poster'))
-                                                ? 'Tambahkan maksimal 9 poster. Urutkan untuk menentukan slide 2 dan seterusnya.'
-                                                : 'Unggah Poster Slide 1 agar tombol Tambah Poster tersedia.'),
+                                                ? 'Tambahkan hanya jika informasi membutuhkan lebih dari satu poster.'
+                                                : 'Unggah Poster Utama untuk mengaktifkan pilihan ini.'),
                                     ])
                                     ->columns(1),
                             ])
@@ -276,6 +292,12 @@ class OpportunityResource extends Resource
         }
 
         $data['status'] = static::normalizeStatusForForm($data['status'] ?? null);
+        $data['additional_link_label'] = filled($data['additional_link_label'] ?? null)
+            ? trim((string) $data['additional_link_label'])
+            : null;
+        $data['additional_link_url'] = filled($data['additional_link_url'] ?? null)
+            ? trim((string) $data['additional_link_url'])
+            : null;
         $data['excerpt'] = filled($data['excerpt'] ?? null)
             ? static::excerptFromDescription((string) $data['excerpt'])
             : static::excerptFromDescription($data['description'] ?? null);

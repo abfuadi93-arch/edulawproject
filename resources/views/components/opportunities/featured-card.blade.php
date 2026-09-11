@@ -5,6 +5,10 @@
         ? Illuminate\Support\Str::limit(Illuminate\Support\Str::squish(strip_tags($opportunity->excerpt)), 180)
         : null;
     $officialUrl = $opportunity->external_url;
+    $additionalUrl = $opportunity->additional_url;
+    $additionalLabel = filled($additionalUrl) && filled($opportunity->additional_link_label)
+        ? trim($opportunity->additional_link_label)
+        : null;
 @endphp
 
 <article class="overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity>
@@ -83,12 +87,12 @@
                     </div>
                 </dl>
 
-                <div class="flex justify-start lg:justify-end">
+                <div class="grid gap-2 {{ $additionalLabel ? 'sm:grid-cols-2 lg:min-w-[25rem]' : '' }}">
                     <a
                         href="{{ $officialUrl }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy sm:w-auto"
+                        class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-center text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
                         aria-label="Lihat informasi resmi {{ $opportunity->title }}"
                     >
                         Lihat Informasi Resmi
@@ -96,6 +100,20 @@
                             <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
+                    @if ($additionalLabel)
+                        <a
+                            href="{{ $additionalUrl }}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-center text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+                            aria-label="{{ $additionalLabel }} untuk {{ $opportunity->title }}"
+                        >
+                            {{ $additionalLabel }}
+                            <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

@@ -5,6 +5,10 @@
         ?: Illuminate\Support\Str::limit(strip_tags($opportunity->description ?? ''), 145);
     $isOpen = $opportunity->is_open_for_applications;
     $officialUrl = $opportunity->external_url;
+    $additionalUrl = $opportunity->additional_url;
+    $additionalLabel = filled($additionalUrl) && filled($opportunity->additional_link_label)
+        ? trim($opportunity->additional_link_label)
+        : null;
     $typeBadgeClass = match ($opportunity->type) {
         'scholarship' => 'bg-emerald-50 text-emerald-700',
         'internship' => 'bg-sky-50 text-sky-700',
@@ -47,13 +51,18 @@
                     @if ($opportunity->target_audience)Target: {{ $opportunity->target_audience }}@endif
                 </p>
             @endif
-            <div class="mt-4 flex flex-wrap items-end justify-between gap-4 border-t border-slate-100 pt-4">
+            <div class="mt-4 grid gap-4 border-t border-slate-100 pt-4 sm:grid-cols-[minmax(0,1fr)_minmax(18rem,auto)] sm:items-end">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</p>
                     <p class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</p>
                     <p class="mt-0.5 text-xs font-black {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
-                <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm font-black text-brand-navy">Lihat Informasi Resmi <span aria-hidden="true">↗</span></a>
+                <div class="grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
+                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-3 text-center text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 sm:text-sm">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
+                    @if ($additionalLabel)
+                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-3 text-center text-xs font-black text-white transition hover:bg-brand-ink sm:text-sm">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
+                    @endif
+                </div>
             </div>
         </div>
     </article>
@@ -89,13 +98,18 @@
                 </p>
             @endif
 
-            <div class="mt-auto flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
+            <div class="mt-auto border-t border-slate-100 pt-4">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</p>
                     <p class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</p>
                     <p class="mt-0.5 text-xs font-black {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
-                <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="shrink-0 text-xs font-black text-brand-navy sm:text-sm">Lihat Informasi Resmi <span aria-hidden="true">↗</span></a>
+                <div class="mt-4 grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
+                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
+                    @if ($additionalLabel)
+                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-black text-white transition hover:bg-brand-ink">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
+                    @endif
+                </div>
             </div>
         </div>
     </article>

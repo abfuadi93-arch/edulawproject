@@ -59,6 +59,26 @@ test('opportunity admin resource preserves a concise curated summary', function 
         ->and($data['seo_description'])->toBe('Kesempatan bagi mahasiswa hukum untuk mengikuti kompetisi tingkat nasional.');
 });
 
+test('opportunity admin resource normalizes an optional additional link', function () {
+    $data = OpportunityResource::prepareFormDataForPersistence([
+        'title' => 'Peluang dengan Guidebook',
+        'additional_link_label' => '  Unduh Guidebook  ',
+        'additional_link_url' => '  https://example.test/guidebook.pdf  ',
+    ]);
+
+    expect($data['additional_link_label'])->toBe('Unduh Guidebook')
+        ->and($data['additional_link_url'])->toBe('https://example.test/guidebook.pdf');
+
+    $emptyData = OpportunityResource::prepareFormDataForPersistence([
+        'title' => 'Peluang Tanpa Tautan Tambahan',
+        'additional_link_label' => '',
+        'additional_link_url' => '',
+    ]);
+
+    expect($emptyData['additional_link_label'])->toBeNull()
+        ->and($emptyData['additional_link_url'])->toBeNull();
+});
+
 test('opportunity admin resource keeps the primary upload as slide one and appends extra posters', function () {
     $data = OpportunityResource::prepareFormDataForPersistence([
         'title' => 'Peluang dengan Poster Tambahan',
@@ -80,7 +100,7 @@ test('opportunity admin resource keeps the primary upload as slide one and appen
         ->and($data)->not->toHaveKey('additional_posters');
 });
 
-test('opportunity create form presents the primary poster before additional posters', function () {
+test('opportunity create form presents a simplified primary flow', function () {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
 
     $role = Role::findOrCreate('super_admin');
@@ -95,10 +115,13 @@ test('opportunity create form presents the primary poster before additional post
     $this->actingAs($user)
         ->get(OpportunityResource::getUrl('create'))
         ->assertOk()
-        ->assertSeeInOrder(['Status Peluang', 'Poster'])
-        ->assertSee('Poster Slide 1')
-        ->assertSee('Poster Tambahan')
-        ->assertSee('Unggah Poster Slide 1 agar tombol Tambah Poster tersedia.');
+        ->assertSeeInOrder(['Informasi Peluang', 'Pengaturan Lanjutan', 'Publikasi', 'Poster'])
+        ->assertSee('Poster Utama')
+        ->assertSee('Poster Lain (Opsional)')
+        ->assertSee('Tautan Tambahan (Opsional)')
+        ->assertSee('Teks Tautan')
+        ->assertSee('URL Tautan')
+        ->assertSee('Unggah Poster Utama untuk mengaktifkan pilihan ini.');
 });
 
 test('opportunity admin resource exposes only open closed and archived statuses', function () {

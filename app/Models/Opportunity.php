@@ -24,6 +24,8 @@ class Opportunity extends Model
         'posters',
         'deadline',
         'application_link',
+        'additional_link_label',
+        'additional_link_url',
         'format',
         'location',
         'eligibility',
@@ -90,6 +92,13 @@ class Opportunity extends Model
     public function getExternalUrlAttribute(): ?string
     {
         $url = trim((string) ($this->attributes['application_link'] ?? ''));
+
+        return Str::startsWith($url, ['https://', 'http://']) ? $url : null;
+    }
+
+    public function getAdditionalUrlAttribute(): ?string
+    {
+        $url = trim((string) ($this->attributes['additional_link_url'] ?? ''));
 
         return Str::startsWith($url, ['https://', 'http://']) ? $url : null;
     }
