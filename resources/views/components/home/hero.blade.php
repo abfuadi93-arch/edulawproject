@@ -15,23 +15,9 @@
     $heroTitleLead = trim($heroTitleParts[0]).(count($heroTitleParts) > 1 ? ',' : '');
     $heroTitleAccent = trim($heroTitleParts[1] ?? '');
 
-    $fallbackValues = [
-        ['title' => 'Belajar', 'description' => 'Program, diskusi, dan pelatihan hukum.', 'symbol' => '01'],
-        ['title' => 'Memahami', 'description' => 'Editorial, riset, dan publikasi kontekstual.', 'symbol' => '02'],
-        ['title' => 'Berkontribusi', 'description' => 'Peluang, kolaborasi, dan jejaring publik.', 'symbol' => '03'],
-    ];
-
-    $dynamicValues = collect($values)->filter()->take(3)->values();
-    $valueCards = $dynamicValues->isNotEmpty()
-        ? $dynamicValues->map(fn ($value, int $index): array => [
-            'title' => ['Belajar', 'Memahami', 'Berkontribusi'][$index],
-            'description' => $value->body,
-            'symbol' => str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT),
-        ])
-        : collect($fallbackValues);
 @endphp
 
-<section class="relative isolate overflow-hidden bg-[#082344] text-white" data-home-hero>
+<section class="relative isolate min-h-[600px] overflow-hidden bg-[#082344] text-white sm:min-h-[640px]" data-home-hero>
     <x-responsive-image
         :src="$heroImage"
         :alt="$heroAlt"
@@ -43,41 +29,28 @@
         fetchpriority="high"
         loading="eager"
     />
-    <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,25,51,.98)_0%,rgba(8,36,70,.94)_45%,rgba(8,34,65,.68)_72%,rgba(8,34,65,.48)_100%)]"></div>
-    <div class="absolute inset-0 -z-10 bg-[radial-gradient(circle_at_14%_48%,rgba(37,183,160,.18),transparent_44%),radial-gradient(circle_at_86%_12%,rgba(245,185,67,.10),transparent_30%)]"></div>
+    <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,25,51,.98)_0%,rgba(8,36,70,.94)_44%,rgba(8,34,65,.64)_72%,rgba(8,34,65,.42)_100%)]"></div>
     <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-[#061b36] to-transparent"></div>
 
-    <div class="section-shell pb-8 pt-14 sm:pt-16 lg:pb-10 lg:pt-20">
-        <div class="max-w-3xl">
-            <p class="text-xs font-extrabold uppercase tracking-[0.24em] text-[#f0c55e]">{{ $heroEyebrow }}</p>
-            <h1 class="mt-5 font-display text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl lg:text-[60px]">
+    <div class="section-shell flex min-h-[600px] items-center pb-24 pt-16 sm:min-h-[640px] sm:pb-28 lg:py-20 lg:pb-28">
+        <div class="max-w-[720px] lg:w-[58%]">
+            <p class="text-xs font-extrabold uppercase tracking-[0.2em] text-[#f0c55e]">{{ $heroEyebrow }}</p>
+            <h1 class="mt-5 font-display text-[2.5rem] font-black leading-[1.06] tracking-[-0.035em] text-white sm:text-5xl lg:text-[58px]">
                 {{ $heroTitleLead }}
                 @if ($heroTitleAccent)
                     <br><span class="text-[#f5c451]">{{ $heroTitleAccent }}</span>
                 @endif
             </h1>
-            <p class="mt-5 max-w-2xl text-base leading-7 text-slate-200 sm:text-[17px]">{{ $heroDescription }}</p>
+            <p class="mt-6 max-w-2xl text-base leading-[1.7] text-slate-200 sm:text-[17px]">{{ $heroDescription }}</p>
 
-            <div class="mt-7 flex flex-wrap gap-3">
-                <a href="{{ $heroPrimaryUrl }}" class="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl bg-white px-5 py-3 text-sm font-extrabold text-[#102b50] transition hover:bg-[#f5c451]">
+            <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+                <a href="{{ $heroPrimaryUrl }}" class="inline-flex min-h-12 items-center justify-center gap-3 rounded-lg bg-[#f5c451] px-6 py-3 text-sm font-extrabold text-[#102b50] transition duration-200 hover:bg-[#ffd36a] focus-visible:outline-white">
                     {{ $heroPrimaryLabel }} <span aria-hidden="true">→</span>
                 </a>
-                <a href="{{ $heroSecondaryUrl }}" class="inline-flex min-h-12 items-center justify-center gap-3 rounded-xl border border-white/35 bg-white/5 px-5 py-3 text-sm font-extrabold text-white backdrop-blur transition hover:bg-white/15">
+                <a href="{{ $heroSecondaryUrl }}" class="inline-flex min-h-12 items-center justify-center gap-3 rounded-lg border border-white/35 bg-[#082344]/30 px-6 py-3 text-sm font-extrabold text-white transition duration-200 hover:border-white/60 hover:bg-white/10 focus-visible:outline-white">
                     {{ $heroSecondaryLabel }} <span aria-hidden="true">→</span>
                 </a>
             </div>
-        </div>
-
-        <div class="mt-12 grid max-w-5xl border-y border-white/15 sm:grid-cols-3 lg:mt-14">
-            @foreach ($valueCards as $value)
-                <article data-home-pillar class="flex gap-4 py-5 sm:border-r sm:px-5 sm:last:border-r-0">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-lg border border-[#f5c451]/40 bg-[#f5c451]/10 text-[11px] font-black tracking-wider text-[#f5c451]" aria-hidden="true">{{ $value['symbol'] }}</span>
-                    <div>
-                        <h2 class="text-base font-extrabold text-white">{{ $value['title'] }}</h2>
-                        <p class="mt-1 text-xs leading-5 text-slate-300 sm:text-[13px]">{{ $value['description'] }}</p>
-                    </div>
-                </article>
-            @endforeach
         </div>
     </div>
 </section>

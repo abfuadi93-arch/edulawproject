@@ -4,7 +4,7 @@
 ])
 
 @if ($featured)
-    <section id="multimedia" class="home-section home-surface-paper scroll-mt-24" aria-labelledby="home-multimedia-title">
+    <section id="multimedia" class="scroll-mt-24 bg-slate-50 py-6 sm:py-10" aria-labelledby="home-multimedia-title">
         <div class="section-shell">
             <div class="home-section-header">
                 <div class="home-section-copy">
@@ -17,14 +17,14 @@
             </div>
 
             <div @class([
-                'mt-6 grid items-stretch gap-5',
+                'mt-8 grid items-stretch gap-5',
                 'mx-auto max-w-3xl' => $items->isEmpty(),
                 'lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]' => $items->isNotEmpty(),
             ])>
                 <x-multimedia.featured-card :item="$featured" variant="home" />
 
                 @if ($items->isNotEmpty())
-                    <div class="grid auto-rows-fr content-stretch gap-3">
+                    <div class="grid auto-rows-fr content-stretch divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
                         @foreach ($items->take(3) as $item)
                             <x-multimedia.media-card :item="$item" variant="horizontal" />
                         @endforeach

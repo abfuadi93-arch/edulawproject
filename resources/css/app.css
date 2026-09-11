@@ -257,46 +257,27 @@
     */
 
     .home-section {
-        @apply py-7 sm:py-8 lg:py-9;
+        @apply py-6 sm:py-10;
     }
 
     .home-surface-paper {
         background-color: #ffffff;
-        background-image:
-            radial-gradient(circle at 92% 8%, rgb(37 183 160 / 8%), transparent 28rem),
-            linear-gradient(180deg, #ffffff 0%, #fcfdfd 100%);
     }
 
     .home-surface-warm {
         background-color: #fbf9f3;
-        background-image:
-            radial-gradient(circle at 88% 12%, rgb(245 185 67 / 14%), transparent 27rem),
-            radial-gradient(circle at 8% 92%, rgb(37 183 160 / 6%), transparent 22rem),
-            linear-gradient(180deg, #fdfbf7 0%, #faf8f1 100%);
     }
 
     .home-surface-teal {
-        background-color: #f2faf8;
-        background-image:
-            radial-gradient(circle at 8% 10%, rgb(37 183 160 / 13%), transparent 28rem),
-            radial-gradient(circle at 92% 90%, rgb(245 185 67 / 9%), transparent 24rem),
-            linear-gradient(180deg, #eff9f6 0%, #f8fbfa 100%);
+        background-color: #f8fafc;
     }
 
     .home-surface-mist {
-        background-color: #f3f7f7;
-        background-image:
-            radial-gradient(circle at 84% 16%, rgb(37 183 160 / 10%), transparent 25rem),
-            radial-gradient(circle at 12% 88%, rgb(245 185 67 / 10%), transparent 22rem),
-            linear-gradient(180deg, #f2f7f7 0%, #f7f8f6 100%);
+        background-color: #f8fafc;
     }
 
     .site-surface-base {
-        background-color: #f4f8f7;
-        background-image:
-            radial-gradient(circle at 92% 6%, rgb(37 183 160 / 8%), transparent 34rem),
-            radial-gradient(circle at 5% 94%, rgb(245 185 67 / 8%), transparent 30rem),
-            linear-gradient(180deg, #f4f8f7 0%, #faf9f5 100%);
+        background-color: #ffffff;
     }
 
     .home-section-header {
@@ -308,11 +289,11 @@
     }
 
     .home-section-eyebrow {
-        @apply flex flex-wrap items-center gap-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-teal;
+        @apply flex flex-wrap items-center gap-2 text-xs font-extrabold uppercase tracking-[0.16em] text-brand-teal;
     }
 
     .home-section-title {
-        @apply mt-2 max-w-3xl font-display text-[1.75rem] font-extrabold leading-[1.16] tracking-[-0.025em] text-brand-navy sm:text-[2rem] lg:text-4xl;
+        @apply mt-2 max-w-3xl font-display text-[1.75rem] font-extrabold leading-[1.16] tracking-[-0.025em] text-brand-navy sm:text-[2rem] lg:text-[34px];
     }
 
     .home-subsection-title {
@@ -328,7 +309,7 @@
     }
 
     .home-card-kicker {
-        @apply text-[10px] font-extrabold uppercase tracking-[0.14em] text-brand-teal;
+        @apply text-xs font-extrabold uppercase tracking-[0.12em] text-brand-teal;
     }
 
     .home-card-title {
@@ -348,7 +329,7 @@
     }
 
     .home-card-interactive {
-        @apply transition duration-300 hover:-translate-y-1 hover:border-brand-navy/25 hover:shadow-xl hover:shadow-brand-ink/10;
+        @apply transition duration-200 hover:-translate-y-0.5 hover:border-slate-300 hover:shadow-sm;
     }
 
     .home-card-link {

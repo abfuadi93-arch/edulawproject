@@ -18,13 +18,13 @@
 @endphp
 
 <section
-    {{ $attributes->class(['home-surface-paper py-3']) }}
+    {{ $attributes->class(['bg-white pb-6 sm:pb-10 lg:pb-12']) }}
     aria-labelledby="{{ $resolvedHeadingId }}"
 >
     <div class="section-shell">
-        <div class="rounded-xl bg-[linear-gradient(105deg,#12385f_0%,#155e68_58%,#2f638f_100%)] px-6 py-8 text-white sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-8">
+        <div class="rounded-xl bg-[linear-gradient(105deg,#102f56_0%,#123f69_100%)] px-6 py-8 text-white sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-8 lg:px-10 lg:py-9">
             <div>
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#f5c451]">{{ $eyebrow }}</p>
+                <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f5c451]">{{ $eyebrow }}</p>
                 <h2 id="{{ $resolvedHeadingId }}" class="mt-2 text-2xl font-extrabold leading-tight text-white sm:text-3xl {{ $titleClass }}">{{ $title }}</h2>
                 <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-200">{{ $summary }}</p>
             </div>

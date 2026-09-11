@@ -28,7 +28,7 @@ class HomeController extends Controller
             ->when($featuredInsight, fn ($query) => $query->whereKeyNot($featuredInsight->id))
             ->orderByDesc('published_at')
             ->orderByDesc('id')
-            ->limit($featuredInsight ? 2 : 3)
+            ->limit($featuredInsight ? 3 : 4)
             ->get();
 
         $featuredInsight ??= $latestInsights->first();
@@ -36,7 +36,7 @@ class HomeController extends Controller
         if ($featuredInsight) {
             $latestInsights = $latestInsights
                 ->where('id', '!=', $featuredInsight->id)
-                ->take(2)
+                ->take(3)
                 ->values();
         }
 

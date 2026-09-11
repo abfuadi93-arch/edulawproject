@@ -9,23 +9,23 @@
         ->map(fn (string $value): string => trim($value))
         ->filter()
         ->take(3);
-    $impactStats = collect($stats)->take(6)->values();
+    $impactStats = collect($stats)->take(3)->values();
 @endphp
 
-<section id="tentang-edulaw" class="home-section home-surface-mist scroll-mt-20" aria-labelledby="home-about-title">
-    <div class="section-shell grid gap-5 lg:grid-cols-[minmax(0,.95fr)_minmax(0,1.05fr)]">
-        <article class="relative flex flex-col overflow-hidden rounded-xl border border-[#e7ebf0] bg-white p-6 sm:p-8 lg:p-9">
+<section id="tentang-edulaw" class="scroll-mt-20 bg-white py-6 sm:py-10" aria-labelledby="home-about-title">
+    <div class="section-shell grid gap-8 lg:grid-cols-[minmax(0,1.12fr)_minmax(360px,.88fr)] lg:items-stretch">
+        <article class="relative flex flex-col py-2 lg:py-6">
             @if ($brandMark)
-                <x-responsive-image :src="$brandMark" alt="Identitas {{ $siteName }}" :widths="[64, 96]" sizes="56px" width="64" height="64" class="absolute right-8 top-8 hidden size-14 object-contain opacity-90 sm:block lg:right-9 lg:top-9" />
+                <x-responsive-image :src="$brandMark" alt="Identitas {{ $siteName }}" :widths="[64, 96]" sizes="56px" width="64" height="64" class="absolute right-0 top-1 hidden size-14 object-contain opacity-90 sm:block lg:top-5" />
             @endif
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#b77928]">Tentang Edulaw</p>
+            <p class="home-section-eyebrow">Tentang Edulaw</p>
             <h2 id="home-about-title" class="mt-3 max-w-lg text-2xl font-extrabold leading-[1.18] tracking-[-0.02em] text-[#102f56] sm:pr-20 sm:text-3xl">Ruang belajar dan riset hukum untuk kepentingan publik.</h2>
-            <p class="mt-4 max-w-xl text-sm leading-7 text-slate-600">{{ $siteName }} — {{ $siteDescription }}</p>
+            <p class="mt-4 max-w-2xl text-[15px] leading-7 text-slate-600">{{ $siteName }} — {{ $siteDescription }}</p>
             <div class="mt-auto flex flex-col items-start gap-4 pt-6 sm:flex-row sm:flex-wrap sm:items-center sm:justify-between">
                 @if ($siteValues->isNotEmpty())
                     <div class="flex flex-wrap gap-2" aria-label="Nilai Edulaw">
                         @foreach ($siteValues as $value)
-                            <span class="rounded-full bg-[#fff0b8] px-3 py-1.5 text-[11px] font-extrabold uppercase tracking-[0.09em] text-[#875b12]">{{ $value }}</span>
+                            <span class="rounded-full bg-[#fff0b8] px-3 py-1.5 text-xs font-extrabold uppercase tracking-[0.09em] text-[#875b12]">{{ $value }}</span>
                         @endforeach
                     </div>
                 @endif
@@ -33,19 +33,20 @@
             </div>
         </article>
 
-        <article class="overflow-hidden rounded-xl bg-[linear-gradient(145deg,#0c386b_0%,#155e68_100%)] text-white">
-            <div class="px-6 pb-4 pt-6 sm:px-8 sm:pt-8">
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#f5c451]">Dampak Edulaw</p>
-                <h2 class="mt-2 text-xl font-extrabold text-white sm:text-2xl">Pengetahuan yang terus bertumbuh.</h2>
+        <article class="flex overflow-hidden rounded-xl bg-[linear-gradient(145deg,#102f56_0%,#173b68_100%)] text-white">
+            <div class="flex w-full flex-col px-6 py-7 sm:px-8 sm:py-8">
+                <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f5c451]">Dampak Edulaw</p>
+                <h2 class="mt-2 max-w-sm text-xl font-extrabold leading-tight text-white sm:text-2xl">Pengetahuan yang terus bertumbuh.</h2>
+                <p class="mt-3 max-w-md text-sm leading-6 text-slate-200">Kerja editorial, riset, dan kolaborasi yang terhubung dalam satu ekosistem pembelajaran hukum.</p>
+                <dl class="mt-auto grid grid-cols-3 gap-4 border-t border-white/15 pt-6" aria-label="Statistik Edulaw Project">
+                    @foreach ($impactStats as $stat)
+                        <div class="min-w-0" data-home-stat="{{ $stat['label'] }}">
+                            <dd class="font-display text-2xl font-extrabold tracking-tight text-[#f5c451] sm:text-3xl">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
+                            <dt class="mt-1.5 text-xs font-bold uppercase leading-4 tracking-[0.06em] text-slate-200">{{ $stat['label'] }}</dt>
+                        </div>
+                    @endforeach
+                </dl>
             </div>
-            <dl class="grid grid-cols-2 border-l border-t border-white/10 sm:grid-cols-3" aria-label="Statistik Edulaw Project">
-                @foreach ($impactStats as $stat)
-                    <div class="flex min-h-24 flex-col justify-center border-b border-r border-white/10 p-5 sm:p-6" data-home-stat="{{ $stat['label'] }}">
-                        <dd class="font-display text-3xl font-extrabold tracking-tight text-[#f5c451]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
-                        <dt class="mt-2 text-[11px] font-extrabold uppercase tracking-[0.09em] text-slate-200">{{ $stat['label'] }}</dt>
-                    </div>
-                @endforeach
-            </dl>
         </article>
     </div>
 </section>

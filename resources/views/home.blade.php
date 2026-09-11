@@ -25,6 +25,7 @@
 
 @section('content')
     <x-home.hero :hero="$homeHero" :values="$homeValues" />
+    <x-home.impact :stats="$credibilityStats" />
     <x-home.featured-editorial :insight="$featuredInsight" :insights="$latestInsights" />
     <x-home.topics :topics="$homeTopics" />
     <x-home.publications :publications="$latestPublications" />

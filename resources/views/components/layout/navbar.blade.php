@@ -54,15 +54,15 @@
 
 <header
     data-site-header
-    class="sticky top-0 z-50 border-b border-slate-200 bg-white"
+    class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
 >
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-        <div class="flex h-20 items-center justify-between gap-6">
+        <div class="flex h-[72px] items-center justify-between gap-5">
 
             {{-- Brand --}}
             <a
                 href="{{ route('home') }}"
-                class="flex shrink-0 items-center gap-4"
+                class="flex shrink-0 items-center gap-3"
                 aria-label="{{ $siteName }}"
             >
                 <img
@@ -70,23 +70,23 @@
                     alt="{{ $siteName }}"
                     width="378"
                     height="512"
-                    class="h-10 w-auto"
+                    class="h-9 w-auto"
                     decoding="async"
                 >
 
-                <div class="hidden md:block">
-                    <div class="text-sm font-black uppercase tracking-[0.18em] text-brand-navy">
+                <div>
+                    <div class="text-xs font-black uppercase tracking-[0.14em] text-brand-navy sm:text-sm sm:tracking-[0.18em]">
                         {{ $siteName }}
                     </div>
 
-                    <div class="text-xs font-medium text-slate-500">
+                    <div class="hidden text-xs font-medium text-slate-500 sm:block">
                         {{ $navSubtitle }}
                     </div>
                 </div>
             </a>
 
             {{-- Desktop Navigation --}}
-            <nav class="hidden flex-1 items-center justify-center gap-9 xl:flex" aria-label="Navigasi utama">
+            <nav class="hidden flex-1 items-center justify-center gap-6 xl:flex" aria-label="Navigasi utama">
                 @foreach($navItems as $item)
                     <a
                         href="{{ $item['url'] }}"
@@ -99,7 +99,7 @@
                         {{ $item['label'] }}
 
                         <span
-                            class="absolute -bottom-7 left-0 h-0.5 bg-brand-amber transition-all duration-300
+                            class="absolute -bottom-[25px] left-0 h-0.5 bg-brand-amber transition-all duration-300
                                 {{ $item['active']
                                     ? 'w-full'
                                     : 'w-0 group-hover:w-full' }}"
@@ -112,11 +112,11 @@
             <div class="hidden shrink-0 items-center gap-3 xl:flex">
                 <a
                     href="{{ route('search.index') }}"
-                    aria-label="Cari"
-                    class="inline-flex h-11 w-11 items-center justify-center rounded-full border border-slate-200 bg-white text-slate-600 transition duration-300 hover:border-brand-navy hover:text-brand-navy"
+                    aria-label="Cari artikel, topik, atau publikasi"
+                    class="inline-flex h-10 w-48 items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-slate-500 transition duration-200 hover:border-slate-300 hover:bg-white hover:text-brand-navy"
                 >
                     <svg
-                        class="h-5 w-5"
+                        class="h-4.5 w-4.5 shrink-0"
                         viewBox="0 0 24 24"
                         fill="none"
                         aria-hidden="true"
@@ -128,6 +128,7 @@
                             stroke-linecap="round"
                         />
                     </svg>
+                    <span class="truncate text-xs font-semibold">Cari artikel, topik, atau publikasi...</span>
                 </a>
 
                 <a
