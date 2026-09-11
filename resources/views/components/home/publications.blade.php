@@ -31,10 +31,10 @@
 
                     <article data-home-publication class="group min-w-0 border-y border-slate-200 transition duration-200 hover:border-slate-300 hover:bg-slate-50/70">
                         <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Lihat publikasi: {{ $publication->title }}" class="flex h-full gap-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
-                            <div class="relative aspect-[3/4] w-[60px] shrink-0 self-start overflow-hidden rounded-md sm:w-16">
+                            <div class="relative w-[68px] shrink-0 self-stretch overflow-hidden rounded-md sm:w-[72px]">
                                 <x-home.media-fallback kind="publication" />
                                 @if ($publication->cover_image_url)
-                                    <x-responsive-image :src="$publication->cover_image_url" alt="Sampul {{ $publication->title }}" :widths="[96, 160, 240]" sizes="64px" width="160" height="214" class="absolute inset-0 size-full object-cover" onerror="this.remove()" />
+                                    <x-responsive-image :src="$publication->cover_image_url" alt="Sampul {{ $publication->title }}" :widths="[96, 160, 240]" sizes="72px" width="160" height="214" class="absolute inset-0 size-full object-cover" onerror="this.remove()" />
                                 @endif
                             </div>
 
