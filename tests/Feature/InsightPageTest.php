@@ -833,7 +833,7 @@ test('editorial contributors prioritize published writing count before optional 
         ->toBeLessThan(strpos($html, 'data-editorial-contributor="'.$manualSecond->id.'"'));
 });
 
-test('productive author panel is capped to five editorial profiles', function () {
+test('productive author panel provides up to eight profiles for adaptive display', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Edulaw Insight',
         'slug' => 'edulaw-insight',
@@ -872,10 +872,12 @@ test('productive author panel is capped to five editorial profiles', function ()
     expect($html)
         ->toContain('Penulis Terproduktif')
         ->and(substr_count($html, 'data-editorial-contributor='))
-        ->toBe(5)
+        ->toBe(8)
         ->and($html)
-        ->toContain('data-editorial-contributor="'.$authors[4]->id.'"')
-        ->not->toContain('data-editorial-contributor="'.$authors[5]->id.'"');
+        ->toContain('data-editorial-contributor="'.$authors[7]->id.'"')
+        ->not->toContain('data-editorial-contributor="'.$authors[8]->id.'"')
+        ->and(substr_count($html, 'data-editorial-contributor-extra'))
+        ->toBe(3);
 });
 
 test('empty optional editorial sections stay hidden and featured article is not repeated in latest list', function () {

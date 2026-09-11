@@ -171,11 +171,63 @@ function initializeDeferredAds() {
     adSlots.forEach((slot) => observer.observe(slot));
 }
 
+function initializeEditorialContributorBalance() {
+    document.querySelectorAll('[data-editorial-pulse-grid]').forEach((grid) => {
+        const popularPanel = grid.querySelector('[data-editorial-popular-panel]');
+        const contributorPanel = grid.querySelector('[data-editorial-contributor-panel]');
+        const extraContributors = [...grid.querySelectorAll('[data-editorial-contributor-extra]')];
+
+        if (!popularPanel || !contributorPanel || extraContributors.length === 0) {
+            return;
+        }
+
+        const desktop = window.matchMedia('(min-width: 1024px)');
+        let animationFrame;
+
+        const balance = () => {
+            window.cancelAnimationFrame(animationFrame);
+            animationFrame = window.requestAnimationFrame(() => {
+                contributorPanel.style.height = '';
+                extraContributors.forEach((item) => {
+                    item.hidden = true;
+                });
+
+                if (!desktop.matches) {
+                    return;
+                }
+
+                const targetHeight = Math.ceil(popularPanel.getBoundingClientRect().height);
+
+                if (contributorPanel.scrollHeight > targetHeight) {
+                    return;
+                }
+
+                contributorPanel.style.height = `${targetHeight}px`;
+
+                extraContributors.forEach((item) => {
+                    item.hidden = false;
+
+                    if (contributorPanel.scrollHeight > targetHeight) {
+                        item.hidden = true;
+                    }
+                });
+            });
+        };
+
+        const resizeObserver = new ResizeObserver(balance);
+        resizeObserver.observe(popularPanel);
+        desktop.addEventListener('change', balance);
+        document.fonts?.ready.then(balance);
+        balance();
+    });
+}
+
 function initialize() {
     initializeMobileNavigation();
     initializeOpportunityFilters();
     initializePosterSliders();
     initializeDeferredAds();
+    initializeEditorialContributorBalance();
 }
 
 if (document.readyState === 'loading') {

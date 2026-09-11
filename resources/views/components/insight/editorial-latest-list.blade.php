@@ -9,7 +9,7 @@
 
 @php
     $popularArticles = collect($popularArticles ?? [])->take(5)->values();
-    $contributors = collect($contributors ?? [])->take(5)->values();
+    $contributors = collect($contributors ?? [])->take(8)->values();
     $leadPopular = $popularArticles->first();
     $leadContributor = $contributors->first();
     $hasImage = fn ($article): bool => filled($article?->cover_image) && edulaw_file_exists($article->cover_image);
@@ -25,9 +25,9 @@
                 <p class="mt-1.5 text-base leading-7 text-slate-600">Tulisan yang paling banyak dibaca dan kontributor paling aktif di kanal Editorial Edulaw.</p>
             </div>
 
-            <div class="mt-6 grid gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.85fr)]">
+            <div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.85fr)]" data-editorial-pulse-grid>
                 @if ($popularHasViews && $popularArticles->isNotEmpty())
-                    <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="popular-editorial-heading">
+                    <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="popular-editorial-heading" data-editorial-popular-panel>
                         <div class="flex items-end justify-between gap-4">
                             <div>
                                 <p class="text-[11px] font-extrabold uppercase tracking-[0.13em] text-slate-500">Tulisan Terpopuler</p>
@@ -71,7 +71,7 @@
                 @endif
 
                 @if ($contributors->isNotEmpty())
-                    <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="productive-heading">
+                    <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="productive-heading" data-editorial-contributor-panel>
                         <div class="flex items-end justify-between gap-3">
                             <div>
                                 <p class="text-[11px] font-extrabold uppercase tracking-[0.13em] text-slate-500">Kontributor Editorial</p>
@@ -96,7 +96,7 @@
 
                         <ol class="mt-3 divide-y divide-slate-200">
                             @foreach ($contributors->skip(1)->values() as $index => $author)
-                                <li>
+                                <li @if ($index >= 4) data-editorial-contributor-extra hidden @endif>
                                     <a href="{{ route('profiles.show', $author->slug) }}" class="grid grid-cols-[24px_34px_minmax(0,1fr)_auto] items-center gap-2 py-2 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber" data-editorial-contributor="{{ $author->id }}">
                                         <span class="text-[11px] font-bold tabular-nums text-slate-500">{{ str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT) }}</span>
                                         <span class="relative grid h-8 w-8 place-items-center overflow-hidden rounded-full bg-brand-navy text-[11px] font-bold text-white">
