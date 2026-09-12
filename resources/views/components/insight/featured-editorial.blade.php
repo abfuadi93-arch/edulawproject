@@ -8,7 +8,7 @@
 @if ($primary)
     <section class="channel-section bg-white" aria-labelledby="featured-editorial-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <p class="mb-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy"><span class="mr-1 text-brand-amber" aria-hidden="true">★</span> Editorial Utama</p>
+            <p class="channel-feature-label"><span class="text-[#D99A25]" aria-hidden="true">★</span> Editorial Utama</p>
 
             <article class="channel-feature-card grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]" data-featured-editorial="{{ $primary->id }}" data-channel-feature-card>
                 <a href="{{ route('insights.show', $primary->slug) }}" class="group relative block min-h-[240px] overflow-hidden bg-brand-navy focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[330px] lg:h-full lg:min-h-0">
@@ -20,25 +20,27 @@
                     @endif
                 </a>
 
-                <div class="flex min-w-0 flex-col justify-center px-5 py-7 sm:px-8 lg:px-10 lg:py-8">
+                <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="inline-flex rounded-full bg-brand-navy/7 px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-navy">{{ $categoryName($primary) }}</span>
+                        <span class="channel-feature-badge bg-brand-navy/7 text-brand-navy">{{ $categoryName($primary) }}</span>
                         @if ($primary->editor_pick)
-                            <span class="inline-flex rounded-full bg-[#dff4ec] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#14705f]">Pilihan Editor</span>
+                            <span class="channel-feature-badge bg-[#dff4ec] text-[#14705f]">Pilihan Editor</span>
                         @endif
                     </div>
-                    <h2 id="featured-editorial-heading" class="mt-3 line-clamp-2 text-balance font-display text-2xl font-black leading-[1.1] text-brand-navy sm:text-3xl lg:text-[2.15rem]">{{ $primary->title }}</h2>
+                    <h2 id="featured-editorial-heading" class="channel-feature-title">{{ $primary->title }}</h2>
                     @if ($excerpt($primary, 240) !== '')
-                        <p class="mt-3 line-clamp-3 text-base leading-7 text-slate-600">{{ $excerpt($primary, 240) }}</p>
+                        <p class="channel-feature-summary">{{ $excerpt($primary, 240) }}</p>
                     @endif
-                    <div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-xs font-semibold text-slate-500">
+                    <div class="channel-feature-meta flex flex-wrap items-center gap-x-2 gap-y-1">
                         <time datetime="{{ optional($primary->published_at)->toDateString() }}">{{ $publishedDate($primary) }}</time>
                         <span aria-hidden="true">·</span><span>{{ $readingTime($primary) }}</span>
                         @if (filled($authorName($primary)))
                             <span aria-hidden="true">·</span><span>{{ $authorName($primary) }}</span>
                         @endif
                     </div>
-                    <a href="{{ route('insights.show', $primary->slug) }}" class="mt-5 inline-flex min-h-10 w-fit items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-extrabold text-white transition hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-brand-amber">Baca Editorial <span class="ml-2" aria-hidden="true">→</span></a>
+                    <div class="channel-feature-actions">
+                        <a href="{{ route('insights.show', $primary->slug) }}" class="channel-feature-primary-action focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-brand-amber">Baca Editorial <span aria-hidden="true">→</span></a>
+                    </div>
                 </div>
             </article>
         </div>

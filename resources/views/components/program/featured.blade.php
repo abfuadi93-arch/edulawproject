@@ -20,7 +20,7 @@
 
     <section class="channel-section home-surface-paper">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div class="mb-5 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-brand-navy">
+            <div class="channel-feature-label">
                 <span class="text-[#D99A25]">★</span>
                 Featured Program
             </div>
@@ -42,23 +42,23 @@
 
                 <div class="flex flex-col justify-center p-6 sm:p-8 lg:p-6">
                     <div class="flex flex-wrap items-center gap-2">
-                        <span class="rounded-full bg-[#EAF2FF] px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-brand-navy">
+                        <span class="channel-feature-badge bg-[#EAF2FF] text-brand-navy">
                             {{ $category }}
                         </span>
-                        <span class="rounded-full bg-[#DFF7EF] px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em] text-[#087B65]">
+                        <span class="channel-feature-badge bg-[#DFF7EF] text-[#087B65]">
                             Featured
                         </span>
                     </div>
 
-                    <h2 class="mt-3 line-clamp-2 max-w-3xl text-2xl font-black leading-tight tracking-normal text-brand-ink sm:text-3xl lg:text-[2rem]">
+                    <h2 class="channel-feature-title">
                         {{ $title }}
                     </h2>
 
-                    <p class="mt-3 line-clamp-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base">
+                    <p class="channel-feature-summary">
                         {{ $excerpt }}
                     </p>
 
-                    <div class="mt-4 grid gap-2 text-sm font-bold text-slate-600 sm:grid-cols-2">
+                    <div class="channel-feature-meta grid gap-2 sm:grid-cols-2">
                         <span class="inline-flex items-center gap-2">
                             <svg class="h-4 w-4 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M8 2v4m8-4v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -85,8 +85,8 @@
                         </span>
                     </div>
 
-                    <div class="mt-5">
-                        <a href="{{ $detailUrl }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-black text-white transition duration-300 hover:bg-[#102B4B]">
+                    <div class="channel-feature-actions">
+                        <a href="{{ $detailUrl }}" class="channel-feature-primary-action">
                             Lihat Detail Program
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

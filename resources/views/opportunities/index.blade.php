@@ -102,7 +102,7 @@
     @if ($featuredOpportunity)
         <section class="channel-section bg-white" aria-labelledby="featured-opportunity-title">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-                <p class="mb-4 text-[11px] font-black uppercase tracking-[0.15em] text-brand-navy"><span class="mr-1 text-brand-amber" aria-hidden="true">★</span> Pilihan Edulaw</p>
+                <p class="channel-feature-label"><span class="text-[#D99A25]" aria-hidden="true">★</span> Pilihan Edulaw</p>
                 <x-opportunities.featured-card :opportunity="$featuredOpportunity" />
             </div>
         </section>

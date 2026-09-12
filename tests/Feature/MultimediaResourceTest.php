@@ -304,6 +304,7 @@ test('public layout adapts a single nullable video without repeated placeholders
 
     $response->assertOk()
         ->assertSee('Video Pilihan Edulaw')
+        ->assertSee('lg:grid-cols-[minmax(0,1.13fr)_minmax(360px,1fr)]', false)
         ->assertDontSee('Video Lainnya')
         ->assertDontSee('Pagination video YouTube')
         ->assertSee('Konten pendek segera hadir')

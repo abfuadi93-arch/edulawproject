@@ -251,9 +251,9 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="channel-feature-card grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12" data-channel-feature-card>
                 <div>
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutWhy?->eyebrow ?? 'Mengapa Edulaw Hadir?' }}</p>
-                    <h2 id="why-edulaw-heading" class="mt-2 font-display text-3xl font-black leading-tight text-brand-navy sm:text-4xl">{{ $aboutWhy?->title ?? 'Mengapa Edulaw Hadir?' }}</h2>
-                    <div class="mt-5 space-y-3 text-base leading-7 text-slate-600">
+                    <p class="text-[11px] font-black uppercase tracking-[0.12em] text-brand-navy">{{ $aboutWhy?->eyebrow ?? 'Mengapa Edulaw Hadir?' }}</p>
+                    <h2 id="why-edulaw-heading" class="channel-feature-title">{{ $aboutWhy?->title ?? 'Mengapa Edulaw Hadir?' }}</h2>
+                    <div class="mt-3 space-y-3 text-sm leading-6 text-slate-600 sm:text-base">
                         @forelse ($whyParagraphs as $paragraph)
                             <p>{{ $paragraph }}</p>
                         @empty

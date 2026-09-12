@@ -26,6 +26,7 @@ test('finder separates featured opportunity from the paginated results', functio
     $featured = createFinderOpportunity([
         'title' => 'Pilihan Utama Edulaw',
         'featured' => true,
+        'poster' => 'opportunities/missing-poster.jpg',
         'deadline' => today()->addDays(5)->toDateString(),
     ]);
     $regular = createFinderOpportunity(['title' => 'Kompetisi Reguler Edulaw']);
@@ -38,6 +39,11 @@ test('finder separates featured opportunity from the paginated results', functio
     $response
         ->assertViewHas('featuredOpportunity', fn (?Opportunity $item): bool => $item?->is($featured) === true)
         ->assertViewHas('opportunities', fn ($items): bool => $items->total() === 1 && $items->first()->is($regular))
+        ->assertSee('lg:grid-cols-[365px_minmax(0,1fr)]', false)
+        ->assertSee('aspect-square', false)
+        ->assertSee('lg:size-[333px]', false)
+        ->assertSee('onerror="this.remove()"', false)
+        ->assertSee('Edulaw Opportunity')
         ->assertSee($featured->application_link, false)
         ->assertSee($regular->application_link, false)
         ->assertDontSee(route('opportunities.show', $featured->slug), false)

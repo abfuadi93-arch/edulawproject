@@ -52,8 +52,8 @@
     </article>
 @else
     <article data-featured-media data-channel-feature-card {{ $attributes->class('channel-feature-card group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10') }}>
-        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
-            <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:h-full lg:min-h-0">
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,1.13fr)_minmax(360px,1fr)]">
+            <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:aspect-video lg:h-auto lg:min-h-0 lg:self-center">
                 <div class="absolute inset-0 grid place-items-center text-brand-navy/35" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
                 </div>
@@ -63,7 +63,7 @@
                         :src="$item->thumbnail_url"
                         :alt="$item->title"
                         :widths="[480, 640, 960]"
-                        sizes="(min-width: 1024px) 60vw, 100vw"
+                        sizes="(min-width: 1024px) 53vw, 100vw"
                         data-fallback="{{ $fallbackThumbnail }}"
                         onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
                         class="relative z-10 h-full w-full object-contain transition duration-700 group-hover:scale-[1.025]"
@@ -77,17 +77,22 @@
                 </span>
             </div>
 
-            <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-6">
-                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-coral">Video Utama</p>
-                <h3 class="mt-2 line-clamp-2 text-2xl font-black leading-tight text-brand-ink lg:text-2xl">{{ $item->title }}</h3>
+            <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
+                <div class="flex flex-wrap items-center gap-2">
+                    <span class="channel-feature-badge bg-[#EAF2FF] text-brand-navy">YouTube</span>
+                    <span class="channel-feature-badge bg-[#DFF7EF] text-[#087B65]">Featured</span>
+                </div>
+                <h2 class="channel-feature-title">{{ $item->title }}</h2>
                 @if ($summary !== '')
-                    <p class="mt-2 line-clamp-2 text-base leading-6 text-slate-600">{{ $summary }}</p>
+                    <p class="channel-feature-summary">{{ $summary }}</p>
                 @endif
-                <p class="mt-3 text-xs font-bold text-slate-500">{{ $date }}</p>
-                <span class="mt-4 inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-brand-amber px-5 py-2 text-sm font-black text-brand-ink transition group-hover:bg-brand-navy group-hover:text-white">
-                    Tonton Video
-                    <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                </span>
+                <p class="channel-feature-meta">{{ $date }}</p>
+                <div class="channel-feature-actions">
+                    <span class="channel-feature-primary-action">
+                        Tonton Video
+                        <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    </span>
+                </div>
             </div>
         </a>
     </article>

@@ -12,48 +12,48 @@
 @endphp
 
 <article class="channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity data-channel-feature-card>
-    <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)]">
+    <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)] lg:grid-cols-[365px_minmax(0,1fr)]">
         <div class="flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6 lg:p-4">
-            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative block aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:h-[333px] lg:w-auto lg:max-w-none" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
+            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative block aspect-square w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:size-[333px] lg:max-w-none" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
+                <div class="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] px-6 text-center text-brand-navy" aria-hidden="true">
+                    <span class="grid size-12 place-items-center rounded-xl border border-brand-navy/10 bg-white/70">
+                        <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>
+                    </span>
+                    <span class="mt-4 text-xs font-black uppercase tracking-[0.16em] text-brand-navy/55">Edulaw Opportunity</span>
+                </div>
                 @if ($opportunity->poster_url)
                     <img
                         src="{{ $opportunity->poster_url }}"
                         alt="Poster {{ $opportunity->title }}"
-                        class="h-full w-full object-contain"
+                        class="relative z-10 h-full w-full object-contain"
                         width="640"
                         height="800"
                         decoding="async"
                         fetchpriority="high"
+                        onerror="this.remove()"
                     >
-                @else
-                    <div class="flex h-full flex-col items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] px-6 text-center" aria-hidden="true">
-                        <span class="flex h-14 w-14 items-center justify-center rounded-2xl bg-white text-2xl font-black text-brand-navy shadow-sm">
-                            {{ mb_substr($opportunity->display_type, 0, 1) }}
-                        </span>
-                        <span class="mt-4 text-xs font-black uppercase tracking-[0.16em] text-brand-navy/45">Edulaw Opportunity</span>
-                    </div>
                 @endif
             </a>
         </div>
 
-        <div class="flex min-w-0 flex-col p-6 sm:p-8 lg:p-4">
+        <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
             <div class="flex flex-wrap items-center gap-2">
-                <span class="rounded-full bg-[#fff4d7] px-3 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-[#80500a]">
+                <span class="channel-feature-badge bg-[#fff4d7] text-[#80500a]">
                     {{ $opportunity->display_type }}
                 </span>
-                <span class="rounded-full bg-emerald-50 px-3 py-1 text-[11px] font-black uppercase tracking-[0.1em] text-emerald-700">
+                <span class="channel-feature-badge bg-emerald-50 text-emerald-700">
                     Masih Dibuka
                 </span>
             </div>
 
-            <h2 class="mt-2.5 line-clamp-2 max-w-3xl text-2xl font-black leading-tight tracking-[-0.02em] text-brand-ink sm:text-3xl lg:text-xl">
+            <h2 class="channel-feature-title">
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="rounded-sm transition hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
                     {{ $opportunity->title }}
                 </a>
             </h2>
 
             @if ($summary)
-                <p class="mt-2 line-clamp-3 max-w-none text-sm leading-6 text-slate-600 sm:text-[15px] lg:line-clamp-1 lg:text-sm">
+                <p class="channel-feature-summary">
                     {{ $summary }}
                 </p>
             @endif
@@ -66,7 +66,7 @@
                 </p>
             @endif
 
-            <div class="mt-auto border-y border-slate-100 py-3">
+            <div class="channel-feature-meta border-y border-slate-100 py-3">
                 <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</dt>
@@ -87,12 +87,12 @@
                     </div>
                 </dl>
 
-                <div class="mt-3 grid gap-2 lg:ml-auto lg:w-full {{ $additionalLabel ? 'sm:grid-cols-2 lg:max-w-[32rem]' : 'lg:max-w-[16rem]' }}">
+                <div class="channel-feature-actions">
                     <a
                         href="{{ $officialUrl }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-center text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:min-h-10 lg:py-2"
+                        class="channel-feature-secondary-action group text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
                         aria-label="Lihat informasi resmi {{ $opportunity->title }}"
                     >
                         Lihat Informasi Resmi
@@ -105,7 +105,7 @@
                             href="{{ $additionalUrl }}"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-center text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:min-h-10 lg:py-2"
+                            class="channel-feature-primary-action group text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
                             aria-label="{{ $additionalLabel }} untuk {{ $opportunity->title }}"
                         >
                             {{ $additionalLabel }}

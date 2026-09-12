@@ -100,8 +100,8 @@
     <section id="video" class="channel-section scroll-mt-24">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             @if ($featuredVideo)
-                <div class="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-brand-navy"><span class="text-[#d99a25]">★</span> Video Utama</div>
-                <x-multimedia.featured-card :item="$featuredVideo" class="mt-4" />
+                <div class="channel-feature-label"><span class="text-[#D99A25]">★</span> Video Utama</div>
+                <x-multimedia.featured-card :item="$featuredVideo" />
             @endif
 
             <div @class([

@@ -270,6 +270,38 @@
         }
     }
 
+    .channel-feature-label {
+        @apply mb-5 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.22em] text-brand-navy;
+    }
+
+    .channel-feature-badge {
+        @apply rounded-full px-3 py-1 text-[11px] font-black uppercase tracking-[0.12em];
+    }
+
+    .channel-feature-title {
+        @apply mt-3 line-clamp-2 max-w-3xl text-2xl font-black leading-tight tracking-normal text-brand-ink sm:text-3xl lg:text-[2rem];
+    }
+
+    .channel-feature-summary {
+        @apply mt-3 line-clamp-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base;
+    }
+
+    .channel-feature-meta {
+        @apply mt-4 text-sm font-bold text-slate-600;
+    }
+
+    .channel-feature-actions {
+        @apply mt-5 flex flex-wrap gap-3;
+    }
+
+    .channel-feature-primary-action {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-black text-white transition duration-300 hover:bg-brand-ink;
+    }
+
+    .channel-feature-secondary-action {
+        @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-brand-navy/20 bg-white px-5 py-2.5 text-sm font-black text-brand-navy transition duration-300 hover:border-brand-navy hover:bg-slate-50;
+    }
+
     .home-surface-paper {
         background-color: #ffffff;
     }

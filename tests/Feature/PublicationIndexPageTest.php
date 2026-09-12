@@ -2,6 +2,24 @@
 
 use App\Models\Publication;
 
+test('featured publication uses a square cover and gives the content the wider column', function () {
+    Publication::query()->create([
+        'title' => 'Publikasi Utama A4',
+        'slug' => 'publikasi-utama-a4',
+        'status' => 'published',
+        'featured' => true,
+        'cover_image' => 'publications/covers/missing-cover.jpg',
+        'published_at' => now(),
+    ]);
+
+    $this->get(route('publications.index'))
+        ->assertOk()
+        ->assertSee('lg:grid-cols-[365px_minmax(0,1fr)]', false)
+        ->assertSee('aspect-square', false)
+        ->assertSee('lg:size-[317px]', false)
+        ->assertSee('onerror="this.remove()"', false);
+});
+
 test('publication catalog paginates grid and list views in complete sets of twelve', function (string $view) {
     foreach (range(1, 13) as $position) {
         Publication::query()->create([
