@@ -6,12 +6,12 @@
 @endphp
 
 @if ($primary)
-    <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="featured-editorial-heading">
+    <section class="channel-section bg-white" aria-labelledby="featured-editorial-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="mb-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy"><span class="mr-1 text-brand-amber" aria-hidden="true">★</span> Editorial Utama</p>
 
-            <article class="grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]" data-featured-editorial="{{ $primary->id }}">
-                <a href="{{ route('insights.show', $primary->slug) }}" class="group relative block min-h-[240px] overflow-hidden bg-brand-navy focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[330px] lg:min-h-[365px]">
+            <article class="channel-feature-card grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)]" data-featured-editorial="{{ $primary->id }}" data-channel-feature-card>
+                <a href="{{ route('insights.show', $primary->slug) }}" class="group relative block min-h-[240px] overflow-hidden bg-brand-navy focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[330px] lg:h-full lg:min-h-0">
                     @if ($hasImage)
                         <img src="{{ $primary->cover_image_url }}" alt="{{ $primary->title }}" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02] motion-reduce:transition-none" fetchpriority="high">
                     @else
@@ -27,7 +27,7 @@
                             <span class="inline-flex rounded-full bg-[#dff4ec] px-2.5 py-1 text-[11px] font-extrabold uppercase tracking-[0.1em] text-[#14705f]">Pilihan Editor</span>
                         @endif
                     </div>
-                    <h2 id="featured-editorial-heading" class="mt-3 text-balance font-display text-2xl font-black leading-[1.1] text-brand-navy sm:text-3xl lg:text-[2.15rem]">{{ $primary->title }}</h2>
+                    <h2 id="featured-editorial-heading" class="mt-3 line-clamp-2 text-balance font-display text-2xl font-black leading-[1.1] text-brand-navy sm:text-3xl lg:text-[2.15rem]">{{ $primary->title }}</h2>
                     @if ($excerpt($primary, 240) !== '')
                         <p class="mt-3 line-clamp-3 text-base leading-7 text-slate-600">{{ $excerpt($primary, 240) }}</p>
                     @endif

@@ -11,10 +11,10 @@
         : null;
 @endphp
 
-<article class="overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity>
-    <div class="grid md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)]">
-        <div class="flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6">
-            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative block aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
+<article class="channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity data-channel-feature-card>
+    <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)]">
+        <div class="flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6 lg:p-4">
+            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative block aspect-[4/5] w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:h-[333px] lg:w-auto lg:max-w-none" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
                 @if ($opportunity->poster_url)
                     <img
                         src="{{ $opportunity->poster_url }}"
@@ -36,7 +36,7 @@
             </a>
         </div>
 
-        <div class="flex min-w-0 flex-col p-6 sm:p-8 lg:p-9">
+        <div class="flex min-w-0 flex-col p-6 sm:p-8 lg:p-4">
             <div class="flex flex-wrap items-center gap-2">
                 <span class="rounded-full bg-[#fff4d7] px-3 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-[#80500a]">
                     {{ $opportunity->display_type }}
@@ -46,28 +46,28 @@
                 </span>
             </div>
 
-            <h2 class="mt-4 max-w-3xl text-2xl font-black leading-tight tracking-[-0.02em] text-brand-ink sm:text-3xl">
+            <h2 class="mt-2.5 line-clamp-2 max-w-3xl text-2xl font-black leading-tight tracking-[-0.02em] text-brand-ink sm:text-3xl lg:text-xl">
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="rounded-sm transition hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
                     {{ $opportunity->title }}
                 </a>
             </h2>
 
             @if ($summary)
-                <p class="mt-3 line-clamp-5 max-w-none text-sm leading-6 text-slate-600 sm:text-[15px]">
+                <p class="mt-2 line-clamp-3 max-w-none text-sm leading-6 text-slate-600 sm:text-[15px] lg:line-clamp-1 lg:text-sm">
                     {{ $summary }}
                 </p>
             @endif
 
             @if ($opportunity->organizer || $opportunity->target_audience)
-                <p class="mt-3 text-sm font-bold text-slate-500">
+                <p class="mt-2 line-clamp-1 text-sm font-bold text-slate-500 lg:text-xs">
                     @if ($opportunity->organizer){{ $opportunity->organizer }}@endif
                     @if ($opportunity->organizer && $opportunity->target_audience)<span aria-hidden="true"> · </span>@endif
                     @if ($opportunity->target_audience)Target: {{ $opportunity->target_audience }}@endif
                 </p>
             @endif
 
-            <div class="mt-auto border-y border-slate-100 py-5">
-                <dl class="grid gap-3 sm:grid-cols-2 xl:grid-cols-4">
+            <div class="mt-auto border-y border-slate-100 py-3">
+                <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</dt>
                         <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</dd>
@@ -75,7 +75,7 @@
                     </div>
                     <div>
                         <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Format</dt>
-                        <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->display_format }}</dd>
+                        <dd class="mt-1 line-clamp-1 text-sm font-black text-brand-ink">{{ $opportunity->display_format }}</dd>
                     </div>
                     <div>
                         <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Lokasi</dt>
@@ -87,12 +87,12 @@
                     </div>
                 </dl>
 
-                <div class="mt-5 grid gap-2 lg:ml-auto lg:w-full {{ $additionalLabel ? 'sm:grid-cols-2 lg:max-w-[32rem]' : 'lg:max-w-[16rem]' }}">
+                <div class="mt-3 grid gap-2 lg:ml-auto lg:w-full {{ $additionalLabel ? 'sm:grid-cols-2 lg:max-w-[32rem]' : 'lg:max-w-[16rem]' }}">
                     <a
                         href="{{ $officialUrl }}"
                         target="_blank"
                         rel="noopener noreferrer"
-                        class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-center text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+                        class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-center text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:min-h-10 lg:py-2"
                         aria-label="Lihat informasi resmi {{ $opportunity->title }}"
                     >
                         Lihat Informasi Resmi
@@ -105,7 +105,7 @@
                             href="{{ $additionalUrl }}"
                             target="_blank"
                             rel="noopener noreferrer"
-                            class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-center text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+                            class="group inline-flex min-h-12 w-full items-center justify-center gap-2 rounded-xl bg-brand-navy px-5 py-3 text-center text-sm font-black text-white transition hover:bg-brand-ink focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:min-h-10 lg:py-2"
                             aria-label="{{ $additionalLabel }} untuk {{ $opportunity->title }}"
                         >
                             {{ $additionalLabel }}

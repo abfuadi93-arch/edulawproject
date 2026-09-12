@@ -19,4 +19,5 @@
     ]"
     :stats="$stats"
     panel-label="Statistik Program"
+    uniform-height
 />

@@ -51,9 +51,9 @@
         </a>
     </article>
 @else
-    <article data-featured-media {{ $attributes->class('group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10') }}>
-        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
-            <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:min-h-[390px]">
+    <article data-featured-media data-channel-feature-card {{ $attributes->class('channel-feature-card group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10') }}>
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
+            <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:h-full lg:min-h-0">
                 <div class="absolute inset-0 grid place-items-center text-brand-navy/35" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
                 </div>
@@ -77,14 +77,14 @@
                 </span>
             </div>
 
-            <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
+            <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-6">
                 <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-coral">Video Utama</p>
-                <h3 class="line-clamp-3 mt-2 text-2xl font-black leading-tight text-brand-ink lg:text-[1.75rem]">{{ $item->title }}</h3>
+                <h3 class="mt-2 line-clamp-2 text-2xl font-black leading-tight text-brand-ink lg:text-2xl">{{ $item->title }}</h3>
                 @if ($summary !== '')
-                    <p class="line-clamp-3 mt-3 text-base leading-7 text-slate-600">{{ $summary }}</p>
+                    <p class="mt-2 line-clamp-2 text-base leading-6 text-slate-600">{{ $summary }}</p>
                 @endif
-                <p class="mt-4 text-xs font-bold text-slate-500">{{ $date }}</p>
-                <span class="mt-5 inline-flex min-h-11 w-fit items-center gap-2 rounded-full bg-brand-amber px-5 py-2.5 text-sm font-black text-brand-ink transition group-hover:bg-brand-navy group-hover:text-white">
+                <p class="mt-3 text-xs font-bold text-slate-500">{{ $date }}</p>
+                <span class="mt-4 inline-flex min-h-10 w-fit items-center gap-2 rounded-full bg-brand-amber px-5 py-2 text-sm font-black text-brand-ink transition group-hover:bg-brand-navy group-hover:text-white">
                     Tonton Video
                     <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                 </span>

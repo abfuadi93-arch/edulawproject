@@ -260,6 +260,16 @@
         @apply py-6 sm:py-10;
     }
 
+    .channel-section {
+        @apply py-9 sm:py-10 lg:py-11;
+    }
+
+    .channel-feature-card {
+        @media (width >= 64rem) {
+            height: 22.8125rem;
+        }
+    }
+
     .home-surface-paper {
         background-color: #ffffff;
     }

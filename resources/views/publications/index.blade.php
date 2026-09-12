@@ -133,6 +133,7 @@
             ['value' => number_format($typeCollection->count(), 0, ',', '.'), 'label' => 'Jenis Publikasi'],
         ]"
         panel-label="Statistik riset dan publikasi"
+        uniform-height
     />
 
     @if ($featured)
@@ -141,13 +142,13 @@
             $featuredDownloadUrl = $downloadUrl($featured);
             $featuredPalette = $fallbackPalette($featured);
         @endphp
-        <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="featured-publication-heading">
+        <section class="channel-section bg-white" aria-labelledby="featured-publication-heading">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <p class="mb-4 text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy"><span class="mr-1 text-brand-amber" aria-hidden="true">★</span> Publikasi Utama</p>
 
-                <article class="grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
-                    <a href="{{ route('publications.show', $featured->slug) }}" class="group grid min-h-[310px] place-items-center bg-[#e9efed] p-6 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[390px] sm:p-8">
-                        <span class="relative flex aspect-[1/1.34] w-[72%] max-w-[270px] flex-col justify-between overflow-hidden rounded-md p-6 text-white shadow-2xl shadow-slate-900/20 transition duration-300 group-hover:-translate-y-1" style="background: linear-gradient(155deg, {{ $featuredPalette['from'] }}, {{ $featuredPalette['via'] }} 68%, {{ $featuredPalette['to'] }});">
+                <article class="channel-feature-card grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]" data-channel-feature-card>
+                    <a href="{{ route('publications.show', $featured->slug) }}" class="group grid min-h-[310px] place-items-center bg-[#e9efed] p-6 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[390px] sm:p-8 lg:h-full lg:min-h-0 lg:p-6">
+                        <span class="relative flex aspect-[1/1.34] w-[72%] max-w-[270px] flex-col justify-between overflow-hidden rounded-md p-6 text-white shadow-2xl shadow-slate-900/20 transition duration-300 group-hover:-translate-y-1 lg:max-w-[215px] lg:p-5" style="background: linear-gradient(155deg, {{ $featuredPalette['from'] }}, {{ $featuredPalette['via'] }} 68%, {{ $featuredPalette['to'] }});">
                             @if ($featuredCover)
                                 <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="absolute inset-0 size-full object-cover" fetchpriority="high">
                             @endif
@@ -163,13 +164,13 @@
                         </span>
                     </a>
 
-                    <div class="flex min-w-0 flex-col justify-center px-5 py-7 sm:px-8 lg:px-10 lg:py-9">
+                    <div class="flex min-w-0 flex-col justify-center px-5 py-7 sm:px-8 lg:p-6">
                         <div class="flex flex-wrap items-center gap-2">
                             <span class="rounded-full bg-brand-navy/8 px-3 py-1 text-[11px] font-black uppercase tracking-[0.1em] text-brand-navy">{{ $publicationTypeName($featured) }}</span>
                             <span class="rounded-full bg-[#fff1c9] px-3 py-1 text-[11px] font-black uppercase tracking-[0.1em] text-[#875b12]">Pilihan Riset</span>
                         </div>
-                        <h2 id="featured-publication-heading" class="mt-3 text-balance font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">{{ $featured->title }}</h2>
-                        <p class="mt-3 line-clamp-4 text-base leading-7 text-slate-600">{{ $publicationExcerpt($featured, 280) }}</p>
+                        <h2 id="featured-publication-heading" class="mt-3 line-clamp-2 text-balance font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">{{ $featured->title }}</h2>
+                        <p class="mt-3 line-clamp-2 text-base leading-6 text-slate-600">{{ $publicationExcerpt($featured, 280) }}</p>
                         <div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 text-sm font-semibold text-slate-500">
                             <span>{{ $publicationAuthors($featured) }}</span>
                             <span aria-hidden="true">·</span>
@@ -178,7 +179,7 @@
                                 <span aria-hidden="true">·</span><span>{{ $featured->page_count }} halaman</span>
                             @endif
                         </div>
-                        <div class="mt-5 flex flex-wrap gap-3">
+                        <div class="mt-4 flex flex-wrap gap-3">
                             <a href="{{ route('publications.show', $featured->slug) }}" class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white transition hover:bg-brand-ink">Baca Publikasi <span class="ml-2" aria-hidden="true">→</span></a>
                             @if ($featuredDownloadUrl)
                                 <a href="{{ $featuredDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 items-center justify-center rounded-lg border border-brand-navy/20 bg-white px-5 text-sm font-black text-brand-navy transition hover:border-brand-navy">Unduh Dokumen</a>
@@ -190,7 +191,7 @@
         </section>
     @endif
 
-    <section id="publication-catalog" class="py-9 sm:py-10 lg:py-11" aria-labelledby="publication-catalog-heading">
+    <section id="publication-catalog" class="channel-section" aria-labelledby="publication-catalog-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>

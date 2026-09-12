@@ -9,7 +9,7 @@
         ->values();
 @endphp
 
-<section class="bg-white pt-12 pb-12 sm:pt-14 sm:pb-14 lg:pt-12 lg:pb-12">
+<section class="channel-section bg-white">
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>

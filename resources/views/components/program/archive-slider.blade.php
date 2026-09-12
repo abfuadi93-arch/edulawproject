@@ -13,7 +13,7 @@
     $sliderId = 'program-archive-slider';
 @endphp
 
-<section id="program-arsip" class="home-surface-paper pb-8 pt-1 lg:pb-10">
+<section id="program-arsip" class="channel-section home-surface-paper">
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <div class="rounded-2xl border border-[#dce5e3] bg-white/90 p-5 sm:p-6">
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">

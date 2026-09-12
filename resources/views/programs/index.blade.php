@@ -45,7 +45,7 @@
 
     <x-program.featured :program="$featuredProgram" />
 
-    <section class="home-surface-paper py-9 sm:py-10 lg:py-11">
+    <section class="channel-section home-surface-paper">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <x-program.filters
                 :status-options="$statusOptions"

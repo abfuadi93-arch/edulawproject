@@ -315,6 +315,8 @@ test('public layout adapts a single nullable video without repeated placeholders
 
     expect(substr_count($html, 'data-featured-media'))->toBe(1)
         ->and(substr_count($html, 'data-secondary-media'))->toBe(0)
+        ->and(strpos($html, 'data-featured-media'))
+        ->toBeLessThan(strpos($html, 'Video Pilihan Edulaw'))
         ->and(substr_count($html, 'Konten pendek segera hadir'))->toBe(1)
         ->and(substr_count($html, 'Dokumentasi kegiatan akan segera tersedia'))->toBe(1)
         ->and($html)->toContain('overflow-x-clip');

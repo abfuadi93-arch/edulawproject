@@ -121,7 +121,7 @@
     />
 
     @if ($categorySections->isNotEmpty())
-        <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="editorial-categories-heading">
+        <section class="channel-section bg-white" aria-labelledby="editorial-categories-heading">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
@@ -155,7 +155,7 @@
     />
 
     @if ($showFilteredArchive)
-        <section id="insight-archive" class="bg-[#f7f8fa] py-9 sm:py-10 lg:py-11">
+        <section id="insight-archive" class="channel-section bg-[#f7f8fa]">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>

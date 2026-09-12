@@ -6,7 +6,7 @@
 @endphp
 
 @if ($articles->isNotEmpty())
-    <section id="editorial-terbaru" class="bg-[#f7f8fa] py-10 sm:py-11 lg:py-12" aria-labelledby="latest-editorial-heading">
+    <section id="editorial-terbaru" class="channel-section bg-[#f7f8fa]" aria-labelledby="latest-editorial-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>

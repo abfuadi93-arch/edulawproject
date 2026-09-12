@@ -81,6 +81,7 @@
             ['label' => 'Multimedia'],
         ]"
         panel-label="Kanal multimedia"
+        uniform-height
     >
         <div class="grid gap-1.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
             @foreach ([
@@ -96,9 +97,17 @@
         </div>
     </x-shared.primary-hero>
 
-    <section id="video" class="scroll-mt-24 py-9 sm:py-10 lg:py-11">
+    <section id="video" class="channel-section scroll-mt-24">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+            @if ($featuredVideo)
+                <div class="flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-brand-navy"><span class="text-[#d99a25]">★</span> Video Utama</div>
+                <x-multimedia.featured-card :item="$featuredVideo" class="mt-4" />
+            @endif
+
+            <div @class([
+                'flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between',
+                'mt-9' => $featuredVideo,
+            ])>
                 <x-multimedia.section-heading
                     platform="youtube"
                     eyebrow="YouTube"
@@ -115,16 +124,8 @@
             </div>
 
             @if ($featuredVideo)
-                <div class="mt-7 flex items-center gap-2 text-[11px] font-black uppercase tracking-[0.2em] text-brand-navy"><span class="text-[#d99a25]">★</span> Video Utama</div>
-                <x-multimedia.featured-card :item="$featuredVideo" class="mt-4" />
-
                 @if ($youtubeVideos->isNotEmpty())
-                    <div class="mt-9 flex items-center justify-between gap-4">
-                        <h3 class="text-lg font-black text-brand-ink">Video Lainnya</h3>
-                        <p class="text-xs font-bold text-slate-500">{{ $youtubeVideos->total() }} video</p>
-                    </div>
-
-                    <div class="mt-4 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+                    <div class="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                         @foreach ($youtubeVideos as $item)
                             <x-multimedia.media-card :item="$item" />
                         @endforeach
@@ -138,7 +139,7 @@
         </div>
     </section>
 
-    <section id="shorts-reels" class="scroll-mt-24 bg-white py-9 sm:py-10 lg:py-11">
+    <section id="shorts-reels" class="channel-section scroll-mt-24 bg-white">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
@@ -180,7 +181,7 @@
         </div>
     </section>
 
-    <section id="album-foto" class="scroll-mt-24 py-9 sm:py-10 lg:py-11">
+    <section id="album-foto" class="channel-section scroll-mt-24">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <x-multimedia.section-heading platform="google_photos" eyebrow="Google Photos" title="Dokumentasi Kegiatan" description="Album diskusi, kelas, kolaborasi, dan kegiatan Edulaw." />
 

@@ -8,6 +8,7 @@
     'backgroundPosition' => 'center',
     'stats' => [],
     'panelLabel' => null,
+    'uniformHeight' => false,
 ])
 
 @php
@@ -18,7 +19,7 @@
         ->values();
 @endphp
 
-<section class="relative isolate overflow-hidden bg-brand-navy text-white">
+<section class="relative isolate overflow-hidden bg-brand-navy text-white" @if ($uniformHeight) data-uniform-channel-hero @endif>
     @if ($backgroundImage)
         <img
             src="{{ $backgroundImage }}"
@@ -31,7 +32,11 @@
     @endif
     <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,19,43,0.98)_0%,rgba(8,35,69,0.91)_58%,rgba(13,74,84,0.82)_100%)]"></div>
 
-    <div class="mx-auto grid max-w-7xl gap-6 px-5 py-7 sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-4">
+    <div @class([
+        'mx-auto grid max-w-7xl content-center gap-6 px-5 py-7 sm:px-6 sm:py-8 lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-4',
+        'h-[440px] sm:h-[400px] lg:h-[240px]' => $uniformHeight,
+        'lg:min-h-[240px]' => ! $uniformHeight,
+    ])>
         <div class="min-w-0">
             @if (! empty($breadcrumbs))
                 <nav aria-label="Breadcrumb" class="flex flex-wrap items-center gap-1.5 text-xs font-medium text-white/60">

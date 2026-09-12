@@ -244,11 +244,12 @@
         ]"
         :stats="$heroStats"
         panel-label="Dampak Edulaw Project"
+        uniform-height
     />
 
-    <section class="bg-white py-6 sm:py-7 lg:py-8" aria-labelledby="why-edulaw-heading">
+    <section class="channel-section bg-white" aria-labelledby="why-edulaw-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div class="grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12">
+            <div class="channel-feature-card grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12" data-channel-feature-card>
                 <div>
                     <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutWhy?->eyebrow ?? 'Mengapa Edulaw Hadir?' }}</p>
                     <h2 id="why-edulaw-heading" class="mt-2 font-display text-3xl font-black leading-tight text-brand-navy sm:text-4xl">{{ $aboutWhy?->title ?? 'Mengapa Edulaw Hadir?' }}</h2>
@@ -276,7 +277,7 @@
         </div>
     </section>
 
-    <section class="py-6 sm:py-7 lg:py-8" aria-labelledby="vision-mission-heading">
+    <section class="channel-section" aria-labelledby="vision-mission-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">Visi &amp; Misi</p>
             <h2 id="vision-mission-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Arah kerja Edulaw Project</h2>
@@ -301,7 +302,7 @@
         </div>
     </section>
 
-    <section class="bg-white py-6 sm:py-7 lg:py-8" aria-labelledby="about-pillars-heading">
+    <section class="channel-section bg-white" aria-labelledby="about-pillars-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutFocusIntro?->eyebrow ?? 'Pilar Edulaw' }}</p>
             <h2 id="about-pillars-heading" class="mt-2 w-full font-display text-3xl font-black leading-tight text-brand-navy sm:text-4xl">Pendidikan, Riset &amp; Kolaborasi untuk Dampak Nyata</h2>
@@ -329,7 +330,7 @@
         </div>
     </section>
 
-    <section class="py-6 sm:py-7 lg:py-8" aria-labelledby="about-timeline-heading">
+    <section class="channel-section" aria-labelledby="about-timeline-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutTimelineIntro?->eyebrow ?? 'Perjalanan Edulaw' }}</p>
             <h2 id="about-timeline-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Perjalanan Edulaw</h2>
@@ -351,7 +352,7 @@
         </div>
     </section>
 
-    <section id="tim" class="scroll-mt-20 bg-white py-6 sm:py-7 lg:py-8" aria-labelledby="about-team-heading">
+    <section id="tim" class="channel-section scroll-mt-20 bg-white" aria-labelledby="about-team-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">Penggerak</p>
             <h2 id="about-team-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Penggerak Edulaw Project</h2>

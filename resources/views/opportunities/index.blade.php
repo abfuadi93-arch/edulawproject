@@ -96,10 +96,11 @@
             $statistics['nearest_deadline'] ? ['value' => $statistics['nearest_deadline'], 'label' => 'Deadline Terdekat'] : null,
         ])->filter()->values()->all()"
         panel-label="Statistik Opportunities"
+        uniform-height
     />
 
     @if ($featuredOpportunity)
-        <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="featured-opportunity-title">
+        <section class="channel-section bg-white" aria-labelledby="featured-opportunity-title">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <p class="mb-4 text-[11px] font-black uppercase tracking-[0.15em] text-brand-navy"><span class="mr-1 text-brand-amber" aria-hidden="true">★</span> Pilihan Edulaw</p>
                 <x-opportunities.featured-card :opportunity="$featuredOpportunity" />
@@ -107,7 +108,7 @@
         </section>
     @endif
 
-    <section id="opportunity-finder" class="py-9 sm:py-10 lg:py-11" aria-labelledby="opportunity-results-title" data-opportunity-filters>
+    <section id="opportunity-finder" class="channel-section" aria-labelledby="opportunity-results-title" data-opportunity-filters>
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
@@ -240,7 +241,7 @@
         </div>
     </section>
 
-    <section class="bg-white py-8 sm:py-9" aria-labelledby="opportunity-curation-heading">
+    <section class="channel-section bg-white" aria-labelledby="opportunity-curation-heading">
         <div class="section-shell">
             <article class="rounded-[14px] bg-[#f7f8fa] p-5 sm:grid sm:grid-cols-[0.42fr_0.58fr] sm:items-center sm:gap-6 sm:p-6">
                 <div>

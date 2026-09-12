@@ -1,12 +1,13 @@
 <?php
 
-test('hero halaman kanal memakai pola utama dan tinggi desktop yang seragam', function () {
+test('hero halaman kanal utama memakai tinggi responsif yang seragam', function () {
     $pages = [
         [route('programs.index'), 'Program', 'Kanal Program', 'Program Edulaw Project dirancang sebagai ruang belajar'],
         [route('insights.index'), 'Editorial', 'Kanal Editorial', 'Editorial Edulaw menghadirkan analisis hukum'],
         [route('publications.index'), 'Riset & Publikasi', 'Kanal Riset & Publikasi', 'Repository kajian, policy brief, naskah akademik'],
         [route('opportunities.index'), 'Opportunities', 'Kanal Opportunities', 'Temukan beasiswa, magang, fellowship'],
         [route('multimedia.index'), 'Multimedia', 'Kanal Multimedia', 'Video, Shorts/Reels, dan dokumentasi kegiatan'],
+        [route('about'), 'Tentang', 'Tentang Kami', 'Edulaw Project adalah ruang belajar'],
     ];
 
     foreach ($pages as [$url, $breadcrumb, $channelLabel, $descriptionExcerpt]) {
@@ -25,7 +26,10 @@ test('hero halaman kanal memakai pola utama dan tinggi desktop yang seragam', fu
 
         expect($hero)->toBeInstanceOf(DOMElement::class)
             ->and($heroMarkup)
-            ->toContain('lg:min-h-[240px]')
+            ->toContain('data-uniform-channel-hero')
+            ->toContain('h-[440px]')
+            ->toContain('sm:h-[400px]')
+            ->toContain('lg:h-[240px]')
             ->toContain('lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)]')
             ->not->toContain('divide-white/15')
             ->and($heroText)
@@ -36,9 +40,8 @@ test('hero halaman kanal memakai pola utama dan tinggi desktop yang seragam', fu
     }
 });
 
-test('hero halaman informasi publik mengikuti pola hero Tentang', function () {
+test('hero halaman informasi publik lainnya tetap memakai pola utama', function () {
     $pages = [
-        [route('about'), 'Tentang', 'Tentang Kami', 'Edulaw Project adalah ruang belajar'],
         [route('collaboration.index'), 'Kolaborasi', 'Kolaborasi', 'Edulaw Project membuka ruang kerja sama'],
         [route('contact.index'), 'Kontak', 'Kontak', 'Sampaikan pertanyaan, kebutuhan informasi'],
         [route('terms'), 'Syarat & Ketentuan', 'Ketentuan Layanan', 'Ketentuan penggunaan website Edulaw Project'],
@@ -93,6 +96,29 @@ test('halaman kanal memakai lebar dan padding horizontal body yang seragam', fun
         );
 
         expect($standardContainers->length)->toBeGreaterThanOrEqual(2);
+    }
+});
+
+test('section utama halaman kanal memakai ritme tinggi vertikal yang seragam', function () {
+    $pages = [
+        [route('programs.index'), 2],
+        [route('insights.index'), 2],
+        [route('publications.index'), 1],
+        [route('opportunities.index'), 2],
+        [route('multimedia.index'), 3],
+        [route('about'), 5],
+    ];
+
+    foreach ($pages as [$url, $minimumSections]) {
+        $html = $this->get($url)->assertOk()->getContent();
+        $document = new DOMDocument;
+        @$document->loadHTML($html);
+        $xpath = new DOMXPath($document);
+        $uniformSections = $xpath->query(
+            '//*[contains(concat(" ", normalize-space(@class), " "), " channel-section ")]'
+        );
+
+        expect($uniformSections->length)->toBeGreaterThanOrEqual($minimumSections);
     }
 });
 

@@ -17,7 +17,7 @@
 @endphp
 
 @if (($popularHasViews && $popularArticles->isNotEmpty()) || $contributors->isNotEmpty())
-    <section class="bg-white py-9 sm:py-10 lg:py-11" aria-labelledby="editorial-pulse-heading">
+    <section class="channel-section bg-white" aria-labelledby="editorial-pulse-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div>
                 <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral"><span class="mr-1 text-brand-amber" aria-hidden="true">●</span> Editorial Pulse</p>

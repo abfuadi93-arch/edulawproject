@@ -19,4 +19,5 @@
         ['value' => number_format((int) $categoryCount, 0, ',', '.'), 'label' => 'Kategori Editorial'],
     ]"
     panel-label="Statistik Editorial"
+    uniform-height
 />
