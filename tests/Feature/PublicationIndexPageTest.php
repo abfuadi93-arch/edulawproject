@@ -2,7 +2,7 @@
 
 use App\Models\Publication;
 
-test('featured publication uses a square cover and gives the content the wider column', function () {
+test('featured publication centers a height-fitted cover inside its square media column', function () {
     Publication::query()->create([
         'title' => 'Publikasi Utama A4',
         'slug' => 'publikasi-utama-a4',
@@ -15,8 +15,8 @@ test('featured publication uses a square cover and gives the content the wider c
     $this->get(route('publications.index'))
         ->assertOk()
         ->assertSee('lg:grid-cols-[365px_minmax(0,1fr)]', false)
-        ->assertSee('aspect-square', false)
-        ->assertSee('lg:size-[317px]', false)
+        ->assertSee('aspect-[210/297]', false)
+        ->assertSee('sm:h-[390px] lg:h-full lg:max-h-full', false)
         ->assertSee('onerror="this.remove()"', false);
 });
 

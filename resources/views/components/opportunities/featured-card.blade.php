@@ -13,8 +13,8 @@
 
 <article class="channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity data-channel-feature-card>
     <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)] lg:grid-cols-[365px_minmax(0,1fr)]">
-        <div class="flex items-center justify-center bg-[#eef2f6] p-4 sm:p-6 lg:p-4">
-            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative block aspect-square w-full max-w-[18rem] overflow-hidden rounded-2xl border border-white/80 bg-white shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:size-[333px] lg:max-w-none" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
+        <div class="relative flex min-h-[300px] items-center justify-center sm:min-h-[365px] lg:min-h-0">
+            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative flex size-full min-h-[300px] items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] px-6 text-center text-brand-navy" aria-hidden="true">
                     <span class="grid size-12 place-items-center rounded-xl border border-brand-navy/10 bg-white/70">
                         <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>
@@ -25,7 +25,7 @@
                     <img
                         src="{{ $opportunity->poster_url }}"
                         alt="Poster {{ $opportunity->title }}"
-                        class="relative z-10 h-full w-full object-contain"
+                        class="absolute inset-0 z-10 size-full object-contain"
                         width="640"
                         height="800"
                         decoding="async"

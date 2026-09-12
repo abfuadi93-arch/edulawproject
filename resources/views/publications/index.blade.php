@@ -147,8 +147,8 @@
                 <p class="channel-feature-label"><span class="text-[#D99A25]" aria-hidden="true">★</span> Publikasi Utama</p>
 
                 <article class="channel-feature-card grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[365px_minmax(0,1fr)]" data-channel-feature-card>
-                    <a href="{{ route('publications.show', $featured->slug) }}" class="group grid min-h-[310px] place-items-center bg-[#e9efed] p-6 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[390px] sm:p-8 lg:h-full lg:min-h-0 lg:p-6">
-                        <span class="relative flex aspect-square w-[72%] max-w-[270px] flex-col justify-between overflow-hidden rounded-md p-6 text-white shadow-2xl shadow-slate-900/20 transition duration-300 group-hover:-translate-y-1 lg:size-[317px] lg:max-w-none lg:p-5" style="background: linear-gradient(155deg, {{ $featuredPalette['from'] }}, {{ $featuredPalette['via'] }} 68%, {{ $featuredPalette['to'] }});">
+                    <a href="{{ route('publications.show', $featured->slug) }}" class="group grid min-h-[310px] place-items-center focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[390px] lg:h-full lg:min-h-0">
+                        <span class="relative flex aspect-[210/297] h-[310px] w-auto max-w-full flex-col justify-between overflow-hidden p-6 text-white transition duration-300 group-hover:-translate-y-1 sm:h-[390px] lg:h-full lg:max-h-full lg:p-5" style="background: linear-gradient(155deg, {{ $featuredPalette['from'] }}, {{ $featuredPalette['via'] }} 68%, {{ $featuredPalette['to'] }});">
                             @if ($featuredCover)
                                 <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="absolute inset-0 size-full object-cover" fetchpriority="high" onerror="this.remove()">
                             @endif
