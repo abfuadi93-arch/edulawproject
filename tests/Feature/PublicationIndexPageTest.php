@@ -2,7 +2,7 @@
 
 use App\Models\Publication;
 
-test('featured publication centers a height-fitted cover inside its square media column', function () {
+test('featured publication uses a compact cover and clamped description', function () {
     Publication::query()->create([
         'title' => 'Publikasi Utama A4',
         'slug' => 'publikasi-utama-a4',
@@ -14,10 +14,10 @@ test('featured publication centers a height-fitted cover inside its square media
 
     $this->get(route('publications.index'))
         ->assertOk()
-        ->assertSee('lg:grid-cols-[365px_minmax(0,1fr)]', false)
-        ->assertSee('aspect-[210/297]', false)
-        ->assertSee('sm:h-[390px] lg:h-full lg:max-h-full', false)
-        ->assertSee('onerror="this.remove()"', false);
+        ->assertSee('publication-feature', false)
+        ->assertSee('publication-feature-cover', false)
+        ->assertSee('channel-feature-summary line-clamp-2', false)
+        ->assertSee('data-repository-card', false);
 });
 
 test('publication catalog paginates grid and list views in complete sets of twelve', function (string $view) {

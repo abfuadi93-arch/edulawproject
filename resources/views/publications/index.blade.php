@@ -19,6 +19,31 @@
     @endif
 @endpush
 
+@push('styles')
+<style>
+    [data-publication-page] .publication-feature { height: auto; min-height: 365px; }
+    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    [data-publication-page] .publication-feature-fallback { width: 200px; height: 264px; }
+    [data-publication-page] .publication-feature-fallback:not([hidden]),
+    [data-publication-page] .repository-cover > span:not([hidden]) { display: block; }
+    [data-publication-page] [data-repository-card] { align-self: stretch; }
+    [data-publication-page] dl[aria-label="Statistik riset dan publikasi"] { width: 100%; max-width: 340px; justify-self: end; }
+    [data-publication-page] dl[aria-label="Statistik riset dan publikasi"] > div { padding: 10px 14px; }
+    [data-publication-page] .publication-avatar-fallback:not([hidden]) { display: block; }
+    [data-publication-page] .publication-toolbar > input[type="search"] { width: 100%; }
+    @media (max-width: 1023px) {
+        [data-publication-page] dl[aria-label="Statistik riset dan publikasi"] { justify-self: start; }
+    }
+    @media (max-width: 767px) {
+        [data-publication-page] .publication-feature-fallback { width: 150px; height: 210px; }
+    }
+    @media (max-width: 359px) {
+        [data-publication-page] [data-repository-card] { flex-direction: column; }
+        [data-publication-page] .repository-cover { min-height: 128px; }
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     use Illuminate\Pagination\AbstractPaginator;
@@ -105,19 +130,14 @@
         return filled($publication->external_url ?? null) ? $publication->external_url : null;
     };
 
-    $fallbackPalettes = [
-        ['from' => '#001b36', 'via' => '#173f62', 'to' => '#28557a', 'overlay' => 'rgba(0, 27, 54, .84)'],
-        ['from' => '#155e53', 'via' => '#236f65', 'to' => '#3b8275', 'overlay' => 'rgba(21, 94, 83, .84)'],
-        ['from' => '#765b32', 'via' => '#98764a', 'to' => '#bd9660', 'overlay' => 'rgba(102, 76, 38, .80)'],
-        ['from' => '#5a1f35', 'via' => '#7f3047', 'to' => '#b4535f', 'overlay' => 'rgba(90, 31, 53, .84)'],
-    ];
-
-    $fallbackPalette = fn ($publication, int $index = 0): array => $fallbackPalettes[$index % count($fallbackPalettes)];
-
     $featured = $featuredPublication ?? null;
+    if ($featured && blank($search) && blank($selectedType) && (int) request('page', 1) === 1) {
+        $publicationItems = $publicationItems->reject(fn ($item) => $item->id === $featured->id)
+            ->concat($publicationItems->filter(fn ($item) => $item->id === $featured->id));
+    }
 @endphp
 
-<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<main data-publication-page class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.primary-hero
         title="Riset & Publikasi"
         eyebrow="Kanal Riset & Publikasi"
@@ -138,52 +158,56 @@
 
     @if ($featured)
         @php
-            $featuredCover = edulaw_file_url($featured->cover_image ?? null);
+            $featuredCover = app(\App\Services\PdfCoverGenerator::class)->displayCover($featured->cover_image, $featured->pdf_file, $featured->slug);
             $featuredDownloadUrl = $downloadUrl($featured);
-            $featuredPalette = $fallbackPalette($featured);
         @endphp
         <section class="channel-section bg-white" aria-labelledby="featured-publication-heading">
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <p class="channel-feature-label"><span class="text-[#D99A25]" aria-hidden="true">★</span> Publikasi Utama</p>
 
-                <article class="channel-feature-card grid overflow-hidden rounded-[14px] bg-[#f7f8fa] lg:grid-cols-[365px_minmax(0,1fr)]" data-channel-feature-card>
-                    <a href="{{ route('publications.show', $featured->slug) }}" class="group grid min-h-[310px] place-items-center focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-[390px] lg:h-full lg:min-h-0">
-                        <span class="relative flex aspect-[210/297] h-[310px] w-auto max-w-full flex-col justify-between overflow-hidden p-6 text-white transition duration-300 group-hover:-translate-y-1 sm:h-[390px] lg:h-full lg:max-h-full lg:p-5" style="background: linear-gradient(155deg, {{ $featuredPalette['from'] }}, {{ $featuredPalette['via'] }} 68%, {{ $featuredPalette['to'] }});">
-                            @if ($featuredCover)
-                                <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="absolute inset-0 size-full object-cover" fetchpriority="high" onerror="this.remove()">
-                            @endif
-                            <span class="absolute inset-0" style="background: linear-gradient(155deg, {{ $featuredPalette['overlay'] }}, {{ $featuredPalette['from'] }} 70%, {{ $featuredPalette['to'] }});"></span>
-                            <span class="absolute -right-12 -top-12 size-40 rounded-full border border-white/10"></span>
-                            <span class="absolute -bottom-16 -left-14 size-48 rounded-full border border-white/10"></span>
-
-                            <span class="relative">
-                                <span class="block text-[11px] font-extrabold uppercase tracking-[0.16em] text-[#efc66b]">{{ $publicationTypeName($featured) }}</span>
-                                <span class="mt-8 line-clamp-6 block font-display text-xl font-black leading-snug text-white sm:text-2xl">{{ $featured->title }}</span>
-                            </span>
-                            <span class="relative text-[11px] font-bold uppercase tracking-[0.14em] text-white/60">Edulaw Project</span>
-                        </span>
-                    </a>
-
-                    <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
-                        <div class="flex flex-wrap items-center gap-2">
-                            <span class="channel-feature-badge bg-brand-navy/8 text-brand-navy">{{ $publicationTypeName($featured) }}</span>
-                            <span class="channel-feature-badge bg-[#fff1c9] text-[#875b12]">Pilihan Riset</span>
+                <article class="publication-feature channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-channel-feature-card>
+                    <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)] lg:grid-cols-[365px_minmax(0,1fr)]">
+                        <div class="relative flex min-h-[300px] items-center justify-center sm:min-h-[365px] lg:min-h-0">
+                            <a href="{{ route('publications.show', $featured->slug) }}" class="relative flex size-full min-h-[300px] items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Baca {{ $featured->title }}">
+                                @if ($featuredCover)
+                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
+                                @endif
+                                <span @if ($featuredCover) hidden @endif class="publication-feature-fallback rounded-lg border border-slate-200 bg-white p-5 text-center text-sm text-slate-400">Pratinjau PDF belum tersedia</span>
+                            </a>
                         </div>
-                        <h2 id="featured-publication-heading" class="channel-feature-title">{{ $featured->title }}</h2>
-                        <p class="channel-feature-summary">{{ $publicationExcerpt($featured, 280) }}</p>
-                        <div class="channel-feature-meta flex flex-wrap items-center gap-x-2 gap-y-1">
-                            <span>{{ $publicationAuthors($featured) }}</span>
-                            <span aria-hidden="true">·</span>
-                            <time datetime="{{ optional($featured->published_at)->toDateString() }}">{{ $publicationDate($featured) }}</time>
-                            @if ($featured->page_count)
-                                <span aria-hidden="true">·</span><span>{{ $featured->page_count }} halaman</span>
-                            @endif
-                        </div>
-                        <div class="channel-feature-actions">
-                            <a href="{{ route('publications.show', $featured->slug) }}" class="channel-feature-primary-action">Baca Publikasi <span aria-hidden="true">→</span></a>
-                            @if ($featuredDownloadUrl)
-                                <a href="{{ $featuredDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="channel-feature-secondary-action">Unduh Dokumen</a>
-                            @endif
+                        <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
+                            <div class="flex flex-wrap items-center gap-2">
+                                <span class="channel-feature-badge bg-[#fff4d7] text-[#80500a]">{{ $publicationTypeName($featured) }}</span>
+                                <span class="channel-feature-badge bg-emerald-50 text-emerald-700">Pilihan Riset</span>
+                            </div>
+                            <h2 id="featured-publication-heading" class="channel-feature-title">
+                                <a href="{{ route('publications.show', $featured->slug) }}" class="rounded-sm transition hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">{{ $featured->title }}</a>
+                            </h2>
+                            <p class="channel-feature-summary line-clamp-2">{{ $publicationExcerpt($featured, 280) }}</p>
+                            <div class="channel-feature-meta border-y border-slate-100 py-3">
+                                <dl class="grid gap-3 sm:grid-cols-2 {{ $featured->page_count ? 'lg:grid-cols-3' : '' }}">
+                                    <div>
+                                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Penulis</dt>
+                                        <dd class="mt-1 text-sm font-black text-brand-ink [overflow-wrap:anywhere]">{{ $publicationAuthors($featured) }}</dd>
+                                    </div>
+                                    <div>
+                                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Tanggal Terbit</dt>
+                                        <dd class="mt-1 text-sm font-black text-brand-ink"><time datetime="{{ optional($featured->published_at)->toDateString() }}">{{ $publicationDate($featured) }}</time></dd>
+                                    </div>
+                                    @if ($featured->page_count)
+                                        <div>
+                                            <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Halaman</dt>
+                                            <dd class="mt-1 text-sm font-black text-brand-ink">{{ $featured->page_count }}</dd>
+                                        </div>
+                                    @endif
+                                </dl>
+                                <div class="channel-feature-actions">
+                                    <a href="{{ route('publications.show', $featured->slug) }}" class="channel-feature-primary-action">Baca Publikasi <span aria-hidden="true">→</span></a>
+                                    @if ($featuredDownloadUrl)
+                                        <a href="{{ $featuredDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="channel-feature-secondary-action">Unduh Dokumen</a>
+                                    @endif
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </article>
@@ -202,7 +226,7 @@
                 <p class="text-sm font-bold text-slate-500"><strong class="text-brand-navy">{{ number_format($totalPublications, 0, ',', '.') }}</strong> dokumen tersedia</p>
             </div>
 
-            <form method="GET" action="{{ route('publications.index') }}#publication-catalog" class="mt-5 grid gap-2 rounded-[14px] bg-white p-3 sm:grid-cols-2 lg:grid-cols-[minmax(280px,1fr)_220px_auto_auto_auto]">
+            <form method="GET" action="{{ route('publications.index') }}#publication-catalog" class="publication-toolbar mt-5 grid gap-2 rounded-xl border border-slate-200 bg-white p-3 sm:grid-cols-2 lg:grid-cols-[minmax(0,1fr)_180px_auto_auto]">
                 <input type="hidden" name="view" value="{{ $selectedView }}">
                 <label class="sr-only" for="publication-search">Cari publikasi</label>
                 <input id="publication-search" type="search" name="q" value="{{ $search }}" placeholder="Cari judul, topik, atau kata kunci..." class="h-11 min-w-0 rounded-lg border border-slate-200 bg-[#f8fafc] px-4 text-sm font-medium text-brand-ink outline-none placeholder:text-slate-400 focus:border-brand-navy focus:bg-white focus:ring-2 focus:ring-brand-navy/10">
@@ -236,7 +260,7 @@
             </form>
 
             @if ($typeCollection->isNotEmpty())
-                <nav aria-label="Jenis publikasi" class="mt-2 flex gap-2 overflow-x-auto pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+                <nav aria-label="Jenis publikasi" class="mt-3 flex flex-wrap gap-2">
                     <a href="{{ route('publications.index', array_filter(['q' => $search, 'view' => $selectedView])) }}#publication-catalog" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ blank($selectedType) ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">Semua</a>
                     @foreach ($typeCollection as $type)
                         @php
@@ -248,103 +272,50 @@
                 </nav>
             @endif
 
-            <div class="mt-7 {{ $selectedView === 'grid' ? 'grid gap-x-6 gap-y-8 sm:grid-cols-2 lg:grid-cols-3' : 'space-y-4' }}">
+            <div class="mt-8 {{ $selectedView === 'grid' ? 'grid gap-6 lg:grid-cols-2' : 'space-y-4' }}">
                 @forelse ($publicationItems as $publicationIndex => $publication)
                     @php
-                        $coverImage = edulaw_file_url($publication->cover_image ?? null);
+                        $coverImage = app(\App\Services\PdfCoverGenerator::class)->displayCover($publication->cover_image, $publication->pdf_file, $publication->slug);
                         $currentDownloadUrl = $downloadUrl($publication);
-                        $palette = $fallbackPalette($publication, $publicationIndex);
                         $authorProfiles = $publicationAuthorProfiles($publication);
                     @endphp
 
-                    @if ($selectedView === 'grid')
-                    <article class="group relative mx-auto flex w-full max-w-sm flex-col">
-                        <a href="{{ route('publications.show', $publication->slug) }}" class="relative z-10 mx-auto flex aspect-[1/1.34] w-[76%] max-w-60 flex-col justify-between overflow-hidden rounded-md p-5 text-white shadow-xl shadow-slate-900/15 transition duration-300 group-hover:-translate-y-1 group-hover:shadow-2xl focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-brand-amber" style="background: linear-gradient(155deg, {{ $palette['from'] }}, {{ $palette['via'] }} 68%, {{ $palette['to'] }});">
+                    <article data-repository-card class="group flex min-w-0 items-start overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-200 hover:-translate-y-px hover:border-slate-300 hover:shadow-sm">
+                        <a href="{{ route('publications.show', $publication->slug) }}" class="repository-cover relative block w-[90px] shrink-0 self-stretch overflow-hidden bg-slate-100 sm:w-[120px]">
                             @if ($coverImage)
-                                <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 size-full object-cover" onerror="this.remove()">
+                                <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                             @endif
-                            <span class="absolute inset-0" style="background: linear-gradient(155deg, {{ $palette['overlay'] }}, {{ $palette['from'] }} 70%, {{ $palette['to'] }});"></span>
-                            <span class="absolute -right-10 -top-10 size-36 rounded-full border border-white/10"></span>
-                            <span class="absolute -bottom-16 -left-12 size-44 rounded-full border border-white/10"></span>
-
-                            <span class="relative">
-                                <span class="block text-[11px] font-extrabold uppercase tracking-[0.15em] text-[#efc66b]">{{ $publicationTypeName($publication) }}</span>
-                                <span class="mt-7 line-clamp-5 block text-lg font-black leading-snug tracking-[-0.012em] text-white">{{ $publication->title }}</span>
-                            </span>
-                            <span class="relative text-[11px] font-bold uppercase tracking-[0.12em] text-white/55">Edulaw Project</span>
+                            <span @if ($coverImage) hidden @endif class="aspect-[210/297] rounded-lg border border-slate-200 bg-white p-3 text-center text-xs text-slate-400">Pratinjau PDF belum tersedia</span>
                         </a>
-
-                        <div class="-mt-8 flex flex-1 flex-col rounded-[14px] border border-[#d9e4e0] bg-white px-5 pb-5 pt-12 transition group-hover:border-[#d9a24c]/50">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="rounded-full bg-brand-navy/8 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.09em] text-brand-navy">{{ $publicationTypeName($publication) }}</span>
+                        <div class="min-w-0 flex-1 p-4 sm:p-5 lg:p-6">
+                            <div class="flex flex-wrap items-center gap-1.5">
+                                <span class="rounded-full bg-brand-navy/8 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-brand-navy">{{ $publicationTypeName($publication) }}</span>
                                 @if ($publication->featured)
-                                    <span class="rounded-full bg-[#fff1c9] px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.09em] text-[#875b12]">Pilihan</span>
+                                    <span class="rounded-full bg-[#fff1c9] px-2 py-1 text-[10px] font-bold text-[#875b12]">Pilihan</span>
                                 @endif
                             </div>
-
-                            <h3 class="mt-3 line-clamp-3 text-lg font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
+                            <h3 class="mt-2 text-base font-black leading-snug text-brand-ink sm:text-lg [overflow-wrap:anywhere]">
                                 <a href="{{ route('publications.show', $publication->slug) }}">{{ $publication->title }}</a>
                             </h3>
-                            <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ $publicationExcerpt($publication, 150) }}</p>
-
-                            <div class="mt-4 flex items-center gap-2 text-xs font-semibold text-slate-500">
-                                @if ($authorProfiles->isNotEmpty())
-                                    <span class="inline-flex shrink-0 -space-x-1.5">
-                                        @foreach ($authorProfiles->take(3) as $author)
-                                            @if ($author->photo_url)
-                                                <img src="{{ $author->photo_url }}" alt="Foto profil {{ $author->name }}" class="h-7 w-7 rounded-full border-2 border-white object-cover" loading="lazy">
-                                            @else
-                                                <span class="grid h-7 w-7 place-items-center rounded-full border-2 border-white bg-brand-navy text-[11px] font-black text-white">{{ $authorInitials($author->name) }}</span>
-                                            @endif
-                                        @endforeach
-                                    </span>
+                            <div class="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-600">
+                                @php $primaryAuthor = $authorProfiles->first(); @endphp
+                                @if ($primaryAuthor?->photo_url)
+                                    <img src="{{ $primaryAuthor->photo_url }}" alt="" width="24" height="24" class="size-6 shrink-0 rounded-full object-cover" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
+                                    <span hidden class="publication-avatar-fallback size-6 shrink-0 rounded-full bg-slate-100 text-center text-[9px] leading-6 text-brand-navy">{{ $authorInitials($publicationAuthors($publication)) }}</span>
+                                @else
+                                    <span class="grid size-6 shrink-0 place-items-center rounded-full bg-slate-100 text-[9px] font-bold text-brand-navy" aria-hidden="true">{{ $authorInitials($publicationAuthors($publication)) }}</span>
                                 @endif
-                                <span class="min-w-0 truncate">{{ $publicationAuthors($publication) }}</span>
+                                <span class="min-w-0 [overflow-wrap:anywhere]">{{ $publicationAuthors($publication) }}</span>
                             </div>
-                            <p class="mt-2 text-xs font-semibold text-slate-500">{{ $publicationDate($publication) }}@if ($publication->page_count) · {{ $publication->page_count }} halaman @endif</p>
-
-                            <div class="mt-auto flex flex-wrap items-center justify-between gap-3 pt-5">
-                                <a href="{{ route('publications.show', $publication->slug) }}" class="text-sm font-black text-brand-navy">Baca ringkasan <span aria-hidden="true">→</span></a>
+                            <time class="mt-1.5 block text-xs text-slate-500" datetime="{{ optional($publication->published_at)->toDateString() }}">{{ $publicationDate($publication) }}</time>
+                            <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
+                                <a href="{{ route('publications.show', $publication->slug) }}" class="text-sm font-bold text-brand-navy">Baca Publikasi →</a>
                                 @if ($currentDownloadUrl)
-                                    <a href="{{ $currentDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="text-xs font-black text-[#875b12]">Unduh dokumen</a>
+                                    <a href="{{ $currentDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-slate-600 hover:text-brand-navy">Unduh PDF</a>
                                 @endif
                             </div>
                         </div>
                     </article>
-                    @else
-                    <article class="group grid min-w-0 overflow-hidden rounded-[14px] bg-white sm:grid-cols-[180px_minmax(0,1fr)]">
-                        <a href="{{ route('publications.show', $publication->slug) }}" class="grid min-h-[220px] place-items-center bg-[#e9efed] p-5 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-amber sm:min-h-0">
-                            <span class="relative flex aspect-[1/1.34] w-28 flex-col justify-between overflow-hidden rounded p-3 text-white shadow-lg" style="background: linear-gradient(155deg, {{ $palette['from'] }}, {{ $palette['via'] }} 68%, {{ $palette['to'] }});">
-                                @if ($coverImage)
-                                    <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 size-full object-cover" onerror="this.remove()">
-                                @endif
-                                <span class="absolute inset-0" style="background: linear-gradient(155deg, {{ $palette['overlay'] }}, {{ $palette['from'] }} 70%, {{ $palette['to'] }});"></span>
-                                <span class="relative text-[11px] font-black uppercase tracking-[0.08em] text-[#efc66b]">{{ $publicationTypeName($publication) }}</span>
-                                <span class="relative line-clamp-4 text-xs font-black leading-snug text-white">{{ $publication->title }}</span>
-                            </span>
-                        </a>
-
-                        <div class="flex min-w-0 flex-col justify-center p-5 sm:p-6">
-                            <div class="flex flex-wrap items-center gap-2">
-                                <span class="rounded-full bg-brand-navy/8 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.09em] text-brand-navy">{{ $publicationTypeName($publication) }}</span>
-                                @if ($publication->featured)
-                                    <span class="rounded-full bg-[#fff1c9] px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.09em] text-[#875b12]">Pilihan</span>
-                                @endif
-                            </div>
-                            <h3 class="mt-3 line-clamp-2 text-xl font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
-                                <a href="{{ route('publications.show', $publication->slug) }}">{{ $publication->title }}</a>
-                            </h3>
-                            <p class="mt-2 line-clamp-2 text-base leading-7 text-slate-600">{{ $publicationExcerpt($publication, 180) }}</p>
-                            <p class="mt-3 text-sm font-semibold text-slate-500">{{ $publicationAuthors($publication) }} · {{ $publicationDate($publication) }}@if ($publication->page_count) · {{ $publication->page_count }} halaman @endif</p>
-                            <div class="mt-4 flex flex-wrap items-center gap-5">
-                                <a href="{{ route('publications.show', $publication->slug) }}" class="text-sm font-black text-brand-navy">Baca ringkasan <span aria-hidden="true">→</span></a>
-                                @if ($currentDownloadUrl)
-                                    <a href="{{ $currentDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm font-black text-[#875b12]">Unduh dokumen</a>
-                                @endif
-                            </div>
-                        </div>
-                    </article>
-                    @endif
                 @empty
                     <div class="col-span-full rounded-[14px] border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
                         <h3 class="font-display text-xl font-black text-brand-navy">Publikasi belum ditemukan</h3>

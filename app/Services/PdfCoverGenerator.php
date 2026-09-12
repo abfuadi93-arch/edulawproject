@@ -2,6 +2,7 @@
 
 namespace App\Services;
 
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -10,6 +11,40 @@ use Throwable;
 
 class PdfCoverGenerator
 {
+    /** Resolve a display cover without changing the publication record. */
+    public function displayCover(?string $cover, ?string $pdf, ?string $name = null): ?string
+    {
+        $coverPath = $this->publicDiskPath($cover);
+        if ($coverPath && Storage::disk('public')->exists($coverPath)) {
+            return Storage::disk('public')->url($coverPath);
+        }
+        if (filled($cover) && Str::startsWith($cover, ['https://', 'http://'])) {
+            return $cover;
+        }
+
+        $source = $this->localPdfPath($pdf);
+        if ($source === null) {
+            return null;
+        }
+
+        $key = 'publication-cover:'.sha1($source.'|'.filemtime($source).'|'.filesize($source).'|'.$name);
+        $result = Cache::store('file')->remember($key, 600, function () use ($pdf, $name) {
+            $source = $this->localPdfPath($pdf);
+            foreach (['jpg', 'png'] as $extension) {
+                $cachedPath = $this->coverPath($this->publicDiskPath($pdf) ?? $source, $source, $name, $extension);
+                if (Storage::disk('public')->exists($cachedPath)) {
+                    return ['path' => $cachedPath];
+                }
+            }
+
+            return ['path' => $this->generate($pdf, $name)];
+        });
+
+        return filled($result['path'] ?? null) && Storage::disk('public')->exists($result['path'])
+            ? Storage::disk('public')->url($result['path'])
+            : null;
+    }
+
     public function generate(?string $pdfFile, ?string $name = null): ?string
     {
         $sourcePath = $this->localPdfPath($pdfFile);
