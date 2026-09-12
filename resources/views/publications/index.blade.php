@@ -22,7 +22,7 @@
 @push('styles')
 <style>
     [data-publication-page] .publication-feature { height: auto; min-height: 365px; }
-    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
     [data-publication-page] .publication-feature-fallback { width: 200px; height: 264px; }
     [data-publication-page] .publication-feature-fallback:not([hidden]),
     [data-publication-page] .repository-cover > span:not([hidden]) { display: block; }
@@ -170,7 +170,7 @@
                         <div class="relative flex min-h-[300px] items-center justify-center sm:min-h-[365px] lg:min-h-0">
                             <a href="{{ route('publications.show', $featured->slug) }}" class="relative flex size-full min-h-[300px] items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Baca {{ $featured->title }}">
                                 @if ($featuredCover)
-                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
+                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover object-top" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                                 @endif
                                 <span @if ($featuredCover) hidden @endif class="publication-feature-fallback rounded-lg border border-slate-200 bg-white p-5 text-center text-sm text-slate-400">Pratinjau PDF belum tersedia</span>
                             </a>
@@ -283,7 +283,7 @@
                     <article data-repository-card class="group flex min-w-0 items-start overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-200 hover:-translate-y-px hover:border-slate-300 hover:shadow-sm">
                         <a href="{{ route('publications.show', $publication->slug) }}" class="repository-cover relative block w-[90px] shrink-0 self-stretch overflow-hidden bg-slate-100 sm:w-[120px]">
                             @if ($coverImage)
-                                <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
+                                <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover object-top" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                             @endif
                             <span @if ($coverImage) hidden @endif class="aspect-[210/297] rounded-lg border border-slate-200 bg-white p-3 text-center text-xs text-slate-400">Pratinjau PDF belum tersedia</span>
                         </a>
