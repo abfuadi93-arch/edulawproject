@@ -25,6 +25,12 @@
                             <p class="home-card-kicker">{{ $featuredOpportunity->display_type }}</p>
                             <h3 class="mt-3 line-clamp-3 text-2xl font-extrabold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
 
+                            <div class="home-opportunity-deadline mt-5 border-l-2 border-[#f5c451] pl-4">
+                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
+                                <p class="mt-1 text-lg font-extrabold text-[#a45e08]">{{ $featuredOpportunity->deadline_display }}</p>
+                                <p class="mt-1 text-xs font-bold text-slate-500">{{ $featuredOpportunity->deadline_relative_label }}</p>
+                            </div>
+
                             @if ($featuredOpportunity->location || $featuredOpportunity->format)
                                 <p class="mt-3 text-xs font-bold text-slate-500">
                                     {{ $featuredOpportunity->location }}
@@ -32,12 +38,6 @@
                                     {{ $featuredOpportunity->format ? Illuminate\Support\Str::headline($featuredOpportunity->format) : '' }}
                                 </p>
                             @endif
-
-                            <div class="mt-5 border-l-2 border-[#f5c451] pl-4">
-                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
-                                <p class="mt-1 text-lg font-extrabold text-[#a45e08]">{{ $featuredOpportunity->deadline_display }}</p>
-                                <p class="mt-1 text-xs font-bold text-slate-500">{{ $featuredOpportunity->deadline_relative_label }}</p>
-                            </div>
 
                             <span class="mt-5 inline-flex w-fit text-sm font-extrabold text-[#102f56] transition group-hover:text-brand-teal">Informasi Resmi ↗</span>
                         </div>

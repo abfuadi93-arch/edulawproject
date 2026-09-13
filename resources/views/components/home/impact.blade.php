@@ -5,7 +5,7 @@
 @endphp
 
 @if ($impactStats->isNotEmpty())
-    <section class="relative z-10 -mt-8 bg-white sm:-mt-9 lg:-mt-10" aria-labelledby="home-impact-title">
+    <section class="relative z-10" data-home-impact style="--impact-mobile-rows: {{ (int) ceil($impactStats->count() / 2) }}; --impact-tablet-rows: {{ (int) ceil($impactStats->count() / 3) }}" aria-labelledby="home-impact-title">
         <div class="section-shell">
             <h2 id="home-impact-title" class="sr-only">Dampak Edulaw Project</h2>
             <dl class="grid grid-cols-2 overflow-hidden rounded-xl border border-slate-200 bg-white shadow-[0_14px_35px_-28px_rgba(15,23,42,.55)] sm:grid-cols-3 lg:grid-cols-6" aria-label="Statistik Edulaw Project">

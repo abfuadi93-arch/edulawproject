@@ -5,31 +5,23 @@
 @section('canonical_url', route('home'))
 
 @push('styles')
-    <style>
-        @media (min-width: 1024px) and (max-width: 1279px) {
-            body header nav[aria-label="Navigasi utama"],
-            body header nav[aria-label="Navigasi utama"] + div {
-                display: none !important;
-            }
-
-            body header button[aria-controls="mobile-navigation"] {
-                display: inline-flex !important;
-            }
-
-            body header #mobile-navigation:not([style*="display: none"]) {
-                display: block !important;
-            }
-        }
-    </style>
+    <link rel="stylesheet" href="{{ asset('css/home-polish.css') }}?v={{ filemtime(public_path('css/home-polish.css')) }}">
 @endpush
 
 @section('content')
-    <x-home.hero :hero="$homeHero" :values="$homeValues" />
-    <x-home.impact :stats="$credibilityStats" />
-    <x-home.featured-editorial :insight="$featuredInsight" :insights="$latestInsights" />
+    <div class="home-hero-impact">
+        <x-home.hero :hero="$homeHero" :values="$homeValues" />
+        <x-home.impact :stats="$credibilityStats" />
+    </div>
+    <div class="home-program-curation">
+        <div class="section-shell home-program-curation-grid">
+            <x-home.programs :programs="$latestPrograms" />
+            <x-home.featured-editorial :insight="$featuredInsight" />
+        </div>
+    </div>
+    <x-home.latest-insights :insight="$featuredInsight" :insights="$latestInsights" />
     <x-home.topics :topics="$homeTopics" />
     <x-home.publications :publications="$latestPublications" />
-    <x-home.programs :programs="$latestPrograms" />
     <x-home.opportunities :opportunities="$latestOpportunities" />
     <x-home.multimedia :featured="$homepageFeaturedMultimedia" :items="$homepageSecondaryMultimedia" />
     <x-home.about :stats="$credibilityStats" />

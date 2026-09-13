@@ -22,24 +22,34 @@
 @push('styles')
 <style>
     [data-publication-page] .publication-feature { height: auto; min-height: 365px; }
-    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: top; }
-    [data-publication-page] .publication-feature-fallback { width: 200px; height: 264px; }
+    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
+    [data-publication-page] .publication-feature-media,
+    [data-publication-page] .repository-cover { aspect-ratio: 210 / 297; height: auto; align-self: start; }
+    [data-publication-page] .publication-feature-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
     [data-publication-page] .publication-feature-fallback:not([hidden]),
     [data-publication-page] .repository-cover > span:not([hidden]) { display: block; }
-    [data-publication-page] [data-repository-card] { align-self: stretch; }
+    [data-publication-page] [data-repository-card] { --cover-width: 90px; height: calc(var(--cover-width) * 297 / 210 + 2px); align-self: start; }
+    [data-publication-page] .repository-cover { width: var(--cover-width); }
+    [data-publication-page] .repository-content { height: 100%; display: flex; flex-direction: column; padding: 8px; gap: 4px; }
+    [data-publication-page] .repository-content h3 { margin: 0; font-size: 12px; line-height: 16px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+    [data-publication-page] .repository-content > div:first-child { flex-wrap: nowrap; overflow: hidden; }
+    [data-publication-page] .repository-content > div:first-child span { padding: 2px 6px; font-size: 9px; white-space: nowrap; }
+    [data-publication-page] [data-publication-card-footer] { margin-top: auto; gap: 6px; }
+    [data-publication-page] [data-publication-card-footer] > a { font-size: 10px; padding: 4px; min-height: 32px; }
+    [data-publication-page] .repository-author-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    [data-publication-page] [data-publication-card-footer] time { margin-top: 2px; font-size: 10px; }
+    @media (min-width: 640px) {
+        [data-publication-page] [data-repository-card] { --cover-width: 120px; }
+        [data-publication-page] .repository-content { padding: 12px 16px; gap: 8px; }
+        [data-publication-page] .repository-content h3 { font-size: 16px; line-height: 20px; }
+        [data-publication-page] [data-publication-card-footer] > a { font-size: 12px; min-height: 36px; }
+    }
     [data-publication-page] dl[aria-label="Statistik riset dan publikasi"] { width: 100%; max-width: 340px; justify-self: end; }
     [data-publication-page] dl[aria-label="Statistik riset dan publikasi"] > div { padding: 10px 14px; }
     [data-publication-page] .publication-avatar-fallback:not([hidden]) { display: block; }
     [data-publication-page] .publication-toolbar > input[type="search"] { width: 100%; }
     @media (max-width: 1023px) {
         [data-publication-page] dl[aria-label="Statistik riset dan publikasi"] { justify-self: start; }
-    }
-    @media (max-width: 767px) {
-        [data-publication-page] .publication-feature-fallback { width: 150px; height: 210px; }
-    }
-    @media (max-width: 359px) {
-        [data-publication-page] [data-repository-card] { flex-direction: column; }
-        [data-publication-page] .repository-cover { min-height: 128px; }
     }
 </style>
 @endpush
@@ -166,11 +176,11 @@
                 <p class="channel-feature-label"><span class="text-[#D99A25]" aria-hidden="true">★</span> Publikasi Utama</p>
 
                 <article class="publication-feature channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-channel-feature-card>
-                    <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)] lg:grid-cols-[365px_minmax(0,1fr)]">
-                        <div class="relative flex min-h-[300px] items-center justify-center sm:min-h-[365px] lg:min-h-0">
-                            <a href="{{ route('publications.show', $featured->slug) }}" class="relative flex size-full min-h-[300px] items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Baca {{ $featured->title }}">
+                    <div class="grid h-full md:grid-cols-[minmax(0,35fr)_minmax(0,65fr)]">
+                        <div class="min-w-0 self-start">
+                            <a href="{{ route('publications.show', $featured->slug) }}" class="publication-feature-media relative block w-full bg-slate-100 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy" aria-label="Baca {{ $featured->title }}">
                                 @if ($featuredCover)
-                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover object-top" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
+                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover object-center" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                                 @endif
                                 <span @if ($featuredCover) hidden @endif class="publication-feature-fallback rounded-lg border border-slate-200 bg-white p-5 text-center text-sm text-slate-400">Pratinjau PDF belum tersedia</span>
                             </a>
@@ -276,18 +286,17 @@
                 @forelse ($publicationItems as $publicationIndex => $publication)
                     @php
                         $coverImage = app(\App\Services\PdfCoverGenerator::class)->displayCover($publication->cover_image, $publication->pdf_file, $publication->slug);
-                        $currentDownloadUrl = $downloadUrl($publication);
                         $authorProfiles = $publicationAuthorProfiles($publication);
                     @endphp
 
                     <article data-repository-card class="group flex min-w-0 items-start overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-200 hover:-translate-y-px hover:border-slate-300 hover:shadow-sm">
-                        <a href="{{ route('publications.show', $publication->slug) }}" class="repository-cover relative block w-[90px] shrink-0 self-stretch overflow-hidden bg-slate-100 sm:w-[120px]">
+                        <a href="{{ route('publications.show', $publication->slug) }}" class="repository-cover relative block w-[90px] shrink-0 self-start overflow-hidden bg-slate-100 sm:w-[120px]">
                             @if ($coverImage)
                                 <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover object-top" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                             @endif
                             <span @if ($coverImage) hidden @endif class="aspect-[210/297] rounded-lg border border-slate-200 bg-white p-3 text-center text-xs text-slate-400">Pratinjau PDF belum tersedia</span>
                         </a>
-                        <div class="min-w-0 flex-1 p-4 sm:p-5 lg:p-6">
+                        <div class="repository-content min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-1.5">
                                 <span class="rounded-full bg-brand-navy/8 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-brand-navy">{{ $publicationTypeName($publication) }}</span>
                                 @if ($publication->featured)
@@ -297,7 +306,9 @@
                             <h3 class="mt-2 text-base font-black leading-snug text-brand-ink sm:text-lg [overflow-wrap:anywhere]">
                                 <a href="{{ route('publications.show', $publication->slug) }}">{{ $publication->title }}</a>
                             </h3>
-                            <div class="mt-3 flex items-center gap-2 text-xs font-semibold text-slate-600">
+                            <div class="mt-4 grid grid-cols-[minmax(0,7fr)_minmax(0,3fr)] items-center gap-3" data-publication-card-footer>
+                                <div class="min-w-0">
+                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
                                 @php $primaryAuthor = $authorProfiles->first(); @endphp
                                 @if ($primaryAuthor?->photo_url)
                                     <img src="{{ $primaryAuthor->photo_url }}" alt="" width="24" height="24" class="size-6 shrink-0 rounded-full object-cover" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
@@ -305,14 +316,11 @@
                                 @else
                                     <span class="grid size-6 shrink-0 place-items-center rounded-full bg-slate-100 text-[9px] font-bold text-brand-navy" aria-hidden="true">{{ $authorInitials($publicationAuthors($publication)) }}</span>
                                 @endif
-                                <span class="min-w-0 [overflow-wrap:anywhere]">{{ $publicationAuthors($publication) }}</span>
+                                <span class="repository-author-name min-w-0" title="{{ $publicationAuthors($publication) }}">{{ $publicationAuthors($publication) }}</span>
                             </div>
                             <time class="mt-1.5 block text-xs text-slate-500" datetime="{{ optional($publication->published_at)->toDateString() }}">{{ $publicationDate($publication) }}</time>
-                            <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2">
-                                <a href="{{ route('publications.show', $publication->slug) }}" class="text-sm font-bold text-brand-navy">Baca Publikasi →</a>
-                                @if ($currentDownloadUrl)
-                                    <a href="{{ $currentDownloadUrl }}" target="_blank" rel="noopener noreferrer" class="text-xs font-semibold text-slate-600 hover:text-brand-navy">Unduh PDF</a>
-                                @endif
+                                </div>
+                                <a href="{{ route('publications.show', $publication->slug) }}" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 py-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">Lihat Detail</a>
                             </div>
                         </div>
                     </article>
