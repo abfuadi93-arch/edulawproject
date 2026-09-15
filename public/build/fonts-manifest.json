@@ -1,9 +1,9 @@
 {
   "version": 1,
   "style": {
-    "file": "assets/fonts-vaIe9aa_.css",
+    "file": "assets/fonts-CsCnqkzL.css",
     "familyStyles": {
-      "lato": "@font-face {\n  font-family: \"Lato\";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(\"/build/assets/lato-400-normal-DXRmO6t1.woff2\") format(\"woff2\");\n}\n\n@font-face {\n  font-family: \"Lato\";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url(\"/build/assets/lato-700-normal-D0hIvJyG.woff2\") format(\"woff2\");\n}\n\n@font-face {\n  font-family: \"Lato\";\n  font-style: normal;\n  font-weight: 900;\n  font-display: swap;\n  src: url(\"/build/assets/lato-900-normal-VL-2tOya.woff2\") format(\"woff2\");\n}\n\n.font-lato {\n  font-family: var(--font-lato);\n}"
+      "lato": "@font-face {\n  font-family: \"Lato\";\n  font-style: normal;\n  font-weight: 400;\n  font-display: swap;\n  src: url(\"/build/assets/lato-400-normal-DXRmO6t1.woff2\") format(\"woff2\");\n}\n\n@font-face {\n  font-family: \"Lato\";\n  font-style: normal;\n  font-weight: 700;\n  font-display: swap;\n  src: url(\"/build/assets/lato-700-normal-D0hIvJyG.woff2\") format(\"woff2\");\n}\n\n.font-lato {\n  font-family: var(--font-lato);\n}"
     },
     "variables": {
       "lato": "--font-lato: \"Lato\", \"Lato fallback\";"
@@ -28,14 +28,6 @@
           "files": [
             {
               "file": "assets/lato-700-normal-D0hIvJyG.woff2",
-              "format": "woff2"
-            }
-          ]
-        },
-        "900:normal": {
-          "files": [
-            {
-              "file": "assets/lato-900-normal-VL-2tOya.woff2",
               "format": "woff2"
             }
           ]

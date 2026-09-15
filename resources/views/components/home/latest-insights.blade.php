@@ -35,11 +35,11 @@
                             <div class="p-5 sm:p-6">
                                 <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
                                     <p class="home-card-kicker">{{ $primaryItem->display_category }}</p>
-                                    @if ($primaryItem->published_at)<p class="text-xs font-semibold text-slate-500">{{ $primaryItem->published_at->translatedFormat('d M Y') }}</p>@endif
+                                    @if ($primaryItem->published_at)<p class="type-role-meta font-normal text-slate-500">{{ $primaryItem->published_at->translatedFormat('d M Y') }}</p>@endif
                                 </div>
                                 <h3 class="mt-3 line-clamp-3 text-[22px] font-extrabold leading-[1.24] tracking-[-0.018em] text-brand-navy sm:text-2xl">{{ $primaryItem->title }}</h3>
                                 <div class="mt-4 flex flex-wrap items-center justify-between gap-x-5 gap-y-3">
-                                    <div class="flex min-w-0 flex-wrap gap-x-2 gap-y-1 text-xs font-bold leading-5 text-slate-500">
+                                    <div class="flex min-w-0 flex-wrap gap-x-2 gap-y-1 type-role-meta font-normal leading-5 text-slate-500">
                                         @if ($primaryItem->reading_time)<span>{{ $primaryItem->reading_time }} menit</span><span>·</span>@endif
                                         <span class="line-clamp-1">{{ $primaryItem->display_author }}</span>
                                     </div>
@@ -63,7 +63,7 @@
                                         <div class="flex min-w-0 flex-col py-0.5">
                                             <p class="home-card-kicker line-clamp-1">{{ $item->display_category }}</p>
                                             <h3 class="mt-1.5 line-clamp-3 text-[15px] font-bold leading-[1.35] text-brand-navy sm:text-base">{{ $item->title }}</h3>
-                                            <div class="mt-auto flex flex-wrap gap-x-2 pt-2 text-xs font-semibold text-slate-500">
+                                            <div class="mt-auto flex flex-wrap gap-x-2 pt-2 type-role-meta font-normal text-slate-500">
                                                 @if ($item->published_at)<span>{{ $item->published_at->translatedFormat('d M Y') }}</span>@endif
                                                 @if ($item->reading_time)<span>· {{ $item->reading_time }} menit</span>@endif
                                             </div>

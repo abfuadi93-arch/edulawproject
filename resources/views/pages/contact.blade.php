@@ -87,7 +87,7 @@
     </x-shared.primary-hero>
 
     {{-- Contact Channels --}}
-    <section class="bg-white py-9 sm:py-10 lg:py-11">
+    <section class="bg-white channel-section">
         <div class="section-shell">
             <div class="max-w-3xl">
                 <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
@@ -166,7 +166,7 @@
     </section>
 
     {{-- Form Section --}}
-    <section id="form-kontak" class="scroll-mt-20 py-9 sm:py-10 lg:py-11">
+    <section id="form-kontak" class="scroll-mt-20 channel-section">
         <div class="section-shell grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <aside>
                 <div class="sticky top-24 rounded-[14px] bg-brand-navy p-6 text-white sm:p-7">
@@ -218,7 +218,7 @@
     </section>
 
     {{-- FAQ --}}
-    <section class="bg-white py-9 sm:py-10 lg:py-11">
+    <section class="bg-white channel-section">
         <div class="section-shell grid gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:items-start">
             <div>
                 <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">

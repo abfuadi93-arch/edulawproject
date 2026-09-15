@@ -43,8 +43,8 @@
 
                 <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8">
                     <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-[#f0c55e]">Video Pilihan</p>
-                    <h3 class="mt-2 line-clamp-2 text-2xl font-black leading-[1.2] text-white drop-shadow-sm sm:text-3xl">{{ $item->title }}</h3>
-                    <p class="mt-3 text-xs font-bold text-white/75">{{ $meta }}</p>
+                    <h3 class="type-role-card mt-2 line-clamp-2 text-2xl font-black leading-[1.2] text-white drop-shadow-sm sm:text-3xl">{{ $item->title }}</h3>
+                    <p class="mt-3 type-role-meta font-normal text-white/75">{{ $meta }}</p>
                     <span class="mt-4 inline-flex text-sm font-black text-white">Tonton Video →</span>
                 </div>
             </div>
@@ -52,7 +52,7 @@
     </article>
 @else
     <article data-featured-media data-channel-feature-card {{ $attributes->class('channel-feature-card group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10') }}>
-        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,1.13fr)_minmax(360px,1fr)]">
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
             <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:aspect-video lg:h-auto lg:min-h-0 lg:self-center">
                 <div class="absolute inset-0 grid place-items-center text-brand-navy/35" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
@@ -77,12 +77,12 @@
                 </span>
             </div>
 
-            <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
+            <div class="flex min-w-0 flex-col justify-center channel-feature-content">
                 <div class="flex flex-wrap items-center gap-2">
                     <span class="channel-feature-badge bg-[#EAF2FF] text-brand-navy">YouTube</span>
                     <span class="channel-feature-badge bg-[#DFF7EF] text-[#087B65]">Featured</span>
                 </div>
-                <h2 class="channel-feature-title">{{ $item->title }}</h2>
+                <h2 class="type-role-feature channel-feature-title">{{ $item->title }}</h2>
                 @if ($summary !== '')
                     <p class="channel-feature-summary">{{ $summary }}</p>
                 @endif

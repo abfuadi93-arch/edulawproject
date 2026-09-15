@@ -136,7 +136,7 @@
         display: flex;
         flex-wrap: wrap;
         font-size: .78rem;
-        font-weight: 800;
+        font-weight: 700;
         gap: .55rem;
         letter-spacing: .02em;
     }
@@ -182,7 +182,7 @@
     .profile-hero__title {
         color: var(--profile-white);
         font-size: clamp(3rem, 5.8vw, 5.25rem);
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: -.04em;
         line-height: .96;
         margin-top: 1.35rem;
@@ -197,7 +197,7 @@
         display: flex;
         flex-wrap: wrap;
         font-size: .95rem;
-        font-weight: 800;
+        font-weight: 700;
         gap: .6rem .75rem;
         line-height: 1.5;
         margin-top: 1.5rem;
@@ -255,7 +255,7 @@
         color: var(--profile-white);
         display: flex;
         font-size: 4rem;
-        font-weight: 950;
+        font-weight: 900;
         justify-content: center;
     }
 
@@ -285,7 +285,7 @@
         color: var(--profile-navy);
         display: block;
         font-size: 1.2rem;
-        font-weight: 950;
+        font-weight: 900;
         line-height: 1;
     }
 
@@ -331,7 +331,7 @@
     .profile-kicker {
         color: var(--profile-gold);
         font-size: .72rem;
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: .14em;
         text-transform: uppercase;
     }
@@ -339,7 +339,7 @@
     .profile-heading {
         color: var(--profile-navy);
         font-size: clamp(1.55rem, 2vw, 2rem);
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: 0;
         line-height: 1.1;
     }
@@ -359,7 +359,7 @@
     .profile-info-list dt {
         color: rgba(16, 42, 76, .44);
         font-size: .68rem;
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: .12em;
         text-transform: uppercase;
     }
@@ -367,7 +367,7 @@
     .profile-info-list dd {
         color: var(--profile-navy);
         font-size: .92rem;
-        font-weight: 850;
+        font-weight: 700;
         line-height: 1.45;
         margin-top: .25rem;
     }
@@ -385,7 +385,7 @@
         color: var(--profile-navy);
         display: inline-flex;
         font-size: .76rem;
-        font-weight: 850;
+        font-weight: 700;
         line-height: 1;
         padding: .52rem .72rem;
     }
@@ -408,7 +408,7 @@
         color: var(--profile-gold);
         flex: none;
         font-size: .86rem;
-        font-weight: 950;
+        font-weight: 900;
         white-space: nowrap;
     }
 
@@ -459,7 +459,7 @@
     .profile-card-meta {
         color: var(--profile-gold);
         font-size: .7rem;
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: .12em;
         text-transform: uppercase;
     }
@@ -467,7 +467,7 @@
     .profile-card-title {
         color: var(--profile-navy);
         font-size: 1.12rem;
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: 0;
         line-height: 1.25;
         margin-top: .45rem;
@@ -491,7 +491,7 @@
         display: flex;
         flex-wrap: wrap;
         font-size: .78rem;
-        font-weight: 850;
+        font-weight: 700;
         gap: .45rem;
         margin-top: .9rem;
     }
@@ -505,7 +505,7 @@
     .profile-subhead {
         color: rgba(16, 42, 76, .5);
         font-size: .72rem;
-        font-weight: 950;
+        font-weight: 900;
         letter-spacing: .12em;
         margin-bottom: .1rem;
         text-transform: uppercase;
@@ -528,7 +528,7 @@
         color: var(--profile-navy);
         display: -webkit-box;
         font-size: .98rem;
-        font-weight: 950;
+        font-weight: 900;
         -webkit-box-orient: vertical;
         -webkit-line-clamp: 2;
         line-clamp: 2;
@@ -562,7 +562,7 @@
         display: inline-flex;
         flex: none;
         font-size: .78rem;
-        font-weight: 950;
+        font-weight: 900;
         min-height: 2.2rem;
         padding-inline: .85rem;
     }
@@ -594,7 +594,7 @@
     .profile-empty strong {
         color: var(--profile-navy);
         font-size: 1.05rem;
-        font-weight: 950;
+        font-weight: 900;
     }
 
     .profile-empty p {
@@ -977,7 +977,7 @@
                             </div>
                             <div class="profile-featured-body">
                                 <p class="profile-card-meta">{{ $featuredInsight->display_category }}</p>
-                                <h3 class="profile-card-title">{{ $featuredInsight->title }}</h3>
+                                <h3 class="type-role-card profile-card-title">{{ $featuredInsight->title }}</h3>
                                 <p class="profile-card-desc">{{ $excerpt($featuredInsight->excerpt ?: $featuredInsight->content, 165) }}</p>
                                 <div class="profile-card-foot">
                                     <span>{{ $publishedDate($featuredInsight->published_at) }}</span>
@@ -999,7 +999,7 @@
                                             @endif
                                         </div>
                                         <div class="min-w-0">
-                                            <h3 class="profile-compact-title">{{ $insight->title }}</h3>
+                                            <h3 class="type-role-compact profile-compact-title">{{ $insight->title }}</h3>
                                             <div class="profile-card-foot">
                                                 <span>{{ $insight->display_category }}</span>
                                                 <span aria-hidden="true">&middot;</span>
@@ -1044,7 +1044,7 @@
                                 <article class="profile-publication-card">
                                     <div class="profile-publication-card__body">
                                         <p class="profile-card-meta">{{ $publication->type?->name ?: 'Publikasi' }}</p>
-                                        <h3 class="profile-card-title">{{ $publication->title }}</h3>
+                                        <h3 class="type-role-card profile-card-title">{{ $publication->title }}</h3>
                                         <div class="profile-card-foot">
                                             <span>{{ $publishedDate($publication->published_at) }}</span>
                                             @if ($publication->page_count)

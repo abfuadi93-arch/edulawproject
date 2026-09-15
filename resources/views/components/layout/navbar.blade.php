@@ -79,7 +79,7 @@
                         {{ $siteName }}
                     </div>
 
-                    <div class="hidden text-xs font-medium text-slate-500 sm:block">
+                    <div class="hidden type-role-meta font-medium text-slate-500 sm:block">
                         {{ $navSubtitle }}
                     </div>
                 </div>

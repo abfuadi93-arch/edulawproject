@@ -16,7 +16,7 @@
 @endphp
 
 <div class="mb-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-    <h2 id="program-active-title" class="text-sm font-black uppercase tracking-[0.14em] text-brand-navy">
+    <h2 id="program-active-title" class="type-role-label text-sm font-black uppercase tracking-[0.14em] text-brand-navy">
         Program Aktif ({{ $total }})
     </h2>
 

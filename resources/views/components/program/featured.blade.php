@@ -25,7 +25,7 @@
                 Featured Program
             </div>
 
-            <article class="channel-feature-card grid overflow-hidden rounded-2xl border border-[#dce5e3] bg-white lg:grid-cols-[0.47fr_0.53fr]" data-channel-feature-card>
+            <article class="channel-feature-card grid overflow-hidden rounded-2xl border border-[#dce5e3] bg-white lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]" data-channel-feature-card>
                 <a href="{{ $detailUrl }}" class="group relative min-h-[300px] overflow-hidden bg-[#102B4B] sm:min-h-[360px] lg:h-full lg:min-h-0">
                     @if ($image)
                         <img
@@ -40,7 +40,7 @@
                     <div class="absolute inset-0 bg-linear-to-t from-[#071426]/55 via-transparent to-transparent"></div>
                 </a>
 
-                <div class="flex flex-col justify-center p-6 sm:p-8 lg:p-6">
+                <div class="flex flex-col justify-center channel-feature-content">
                     <div class="flex flex-wrap items-center gap-2">
                         <span class="channel-feature-badge bg-[#EAF2FF] text-brand-navy">
                             {{ $category }}
@@ -50,7 +50,7 @@
                         </span>
                     </div>
 
-                    <h2 class="channel-feature-title">
+                    <h2 class="type-role-feature channel-feature-title">
                         {{ $title }}
                     </h2>
 

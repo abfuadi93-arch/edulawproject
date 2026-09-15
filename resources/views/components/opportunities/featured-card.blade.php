@@ -12,7 +12,7 @@
 @endphp
 
 <article class="channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity data-channel-feature-card>
-    <div class="grid h-full md:grid-cols-[minmax(15rem,.8fr)_minmax(0,1.7fr)] lg:grid-cols-[365px_minmax(0,1fr)]">
+    <div class="grid h-full md:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
         <div class="relative flex min-h-[300px] items-center justify-center sm:min-h-[365px] lg:min-h-0">
             <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative flex size-full min-h-[300px] items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] px-6 text-center text-brand-navy" aria-hidden="true">
@@ -36,7 +36,7 @@
             </a>
         </div>
 
-        <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
+        <div class="flex min-w-0 flex-col justify-center channel-feature-content">
             <div class="flex flex-wrap items-center gap-2">
                 <span class="channel-feature-badge bg-[#fff4d7] text-[#80500a]">
                     {{ $opportunity->display_type }}
@@ -46,7 +46,7 @@
                 </span>
             </div>
 
-            <h2 class="channel-feature-title">
+            <h2 class="type-role-feature channel-feature-title">
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="rounded-sm transition hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
                     {{ $opportunity->title }}
                 </a>
@@ -59,7 +59,7 @@
             @endif
 
             @if ($opportunity->organizer || $opportunity->target_audience)
-                <p class="mt-2 line-clamp-1 text-sm font-bold text-slate-500 lg:text-xs">
+                <p class="mt-2 line-clamp-1 text-sm font-normal text-slate-500 lg:text-xs">
                     @if ($opportunity->organizer){{ $opportunity->organizer }}@endif
                     @if ($opportunity->organizer && $opportunity->target_audience)<span aria-hidden="true"> · </span>@endif
                     @if ($opportunity->target_audience)Target: {{ $opportunity->target_audience }}@endif

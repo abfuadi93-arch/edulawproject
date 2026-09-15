@@ -48,7 +48,7 @@
                                 <span class="relative mt-auto p-4 text-white sm:p-5">
                                     <span class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-amber">{{ $categoryName($leadPopular) }}</span>
                                     <span class="mt-1.5 block line-clamp-3 text-lg font-black leading-snug">{{ $leadPopular->title }}</span>
-                                    <span class="mt-2 block text-xs font-semibold text-white/75">{{ $publishedDate($leadPopular) }} · {{ number_format((int) $leadPopular->getAttribute('visit_count'), 0, ',', '.') }} kali dibaca</span>
+                                    <span class="mt-2 block type-role-meta font-normal text-white/75">{{ $publishedDate($leadPopular) }} · {{ number_format((int) $leadPopular->getAttribute('visit_count'), 0, ',', '.') }} kali dibaca</span>
                                 </span>
                             </a>
 

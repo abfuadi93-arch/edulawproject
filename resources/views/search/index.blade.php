@@ -180,7 +180,7 @@
                                     </p>
 
                                     <div class="mt-5 flex flex-wrap items-center justify-between gap-4">
-                                        <p class="text-xs font-semibold text-slate-500">
+                                        <p class="type-role-meta font-normal text-slate-500">
                                             {{ $result['date'] }}
                                         </p>
 

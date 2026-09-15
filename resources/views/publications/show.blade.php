@@ -298,7 +298,7 @@
                                         <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
                                             {{ $relatedTypeName($relatedPublication) }}
                                         </p>
-                                        <h3 class="mt-3 line-clamp-2 text-base font-black leading-snug text-brand-navy">
+                                        <h3 class="type-role-compact mt-3 line-clamp-2 text-base font-black leading-snug text-brand-navy">
                                             {{ $relatedPublication->title }}
                                         </h3>
                                         <p class="mt-3 text-sm font-bold text-slate-500">
@@ -352,7 +352,7 @@
                         <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
                             Referensi Akademik
                         </p>
-                        <h2 class="mt-2 text-xl font-black tracking-tight text-brand-navy">
+                        <h2 class="type-role-subheading mt-2 text-xl font-black tracking-tight text-brand-navy">
                             Cara Mengutip
                         </h2>
                         <p class="mt-2 text-sm leading-6 text-slate-500">

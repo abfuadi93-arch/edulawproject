@@ -104,7 +104,7 @@
                             <p class="text-[10px] font-black uppercase tracking-[0.15em] text-brand-coral">
                                 {{ $definition['name'] }}
                             </p>
-                            <h3 class="mt-2 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
+                            <h3 class="type-role-card mt-2 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                                 {{ $article->title }}
                             </h3>
                             @if (filled($article->excerpt))
@@ -112,7 +112,7 @@
                                     {{ Str::limit(strip_tags($article->excerpt), 150) }}
                                 </p>
                             @endif
-                            <p class="mt-4 text-xs font-semibold text-slate-500">
+                            <p class="mt-4 type-role-meta font-normal text-slate-500">
                                 {{ Carbon::parse($article->published_at)->translatedFormat('d M Y') }}
                                 @if ($article->reading_time)
                                     · {{ $article->reading_time }} menit baca

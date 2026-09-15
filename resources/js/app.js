@@ -48,8 +48,8 @@ function initializeMobileNavigation() {
         }
     });
 
-    window.addEventListener('resize', () => {
-        if (isOpen && window.innerWidth >= 1280) {
+    window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
+        if (isOpen && event.matches) {
             setOpen(false);
         }
     });

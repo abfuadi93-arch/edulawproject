@@ -16,7 +16,7 @@
                         <p class="home-card-kicker text-slate-400">Program Pilihan</p>
                         <h3 class="home-card-title line-clamp-2">{{ $program?->display_title ?? 'Program terbaru sedang disiapkan' }}</h3>
                         @if ($program)
-                            <p class="mt-2 text-xs font-bold text-slate-500">{{ $program->event_date?->translatedFormat('d M Y') ?? 'Jadwal segera diumumkan' }}{{ $program->display_format ? ' · '.$program->display_format : '' }}</p>
+                            <p class="mt-2 type-role-meta font-normal text-slate-500">{{ $program->event_date?->translatedFormat('d M Y') ?? 'Jadwal segera diumumkan' }}{{ $program->display_format ? ' · '.$program->display_format : '' }}</p>
                             <a href="{{ route('programs.show', $program->slug) }}" class="home-card-action mt-4">Lihat Detail →</a>
                         @endif
                     </div>
@@ -30,7 +30,7 @@
                         <p class="home-card-kicker text-slate-400">Peluang Terbuka</p>
                         <h3 class="home-card-title line-clamp-2">{{ $opportunity?->title ?? 'Peluang terbaru sedang disiapkan' }}</h3>
                         @if ($opportunity)
-                            <p class="mt-2 text-xs font-bold text-slate-500">{{ $opportunity->deadline ? 'Batas akhir '.$opportunity->deadline->translatedFormat('d M Y') : 'Tenggat fleksibel' }}</p>
+                            <p class="mt-2 type-role-meta font-normal text-slate-500">{{ $opportunity->deadline ? 'Batas akhir '.$opportunity->deadline->translatedFormat('d M Y') : 'Tenggat fleksibel' }}</p>
                             <a href="{{ $opportunity->external_url }}" target="_blank" rel="noopener noreferrer" class="home-card-action mt-4">Lihat Informasi Resmi ↗</a>
                         @endif
                     </div>
@@ -44,7 +44,7 @@
                         <p class="home-card-kicker text-slate-400">Pilihan Editor</p>
                         <h3 class="home-card-title line-clamp-2">{{ $insight?->title ?? 'Editorial pilihan sedang disiapkan' }}</h3>
                         @if ($insight)
-                            <p class="mt-2 text-xs font-bold text-slate-500">{{ $insight->display_category }}{{ $insight->reading_time ? ' · '.$insight->reading_time.' menit baca' : '' }}</p>
+                            <p class="mt-2 type-role-meta font-normal text-slate-500">{{ $insight->display_category }}{{ $insight->reading_time ? ' · '.$insight->reading_time.' menit baca' : '' }}</p>
                             <a href="{{ route('insights.show', $insight->slug) }}" class="home-card-action mt-4">Baca Editorial →</a>
                         @endif
                     </div>

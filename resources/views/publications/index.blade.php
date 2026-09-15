@@ -21,9 +21,7 @@
 
 @push('styles')
 <style>
-    [data-publication-page] .publication-feature { height: auto; min-height: 365px; }
-    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
-    [data-publication-page] .publication-feature-media,
+    [data-publication-page] .publication-feature-cover { position: absolute; inset: 0; width: 100%; height: 100%; object-position: center; }
     [data-publication-page] .repository-cover { aspect-ratio: 210 / 297; height: auto; align-self: start; }
     [data-publication-page] .publication-feature-fallback { position: absolute; inset: 0; width: 100%; height: 100%; }
     [data-publication-page] .publication-feature-fallback:not([hidden]),
@@ -176,8 +174,8 @@
                 <p class="channel-feature-label"><span class="text-[#D99A25]" aria-hidden="true">★</span> Publikasi Utama</p>
 
                 <article class="publication-feature channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-channel-feature-card>
-                    <div class="grid h-full md:grid-cols-[minmax(0,35fr)_minmax(0,65fr)]">
-                        <div class="min-w-0 self-start">
+                    <div class="grid h-full lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
+                        <div class="publication-feature-media-shell min-w-0">
                             <a href="{{ route('publications.show', $featured->slug) }}" class="publication-feature-media relative block w-full bg-slate-100 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy" aria-label="Baca {{ $featured->title }}">
                                 @if ($featuredCover)
                                     <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover object-center" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
@@ -185,12 +183,12 @@
                                 <span @if ($featuredCover) hidden @endif class="publication-feature-fallback rounded-lg border border-slate-200 bg-white p-5 text-center text-sm text-slate-400">Pratinjau PDF belum tersedia</span>
                             </a>
                         </div>
-                        <div class="flex min-w-0 flex-col justify-center p-6 sm:p-8 lg:p-6">
+                        <div class="flex min-w-0 flex-col justify-center channel-feature-content">
                             <div class="flex flex-wrap items-center gap-2">
                                 <span class="channel-feature-badge bg-[#fff4d7] text-[#80500a]">{{ $publicationTypeName($featured) }}</span>
                                 <span class="channel-feature-badge bg-emerald-50 text-emerald-700">Pilihan Riset</span>
                             </div>
-                            <h2 id="featured-publication-heading" class="channel-feature-title">
+                            <h2 id="featured-publication-heading" class="type-role-feature channel-feature-title">
                                 <a href="{{ route('publications.show', $featured->slug) }}" class="rounded-sm transition hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">{{ $featured->title }}</a>
                             </h2>
                             <p class="channel-feature-summary line-clamp-2">{{ $publicationExcerpt($featured, 280) }}</p>
@@ -303,7 +301,7 @@
                                     <span class="rounded-full bg-[#fff1c9] px-2 py-1 text-[10px] font-bold text-[#875b12]">Pilihan</span>
                                 @endif
                             </div>
-                            <h3 class="mt-2 text-base font-black leading-snug text-brand-ink sm:text-lg [overflow-wrap:anywhere]">
+                            <h3 class="type-role-compact mt-2 text-base font-black leading-snug text-brand-ink sm:text-lg [overflow-wrap:anywhere]">
                                 <a href="{{ route('publications.show', $publication->slug) }}">{{ $publication->title }}</a>
                             </h3>
                             <div class="mt-4 grid grid-cols-[minmax(0,7fr)_minmax(0,3fr)] items-center gap-3" data-publication-card-footer>
@@ -318,7 +316,7 @@
                                 @endif
                                 <span class="repository-author-name min-w-0" title="{{ $publicationAuthors($publication) }}">{{ $publicationAuthors($publication) }}</span>
                             </div>
-                            <time class="mt-1.5 block text-xs text-slate-500" datetime="{{ optional($publication->published_at)->toDateString() }}">{{ $publicationDate($publication) }}</time>
+                            <time class="mt-1.5 block type-role-meta text-slate-500" datetime="{{ optional($publication->published_at)->toDateString() }}">{{ $publicationDate($publication) }}</time>
                                 </div>
                                 <a href="{{ route('publications.show', $publication->slug) }}" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 py-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">Lihat Detail</a>
                             </div>

@@ -31,6 +31,6 @@
             <a href="{{ $pageUrl($paginator->nextPageUrl()) }}" aria-label="Halaman berikutnya" class="grid h-9 w-9 place-items-center rounded-lg border border-slate-200 bg-white text-sm font-bold text-brand-navy">→</a>
         @endif
 
-        <span class="ml-2 text-xs font-semibold text-slate-500">Halaman {{ $paginator->currentPage() }} dari {{ $paginator->lastPage() }}</span>
+        <span class="ml-2 type-role-meta font-normal text-slate-500">Halaman {{ $paginator->currentPage() }} dari {{ $paginator->lastPage() }}</span>
     </nav>
 @endif

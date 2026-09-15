@@ -60,7 +60,7 @@
                             <p class="text-sm font-extrabold text-slate-950">
                                 Muat ulang halaman
                             </p>
-                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                            <p class="mt-1 type-role-meta leading-5 text-slate-500">
                                 Coba refresh browser beberapa saat lagi.
                             </p>
                         </div>
@@ -69,7 +69,7 @@
                             <p class="text-sm font-extrabold text-slate-950">
                                 Kembali ke beranda
                             </p>
-                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                            <p class="mt-1 type-role-meta leading-5 text-slate-500">
                                 Akses kembali kanal utama Edulaw Project.
                             </p>
                         </div>
@@ -78,7 +78,7 @@
                             <p class="text-sm font-extrabold text-slate-950">
                                 Laporkan kendala
                             </p>
-                            <p class="mt-1 text-xs leading-5 text-slate-500">
+                            <p class="mt-1 type-role-meta leading-5 text-slate-500">
                                 Hubungi kami jika kendala terus terjadi.
                             </p>
                         </div>

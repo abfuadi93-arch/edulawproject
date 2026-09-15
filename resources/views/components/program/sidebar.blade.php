@@ -8,7 +8,7 @@
 
 <aside {{ $attributes->merge(['class' => 'space-y-5 xl:sticky xl:top-24 xl:self-start']) }}>
     <section class="rounded-[24px] border border-slate-200 bg-white p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
-        <h2 class="text-base font-black tracking-normal text-brand-ink">Untuk Siapa?</h2>
+        <h2 class="type-role-compact text-base font-black tracking-normal text-brand-ink">Untuk Siapa?</h2>
 
         <div class="mt-4 flex flex-wrap gap-2">
             @foreach ($audiences as $audience)
@@ -21,7 +21,7 @@
 
     <section class="overflow-hidden rounded-[24px] border border-[#EBDCB9] bg-[#FFF8EA] p-5 shadow-[0_18px_45px_rgba(15,23,42,0.06)]">
         <p class="text-[11px] font-black uppercase tracking-[0.18em] text-[#B87316]">Ajukan Program</p>
-        <h2 class="mt-2 text-xl font-black leading-tight tracking-normal text-brand-ink">
+        <h2 class="type-role-subheading mt-2 text-xl font-black leading-tight tracking-normal text-brand-ink">
             Punya ide program? Ajukan kolaborasi bersama Edulaw.
         </h2>
         <p class="mt-3 text-sm leading-6 text-slate-600">

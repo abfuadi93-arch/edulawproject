@@ -231,7 +231,7 @@
     $ctaSecondaryLabel = $ctaMeta['secondary_label'] ?? 'Lihat Program';
 @endphp
 
-<div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div class="about-page overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.primary-hero
         :title="$aboutHero?->title ?? 'Edulaw Project'"
         :eyebrow="$aboutHero?->eyebrow ?? 'Tentang Kami'"
@@ -249,10 +249,10 @@
 
     <section class="channel-section bg-white" aria-labelledby="why-edulaw-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div class="channel-feature-card grid gap-8 lg:grid-cols-2 lg:items-center lg:gap-12" data-channel-feature-card>
+            <div class="grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
                 <div>
                     <p class="text-[11px] font-black uppercase tracking-[0.12em] text-brand-navy">{{ $aboutWhy?->eyebrow ?? 'Mengapa Edulaw Hadir?' }}</p>
-                    <h2 id="why-edulaw-heading" class="channel-feature-title">{{ $aboutWhy?->title ?? 'Mengapa Edulaw Hadir?' }}</h2>
+                    <h2 id="why-edulaw-heading" class="type-role-feature channel-feature-title">{{ $aboutWhy?->title ?? 'Mengapa Edulaw Hadir?' }}</h2>
                     <div class="mt-3 space-y-3 text-sm leading-6 text-slate-600 sm:text-base">
                         @forelse ($whyParagraphs as $paragraph)
                             <p>{{ $paragraph }}</p>
@@ -264,9 +264,9 @@
                     <blockquote class="mt-6 border-l-4 border-brand-amber pl-5 font-display text-xl font-black leading-snug text-brand-navy">“Pengetahuan hukum seharusnya menjadi milik semua, bukan hanya mereka yang berada di ruang kuasa.”</blockquote>
                 </div>
                 <div class="min-w-0">
-                    <div class="rounded-xl bg-[#f7f8fa] p-3">
-                        <h3 class="text-[11px] font-extrabold uppercase tracking-[0.12em] text-brand-navy">Founder &amp; Co-Founder</h3>
-                        <div class="mt-2.5 grid grid-cols-4 gap-2">
+                    <div class="rounded-xl bg-[#f7f8fa] p-4">
+                        <h3 class="type-role-label text-[11px] font-extrabold uppercase tracking-[0.12em] text-brand-navy">Founder &amp; Co-Founder</h3>
+                        <div class="about-founder-grid mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                             @foreach ($leaders as $leader)
                                 <x-about.leadership-card :person="$leader" :profile="$profileFor($leader)" :role="$leader['profile_role']" mini />
                             @endforeach
@@ -281,11 +281,11 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">Visi &amp; Misi</p>
             <h2 id="vision-mission-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Arah kerja Edulaw Project</h2>
-            <div class="mt-5 grid items-stretch gap-4 lg:grid-cols-[9fr_11fr]">
-                <article class="relative flex h-full flex-col overflow-hidden rounded-[14px] bg-brand-navy p-5 text-white sm:p-6 lg:p-7">
+            <div class="mt-6 grid items-stretch gap-6 lg:grid-cols-2">
+                <article class="relative flex h-full flex-col overflow-hidden rounded-[14px] bg-brand-navy p-5 text-white sm:p-6">
                     <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-amber">Visi</p>
                     <img src="{{ asset('images/logo/edulaw-logo-white.png') }}" alt="Edulaw Project" class="absolute right-5 top-5 h-7 w-auto object-contain opacity-90 sm:right-6 sm:top-6 sm:h-8" loading="lazy">
-                    <h3 class="mt-12 text-balance font-display text-xl font-black leading-snug text-white sm:text-2xl lg:mt-auto lg:pt-12">{{ $vision }}</h3>
+                    <h3 class="mt-8 text-balance font-display text-xl font-black leading-snug text-white sm:text-2xl lg:my-auto lg:pt-8">{{ $vision }}</h3>
                 </article>
                 <article class="h-full rounded-[14px] bg-white p-5 sm:p-6">
                     <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-navy">Misi</p>
@@ -306,7 +306,7 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutFocusIntro?->eyebrow ?? 'Pilar Edulaw' }}</p>
             <h2 id="about-pillars-heading" class="mt-2 w-full font-display text-3xl font-black leading-tight text-brand-navy sm:text-4xl">Pendidikan, Riset &amp; Kolaborasi untuk Dampak Nyata</h2>
-            <div class="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
+            <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($focusAreas->take(4) as $item)
                     <article class="rounded-[14px] border border-slate-200 bg-white p-5">
                         <div class="flex items-center gap-3">
@@ -342,9 +342,9 @@
                         <span class="absolute inset-y-0 left-0 w-1 bg-brand-amber"></span>
                         <div class="flex items-center justify-between gap-4">
                             <p class="text-base font-black text-brand-coral">{{ $item['year'] }}</p>
-                            <span class="text-xs font-extrabold tabular-nums text-slate-400">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                            <span class="type-role-meta font-normal tabular-nums text-slate-400">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                         </div>
-                        <h3 class="mt-3 text-base font-black leading-snug text-brand-navy">{{ $item['title'] }}</h3>
+                        <h3 class="type-role-compact mt-3 text-base font-black leading-snug text-brand-navy">{{ $item['title'] }}</h3>
                         <p class="mt-2 text-[15px] leading-6 text-slate-600">{{ $item['description'] }}</p>
                     </article>
                 @endforeach
@@ -358,36 +358,39 @@
             <h2 id="about-team-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Penggerak Edulaw Project</h2>
             <p class="mt-2 w-full text-base leading-7 text-slate-600">Orang-orang yang membangun arah institusi, mengembangkan program, serta menjaga kualitas pengetahuan hukum Edulaw.</p>
 
-            @if ($directors->isNotEmpty())
-                <div class="mt-10">
-                    <div class="flex items-center gap-4"><h3 class="shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">Director / Leadership</h3><span class="h-px flex-1 bg-slate-200"></span></div>
-                    <div class="mt-5 grid gap-6 md:grid-cols-2">
-                        @foreach ($directors as $director)
-                            <x-about.leadership-card :person="$director" :profile="$profileFor($director)" role="Director" compact />
-                        @endforeach
-                    </div>
-                </div>
-            @endif
-
-            @if ($managers->isNotEmpty())
-                <div class="mt-12">
-                    <div class="flex items-center gap-4"><h3 class="shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">Manager</h3><span class="h-px flex-1 bg-slate-200"></span></div>
-                    <div class="mt-5 grid grid-cols-2 gap-5 lg:grid-cols-4">
-                        @foreach ($managers as $manager)
-                            <x-about.team-card :person="$manager" :profile="$profileFor($manager)" />
-                        @endforeach
-                    </div>
+            @if ($directors->isNotEmpty() || $managers->isNotEmpty())
+                <div @class(['about-leadership-grid mt-8 grid gap-4', 'lg:grid-cols-3' => $directors->isNotEmpty() && $managers->isNotEmpty()])>
+                    @if ($directors->isNotEmpty())
+                        <div class="flex min-w-0 flex-col">
+                            <div class="flex items-center gap-4"><h3 class="type-role-label shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">Director / Leadership</h3><span class="h-px flex-1 bg-slate-200"></span></div>
+                            <div class="about-leadership-list mt-5 grid flex-1 gap-4">
+                                @foreach ($directors as $director)
+                                    <x-about.team-card :person="$director" :profile="$profileFor($director)" />
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                    @if ($managers->isNotEmpty())
+                        <div @class(['flex min-w-0 flex-col', 'lg:col-span-2' => $directors->isNotEmpty()])>
+                            <div class="flex items-center gap-4"><h3 class="type-role-label shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">Manager</h3><span class="h-px flex-1 bg-slate-200"></span></div>
+                            <div class="about-leadership-list mt-5 grid flex-1 gap-4 lg:grid-cols-2 lg:grid-rows-2 lg:grid-flow-col">
+                                @foreach ($managers as $manager)
+                                    <x-about.team-card :person="$manager" :profile="$profileFor($manager)" />
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
                 </div>
             @endif
 
             @foreach ($teamGroups as $group)
                 <div class="mt-10">
                     <div class="flex items-center gap-4">
-                        <h3 class="shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">{{ $group['label'] }}</h3>
+                        <h3 class="type-role-label shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">{{ $group['label'] }}</h3>
                         <span class="h-px flex-1 bg-slate-200"></span>
-                        <span class="shrink-0 text-xs font-bold text-slate-500">{{ $group['members']->count() }} profil</span>
+                        <span class="shrink-0 type-role-meta font-normal text-slate-500">{{ $group['members']->count() }} profil</span>
                     </div>
-                    <div class="mt-5 grid grid-cols-2 gap-5 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6">
+                    <div class="about-team-grid mt-5 grid grid-cols-2 gap-x-4 gap-y-6 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-8">
                         @foreach ($group['members'] as $member)
                             <x-about.team-card :person="$member" :profile="$profileFor($member)" />
                         @endforeach

@@ -41,7 +41,7 @@
                                 {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                             </span>
                             <div class="min-w-0">
-                                <h2 class="text-lg font-black leading-snug text-brand-navy">{{ $item['title'] }}</h2>
+                                <h2 class="type-role-subheading text-lg font-black leading-snug text-brand-navy">{{ $item['title'] }}</h2>
                                 <p class="mt-2 text-[15px] leading-6 text-slate-600">{{ $item['description'] }}</p>
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                 <div class="divide-y divide-slate-200">
                     @foreach ($sections as $sectionIndex => $section)
                         <section id="bagian-{{ $sectionIndex + 1 }}" class="scroll-mt-24 py-7 first:pt-0 last:pb-0">
-                            <h2 class="font-display text-xl font-black leading-snug text-brand-navy sm:text-2xl">
+                            <h2 class="type-role-subheading font-display text-xl font-black leading-snug text-brand-navy sm:text-2xl">
                                 {{ $section['title'] }}
                             </h2>
 

@@ -19,6 +19,20 @@ const tinyMcePlugins = [
     'wordcount',
 ];
 
+const tinyMceAssets = [
+    'tinymce.min.js',
+    'icons/default/icons.min.js',
+    'models/dom/model.min.js',
+    'themes/silver/theme.min.js',
+    'skins/ui/oxide/skin.min.css',
+    'skins/ui/oxide/content.min.css',
+    'skins/ui/oxide-dark/skin.min.css',
+    'skins/ui/oxide-dark/content.min.css',
+    'skins/content/default/content.css',
+    'skins/content/dark/content.css',
+    ...tinyMcePlugins.map((plugin) => `plugins/${plugin}/plugin.min.js`),
+];
+
 export default defineConfig({
     build: {
         rolldownOptions: {
@@ -31,6 +45,7 @@ export default defineConfig({
         laravel({
             input: [
                 'resources/css/app.css',
+                'resources/css/home.css',
                 'resources/css/filament/admin/theme.css',
                 'resources/js/app.js',
                 'resources/js/filament/rich-editor-footnote.js',
@@ -39,63 +54,20 @@ export default defineConfig({
             refresh: true,
             fonts: [
                 local('Lato', {
-                    variants: [
-                        { src: 'resources/fonts/lato/lato-400-latin.woff2', weight: 400 },
-                        { src: 'resources/fonts/lato/lato-700-latin.woff2', weight: 700 },
-                        { src: 'resources/fonts/lato/lato-900-latin.woff2', weight: 900 },
-                    ],
+                    variants: [400, 700].map((weight) => ({
+                        src: `resources/fonts/lato/lato-${weight}-latin.woff2`,
+                        weight,
+                    })),
                     preload: false,
                 }),
             ],
         }),
         tailwindcss(),
         viteStaticCopy({
-            targets: [
-                {
-                    src: 'node_modules/tinymce/tinymce.min.js',
-                    dest: 'tinymce',
-                },
-                {
-                    src: 'node_modules/tinymce/icons/default/icons.min.js',
-                    dest: 'tinymce/icons/default',
-                },
-                {
-                    src: 'node_modules/tinymce/models/dom/model.min.js',
-                    dest: 'tinymce/models/dom',
-                },
-                {
-                    src: 'node_modules/tinymce/themes/silver/theme.min.js',
-                    dest: 'tinymce/themes/silver',
-                },
-                {
-                    src: 'node_modules/tinymce/skins/ui/oxide/skin.min.css',
-                    dest: 'tinymce/skins/ui/oxide',
-                },
-                {
-                    src: 'node_modules/tinymce/skins/ui/oxide/content.min.css',
-                    dest: 'tinymce/skins/ui/oxide',
-                },
-                {
-                    src: 'node_modules/tinymce/skins/ui/oxide-dark/skin.min.css',
-                    dest: 'tinymce/skins/ui/oxide-dark',
-                },
-                {
-                    src: 'node_modules/tinymce/skins/ui/oxide-dark/content.min.css',
-                    dest: 'tinymce/skins/ui/oxide-dark',
-                },
-                {
-                    src: 'node_modules/tinymce/skins/content/default/content.css',
-                    dest: 'tinymce/skins/content/default',
-                },
-                {
-                    src: 'node_modules/tinymce/skins/content/dark/content.css',
-                    dest: 'tinymce/skins/content/dark',
-                },
-                ...tinyMcePlugins.map((plugin) => ({
-                    src: `node_modules/tinymce/plugins/${plugin}/plugin.min.js`,
-                    dest: `tinymce/plugins/${plugin}`,
-                })),
-            ],
+            targets: tinyMceAssets.map((asset) => ({
+                src: `node_modules/tinymce/${asset}`,
+                dest: `tinymce/${asset.split('/').slice(0, -1).join('/')}`.replace(/\/$/, ''),
+            })),
         }),
     ],
     server: {

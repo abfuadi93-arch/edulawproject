@@ -165,7 +165,7 @@
                                     <x-multimedia.platform-badge :platform="$platform" :label="$platform === 'youtube' ? 'YouTube Shorts' : 'Instagram'" :dark="true" class="absolute left-3 top-3" />
                                     <div class="absolute inset-x-0 bottom-0 p-4">
                                         <div class="flex items-start justify-between gap-2">
-                                            <h3 class="line-clamp-2 text-sm font-black leading-snug text-white sm:text-base">{{ $item->title }}</h3>
+                                            <h3 class="type-role-compact line-clamp-2 text-sm font-black leading-snug text-white sm:text-base">{{ $item->title }}</h3>
                                             <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-amber transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         </div>
                                         <p class="mt-2 text-xs font-bold text-white/65">{{ $dateLabel($item) }}</p>
@@ -198,8 +198,8 @@
                                 </div>
 
                                 <div class="flex flex-1 flex-col p-5">
-                                    <p class="text-xs font-bold text-slate-500">{{ $dateLabel($item) }}@if ($item->photo_count) · {{ number_format($item->photo_count, 0, ',', '.') }} foto @endif</p>
-                                    <h3 class="line-clamp-2 mt-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $item->title }}</h3>
+                                    <p class="type-role-meta font-normal text-slate-500">{{ $dateLabel($item) }}@if ($item->photo_count) · {{ number_format($item->photo_count, 0, ',', '.') }} foto @endif</p>
+                                    <h3 class="type-role-card line-clamp-2 mt-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $item->title }}</h3>
                                     <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-black text-brand-navy">
                                         Buka Album
                                         <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>

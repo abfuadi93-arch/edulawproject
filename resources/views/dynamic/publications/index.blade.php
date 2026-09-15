@@ -33,7 +33,7 @@
                             <p class="text-xs font-black uppercase tracking-[0.15em] text-brand-navy">Publikasi Pilihan</p>
                             <h2 class="mt-3 text-2xl font-extrabold text-brand-ink sm:text-3xl">{{ $featuredPublication->title }}</h2>
                             <p class="mt-3 text-slate-600">{{ $featuredPublication->excerpt }}</p>
-                            <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
+                            <div class="mt-4 flex flex-wrap gap-3 type-role-meta text-slate-500">
                                 <span>{{ $featuredPublication->type?->name }}</span>
                                 <span>•</span>
                                 <span>{{ $featuredPublication->publication_date_display }}</span>
@@ -72,7 +72,7 @@
                                 <p class="text-xs font-bold uppercase tracking-[0.14em] text-brand-navy">{{ $publication->type?->name ?? 'Publikasi' }}</p>
                                 <h3 class="mt-2 text-lg font-extrabold text-brand-ink">{{ $publication->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $publication->excerpt }}</p>
-                                <p class="mt-3 text-xs text-slate-500">{{ $publication->publication_date_display }}</p>
+                                <p class="mt-3 type-role-meta text-slate-500">{{ $publication->publication_date_display }}</p>
                                 <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Baca Selengkapnya →</span>
                             </div>
                         </a>

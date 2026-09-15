@@ -35,7 +35,7 @@
                             <p class="text-xs font-black uppercase tracking-[0.15em] text-brand-navy">Opportunity Pilihan</p>
                             <h2 class="mt-3 text-2xl font-extrabold text-brand-ink sm:text-3xl">{{ $featuredOpportunity->title }}</h2>
                             <p class="mt-3 text-slate-600">{{ $featuredOpportunity->excerpt }}</p>
-                            <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
+                            <div class="mt-4 flex flex-wrap gap-3 type-role-meta text-slate-500">
                                 <span>{{ $featuredOpportunity->display_type }}</span>
                                 <span>•</span>
                                 <span>{{ optional($featuredOpportunity->deadline)->translatedFormat('d M Y') }}</span>
@@ -89,7 +89,7 @@
                                 </div>
                                 <h3 class="mt-3 text-xl font-extrabold text-brand-ink">{{ $opportunity->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $opportunity->excerpt }}</p>
-                                <div class="mt-3 text-xs text-slate-500">Batas akhir: {{ optional($opportunity->deadline)->translatedFormat('d M Y') }}</div>
+                                <div class="mt-3 type-role-meta text-slate-500">Batas akhir: {{ optional($opportunity->deadline)->translatedFormat('d M Y') }}</div>
                                 <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Lihat Informasi Resmi ↗</span>
                             </div>
                         </a>

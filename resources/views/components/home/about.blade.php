@@ -36,7 +36,7 @@
         <article class="flex overflow-hidden rounded-xl bg-[linear-gradient(145deg,#102f56_0%,#173b68_100%)] text-white">
             <div class="flex w-full flex-col px-6 py-7 sm:px-8 sm:py-8">
                 <p class="text-xs font-extrabold uppercase tracking-[0.16em] text-[#f5c451]">Dampak Edulaw</p>
-                <h2 class="mt-2 max-w-sm text-xl font-extrabold leading-tight text-white sm:text-2xl">Pengetahuan yang terus bertumbuh.</h2>
+                <h3 class="mt-2 max-w-sm text-white">Pengetahuan yang terus bertumbuh.</h3>
                 <p class="mt-3 max-w-md text-sm leading-6 text-slate-200">Kerja editorial, riset, dan kolaborasi yang terhubung dalam satu ekosistem pembelajaran hukum.</p>
                 <dl class="mt-auto grid grid-cols-3 gap-4 border-t border-white/15 pt-6" aria-label="Statistik Edulaw Project">
                     @foreach ($impactStats as $stat)

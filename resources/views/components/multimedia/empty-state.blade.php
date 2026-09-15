@@ -10,7 +10,7 @@
     <div class="min-w-0 flex-1">
         <x-multimedia.platform-badge :platform="$platform" />
 
-        <h3 class="mt-3 text-base font-black text-brand-ink">{{ $title }}</h3>
+        <h3 class="type-role-compact mt-3 text-base font-black text-brand-ink">{{ $title }}</h3>
         <p class="mt-1 text-sm leading-6 text-slate-600">{{ $description }}</p>
 
         @if ($url && $linkLabel)

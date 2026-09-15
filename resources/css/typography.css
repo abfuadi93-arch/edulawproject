@@ -1,0 +1,216 @@
+/* Golden-ratio scale, based on 16px body text.
+ * Major steps: 16 → 25.89 → 41.89 (× phi).
+ * Half/quarter steps keep card titles and captions proportionate.
+ */
+#main-content {
+    --type-phi: 1.618034;
+    --type-half-step: 1.27202;
+    --type-quarter-step: 1.127838;
+    --type-weight-body: 400;
+    --type-weight-heading: 700;
+    --site-text-body: 16px;
+    --site-text-small: calc(var(--site-text-body) / var(--type-half-step));
+    --site-text-card: calc(var(--site-text-body) * var(--type-quarter-step));
+    --site-text-subheading: calc(var(--site-text-body) * var(--type-half-step));
+    --site-text-section: calc(var(--site-text-body) * var(--type-phi));
+    --site-text-feature: var(--site-text-subheading);
+    --site-text-callout: calc(var(--site-text-section) * var(--type-half-step));
+    --site-text-title: calc(var(--site-text-section) * var(--type-phi));
+    font-family: var(--font-sans);
+    font-size: var(--site-text-body);
+    line-height: var(--type-phi);
+}
+
+#main-content :is(h1, h2, h3, h4, h5, h6) {
+    font-family: var(--font-display);
+    font-weight: var(--type-weight-heading, 700);
+    text-wrap: pretty;
+}
+
+#main-content h1 {
+    font-size: clamp(36px, 3.3vw, var(--site-text-title));
+    line-height: var(--type-quarter-step);
+    letter-spacing: -.025em;
+}
+
+/* Home hero: one half-step above the standard title on the golden scale. */
+#main-content [data-home-hero] h1 {
+    font-size: clamp(
+        calc(36px * var(--type-half-step)),
+        calc(3.3vw * var(--type-half-step)),
+        calc(var(--site-text-title) * var(--type-half-step))
+    );
+}
+
+#main-content h2 {
+    font-size: var(--site-text-section);
+    line-height: var(--type-half-step);
+    letter-spacing: -.02em;
+}
+
+#main-content h3 {
+    font-size: var(--site-text-subheading);
+    line-height: var(--type-half-step);
+    letter-spacing: -.01em;
+}
+
+#main-content h4 {
+    font-size: var(--site-text-card);
+    line-height: var(--type-half-step);
+}
+
+/* Assign a scale level by content role rather than giving every card equal emphasis. */
+#main-content :is([data-home-program], .home-latest-secondary) h3 {
+    font-size: var(--site-text-card);
+}
+
+#main-content :is([data-home-publication], [data-home-opportunity-secondary], [data-home-multimedia-secondary], #topik-editorial) h3 {
+    font-size: var(--site-text-body);
+    line-height: var(--type-half-step);
+}
+
+#main-content :is([data-home-insight-featured], [data-home-opportunity-featured], [data-home-multimedia-featured]) h3 {
+    font-size: var(--site-text-feature);
+    line-height: var(--type-half-step);
+}
+
+#main-content [data-home-insight-latest] h3 {
+    font-size: var(--site-text-section);
+    line-height: var(--type-half-step);
+}
+
+#main-content #home-collaboration-title {
+    font-size: var(--site-text-callout);
+    line-height: var(--type-half-step);
+    max-width: 36ch;
+}
+
+#main-content :is(.edulaw-readable, .home-section-description, .section-description) {
+    font-size: var(--site-text-body);
+    font-weight: var(--type-weight-body, 400);
+    line-height: var(--type-phi);
+}
+
+#main-content :is(.home-card-kicker, .home-section-eyebrow, .section-kicker) {
+    font-size: var(--site-text-small);
+    font-weight: var(--type-weight-heading);
+    line-height: var(--type-phi);
+    letter-spacing: .08em;
+}
+
+#main-content :is(.home-card-meta, .type-role-meta, .home-publication-meta, figcaption) {
+    font-size: var(--site-text-small);
+    font-weight: var(--type-weight-body, 400);
+    line-height: var(--type-phi);
+}
+
+#main-content figcaption {
+    font-style: italic;
+    color: #475569;
+}
+
+#main-content :is(.home-section-link, .home-card-action, .btn) {
+    font-size: 12.578px;
+    font-weight: var(--type-weight-heading, 700);
+    line-height: 1.618034;
+}
+
+#main-content :is(.text-slate-400, .text-slate-500) {
+    color: #526175;
+}
+
+footer h2 {
+    font-size: 12.578px;
+    font-weight: var(--type-weight-heading, 700);
+}
+
+footer p {
+    font-size: 12px;
+    line-height: 1.7;
+}
+
+footer a {
+    font-size: 14px;
+}
+
+footer a:not(:hover), footer p {
+    color: #e2e8f0;
+}
+
+/* Keep paragraphs readable without constraining grids or full-width sections. */
+#main-content :is(.home-section-description, .section-description, .section-description-wide) {
+    max-width: 65ch;
+}
+#main-content .edulaw-readable :where(p, li) {
+    line-height: var(--type-phi);
+}
+#main-content .edulaw-readable :where(h2, h3, h4) {
+    margin-block: 1.618em .618em;
+}
+#main-content :is(.home-section-title, .section-title, .section-title-sm) {
+    margin-top: .618rem;
+}
+#main-content .home-card-meta {
+    margin-top: .618rem;
+}
+
+/* Shared roles for index, detail, profile, information and reusable card views.
+ * Heading tags retain their document semantics; these roles set visual emphasis.
+ */
+#main-content :is(h2, h3, h4).type-role-label {
+    font-family: var(--font-sans);
+    font-size: var(--site-text-small);
+    font-weight: var(--type-weight-heading, 700);
+    line-height: var(--type-phi);
+    letter-spacing: .08em;
+}
+#main-content :is(h2, h3, h4).type-role-compact {
+    font-size: var(--site-text-body);
+}
+#main-content :is(h2, h3, h4).type-role-card {
+    font-size: var(--site-text-card);
+}
+#main-content :is(h2, h3, h4).type-role-subheading {
+    font-size: var(--site-text-subheading);
+}
+#main-content :is(h2, h3, h4).type-role-feature {
+    font-size: var(--site-text-section);
+}
+#main-content aside :is(h2, h3):not(.type-role-label):not(.type-role-compact):not(.type-role-card) {
+    font-size: var(--site-text-subheading);
+}
+
+#main-content :is(h5, h6) {
+    font-size: var(--site-text-body);
+    line-height: var(--type-half-step);
+}
+
+
+/* Bold signals headings, actions and explicit emphasis; supporting copy stays regular. */
+#main-content :is(p, li, dd):not(.section-kicker):not(.home-section-eyebrow):not(.home-card-kicker):not(.uppercase) {
+    font-weight: var(--type-weight-body);
+}
+#main-content :is(strong, b, button, .btn),
+#main-content [data-home-impact-stat] dd {
+    font-weight: var(--type-weight-heading);
+}
+#main-content :is(.home-card-meta, time, figcaption),
+#main-content :is(.home-card-meta, time, figcaption) :is(span, a) {
+    font-weight: var(--type-weight-body);
+}
+/* Compact card titles retain a readable line height on every channel. */
+#main-content :is(h2, h3, h4).type-role-card {
+    line-height: 1.4;
+}
+
+/* Metadata also appears in navigation, pagination and standalone error views. */
+.type-role-meta {
+    font-size: var(--site-text-small, 12.578px);
+    font-weight: 400;
+    line-height: 1.618034;
+}
+
+/* Section labels outside home use the same bold weight. */
+#main-content p.uppercase {
+    font-weight: var(--type-weight-heading);
+}

@@ -16,7 +16,7 @@
 
 <div {{ $attributes->merge(['class' => 'flex flex-wrap items-center gap-2']) }} data-edulaw-share-group>
     @if (filled($label))
-        <span class="mr-1 text-xs font-black uppercase tracking-[0.18em] text-slate-400">
+        <span class="mr-1 type-role-meta font-normal uppercase tracking-[0.18em] text-slate-400">
             {{ $label }}
         </span>
     @endif

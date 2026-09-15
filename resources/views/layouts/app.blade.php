@@ -110,24 +110,8 @@
     {{-- Favicon placeholder --}}
     <link rel="icon" href="{{ asset('favicon.ico') }}">
 
-    {{-- Self-hosted brand typography; inlined declarations avoid a font CSS request chain. --}}
     @fonts('lato')
-
     @vite(['resources/css/app.css', 'resources/js/app.js'])
-
-    <style>
-        html {
-            scroll-behavior: smooth;
-        }
-
-        body {
-            font-family: 'Lato', ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-        }
-
-        [x-cloak] {
-            display: none !important;
-        }
-    </style>
 
     @stack('head')
     @stack('styles')

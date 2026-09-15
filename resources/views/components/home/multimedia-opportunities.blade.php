@@ -128,7 +128,7 @@
                         <p class="text-sm font-black text-brand-ink">
                             Konten sedang disiapkan.
                         </p>
-                        <p class="mt-1 text-xs leading-5 text-slate-500">
+                        <p class="mt-1 type-role-meta leading-5 text-slate-500">
                             Multimedia published akan tampil otomatis di sini.
                         </p>
                     </div>

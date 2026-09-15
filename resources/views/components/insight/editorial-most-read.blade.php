@@ -8,7 +8,7 @@
                     <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Pilihan pembaca</p>
                     <h2 class="mt-2 font-display text-3xl font-bold text-brand-ink sm:text-4xl">Paling Banyak Dibaca</h2>
                 </div>
-                <p class="text-xs font-semibold text-slate-500 sm:pb-1">30 hari terakhir</p>
+                <p class="type-role-meta font-normal text-slate-500 sm:pb-1">30 hari terakhir</p>
             </div>
 
             <ol class="divide-y divide-slate-200">
@@ -21,7 +21,7 @@
                                 <span class="block text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</span>
                                 <span class="mt-2 block line-clamp-2 max-w-4xl text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy sm:text-xl">{{ $article->title }}</span>
                             </span>
-                            <span class="col-start-2 mt-1 text-xs font-semibold text-slate-500 sm:col-start-auto sm:mt-0 sm:text-right">
+                            <span class="col-start-2 mt-1 type-role-meta font-normal text-slate-500 sm:col-start-auto sm:mt-0 sm:text-right">
                                 {{ $readingTime($article) }}
                                 @if (is_numeric($visitCount) && (int) $visitCount > 0)
                                     · {{ number_format((int) $visitCount, 0, ',', '.') }} kali dibaca

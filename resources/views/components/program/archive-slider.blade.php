@@ -18,7 +18,7 @@
         <div class="rounded-2xl border border-[#dce5e3] bg-white/90 p-5 sm:p-6">
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h2 class="text-base font-black uppercase tracking-[0.14em] text-brand-navy">Program Terdahulu</h2>
+                    <h2 class="type-role-compact text-base font-black uppercase tracking-[0.14em] text-brand-navy">Program Terdahulu</h2>
                     <p class="mt-1 text-sm leading-6 text-slate-500">Dokumentasi program yang telah diselenggarakan Edulaw.</p>
                 </div>
 

@@ -1,10 +1,13 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
+@import '../../font-stack.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
 
 :root {
-    --font-sans: "Lato", ui-sans-serif, system-ui, sans-serif;
+    --font-sans: var(--font-brand);
+    --font-weight-extrabold: 700;
+    --font-weight-black: 700;
     --edulaw-navy-950: #0d1b30;
     --edulaw-navy-900: #152a49;
     --edulaw-navy-800: #1f3c69;
@@ -99,7 +102,7 @@
 .fi-body {
     background: var(--edulaw-admin-soft);
     color: var(--edulaw-admin-ink);
-    font-family: "Lato", ui-sans-serif, system-ui, sans-serif;
+    font-family: var(--font-brand);
 }
 
 .fi-fo-rich-editor .edulaw-footnote-ref {
@@ -113,7 +116,7 @@
     background: var(--edulaw-admin-blue-soft);
     color: var(--edulaw-admin-blue);
     font-size: 0.68em;
-    font-weight: 900;
+    font-weight: 700;
     line-height: 1;
     vertical-align: super;
 }
@@ -145,7 +148,7 @@
     color: var(--edulaw-admin-heading);
     font-size: clamp(1.85rem, 2.4vw, 2.45rem);
     line-height: 1.05;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0;
 }
 
@@ -228,7 +231,7 @@
 .fi-sidebar-group-label {
     color: rgba(219, 230, 242, 0.56);
     font-size: 0.7rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.08em;
     text-transform: uppercase;
 }
@@ -273,7 +276,7 @@
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-icon,
 .fi-sidebar-item.fi-active > .fi-sidebar-item-btn .fi-sidebar-item-label {
     color: #ffffff;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .fi-sidebar-footer {
@@ -435,7 +438,7 @@
     overflow: hidden;
     color: var(--edulaw-admin-heading);
     font-size: 0.875rem;
-    font-weight: 650;
+    font-weight: 700;
     line-height: 1.35;
     overflow-wrap: anywhere;
     word-break: normal;
@@ -718,7 +721,7 @@
 .edulaw-assigned-insight-table .edulaw-assigned-title-cell .fi-ta-text-item-label {
     color: var(--edulaw-admin-heading);
     font-size: 0.875rem;
-    font-weight: 750;
+    font-weight: 700;
     line-height: 1.35;
 }
 
@@ -1046,9 +1049,9 @@
 
 .edulaw-permission-table .edulaw-permission-name-cell .fi-ta-text {
     overflow: hidden;
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: var(--font-brand);
     font-size: 0.8rem;
-    font-weight: 650;
+    font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -1112,7 +1115,7 @@
     overflow: hidden;
     color: var(--edulaw-admin-heading);
     font-size: 0.875rem;
-    font-weight: 750;
+    font-weight: 700;
     text-overflow: ellipsis;
     white-space: nowrap;
 }
@@ -1188,7 +1191,7 @@
 }
 
 .edulaw-user-table .edulaw-user-account-cell .edulaw-table-identity__title {
-    font-weight: 750;
+    font-weight: 700;
 }
 
 .edulaw-user-table :is(.edulaw-user-role-cell, .edulaw-user-status-cell) .fi-badge {
@@ -1261,7 +1264,7 @@
 }
 
 .edulaw-table-identity__slug {
-    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    font-family: var(--font-brand);
 }
 
 .edulaw-line-clamp-1 {
@@ -1289,7 +1292,7 @@
     background: #0f2a4a;
     color: white;
     font-size: 0.75rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0.04em;
 }
 
@@ -1783,7 +1786,7 @@
     overflow: hidden;
     color: var(--edulaw-admin-heading);
     font-size: 0.875rem;
-    font-weight: 650;
+    font-weight: 700;
     line-height: 1.35;
     overflow-wrap: anywhere;
     -webkit-box-orient: vertical;
@@ -2042,7 +2045,7 @@
     padding: 0.35rem 0.65rem;
     color: #dbeafe;
     font-size: 0.65rem;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0.1em;
     text-transform: uppercase;
 }
@@ -2070,7 +2073,7 @@
     padding: 0.7rem 0.85rem;
     color: #ffffff;
     font-size: 0.78rem;
-    font-weight: 850;
+    font-weight: 700;
     line-height: 1.2;
     text-align: center;
     white-space: nowrap;
@@ -2150,7 +2153,7 @@
     padding: 0.35rem 0.65rem;
     color: #64748b;
     font-size: 0.65rem;
-    font-weight: 850;
+    font-weight: 700;
 }
 
 .fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat {
@@ -2302,7 +2305,7 @@
 .fi-ta-header-heading {
     color: var(--edulaw-admin-heading);
     font-size: 1rem;
-    font-weight: 900;
+    font-weight: 700;
     letter-spacing: 0;
 }
 
@@ -2411,7 +2414,7 @@
 .fi-fo-field-wrp-label span {
     color: var(--edulaw-admin-heading);
     font-size: 0.8rem;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .fi-fo-field-wrp-helper-text,
@@ -2491,7 +2494,7 @@
 .fi-btn {
     min-height: 2.35rem;
     border-radius: 0.55rem;
-    font-weight: 800;
+    font-weight: 700;
     letter-spacing: 0;
 }
 
@@ -2540,13 +2543,13 @@
 .fi-wi-stats-overview-stat-label {
     color: var(--edulaw-admin-muted);
     font-size: 0.76rem;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .fi-wi-stats-overview-stat-value {
     color: var(--edulaw-admin-heading);
     font-size: clamp(1.65rem, 3vw, 2.25rem);
-    font-weight: 900;
+    font-weight: 700;
 }
 
 .fi-ta-table {
@@ -2576,7 +2579,7 @@
     background: #f3f7fc;
     color: var(--edulaw-admin-heading);
     font-size: 0.76rem;
-    font-weight: 850;
+    font-weight: 700;
 }
 
 .fi-ta-cell {
@@ -2594,7 +2597,7 @@
 .fi-badge {
     border-radius: 999px;
     font-size: 0.68rem;
-    font-weight: 850;
+    font-weight: 700;
     letter-spacing: 0;
 }
 
@@ -2634,7 +2637,7 @@
     padding: 0.5rem 0.78rem;
     color: #475569;
     font-size: 0.78rem;
-    font-weight: 800;
+    font-weight: 700;
     box-shadow: none;
 }
 
@@ -2661,7 +2664,7 @@
 .edulaw-topbar-user-name {
     color: var(--edulaw-admin-heading);
     font-size: 0.78rem;
-    font-weight: 850;
+    font-weight: 700;
 }
 
 .edulaw-topbar-user-role {
@@ -2693,7 +2696,7 @@
     background: #fffbeb;
     padding: 0.45rem 0.65rem;
     color: #9a6700 !important;
-    font-weight: 900;
+    font-weight: 700;
 }
 
 .edulaw-latest-insights-view-all .fi-icon {
@@ -2761,7 +2764,7 @@
     content: "Perubahan belum disimpan";
     color: var(--edulaw-admin-heading);
     font-size: 0.88rem;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions > .fi-ac {
@@ -2802,7 +2805,7 @@
 .edulaw-self-profile-actions__copy p {
     color: var(--edulaw-admin-heading);
     font-size: 0.86rem;
-    font-weight: 800;
+    font-weight: 700;
 }
 
 .edulaw-self-profile-actions__copy span {
@@ -2892,7 +2895,7 @@
 .fi-ta-empty-state-heading {
     color: var(--edulaw-admin-heading);
     font-size: 1rem;
-    font-weight: 850;
+    font-weight: 700;
 }
 
 .fi-ta-empty-state-description {
@@ -3175,7 +3178,7 @@
 .dark .fi-fo-field-wrp-label span,
 .dark .fi-sc-section-label {
     color: var(--text-body);
-    font-weight: 600;
+    font-weight: 700;
 }
 
 .dark .fi-fo-field-label-required-mark,

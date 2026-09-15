@@ -17,7 +17,7 @@
 
 @endphp
 
-<section class="relative isolate min-h-[600px] overflow-hidden bg-[#082344] text-white sm:min-h-[640px]" data-home-hero>
+<section class="relative isolate min-h-[600px] overflow-hidden bg-[#082344] py-3 text-white sm:min-h-[640px]" data-home-hero>
     <x-responsive-image
         :src="$heroImage"
         :alt="$heroAlt"

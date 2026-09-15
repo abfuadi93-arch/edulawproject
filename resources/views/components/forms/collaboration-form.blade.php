@@ -205,7 +205,7 @@
         </a>
     </div>
 
-    <p class="mt-4 text-xs text-slate-500">
+    <p class="mt-4 type-role-meta text-slate-500">
         <span class="text-brand-navy">*</span> Wajib diisi
     </p>
 </form>

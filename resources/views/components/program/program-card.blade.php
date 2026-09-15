@@ -49,7 +49,7 @@
         </a>
 
         <div class="flex flex-1 flex-col p-4">
-            <h3 class="line-clamp-2 text-base font-black leading-snug tracking-normal text-brand-ink">
+            <h3 class="type-role-compact line-clamp-2 text-base font-black leading-snug tracking-normal text-brand-ink">
                 <a href="{{ $detailUrl }}" class="transition hover:text-brand-navy">
                     {{ $title }}
                 </a>

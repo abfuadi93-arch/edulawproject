@@ -54,7 +54,7 @@
                         Kirim Tulisan
                     </a>
                 @else
-                    <p class="mt-5 text-xs font-semibold leading-5 text-slate-500">
+                    <p class="mt-5 type-role-meta font-normal leading-5 text-slate-500">
                         Kanal pengiriman tulisan belum dibuka.
                     </p>
                 @endif

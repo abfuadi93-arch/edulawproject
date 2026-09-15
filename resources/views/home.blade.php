@@ -5,7 +5,7 @@
 @section('canonical_url', route('home'))
 
 @push('styles')
-    <link rel="stylesheet" href="{{ asset('css/home-polish.css') }}?v={{ filemtime(public_path('css/home-polish.css')) }}">
+    @vite('resources/css/home.css')
 @endpush
 
 @section('content')

@@ -195,8 +195,8 @@
                                     </div>
                                     <div class="pt-4">
                                         <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                        <h3 class="mt-1.5 line-clamp-3 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
-                                        <p class="mt-2.5 text-xs font-semibold text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
+                                        <h3 class="type-role-compact mt-1.5 line-clamp-3 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                        <p class="mt-2.5 type-role-meta font-normal text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
                                     </div>
                                 </a>
                             </article>
@@ -212,11 +212,11 @@
                                     </div>
                                     <div class="min-w-0 self-center">
                                         <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                        <h3 class="mt-1.5 line-clamp-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                        <h3 class="type-role-card mt-1.5 line-clamp-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</h3>
                                         @if ($excerpt($article, 150) !== '')
                                             <p class="mt-2 line-clamp-2 text-base leading-7 text-slate-600">{{ $excerpt($article, 150) }}</p>
                                         @endif
-                                        <p class="mt-2 text-xs font-semibold text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
+                                        <p class="mt-2 type-role-meta font-normal text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
                                     </div>
                                 </a>
                             </article>

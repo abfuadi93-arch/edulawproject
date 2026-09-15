@@ -165,7 +165,7 @@
 
             <aside class="insight-sidebar grid w-full grid-cols-1 gap-5 self-start lg:sticky lg:top-24 lg:block lg:space-y-5" aria-label="Informasi artikel">
                 <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-about-heading">
-                    <h2 id="article-about-heading" class="text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Tentang Artikel</h2>
+                    <h2 id="article-about-heading" class="type-role-label text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Tentang Artikel</h2>
 
                     <p class="mt-4 text-sm">
                         <span class="font-bold text-slate-500">Kategori:</span>
@@ -194,7 +194,7 @@
                             @endif
 
                             <div class="min-w-0 break-words">
-                                <h3 class="text-sm font-black leading-snug text-brand-navy">
+                                <h3 class="type-role-compact text-sm font-black leading-snug text-brand-navy">
                                     @if ($authorProfileUrl)
                                         <a href="{{ $authorProfileUrl }}" class="underline-offset-4 hover:underline">
                                             {{ $authorName }}
@@ -203,12 +203,12 @@
                                         {{ $authorName }}
                                     @endif
                                 </h3>
-                                <p class="mt-1 text-xs leading-5 text-slate-500">
+                                <p class="mt-1 type-role-meta leading-5 text-slate-500">
                                     {{ $authorInstitution }}
                                 </p>
 
                                 @if ($additionalAuthorsCount > 0)
-                                    <p class="mt-1 text-xs font-semibold text-slate-400">
+                                    <p class="mt-1 type-role-meta font-normal text-slate-400">
                                         dan {{ $additionalAuthorsCount }} penulis lainnya
                                     </p>
                                 @endif
@@ -218,7 +218,7 @@
                 </section>
 
                 <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="insight-editorial-metadata-heading">
-                    <h2 id="insight-editorial-metadata-heading" class="text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
+                    <h2 id="insight-editorial-metadata-heading" class="type-role-label text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
                     <dl class="mt-4 grid gap-4 text-sm">
                         @if ($editorName)
                             <div>
@@ -267,7 +267,7 @@
                             </span>
                             <div>
                                 <p class="text-[10px] font-black uppercase tracking-[0.22em] text-[#a8660a]">Navigasi</p>
-                                <h2 id="article-toc-heading" class="mt-1 text-lg font-black text-brand-navy">Daftar Isi</h2>
+                                <h2 id="article-toc-heading" class="type-role-subheading mt-1 text-lg font-black text-brand-navy">Daftar Isi</h2>
                             </div>
                         </div>
 
@@ -348,7 +348,7 @@
                                     {{ $item->display_category }}
                                 </p>
 
-                                <h3 class="mt-3 line-clamp-2 min-h-[2.75rem] text-base font-black leading-snug text-brand-navy">
+                                <h3 class="type-role-compact mt-3 line-clamp-2 min-h-[2.75rem] text-base font-black leading-snug text-brand-navy">
                                     <a href="{{ route('insights.show', $item->slug) }}">
                                         {{ $item->title }}
                                     </a>
@@ -360,7 +360,7 @@
                                     </p>
                                 @endif
 
-                                <div class="mt-auto flex items-center gap-1.5 border-t border-slate-100 pt-5 text-xs font-semibold text-slate-400">
+                                <div class="mt-auto flex items-center gap-1.5 border-t border-slate-100 pt-5 type-role-meta font-normal text-slate-400">
                                     <time datetime="{{ optional($item->published_at)?->toDateString() }}">
                                         {{ optional($item->published_at)->translatedFormat('d M Y') }}
                                     </time>

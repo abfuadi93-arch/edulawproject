@@ -40,10 +40,10 @@
 
                             <div class="flex min-w-0 flex-1 flex-col">
                                 <p class="home-card-kicker">{{ $typeName }}</p>
-                                <h3 class="mt-2 line-clamp-2 text-[15px] font-bold leading-[1.4] text-brand-navy transition group-hover:text-brand-teal">{{ $publication->title }}</h3>
-                                <div class="mt-3 flex items-start justify-between gap-3 text-xs font-semibold leading-5 text-slate-500">
-                                    @if ($authorNames !== '')<span class="min-w-0 flex-1 truncate text-left">{{ $authorNames }}</span>@endif
-                                    @if (filled($publicationDate) && $publicationDate !== 'Belum diketahui' && $publicationDate !== '-')<span class="shrink-0 text-right">{{ $publicationDate }}</span>@endif
+                                <h3 class="type-role-card mt-2 line-clamp-2 font-bold text-brand-navy transition group-hover:text-brand-teal">{{ $publication->title }}</h3>
+                                <div class="home-publication-meta mt-3 grid grid-cols-2 items-start gap-3 text-slate-500">
+                                    @if ($authorNames !== '')<span class="col-start-1 row-start-1 min-w-0 break-words text-left">{{ $authorNames }}</span>@endif
+                                    @if (filled($publicationDate) && $publicationDate !== 'Belum diketahui' && $publicationDate !== '-')<span class="col-start-2 row-start-1 min-w-0 break-words text-right">{{ $publicationDate }}</span>@endif
                                 </div>
                             </div>
                         </a>

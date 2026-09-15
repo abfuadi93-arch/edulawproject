@@ -328,7 +328,7 @@
                                         </div>
 
                                         <div class="min-w-0 pt-1">
-                                            <h3 class="text-base font-black leading-snug text-brand-navy">
+                                            <h3 class="type-role-compact text-base font-black leading-snug text-brand-navy">
                                                 {{ $speaker['name'] }}
                                             </h3>
                                             <p class="mt-1 text-sm font-semibold leading-6 text-slate-500">
@@ -398,7 +398,7 @@
                                         @endif
                                     </span>
 
-                                    <h3 class="min-w-0 text-sm font-black text-brand-navy">
+                                    <h3 class="type-role-compact min-w-0 text-sm font-black text-brand-navy">
                                         {{ $card['label'] }}
                                     </h3>
                                 </div>
@@ -443,7 +443,7 @@
                     <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-teal">
                         Poster Kegiatan
                     </p>
-                    <h2 class="mt-2 text-lg font-black tracking-tight text-brand-navy">
+                    <h2 class="type-role-subheading mt-2 text-lg font-black tracking-tight text-brand-navy">
                         Visual program
                     </h2>
                 </div>
@@ -491,7 +491,7 @@
                         <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-teal">
                             Informasi Program
                         </p>
-                        <h2 class="mt-2 text-lg font-black text-brand-navy">
+                        <h2 class="type-role-subheading mt-2 text-lg font-black text-brand-navy">
                             Pendaftaran & tiket
                         </h2>
                     </div>
@@ -502,7 +502,7 @@
                 </div>
 
                 <div class="border-b border-slate-100 py-5">
-                    <p class="text-xs font-bold uppercase tracking-wide text-slate-500">Biaya</p>
+                    <p class="type-role-meta font-normal uppercase tracking-wide text-slate-500">Biaya</p>
                     <p class="mt-2 text-2xl font-black text-brand-navy">{{ $program->display_price ?: 'Belum diumumkan' }}</p>
                     @if ($program->registration_status_label)
                         <p class="mt-3 rounded-xl bg-brand-mist px-3 py-2 text-sm font-bold text-brand-navy">{{ $program->registration_status_label }}</p>
@@ -607,7 +607,7 @@
                                 {{ $related->display_status }}
                             </span>
 
-                            <h3 class="mt-4 line-clamp-2 text-lg font-black leading-snug text-brand-navy">
+                            <h3 class="type-role-card mt-4 line-clamp-2 text-lg font-black leading-snug text-brand-navy">
                                 <a href="{{ route('programs.show', $related->slug) }}" class="transition hover:text-brand-teal">
                                     {{ $related->display_title }}
                                 </a>

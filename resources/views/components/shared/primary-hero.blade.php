@@ -19,7 +19,7 @@
         ->values();
 @endphp
 
-<section class="relative isolate overflow-hidden bg-brand-navy text-white" @if ($uniformHeight) data-uniform-channel-hero @endif>
+<section class="relative isolate overflow-hidden bg-brand-navy py-3 text-white" @if ($uniformHeight) data-uniform-channel-hero @endif>
     @if ($backgroundImage)
         <img
             src="{{ $backgroundImage }}"

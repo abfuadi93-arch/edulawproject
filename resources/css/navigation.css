@@ -1,0 +1,44 @@
+/* Shared navigation on every public page, independent of page styles. */
+[data-site-header] {
+    font-family: var(--font-brand);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+[data-site-header] > div > div:first-child {
+    height: 72px;
+    gap: 16px;
+}
+
+[data-site-header] img {
+    height: 39px;
+}
+
+[data-site-header] nav[aria-label="Navigasi utama"] {
+    gap: 18px;
+}
+
+[data-site-header] nav[aria-label="Navigasi utama"] a {
+    font-size: 13px;
+}
+
+[data-site-header] a[aria-label="Cari artikel, topik, atau publikasi"] {
+    width: 184px;
+}
+
+[data-site-header] nav + div > a:last-child {
+    padding-inline: 16px;
+    font-size: 13px;
+    box-shadow: none;
+}
+
+[data-site-header] nav a {
+    font-weight: 700;
+    line-height: 1.5;
+}
+
+@media (max-width: 639px) {
+    [data-site-header] > div > div:first-child {
+        height: 68px;
+    }
+}

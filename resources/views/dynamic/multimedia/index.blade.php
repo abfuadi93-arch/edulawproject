@@ -38,7 +38,7 @@
                             <p class="text-xs font-black uppercase tracking-[0.15em] text-brand-navy">Konten Pilihan</p>
                             <h2 class="mt-3 text-2xl font-extrabold text-brand-ink sm:text-3xl">{{ $featured->title }}</h2>
                             <p class="mt-3 text-slate-600">{{ $featured->description }}</p>
-                            <div class="mt-4 flex flex-wrap gap-3 text-xs text-slate-500">
+                            <div class="mt-4 flex flex-wrap gap-3 type-role-meta text-slate-500">
                                 <span>{{ $featured->display_type }}</span>
                                 <span>•</span>
                                 <span>{{ $featured->display_platform }}</span>
@@ -84,7 +84,7 @@
                             <p class="text-xs font-bold uppercase tracking-[0.14em] text-brand-navy">{{ $item->display_type }}</p>
                             <h3 class="mt-2 text-lg font-extrabold text-brand-ink">{{ $item->title }}</h3>
                             <p class="mt-2 text-sm text-slate-600">{{ $item->description }}</p>
-                            <p class="mt-3 text-xs text-slate-500">{{ optional($item->published_at)->translatedFormat('d M Y') }} • {{ $item->display_platform }}</p>
+                            <p class="mt-3 type-role-meta text-slate-500">{{ optional($item->published_at)->translatedFormat('d M Y') }} • {{ $item->display_platform }}</p>
                             @if ($item->media_url)
                                 <a href="{{ $item->media_url }}" target="_blank" rel="noopener noreferrer" class="mt-4 inline-flex text-sm font-bold text-brand-navy">Buka Konten →</a>
                             @endif

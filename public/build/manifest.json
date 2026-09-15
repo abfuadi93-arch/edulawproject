@@ -1,7 +1,7 @@
 {
-  "_fonts-vaIe9aa_.css": {
-    "file": "assets/fonts-vaIe9aa_.css",
-    "src": "_fonts-vaIe9aa_.css"
+  "_fonts-CsCnqkzL.css": {
+    "file": "assets/fonts-CsCnqkzL.css",
+    "src": "_fonts-CsCnqkzL.css"
   },
   "_lato-400-normal-DXRmO6t1.woff2": {
     "file": "assets/lato-400-normal-DXRmO6t1.woff2",
@@ -11,12 +11,8 @@
     "file": "assets/lato-700-normal-D0hIvJyG.woff2",
     "src": "_lato-700-normal-D0hIvJyG.woff2"
   },
-  "_lato-900-normal-VL-2tOya.woff2": {
-    "file": "assets/lato-900-normal-VL-2tOya.woff2",
-    "src": "_lato-900-normal-VL-2tOya.woff2"
-  },
   "resources/css/app.css": {
-    "file": "assets/app-aFkprb7A.css",
+    "file": "assets/app-ChOhaPa_.css",
     "name": "app",
     "names": [
       "app.css"
@@ -25,7 +21,7 @@
     "isEntry": true
   },
   "resources/css/filament/admin/theme.css": {
-    "file": "assets/theme-BGx5-eoF.css",
+    "file": "assets/theme-DZ55N9mF.css",
     "name": "theme",
     "names": [
       "theme.css"
@@ -33,8 +29,17 @@
     "src": "resources/css/filament/admin/theme.css",
     "isEntry": true
   },
+  "resources/css/home.css": {
+    "file": "assets/home-BQ1uVWra.css",
+    "name": "home",
+    "names": [
+      "home.css"
+    ],
+    "src": "resources/css/home.css",
+    "isEntry": true
+  },
   "resources/js/app.js": {
-    "file": "assets/app-DFdLVb9l.js",
+    "file": "assets/app-DIC0RZ20.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

@@ -44,7 +44,7 @@ it('serves the brand fonts locally without a third-party stylesheet chain', func
         ->assertSee('font-family: "Lato"', false)
         ->assertSee('/build/assets/lato-400-normal-', false)
         ->assertSee('/build/assets/lato-700-normal-', false)
-        ->assertSee('/build/assets/lato-900-normal-', false);
+        ->assertDontSee('/build/assets/lato-900-normal-', false);
 });
 
 it('keeps advertising scripts off the initial render path', function () {

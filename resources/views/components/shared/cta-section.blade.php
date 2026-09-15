@@ -18,7 +18,7 @@
 @endphp
 
 <section
-    {{ $attributes->class(['bg-white pb-6 sm:pb-10 lg:pb-12']) }}
+    {{ $attributes->class(['bg-white pb-5 sm:pb-7 lg:pb-8']) }}
     aria-labelledby="{{ $resolvedHeadingId }}"
 >
     <div class="section-shell">

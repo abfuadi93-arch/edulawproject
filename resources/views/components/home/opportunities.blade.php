@@ -26,13 +26,13 @@
                             <h3 class="mt-3 line-clamp-3 text-2xl font-extrabold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
 
                             <div class="home-opportunity-deadline mt-5 border-l-2 border-[#f5c451] pl-4">
-                                <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
+                                <p class="type-role-meta font-normal uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
                                 <p class="mt-1 text-lg font-extrabold text-[#a45e08]">{{ $featuredOpportunity->deadline_display }}</p>
-                                <p class="mt-1 text-xs font-bold text-slate-500">{{ $featuredOpportunity->deadline_relative_label }}</p>
+                                <p class="mt-1 type-role-meta font-normal text-slate-500">{{ $featuredOpportunity->deadline_relative_label }}</p>
                             </div>
 
                             @if ($featuredOpportunity->location || $featuredOpportunity->format)
-                                <p class="mt-3 text-xs font-bold text-slate-500">
+                                <p class="mt-3 type-role-meta font-normal text-slate-500">
                                     {{ $featuredOpportunity->location }}
                                     @if ($featuredOpportunity->location && $featuredOpportunity->format)<span aria-hidden="true"> · </span>@endif
                                     {{ $featuredOpportunity->format ? Illuminate\Support\Str::headline($featuredOpportunity->format) : '' }}
@@ -66,7 +66,7 @@
                                         <p class="home-card-kicker">{{ $opportunity->display_type }}</p>
                                         <h3 class="mt-2 line-clamp-2 text-[15px] font-bold leading-[1.35] text-[#102f56]">{{ $opportunity->title }}</h3>
                                         @if ($opportunity->organizer)
-                                            <p class="mt-2 line-clamp-1 text-xs font-bold text-slate-500">{{ $opportunity->organizer }}</p>
+                                            <p class="mt-2 line-clamp-1 type-role-meta font-normal text-slate-500">{{ $opportunity->organizer }}</p>
                                         @endif
                                         <div class="mt-auto pt-3">
                                             <p class="text-xs font-extrabold text-[#a45e08]">Deadline {{ $opportunity->deadline_display }}</p>
