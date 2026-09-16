@@ -12,10 +12,11 @@
     --site-text-small: calc(var(--site-text-body) / var(--type-half-step));
     --site-text-card: calc(var(--site-text-body) * var(--type-quarter-step));
     --site-text-subheading: calc(var(--site-text-body) * var(--type-half-step));
-    --site-text-section: calc(var(--site-text-body) * var(--type-phi));
+    --site-text-section: var(--site-text-card);
+    --site-text-display: calc(var(--site-text-body) * var(--type-phi));
     --site-text-feature: var(--site-text-subheading);
-    --site-text-callout: calc(var(--site-text-section) * var(--type-half-step));
-    --site-text-title: calc(var(--site-text-section) * var(--type-phi));
+    --site-text-callout: calc(var(--site-text-display) * var(--type-half-step));
+    --site-text-title: calc(var(--site-text-display) * var(--type-phi));
     font-family: var(--font-sans);
     font-size: var(--site-text-body);
     line-height: var(--type-phi);
@@ -49,7 +50,7 @@
 }
 
 #main-content h3 {
-    font-size: var(--site-text-subheading);
+    font-size: var(--site-text-card);
     line-height: var(--type-half-step);
     letter-spacing: -.01em;
 }
@@ -75,7 +76,7 @@
 }
 
 #main-content [data-home-insight-latest] h3 {
-    font-size: var(--site-text-section);
+    font-size: var(--site-text-display);
     line-height: var(--type-half-step);
 }
 
@@ -110,9 +111,9 @@
 }
 
 #main-content :is(.home-section-link, .home-card-action, .btn) {
-    font-size: 12.578px;
-    font-weight: var(--type-weight-heading, 700);
-    line-height: 1.618034;
+    font-size: var(--site-text-small);
+    font-weight: var(--type-weight-heading);
+    line-height: var(--type-phi);
 }
 
 #main-content :is(.text-slate-400, .text-slate-500) {
@@ -149,6 +150,8 @@ footer a:not(:hover), footer p {
     margin-block: 1.618em .618em;
 }
 #main-content :is(.home-section-title, .section-title, .section-title-sm) {
+    font-size: var(--site-text-card);
+    line-height: var(--type-half-step);
     margin-top: .618rem;
 }
 #main-content .home-card-meta {
@@ -170,15 +173,16 @@ footer a:not(:hover), footer p {
 }
 #main-content :is(h2, h3, h4).type-role-card {
     font-size: var(--site-text-card);
+    line-height: 1.4;
 }
 #main-content :is(h2, h3, h4).type-role-subheading {
     font-size: var(--site-text-subheading);
 }
 #main-content :is(h2, h3, h4).type-role-feature {
-    font-size: var(--site-text-section);
+    font-size: var(--site-text-display);
 }
 #main-content aside :is(h2, h3):not(.type-role-label):not(.type-role-compact):not(.type-role-card) {
-    font-size: var(--site-text-subheading);
+    font-size: var(--site-text-card);
 }
 
 #main-content :is(h5, h6) {
@@ -199,10 +203,6 @@ footer a:not(:hover), footer p {
 #main-content :is(.home-card-meta, .home-publication-meta, .type-role-meta, time, figcaption) :is(span, a) {
     font-weight: var(--type-weight-body);
 }
-/* Compact card titles retain a readable line height on every channel. */
-#main-content :is(h2, h3, h4).type-role-card {
-    line-height: 1.4;
-}
 
 /* Metadata also appears in navigation, pagination and standalone error views. */
 .type-role-meta {
@@ -214,4 +214,12 @@ footer a:not(:hover), footer p {
 /* Section labels outside home use the same bold weight. */
 #main-content p.uppercase {
     font-weight: var(--type-weight-heading);
+}
+
+/* Long-form content keeps its own reading hierarchy. */
+#main-content :is(.article-content, .edulaw-readable) h2 {
+    font-size: var(--site-text-display);
+}
+#main-content :is(.article-content, .edulaw-readable) h3 {
+    font-size: var(--site-text-subheading);
 }
