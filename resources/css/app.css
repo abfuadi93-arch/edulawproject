@@ -1105,17 +1105,12 @@ article[data-channel-feature-card] .channel-feature-actions {
 .opportunity-landscape-footer {
     margin-top: auto;
 }
-.opportunity-organizer,
-.opportunity-relative-date {
+.opportunity-organizer {
     display: none;
 }
 @container (max-width: 560px) {
-    .opportunity-landscape .opportunity-summary {
-        display: none;
-    }
     #main-content .opportunity-landscape h2 {
         font-size: var(--site-text-body);
-        line-height: 1.3;
     }
 }
 @media (max-width: 639px) {
@@ -1126,4 +1121,19 @@ article[data-channel-feature-card] .channel-feature-actions {
     .opportunity-landscape-footer {
         margin-top: 12px;
     }
+}
+
+.opportunity-landscape-content > .opportunity-summary {
+    flex: 0 1 auto;
+    min-height: 0;
+    max-height: 4.5em;
+    overflow: hidden;
+}
+.opportunity-relative-date {
+    display: block;
+}
+
+/* Proportional 1.5 line spacing; the summary fitter reads this computed value. */
+#main-content .opportunity-landscape :is(h2, p, span, a) {
+    line-height: 1.5;
 }

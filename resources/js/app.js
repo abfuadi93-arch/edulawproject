@@ -222,7 +222,46 @@ function initializeEditorialContributorBalance() {
     });
 }
 
+function initializeOpportunitySummaries() {
+    document.querySelectorAll('.opportunity-landscape-content').forEach((content) => {
+        const summary = content.querySelector('.opportunity-summary');
+        if (!summary || !('ResizeObserver' in window)) return;
+
+        const fit = () => {
+            // On mobile the card grows naturally; retain the three-line limit.
+            if (window.innerWidth < 640) {
+                summary.style.maxHeight = '';
+                summary.style.webkitLineClamp = '3';
+                return;
+            }
+            const style = getComputedStyle(content);
+            const summaryStyle = getComputedStyle(summary);
+            let available = content.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+            for (const child of content.children) {
+                if (child === summary) continue;
+                const childStyle = getComputedStyle(child);
+                if (childStyle.display === 'none') continue;
+                available -= child.getBoundingClientRect().height + parseFloat(childStyle.marginBottom);
+                if (!child.classList.contains('opportunity-landscape-footer')) {
+                    available -= parseFloat(childStyle.marginTop);
+                }
+            }
+            available -= parseFloat(summaryStyle.marginTop) + parseFloat(summaryStyle.marginBottom);
+            const lineHeight = parseFloat(summaryStyle.lineHeight);
+            const lines = Math.max(0, Math.min(3, Math.floor(available / lineHeight)));
+            summary.style.maxHeight = `${lines * lineHeight}px`;
+            summary.style.webkitLineClamp = String(Math.max(1, lines));
+        };
+        const observer = new ResizeObserver(fit);
+        observer.observe(content);
+        [...content.children].filter((child) => child !== summary).forEach((child) => observer.observe(child));
+        document.fonts?.ready.then(fit);
+        fit();
+    });
+}
+
 function initialize() {
+    initializeOpportunitySummaries();
     initializeMobileNavigation();
     initializeOpportunityFilters();
     initializePosterSliders();

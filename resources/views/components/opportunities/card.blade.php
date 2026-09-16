@@ -88,7 +88,7 @@
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer">{{ $opportunity->title }}</a>
             </h2>
             @if ($summary)
-                <p class="opportunity-summary mt-2 line-clamp-1 text-sm leading-5 text-slate-600">{{ $summary }}</p>
+                <p class="opportunity-summary mt-2 line-clamp-3 text-sm leading-5 text-slate-600">{{ $summary }}</p>
             @endif
             @if ($opportunity->organizer || $opportunity->target_audience)
                 <p class="opportunity-organizer mt-2 line-clamp-1 type-role-meta font-normal leading-5 text-slate-500">
@@ -102,7 +102,7 @@
                 <div class="flex flex-wrap items-baseline gap-x-2">
                     <p class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Deadline</p>
                     <p class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</p>
-                    <p class="opportunity-relative-date mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
+                    <p class="opportunity-relative-date ml-auto mt-0.5 text-right type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
                 <div class="mt-2 grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
                     <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
