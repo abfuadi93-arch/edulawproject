@@ -219,7 +219,7 @@
             </div>
 
             @if ($opportunities->isNotEmpty())
-                <div class="mt-4 grid grid-cols-1 gap-5 {{ $selectedView === 'grid' ? 'sm:grid-cols-2 lg:grid-cols-3' : '' }}">
+                <div class="mt-4 grid grid-cols-1 gap-5 {{ $selectedView === 'grid' ? 'lg:grid-cols-2' : '' }}">
                     @foreach ($opportunities as $opportunity)
                         <x-opportunities.card :opportunity="$opportunity" :view="$selectedView" />
                     @endforeach

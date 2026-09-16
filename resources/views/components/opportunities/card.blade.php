@@ -67,44 +67,44 @@
         </div>
     </article>
 @else
-    <article class="group flex min-w-0 flex-col overflow-hidden rounded-[14px] border border-slate-200 bg-white transition hover:border-brand-amber/70" data-opportunity-card>
-        <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="grid aspect-[4/3] place-items-center bg-[#edf1f5] p-4 focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
-            <div class="relative aspect-[4/5] h-full max-h-64 overflow-hidden rounded-lg bg-white shadow-sm">
+    <article class="opportunity-landscape group grid aspect-[21/9] w-full min-w-0 grid-rows-[minmax(0,1fr)] grid-cols-[minmax(0,3fr)_minmax(0,7fr)] sm:grid-cols-[minmax(0,35fr)_minmax(0,65fr)] overflow-hidden rounded-[14px] border border-slate-200 bg-white transition hover:border-brand-amber/70" data-opportunity-card>
+        <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="grid min-h-0 min-w-0 place-items-center overflow-hidden bg-white focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
+            <div class="relative aspect-[4/5] w-full max-h-full overflow-hidden">
                 @if ($opportunity->poster_url)
-                    <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" class="size-full object-contain transition duration-500 group-hover:scale-[1.015]" width="640" height="800" loading="lazy" decoding="async">
+                    <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" class="absolute inset-0 size-full object-contain object-center" width="640" height="800" loading="lazy" decoding="async">
                 @else
                     <div class="grid size-full place-items-center bg-linear-to-br from-[#e8eef4] to-[#d8e3ec] text-2xl font-bold text-brand-navy/55">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
                 @endif
             </div>
         </a>
 
-        <div class="flex flex-1 flex-col p-5">
+        <div class="opportunity-landscape-content flex min-h-0 min-w-0 flex-col p-3">
             <div class="flex items-start justify-between gap-2">
                 <span class="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
                 <span class="line-clamp-1 text-right text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }} · {{ $opportunity->location ?: 'Menyesuaikan' }}</span>
             </div>
 
-            <h2 class="type-role-card mt-3 line-clamp-3 text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
+            <h2 class="type-role-card mt-2 line-clamp-2 text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer">{{ $opportunity->title }}</a>
             </h2>
             @if ($summary)
-                <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ $summary }}</p>
+                <p class="opportunity-summary mt-2 line-clamp-1 text-sm leading-5 text-slate-600">{{ $summary }}</p>
             @endif
             @if ($opportunity->organizer || $opportunity->target_audience)
-                <p class="mt-2 line-clamp-2 type-role-meta font-normal leading-5 text-slate-500">
+                <p class="opportunity-organizer mt-2 line-clamp-1 type-role-meta font-normal leading-5 text-slate-500">
                     @if ($opportunity->organizer){{ $opportunity->organizer }}@endif
                     @if ($opportunity->organizer && $opportunity->target_audience)<span aria-hidden="true"> · </span>@endif
                     @if ($opportunity->target_audience)Target: {{ $opportunity->target_audience }}@endif
                 </p>
             @endif
 
-            <div class="mt-auto border-t border-slate-100 pt-4">
-                <div>
+            <div class="opportunity-landscape-footer mt-auto border-t border-slate-100 pt-2">
+                <div class="flex flex-wrap items-baseline gap-x-2">
                     <p class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Deadline</p>
                     <p class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</p>
-                    <p class="mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
+                    <p class="opportunity-relative-date mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
-                <div class="mt-4 grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
+                <div class="mt-2 grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
                     <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
                     @if ($additionalLabel)
                         <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
