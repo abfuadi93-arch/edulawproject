@@ -57,7 +57,7 @@
             <option value="title" @selected($selectedSort === 'title')>Judul A–Z</option>
         </select>
 
-        <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-extrabold text-white transition hover:bg-brand-ink">Terapkan</button>
+        <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-bold text-white transition hover:bg-brand-ink">Terapkan</button>
 
         <div class="flex h-11 items-center rounded-lg border border-slate-200 bg-[#f8fafc] p-1" aria-label="Pilihan tampilan">
             <a href="{{ route('insights.index', $gridParams) }}#insight-archive" aria-label="Tampilan grid" aria-current="{{ $selectedView === 'grid' ? 'true' : 'false' }}" class="grid h-9 w-9 place-items-center rounded-md {{ $selectedView === 'grid' ? 'bg-brand-navy text-white' : 'text-slate-500 hover:text-brand-navy' }}">

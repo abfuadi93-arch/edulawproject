@@ -37,7 +37,7 @@
                                     <p class="home-card-kicker">{{ $primaryItem->display_category }}</p>
                                     @if ($primaryItem->published_at)<p class="type-role-meta font-normal text-slate-500">{{ $primaryItem->published_at->translatedFormat('d M Y') }}</p>@endif
                                 </div>
-                                <h3 class="mt-3 line-clamp-3 text-[22px] font-extrabold leading-[1.24] tracking-[-0.018em] text-brand-navy sm:text-2xl">{{ $primaryItem->title }}</h3>
+                                <h3 class="mt-3 line-clamp-3 text-[22px] font-bold leading-[1.24] tracking-[-0.018em] text-brand-navy sm:text-2xl">{{ $primaryItem->title }}</h3>
                                 <div class="mt-4 flex flex-wrap items-center justify-between gap-x-5 gap-y-3">
                                     <div class="flex min-w-0 flex-wrap gap-x-2 gap-y-1 type-role-meta font-normal leading-5 text-slate-500">
                                         @if ($primaryItem->reading_time)<span>{{ $primaryItem->reading_time }} menit</span><span>·</span>@endif

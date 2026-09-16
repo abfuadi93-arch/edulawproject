@@ -66,10 +66,10 @@
             @endif
 
             @if ($eyebrow)
-                <p class="mt-2 text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-amber">{{ $eyebrow }}</p>
+                <p class="mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">{{ $eyebrow }}</p>
             @endif
 
-            <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-black leading-tight text-white sm:text-4xl lg:line-clamp-2">{{ $title }}</h1>
+            <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:line-clamp-2">{{ $title }}</h1>
 
             @if ($description)
                 <p class="mt-3 max-w-4xl text-pretty text-base font-bold leading-6 text-white/90 sm:text-lg sm:leading-7 lg:line-clamp-2">{{ $description }}</p>
@@ -86,8 +86,8 @@
                         'border-t' => $loop->iteration > 2,
                         'col-span-2' => $statItems->count() === 3 && $loop->last,
                     ])>
-                        <dd class="font-display text-2xl font-black tabular-nums text-brand-amber">{{ $stat['value'] ?? '0' }}</dd>
-                        <dt class="mt-1 text-[10px] font-extrabold uppercase leading-4 tracking-[0.1em] text-white/70">{{ $stat['label'] }}</dt>
+                        <dd class="font-display text-2xl font-bold tabular-nums text-brand-amber">{{ $stat['value'] ?? '0' }}</dd>
+                        <dt class="mt-1 text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-white/70">{{ $stat['label'] }}</dt>
                     </div>
                 @endforeach
             </dl>

@@ -32,7 +32,7 @@
                 name="q"
                 value="{{ $search }}"
                 placeholder="Cari program..."
-                class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white pl-3 pr-10 text-sm font-semibold text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
+                class="h-11 w-full min-w-0 rounded-lg border border-slate-200 bg-white pl-3 pr-10 text-sm font-bold text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-2 focus:ring-brand-navy/10"
             >
             <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                 <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -79,11 +79,11 @@
             </select>
         </label>
 
-        <button type="submit" class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-black text-white transition hover:bg-[#102B4B]">
+        <button type="submit" class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-navy px-4 text-sm font-bold text-white transition hover:bg-[#102B4B]">
             Terapkan
         </button>
 
-        <a href="{{ $indexUrl }}" class="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-black text-slate-500 transition hover:bg-slate-50 hover:text-brand-navy">
+        <a href="{{ $indexUrl }}" class="inline-flex min-h-11 items-center justify-center rounded-lg px-3 text-sm font-bold text-slate-500 transition hover:bg-slate-50 hover:text-brand-navy">
             Reset
         </a>
     </div>

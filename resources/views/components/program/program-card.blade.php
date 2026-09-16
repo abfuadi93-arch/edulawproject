@@ -39,17 +39,17 @@
             @endif
 
             <div class="absolute left-3 top-3 flex flex-wrap gap-2">
-                <span class="rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-brand-navy shadow-sm backdrop-blur">
+                <span class="rounded-full bg-white/92 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-brand-navy shadow-sm backdrop-blur">
                     {{ $category }}
                 </span>
-                <span class="rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.11em] shadow-sm {{ $statusClass }}">
+                <span class="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.11em] shadow-sm {{ $statusClass }}">
                     {{ $statusLabel }}
                 </span>
             </div>
         </a>
 
         <div class="flex flex-1 flex-col p-4">
-            <h3 class="type-role-compact line-clamp-2 text-base font-black leading-snug tracking-normal text-brand-ink">
+            <h3 class="type-role-compact line-clamp-2 text-base font-bold leading-snug tracking-normal text-brand-ink">
                 <a href="{{ $detailUrl }}" class="transition hover:text-brand-navy">
                     {{ $title }}
                 </a>
@@ -59,7 +59,7 @@
                 {{ $excerpt }}
             </p>
 
-            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-black text-brand-navy">
+            <div class="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs font-bold text-brand-navy">
                 <span class="inline-flex items-center gap-1.5">
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M8 2v4m8-4v4M3 10h18M5 5h14a2 2 0 0 1 2 2v12a3 3 0 0 1-3 3H6a3 3 0 0 1-3-3V7a2 2 0 0 1 2-2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -81,7 +81,7 @@
             </div>
 
             <div class="mt-auto pt-3">
-                <a href="{{ $detailUrl }}" class="inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-teal">
+                <a href="{{ $detailUrl }}" class="inline-flex items-center gap-2 text-sm font-bold text-brand-navy transition hover:text-brand-teal">
                     Lihat Detail
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

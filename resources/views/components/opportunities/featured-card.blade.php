@@ -19,7 +19,7 @@
                     <span class="grid size-12 place-items-center rounded-xl border border-brand-navy/10 bg-white/70">
                         <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>
                     </span>
-                    <span class="mt-4 text-xs font-black uppercase tracking-[0.16em] text-brand-navy/55">Edulaw Opportunity</span>
+                    <span class="mt-4 text-xs font-bold uppercase tracking-[0.16em] text-brand-navy/55">Edulaw Opportunity</span>
                 </div>
                 @if ($opportunity->poster_url)
                     <img
@@ -69,21 +69,21 @@
             <div class="channel-feature-meta border-y border-slate-100 py-3">
                 <dl class="grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
-                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</dt>
-                        <dd class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</dd>
+                        <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Deadline</dt>
+                        <dd class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</dd>
                         <dd class="mt-0.5 text-xs font-bold text-[#a56408]">{{ $opportunity->deadline_relative_label }}</dd>
                     </div>
                     <div>
-                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Format</dt>
-                        <dd class="mt-1 line-clamp-1 text-sm font-black text-brand-ink">{{ $opportunity->display_format }}</dd>
+                        <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Format</dt>
+                        <dd class="mt-1 line-clamp-1 text-sm font-bold text-brand-ink">{{ $opportunity->display_format }}</dd>
                     </div>
                     <div>
-                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Lokasi</dt>
-                        <dd class="mt-1 line-clamp-2 text-sm font-black text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
+                        <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Lokasi</dt>
+                        <dd class="mt-1 line-clamp-2 text-sm font-bold text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
                     </div>
                     <div>
-                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Status</dt>
-                        <dd class="mt-1 text-sm font-black text-emerald-700">Masih Dibuka</dd>
+                        <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Status</dt>
+                        <dd class="mt-1 text-sm font-bold text-emerald-700">Masih Dibuka</dd>
                     </div>
                 </dl>
 

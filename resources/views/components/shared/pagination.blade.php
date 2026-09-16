@@ -24,7 +24,7 @@
         @endif
 
         @foreach (range($firstPage, $lastPage) as $page)
-            <a href="{{ $pageUrl($paginator->url($page)) }}" aria-current="{{ $page === $paginator->currentPage() ? 'page' : 'false' }}" class="grid h-9 min-w-9 place-items-center rounded-lg px-2 text-xs font-extrabold {{ $page === $paginator->currentPage() ? 'bg-brand-navy text-white' : 'border border-slate-200 bg-white text-brand-navy' }}">{{ $page }}</a>
+            <a href="{{ $pageUrl($paginator->url($page)) }}" aria-current="{{ $page === $paginator->currentPage() ? 'page' : 'false' }}" class="grid h-9 min-w-9 place-items-center rounded-lg px-2 text-xs font-bold {{ $page === $paginator->currentPage() ? 'bg-brand-navy text-white' : 'border border-slate-200 bg-white text-brand-navy' }}">{{ $page }}</a>
         @endforeach
 
         @if ($paginator->hasMorePages())

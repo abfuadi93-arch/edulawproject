@@ -78,12 +78,12 @@
     <section id="insight-archive" aria-labelledby="category-articles-heading" class="mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
         <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
             <div>
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-coral">Artikel Pilihan Kanal</p>
+                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Artikel Pilihan Kanal</p>
                 <h2 id="category-articles-heading" class="mt-2 font-display text-3xl font-bold text-brand-navy">
                     Artikel {{ $definition['name'] }}
                 </h2>
             </div>
-            <p class="text-sm font-semibold text-slate-500">
+            <p class="text-sm font-bold text-slate-500">
                 Menampilkan {{ $insights->firstItem() ?? 0 }}–{{ $insights->lastItem() ?? 0 }} dari {{ $insights->total() }} artikel
             </p>
         </div>
@@ -97,11 +97,11 @@
                                 <img src="{{ $article->cover_image_url }}" alt="{{ $article->title }}" loading="lazy" class="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03] motion-reduce:transition-none">
                             @else
                                 <div class="absolute inset-0 bg-linear-to-br from-brand-navy via-[#244972] to-[#0f766e]"></div>
-                                <div class="absolute inset-0 grid place-items-center text-4xl font-black text-white/15">{{ Str::upper(Str::substr($definition['name'], 0, 1)) }}</div>
+                                <div class="absolute inset-0 grid place-items-center text-4xl font-bold text-white/15">{{ Str::upper(Str::substr($definition['name'], 0, 1)) }}</div>
                             @endif
                         </div>
                         <div class="pt-4">
-                            <p class="text-[10px] font-black uppercase tracking-[0.15em] text-brand-coral">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-coral">
                                 {{ $definition['name'] }}
                             </p>
                             <h3 class="type-role-card mt-2 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
@@ -141,13 +141,13 @@
     <section aria-labelledby="related-categories-heading" class="border-t border-slate-200 bg-[#fbfaf7] py-12 sm:py-14">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="max-w-2xl">
-                <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-coral">Kanal Terkait</p>
+                <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-coral">Kanal Terkait</p>
                 <h2 id="related-categories-heading" class="mt-2 font-display text-3xl font-bold text-brand-navy">Lanjutkan penelusuran</h2>
             </div>
             <div class="mt-7 grid gap-4 md:grid-cols-3">
                 @foreach ($relatedCategories as $related)
                     <a href="{{ $related['url'] }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/30 hover:shadow-md">
-                        <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-coral">{{ number_format($related['article_count'], 0, ',', '.') }} artikel</p>
+                        <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-coral">{{ number_format($related['article_count'], 0, ',', '.') }} artikel</p>
                         <h3 class="mt-2 text-lg font-bold text-brand-ink transition group-hover:text-brand-navy">{{ $related['name'] }}</h3>
                         <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{{ $related['seo_description'] }}</p>
                         <span class="mt-4 inline-flex text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Buka kanal</span>

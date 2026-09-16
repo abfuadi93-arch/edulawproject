@@ -26,7 +26,7 @@
                 <img src="{{ $publicationImage }}" alt="{{ $publication->title }}" class="h-72 w-full object-cover">
 
                 <div class="p-6 sm:p-8">
-                <h2 class="text-2xl font-extrabold text-brand-ink">Ringkasan</h2>
+                <h2 class="text-2xl font-bold text-brand-ink">Ringkasan</h2>
                 <p class="edulaw-readable mt-4 text-slate-600">{{ $publication->excerpt }}</p>
 
                 @if ($publication->description)
@@ -47,7 +47,7 @@
 
             <aside class="space-y-4">
                 <div class="rounded-3xl bg-white p-6 shadow-sm ring-1 ring-slate-200">
-                    <h3 class="text-sm font-black uppercase tracking-[0.15em] text-brand-navy">Informasi</h3>
+                    <h3 class="text-sm font-bold uppercase tracking-[0.15em] text-brand-navy">Informasi</h3>
                     <dl class="mt-4 space-y-3 text-sm">
                         <div><dt class="text-slate-500">Tipe</dt><dd class="font-bold text-brand-ink">{{ $publication->type?->name ?? '-' }}</dd></div>
                         <div><dt class="text-slate-500">Tahun / Tanggal</dt><dd class="font-bold text-brand-ink">{{ $publication->publication_date_display }}</dd></div>
@@ -66,12 +66,12 @@
 
     <section class="bg-white py-14">
         <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-            <h2 class="text-2xl font-extrabold text-brand-ink">Publikasi Terkait</h2>
+            <h2 class="text-2xl font-bold text-brand-ink">Publikasi Terkait</h2>
             <div class="mt-6 grid gap-5 md:grid-cols-3">
                 @forelse ($relatedPublications as $item)
                     <article class="rounded-2xl border border-slate-200 bg-white p-5">
                         <p class="text-xs font-bold uppercase tracking-[0.14em] text-brand-navy">{{ $item->type?->name ?? 'Publikasi' }}</p>
-                        <h3 class="mt-2 font-extrabold text-brand-ink">{{ $item->title }}</h3>
+                        <h3 class="mt-2 font-bold text-brand-ink">{{ $item->title }}</h3>
                         <p class="mt-2 text-sm text-slate-600">{{ $item->excerpt }}</p>
                         <a href="{{ route('publications.show', $item->slug) }}" class="mt-3 inline-flex text-sm font-bold text-brand-navy">Lihat Detail →</a>
                     </article>

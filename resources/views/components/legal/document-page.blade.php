@@ -26,8 +26,8 @@
         panel-label="Informasi dokumen"
     >
         <div class="flex min-h-28 flex-col justify-center rounded-lg px-4 py-3">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.14em] text-white/65">Terakhir diperbarui</p>
-            <p class="mt-2 font-display text-2xl font-black text-brand-amber">{{ $updatedAt }}</p>
+            <p class="text-[11px] font-bold uppercase tracking-[0.14em] text-white/65">Terakhir diperbarui</p>
+            <p class="mt-2 font-display text-2xl font-bold text-brand-amber">{{ $updatedAt }}</p>
         </div>
     </x-shared.primary-hero>
 
@@ -37,11 +37,11 @@
                 @foreach ($summaryItems as $index => $item)
                     <article class="rounded-[14px] bg-[#f7f8fa] p-5 sm:p-6">
                         <div class="flex items-start gap-4">
-                            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-brand-amber-soft text-[10px] font-black text-brand-navy">
+                            <span class="grid size-9 shrink-0 place-items-center rounded-full bg-brand-amber-soft text-[10px] font-bold text-brand-navy">
                                 {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                             </span>
                             <div class="min-w-0">
-                                <h2 class="type-role-subheading text-lg font-black leading-snug text-brand-navy">{{ $item['title'] }}</h2>
+                                <h2 class="type-role-subheading text-lg font-bold leading-snug text-brand-navy">{{ $item['title'] }}</h2>
                                 <p class="mt-2 text-[15px] leading-6 text-slate-600">{{ $item['description'] }}</p>
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                 <div class="divide-y divide-slate-200">
                     @foreach ($sections as $sectionIndex => $section)
                         <section id="bagian-{{ $sectionIndex + 1 }}" class="scroll-mt-24 py-7 first:pt-0 last:pb-0">
-                            <h2 class="type-role-subheading font-display text-xl font-black leading-snug text-brand-navy sm:text-2xl">
+                            <h2 class="type-role-subheading font-display text-xl font-bold leading-snug text-brand-navy sm:text-2xl">
                                 {{ $section['title'] }}
                             </h2>
 
@@ -73,7 +73,7 @@
 
             <aside class="lg:sticky lg:top-24">
                 <nav class="rounded-[14px] bg-white p-5" aria-label="Daftar bagian {{ $title }}">
-                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">Daftar Bagian</p>
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">Daftar Bagian</p>
                     <ol class="mt-4 grid gap-1.5">
                         @foreach ($sections as $sectionIndex => $section)
                             <li>

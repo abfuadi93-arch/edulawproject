@@ -21,10 +21,10 @@
         ['label' => 'Riset & Publikasi', 'route' => 'publications.index'],
         ['label' => 'Opportunities', 'route' => 'opportunities.index'],
         ['label' => 'Multimedia', 'route' => 'multimedia.index'],
-        ['label' => 'Tentang Edulaw', 'route' => 'about'],
     ])->filter(fn (array $link): bool => Route::has($link['route']));
 
     $resourceLinks = collect([
+        Route::has('about') ? ['label' => 'Tentang Edulaw', 'route' => 'about'] : null,
         Route::has('collaboration.index') ? ['label' => 'Ajukan Kolaborasi', 'route' => 'collaboration.index'] : null,
         Route::has('editorial-standards') ? ['label' => 'Standar Editorial', 'route' => 'editorial-standards'] : null,
         Route::has('corrections-policy') ? ['label' => 'Kebijakan Koreksi', 'route' => 'corrections-policy'] : null,
@@ -35,7 +35,6 @@
         ['label' => 'Instagram', 'url' => EdulawSite::resolveUrl($settings['social.instagram_url'] ?? null)],
         ['label' => 'YouTube', 'url' => EdulawSite::resolveUrl($settings['social.youtube_url'] ?? null)],
         ['label' => 'LinkedIn', 'url' => EdulawSite::resolveUrl($settings['social.linkedin_url'] ?? null)],
-        ['label' => 'Email', 'url' => $emailUrl],
     ])->filter(fn (array $link): bool => filled($link['url']));
 
     $legalLinks = collect([
@@ -47,40 +46,49 @@
 @endphp
 
 <footer class="border-t border-white/10 bg-[#102f56] text-white">
-    <div class="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 px-5 py-11 sm:px-6 md:grid-cols-2 lg:grid-cols-[1.45fr_.8fr_1fr_.8fr] lg:px-8 lg:py-12">
-        <div class="col-span-2 lg:col-span-1">
+    <div class="mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 px-5 py-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,4fr)_repeat(4,minmax(0,3fr))] lg:gap-6 lg:px-8 lg:py-10">
+        <div class="min-w-0 sm:col-span-2 lg:col-span-1">
             <a href="{{ route('home') }}" class="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f0c55e]" aria-label="{{ $siteName }} — Beranda">
                 @if ($footerLogo)
                     <img src="{{ $footerLogo }}" alt="{{ $siteName }}" width="649" height="240" class="h-12 w-auto max-w-56 object-contain" loading="lazy" decoding="async">
                 @else
-                    <span class="text-xl font-extrabold text-white">{{ $siteName }}</span>
+                    <span class="text-xl font-bold text-white">{{ $siteName }}</span>
                 @endif
             </a>
 
             @if ($siteDescription)
-                <p class="mt-5 max-w-sm text-sm leading-7 text-slate-200">{{ $siteDescription }}</p>
+                <p class="mt-4 max-w-sm text-sm leading-6 text-slate-200">{{ $siteDescription }}</p>
             @endif
 
             @if ($tagline)
-                <p class="mt-4 text-sm font-extrabold text-[#f0c55e]">{{ $tagline }}</p>
+                <p class="mt-4 text-sm font-bold text-[#f0c55e]">{{ $tagline }}</p>
             @endif
         </div>
 
-        <nav aria-label="Navigasi footer">
-            <h2 class="text-sm font-extrabold text-white">Navigasi</h2>
-            <ul class="mt-5 grid gap-3">
+        <nav class="min-w-0" aria-label="Navigasi footer">
+            <h2 class="text-sm font-bold text-white">Navigasi</h2>
+            <ul class="mt-4 grid gap-2.5">
                 @foreach ($channelLinks as $link)
                     <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $link['label'] }}</a></li>
                 @endforeach
             </ul>
         </nav>
 
-        <div>
-            <h2 class="text-sm font-extrabold text-white">Sumber Daya</h2>
-            <ul class="mt-5 grid gap-3">
+        <nav class="min-w-0" aria-label="Sumber daya footer">
+            <h2 class="text-sm font-bold text-white">Sumber Daya</h2>
+            <ul class="mt-4 grid gap-2.5">
                 @foreach ($resourceLinks as $link)
                     <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $link['label'] }}</a></li>
                 @endforeach
+            </ul>
+        </nav>
+
+        <div class="min-w-0">
+            <h2 class="text-sm font-bold text-white">Kontak</h2>
+            <ul class="mt-4 grid gap-2.5">
+                @if ($emailUrl)
+                    <li><!--email_off--><a href="{{ $emailUrl }}" class="break-words text-sm text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $email }}</a><!--/email_off--></li>
+                @endif
                 @if ($whatsappUrl && $whatsappLabel)
                     <li><a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-slate-200 transition hover:text-[#f0c55e]">{{ $whatsappLabel }}</a></li>
                 @endif
@@ -88,12 +96,11 @@
             </ul>
         </div>
 
-        <div class="col-span-2 lg:col-span-1">
-            <h2 class="text-sm font-extrabold text-white">Ikuti Kami</h2>
-            <div class="mt-5 grid grid-cols-2 gap-3 lg:grid-cols-1" aria-label="Media sosial Edulaw Project">
+        <div class="min-w-0">
+            <h2 class="text-sm font-bold text-white">Ikuti Kami</h2>
+            <div class="mt-4 grid grid-cols-1 gap-2.5" aria-label="Media sosial Edulaw Project">
                 @foreach ($socialLinks as $link)
-                    @if ($link['label'] === 'Email')<!--email_off-->@endif
-                    <a href="{{ $link['url'] }}" @if ($link['label'] !== 'Email') target="_blank" rel="noopener noreferrer" @endif class="flex items-center gap-2.5 text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]" aria-label="{{ $link['label'] }} Edulaw Project">
+                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]" aria-label="{{ $link['label'] }} Edulaw Project">
                         <span class="grid size-6 shrink-0 place-items-center rounded-md bg-white/10 text-[#f0c55e]" aria-hidden="true">
                             @if ($link['label'] === 'Instagram')
                                 <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.5"/><path d="M17.5 6.5h.01"/></svg>
@@ -107,7 +114,6 @@
                         </span>
                         {{ $link['label'] }}
                     </a>
-                    @if ($link['label'] === 'Email')<!--/email_off-->@endif
                 @endforeach
             </div>
         </div>
@@ -117,11 +123,11 @@
         <div class="mx-auto flex max-w-7xl flex-col gap-4 px-5 py-5 text-[13px] leading-5 text-slate-300 sm:px-6 md:flex-row md:items-center md:justify-between lg:px-8">
             <p>© {{ now()->year }} {{ $siteName }}. Hak cipta dilindungi.</p>
             @if ($legalLinks->isNotEmpty())
-                <div class="flex flex-wrap items-center gap-x-5 gap-y-2">
+                <nav aria-label="Kebijakan situs" class="flex flex-wrap items-center gap-x-5 gap-y-2">
                     @foreach ($legalLinks as $link)
                         <a href="{{ route($link['route']) }}" class="font-medium transition hover:text-white">{{ $link['label'] }}</a>
                     @endforeach
-                </div>
+                </nav>
             @endif
         </div>
     </div>

@@ -41,11 +41,11 @@
                     <path d="M8 2v3m8-3v3M4 9h16M5 5h14a1 1 0 0 1 1 1v13H4V6a1 1 0 0 1 1-1Zm10 10 4 4m0-4-4 4" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/>
                 </svg>
             </span>
-            <h2 class="type-role-subheading mt-4 text-lg font-black tracking-normal text-brand-navy">Belum ada program aktif saat ini.</h2>
+            <h2 class="type-role-subheading mt-4 text-lg font-bold tracking-normal text-brand-navy">Belum ada program aktif saat ini.</h2>
             <p class="mx-auto mt-1 max-w-2xl text-sm leading-6 text-slate-500">Jelajahi dokumentasi program terdahulu atau temukan peluang lain dari Edulaw.</p>
             <div class="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-                <a href="{{ $archiveUrl }}" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white transition hover:bg-[#102B4B]">Lihat Program Arsip →</a>
-                <a href="{{ $opportunitiesUrl }}" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 bg-white px-5 text-sm font-black text-brand-navy transition hover:border-brand-navy">Lihat Opportunities →</a>
+                <a href="{{ $archiveUrl }}" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-bold text-white transition hover:bg-[#102B4B]">Lihat Program Arsip →</a>
+                <a href="{{ $opportunitiesUrl }}" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 bg-white px-5 text-sm font-bold text-brand-navy transition hover:border-brand-navy">Lihat Opportunities →</a>
             </div>
         </div>
     @endif

@@ -112,8 +112,8 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.15em] text-brand-navy">Opportunity Finder</p>
-                    <h2 id="opportunity-results-title" class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">{{ $resultsTitle }}</h2>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.15em] text-brand-navy">Opportunity Finder</p>
+                    <h2 id="opportunity-results-title" class="mt-1 font-display text-2xl font-bold text-brand-navy sm:text-3xl">{{ $resultsTitle }}</h2>
                     <p class="mt-1.5 max-w-3xl text-base leading-7 text-slate-600">Cari peluang berdasarkan kata kunci, kategori, format, lokasi, dan deadline.</p>
                 </div>
                 <p class="text-sm font-bold text-slate-500"><strong class="text-brand-navy">{{ number_format($opportunities->total()) }}</strong> kesempatan ditemukan</p>
@@ -151,14 +151,14 @@
                         </select>
                     </label>
 
-                    <button type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-[#f8fafc] px-4 text-sm font-black text-brand-navy" data-opportunity-filters-toggle aria-expanded="{{ $hasAdvancedFilters ? 'true' : 'false' }}" aria-controls="opportunity-advanced-filters">
+                    <button type="button" class="inline-flex h-11 items-center justify-center gap-2 rounded-lg border border-slate-200 bg-[#f8fafc] px-4 text-sm font-bold text-brand-navy" data-opportunity-filters-toggle aria-expanded="{{ $hasAdvancedFilters ? 'true' : 'false' }}" aria-controls="opportunity-advanced-filters">
                         Filter Lanjutan
                         @if ($activeFilterCount > 0)
                             <span class="grid h-5 min-w-5 place-items-center rounded-full bg-brand-navy px-1 text-[11px] text-white">{{ $activeFilterCount }}</span>
                         @endif
                     </button>
 
-                    <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white transition hover:bg-brand-ink">Terapkan</button>
+                    <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-bold text-white transition hover:bg-brand-ink">Terapkan</button>
 
                     <div class="flex h-11 items-center rounded-lg border border-slate-200 bg-[#f8fafc] p-1" aria-label="Pilihan tampilan opportunities">
                         <a href="{{ $queryFor(['view' => 'grid']) }}#opportunity-finder" aria-label="Tampilan grid" aria-current="{{ $selectedView === 'grid' ? 'true' : 'false' }}" class="grid h-9 w-9 place-items-center rounded-md {{ $selectedView === 'grid' ? 'bg-brand-navy text-white' : 'text-slate-500 hover:text-brand-navy' }}">
@@ -173,14 +173,14 @@
                 <div id="opportunity-advanced-filters" data-opportunity-filters-panel @if (! $hasAdvancedFilters) hidden @endif class="mt-3 border-t border-slate-100 pt-3">
                     <div class="grid gap-3 sm:grid-cols-3">
                         <label>
-                            <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Status</span>
+                            <span class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Status</span>
                             <select name="status" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
                                 <option value="open" @selected($filters['status'] === 'open')>Masih Dibuka</option>
                                 <option value="closed" @selected($filters['status'] === 'closed')>Sudah Ditutup</option>
                             </select>
                         </label>
                         <label>
-                            <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</span>
+                            <span class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Deadline</span>
                             <select name="deadline" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
                                 <option value="">Semua deadline</option>
                                 @foreach ($deadlineLabels as $value => $label)
@@ -189,7 +189,7 @@
                             </select>
                         </label>
                         <label>
-                            <span class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Lokasi</span>
+                            <span class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Lokasi</span>
                             <select name="location" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
                                 <option value="">Semua lokasi</option>
                                 @foreach ($availableLocations as $location)
@@ -199,7 +199,7 @@
                         </label>
                     </div>
                     <div class="mt-3 flex justify-end">
-                        <a href="{{ $indexUrl }}#opportunity-finder" class="text-sm font-black text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Hapus semua filter</a>
+                        <a href="{{ $indexUrl }}#opportunity-finder" class="text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Hapus semua filter</a>
                     </div>
                 </div>
             </form>
@@ -231,10 +231,10 @@
                 <x-shared.pagination :paginator="$opportunities" fragment="opportunity-finder" label="Navigasi halaman opportunities" />
             @else
                 <div class="mt-6 rounded-[14px] border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-                    <h3 class="font-display text-xl font-black text-brand-navy">Belum ada peluang yang sesuai</h3>
+                    <h3 class="font-display text-xl font-bold text-brand-navy">Belum ada peluang yang sesuai</h3>
                     <p class="mx-auto mt-2 max-w-lg text-base leading-7 text-slate-600">{{ $hasActiveFilters ? 'Coba ubah kata kunci atau filter untuk memperluas hasil pencarian.' : 'Belum ada opportunity yang tersedia untuk daftar ini saat ini.' }}</p>
                     @if ($hasActiveFilters)
-                        <a href="{{ $indexUrl }}#opportunity-finder" class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white">Hapus Filter</a>
+                        <a href="{{ $indexUrl }}#opportunity-finder" class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-brand-navy px-5 text-sm font-bold text-white">Hapus Filter</a>
                     @endif
                 </div>
             @endif
@@ -245,8 +245,8 @@
         <div class="section-shell">
             <article class="rounded-[14px] bg-[#f7f8fa] p-5 sm:grid sm:grid-cols-[0.42fr_0.58fr] sm:items-center sm:gap-6 sm:p-6">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.15em] text-brand-teal">Kurasi Edulaw</p>
-                    <h2 id="opportunity-curation-heading" class="mt-2 font-display text-2xl font-black text-brand-navy">Informasi peluang yang lebih mudah dipindai.</h2>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.15em] text-brand-teal">Kurasi Edulaw</p>
+                    <h2 id="opportunity-curation-heading" class="mt-2 font-display text-2xl font-bold text-brand-navy">Informasi peluang yang lebih mudah dipindai.</h2>
                 </div>
                 <p class="mt-3 text-base leading-7 text-slate-600 sm:mt-0">Setiap peluang diringkas melalui kategori, format, lokasi, dan deadline agar pembaca dapat mengambil keputusan dengan cepat.</p>
             </article>

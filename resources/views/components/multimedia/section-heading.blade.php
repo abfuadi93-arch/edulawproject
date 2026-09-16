@@ -10,7 +10,7 @@
         <x-multimedia.platform-badge :platform="$platform" :label="$eyebrow" />
     </div>
 
-    <h2 class="mt-2 text-2xl font-black tracking-tight text-brand-ink sm:text-3xl">
+    <h2 class="mt-2 text-2xl font-bold tracking-tight text-brand-ink sm:text-3xl">
         {{ $title }}
     </h2>
 

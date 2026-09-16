@@ -10,11 +10,11 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral"><span class="mr-1 text-brand-amber" aria-hidden="true">●</span> Terbaru</p>
-                    <h2 id="latest-editorial-heading" class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">Editorial Terbaru</h2>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral"><span class="mr-1 text-brand-amber" aria-hidden="true">●</span> Terbaru</p>
+                    <h2 id="latest-editorial-heading" class="mt-1 font-display text-2xl font-bold text-brand-navy sm:text-3xl">Editorial Terbaru</h2>
                     <p class="mt-1.5 text-base leading-7 text-slate-600">Analisis dan penjelasan terbaru mengenai hukum, regulasi, putusan, dan kebijakan publik.</p>
                 </div>
-                <a href="{{ $archiveUrl }}" class="shrink-0 text-sm font-extrabold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4 hover:text-brand-coral">Lihat Semua Editorial <span aria-hidden="true">→</span></a>
+                <a href="{{ $archiveUrl }}" class="shrink-0 text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4 hover:text-brand-coral">Lihat Semua Editorial <span aria-hidden="true">→</span></a>
             </div>
 
             <div class="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -29,8 +29,8 @@
                                 @endif
                             </div>
                             <div class="pt-4">
-                                <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                <h3 class="type-role-compact mt-1.5 line-clamp-3 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
+                                <h3 class="type-role-compact mt-1.5 line-clamp-3 text-base font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
                                 <p class="mt-2.5 type-role-meta font-normal text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
                             </div>
                         </a>

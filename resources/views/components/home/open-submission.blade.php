@@ -35,7 +35,7 @@
                 <p class="text-xs font-bold text-brand-navy">
                     Kontribusi Editorial
                 </p>
-                <h3 class="mt-2 text-xl font-extrabold text-brand-ink">
+                <h3 class="mt-2 text-xl font-bold text-brand-ink">
                     Kirim Tulisan
                 </h3>
                 <p class="mt-2 text-sm leading-6 text-slate-600">
@@ -73,7 +73,7 @@
                 <p class="text-xs font-bold text-brand-navy">
                     Kolaborasi Kelembagaan
                 </p>
-                <h3 class="mt-2 text-xl font-extrabold text-brand-ink">
+                <h3 class="mt-2 text-xl font-bold text-brand-ink">
                     Ajukan Kolaborasi
                 </h3>
                 <p class="mt-2 text-sm leading-6 text-slate-600">

@@ -69,7 +69,7 @@
         <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <a
                 href="#form-kontak"
-                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-black text-brand-navy transition hover:bg-[#ffd670]"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-bold text-brand-navy transition hover:bg-[#ffd670]"
             >
                 Kirim Pesan
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -79,7 +79,7 @@
 
             <a
                 href="{{ url('/kolaborasi') }}"
-                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur transition hover:bg-white/15"
+                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/15"
             >
                 Ajukan Kolaborasi
             </a>
@@ -90,11 +90,11 @@
     <section class="bg-white channel-section">
         <div class="section-shell">
             <div class="max-w-3xl">
-                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
+                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-teal">
                     Kanal Resmi
                 </p>
 
-                <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">
+                <h2 class="mt-2 font-display text-2xl font-bold leading-tight text-brand-navy sm:text-3xl">
                     Pilih kanal komunikasi yang paling sesuai.
                 </h2>
 
@@ -131,7 +131,7 @@
                             </div>
 
                             <div class="min-w-0">
-                                <h3 class="text-xl font-black leading-tight text-brand-navy">
+                                <h3 class="text-xl font-bold leading-tight text-brand-navy">
                                     {{ $channel['title'] }}
                                 </h3>
 
@@ -149,7 +149,7 @@
                             href="{{ $channel['url'] }}"
                             target="{{ str_starts_with($channel['url'], 'http') ? '_blank' : '_self' }}"
                             rel="{{ str_starts_with($channel['url'], 'http') ? 'noopener noreferrer' : '' }}"
-                            class="mt-5 inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-brand-teal"
+                            class="mt-5 inline-flex items-center gap-2 text-sm font-bold text-brand-navy transition hover:text-brand-teal"
                         >
                             {{ $channel['label'] }}
                             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -170,11 +170,11 @@
         <div class="section-shell grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <aside>
                 <div class="sticky top-24 rounded-[14px] bg-brand-navy p-6 text-white sm:p-7">
-                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-amber">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-amber">
                         Kirim Pesan
                     </p>
 
-                    <h2 class="mt-2 font-display text-2xl font-black leading-tight text-white sm:text-3xl">
+                    <h2 class="mt-2 font-display text-2xl font-bold leading-tight text-white sm:text-3xl">
                         Sampaikan pertanyaan Anda kepada Edulaw.
                     </h2>
 
@@ -185,21 +185,21 @@
 
                     <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                         <div class="rounded-[12px] bg-white/8 p-4">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-amber">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-amber">
                                 Respons
                             </p>
-                            <p class="mt-2 text-sm font-semibold leading-6 text-white/75">
+                            <p class="mt-2 text-sm font-bold leading-6 text-white/75">
                                 Pesan akan ditinjau oleh pengelola Edulaw Project dan direspons melalui email atau kanal kontak yang tersedia.
                             </p>
                         </div>
 
                         <div class="rounded-[12px] bg-white/8 p-4">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-amber">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-amber">
                                 Kolaborasi
                             </p>
                             <a
                                 href="{{ url('/kolaborasi') }}"
-                                class="mt-3 inline-flex items-center gap-2 text-sm font-black text-white transition hover:text-brand-amber"
+                                class="mt-3 inline-flex items-center gap-2 text-sm font-bold text-white transition hover:text-brand-amber"
                             >
                                 Ajukan kerja sama
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -221,11 +221,11 @@
     <section class="bg-white channel-section">
         <div class="section-shell grid gap-6 lg:grid-cols-[0.42fr_0.58fr] lg:items-start">
             <div>
-                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
+                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-teal">
                     Pertanyaan Umum
                 </p>
 
-                <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">
+                <h2 class="mt-2 font-display text-2xl font-bold leading-tight text-brand-navy sm:text-3xl">
                     Informasi sebelum menghubungi kami.
                 </h2>
 
@@ -238,7 +238,7 @@
             <div class="divide-y divide-slate-200 rounded-[14px] bg-[#f7f8fa] px-5 sm:px-6">
                 @foreach ($faqItems as $item)
                     <article class="py-5 first:pt-5 last:pb-5">
-                        <h3 class="text-lg font-black leading-snug text-brand-navy">
+                        <h3 class="text-lg font-bold leading-snug text-brand-navy">
                             {{ $item['question'] }}
                         </h3>
 

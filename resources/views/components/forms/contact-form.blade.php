@@ -6,11 +6,11 @@
     @csrf
 
     <div>
-        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">
             Form Kontak
         </p>
 
-        <h2 class="mt-2 font-display text-2xl font-black text-brand-navy sm:text-3xl">
+        <h2 class="mt-2 font-display text-2xl font-bold text-brand-navy sm:text-3xl">
             Kirim Pesan
         </h2>
 
@@ -145,7 +145,7 @@
     <div class="mt-7 grid gap-3 sm:grid-cols-[1fr_auto] sm:items-center">
         <button
             type="submit"
-        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 py-3 text-sm font-black text-white transition hover:bg-[#294f82]"
+        class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-brand-navy px-5 py-3 text-sm font-bold text-white transition hover:bg-[#294f82]"
         >
             Kirim Pesan
             <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -157,7 +157,7 @@
             href="https://wa.me/6281529927677"
             target="_blank"
             rel="noopener noreferrer"
-            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-black text-brand-navy transition hover:border-brand-teal/40 hover:bg-brand-teal-soft sm:w-auto"
+            class="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg border border-slate-200 bg-white px-5 py-3 text-sm font-bold text-brand-navy transition hover:border-brand-teal/40 hover:bg-brand-teal-soft sm:w-auto"
         >
             Chat via WhatsApp
         </a>

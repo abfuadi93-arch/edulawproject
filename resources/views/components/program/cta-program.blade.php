@@ -10,12 +10,12 @@
             </svg>
         </span>
         <div>
-            <p class="text-sm font-black text-brand-ink">Tidak menemukan program yang sesuai?</p>
+            <p class="text-sm font-bold text-brand-ink">Tidak menemukan program yang sesuai?</p>
             <p class="mt-1 text-sm leading-6 text-slate-600">Lihat seluruh dokumentasi program yang telah selesai.</p>
         </div>
     </div>
 
-    <a href="{{ $archiveUrl }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-4 py-2.5 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white">
+    <a href="{{ $archiveUrl }}" class="inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-brand-navy/20 bg-white px-4 py-2.5 text-sm font-bold text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white">
         Lihat Selengkapnya
         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
             <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>

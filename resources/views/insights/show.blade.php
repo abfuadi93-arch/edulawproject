@@ -95,7 +95,7 @@
         <div class="absolute bottom-0 left-0 right-0 z-0 h-px bg-white/12"></div>
 
         <div class="relative z-10 mx-auto flex min-h-[360px] max-w-7xl flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[400px] lg:min-h-[520px] lg:px-8 lg:py-24">
-            <nav class="mb-7 flex flex-wrap items-center justify-center gap-2 text-xs font-semibold text-white/70" aria-label="Breadcrumb">
+            <nav class="mb-7 flex flex-wrap items-center justify-center gap-2 text-xs font-bold text-white/70" aria-label="Breadcrumb">
                 <a href="{{ route('home') }}" class="transition hover:text-white">
                     Beranda
                 </a>
@@ -109,11 +109,11 @@
                 </span>
             </nav>
 
-            <h1 class="max-w-6xl break-words text-balance text-3xl font-black leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl lg:leading-[1.04]">
+            <h1 class="max-w-6xl break-words text-balance text-3xl font-bold leading-[1.08] tracking-tight text-white sm:text-4xl md:text-5xl lg:text-6xl lg:leading-[1.04]">
                 {{ $insight->title }}
             </h1>
 
-            <div class="mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm font-semibold text-white/80">
+            <div class="mt-7 flex flex-wrap items-center justify-center gap-x-4 gap-y-3 text-sm font-bold text-white/80">
                 <span>{{ $publishedDate }}</span>
 
                 <span class="hidden h-1 w-1 rounded-full bg-white/40 sm:block"></span>
@@ -133,7 +133,7 @@
 
                 <div class="article-content edulaw-readable insight-article-body prose prose-slate max-w-none
                     prose-headings:text-[#0f2a4a]
-                    prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-l-4 prose-h2:border-[#d99a21] prose-h2:pl-4 prose-h2:text-2xl prose-h2:font-extrabold
+                    prose-h2:mt-10 prose-h2:mb-4 prose-h2:border-l-4 prose-h2:border-[#d99a21] prose-h2:pl-4 prose-h2:text-2xl prose-h2:font-bold
                     prose-h3:mt-8 prose-h3:mb-3 prose-h3:text-xl prose-h3:font-bold
                     prose-strong:text-[#0f2a4a]">
                     @if ($preparedArticle['html'])
@@ -165,14 +165,14 @@
 
             <aside class="insight-sidebar grid w-full grid-cols-1 gap-5 self-start lg:sticky lg:top-24 lg:block lg:space-y-5" aria-label="Informasi artikel">
                 <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="article-about-heading">
-                    <h2 id="article-about-heading" class="type-role-label text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Tentang Artikel</h2>
+                    <h2 id="article-about-heading" class="type-role-label text-xs font-bold uppercase tracking-[0.22em] text-brand-teal">Tentang Artikel</h2>
 
                     <p class="mt-4 text-sm">
                         <span class="font-bold text-slate-500">Kategori:</span>
                         @if ($insight->categoryRelation?->slug)
-                            <a href="{{ route('insights.index', ['category' => $insight->categoryRelation->slug]) }}" class="font-black text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal">{{ $categoryName }}</a>
+                            <a href="{{ route('insights.index', ['category' => $insight->categoryRelation->slug]) }}" class="font-bold text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal">{{ $categoryName }}</a>
                         @else
-                            <span class="font-black text-brand-navy">{{ $categoryName }}</span>
+                            <span class="font-bold text-brand-navy">{{ $categoryName }}</span>
                         @endif
                     </p>
 
@@ -188,13 +188,13 @@
                                     loading="lazy"
                                 >
                             @else
-                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-navy text-sm font-black text-white">
+                                <div class="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-brand-navy text-sm font-bold text-white">
                                     {{ $authorInitials }}
                                 </div>
                             @endif
 
                             <div class="min-w-0 break-words">
-                                <h3 class="type-role-compact text-sm font-black leading-snug text-brand-navy">
+                                <h3 class="type-role-compact text-sm font-bold leading-snug text-brand-navy">
                                     @if ($authorProfileUrl)
                                         <a href="{{ $authorProfileUrl }}" class="underline-offset-4 hover:underline">
                                             {{ $authorName }}
@@ -218,31 +218,31 @@
                 </section>
 
                 <section class="w-full rounded-2xl border border-slate-200 bg-white p-6 shadow-sm" aria-labelledby="insight-editorial-metadata-heading">
-                    <h2 id="insight-editorial-metadata-heading" class="type-role-label text-xs font-black uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
+                    <h2 id="insight-editorial-metadata-heading" class="type-role-label text-xs font-bold uppercase tracking-[0.22em] text-brand-teal">Metadata Editorial</h2>
                     <dl class="mt-4 grid gap-4 text-sm">
                         @if ($editorName)
                             <div>
                                 <dt class="font-bold text-slate-500">Disunting oleh</dt>
-                                <dd class="mt-1 font-black text-brand-navy">{{ $editorName }}</dd>
+                                <dd class="mt-1 font-bold text-brand-navy">{{ $editorName }}</dd>
                             </div>
                         @endif
                         @if ($insight->published_at)
                             <div>
                                 <dt class="font-bold text-slate-500">Tanggal terbit</dt>
-                                <dd class="mt-1 font-black text-brand-navy">{{ $publishedDate }}</dd>
+                                <dd class="mt-1 font-bold text-brand-navy">{{ $publishedDate }}</dd>
                             </div>
                         @endif
                         @if ($updatedDate)
                             <div>
                                 <dt class="font-bold text-slate-500">Terakhir diperbarui</dt>
-                                <dd class="mt-1 font-black text-brand-navy">{{ $updatedDate }}</dd>
+                                <dd class="mt-1 font-bold text-brand-navy">{{ $updatedDate }}</dd>
                             </div>
                         @endif
                     </dl>
 
                     @if ($insight->tags->isNotEmpty())
                         <div class="mt-5 border-t border-slate-100 pt-5">
-                            <p class="text-[10px] font-black uppercase tracking-[0.24em] text-brand-navy/60">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.24em] text-brand-navy/60">
                                 Topik
                             </p>
 
@@ -266,8 +266,8 @@
                                 </svg>
                             </span>
                             <div>
-                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-[#a8660a]">Navigasi</p>
-                                <h2 id="article-toc-heading" class="type-role-subheading mt-1 text-lg font-black text-brand-navy">Daftar Isi</h2>
+                                <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-[#a8660a]">Navigasi</p>
+                                <h2 id="article-toc-heading" class="type-role-subheading mt-1 text-lg font-bold text-brand-navy">Daftar Isi</h2>
                             </div>
                         </div>
 
@@ -276,7 +276,7 @@
                                 <li class="pl-4">
                                     <a
                                         href="#{{ $heading['id'] }}"
-                                        class="block rounded-r-lg py-2 pr-2 text-sm font-semibold leading-5 text-slate-600 transition hover:bg-white/80 hover:text-brand-navy"
+                                        class="block rounded-r-lg py-2 pr-2 text-sm font-bold leading-5 text-slate-600 transition hover:bg-white/80 hover:text-brand-navy"
                                     >
                                         {{ $heading['title'] }}
                                     </a>
@@ -305,11 +305,11 @@
             <div class="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-xs font-black uppercase tracking-[0.2em] text-[#a8660a]">
+                        <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#a8660a]">
                             Baca Juga
                         </p>
 
-                        <h2 id="related-editorials-heading" class="mt-3 border-l-4 border-brand-amber pl-4 text-3xl font-black tracking-tight text-brand-navy sm:text-4xl">
+                        <h2 id="related-editorials-heading" class="mt-3 border-l-4 border-brand-amber pl-4 text-3xl font-bold tracking-tight text-brand-navy sm:text-4xl">
                             Editorial Terkait
                         </h2>
                         <p class="mt-4 max-w-2xl text-sm leading-6 text-slate-500 sm:text-base">
@@ -344,11 +344,11 @@
                             </a>
 
                             <div class="flex flex-1 flex-col p-5 sm:p-6">
-                                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-[#a8660a]">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-[#a8660a]">
                                     {{ $item->display_category }}
                                 </p>
 
-                                <h3 class="type-role-compact mt-3 line-clamp-2 min-h-[2.75rem] text-base font-black leading-snug text-brand-navy">
+                                <h3 class="type-role-compact mt-3 line-clamp-2 min-h-[2.75rem] text-base font-bold leading-snug text-brand-navy">
                                     <a href="{{ route('insights.show', $item->slug) }}">
                                         {{ $item->title }}
                                     </a>

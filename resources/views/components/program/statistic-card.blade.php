@@ -27,7 +27,7 @@
     </span>
 
     <span class="ml-auto min-w-0 text-right">
-        <span class="block text-2xl font-black leading-none tracking-normal text-white">{{ $value }}</span>
-        <span class="mt-1 block text-[11px] font-black uppercase tracking-[0.14em] text-white/75">{{ $label }}</span>
+        <span class="block text-2xl font-bold leading-none tracking-normal text-white">{{ $value }}</span>
+        <span class="mt-1 block text-[11px] font-bold uppercase tracking-[0.14em] text-white/75">{{ $label }}</span>
     </span>
 </div>

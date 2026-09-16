@@ -18,11 +18,11 @@
         <div class="rounded-2xl border border-[#dce5e3] bg-white/90 p-5 sm:p-6">
             <div class="mb-6 flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
                 <div>
-                    <h2 class="type-role-compact text-base font-black uppercase tracking-[0.14em] text-brand-navy">Program Terdahulu</h2>
+                    <h2 class="type-role-compact text-base font-bold uppercase tracking-[0.14em] text-brand-navy">Program Terdahulu</h2>
                     <p class="mt-1 text-sm leading-6 text-slate-500">Dokumentasi program yang telah diselenggarakan Edulaw.</p>
                 </div>
 
-                <a href="{{ $archiveUrl }}" class="inline-flex items-center gap-2 text-sm font-black text-brand-navy transition hover:text-[#102B4B]">
+                <a href="{{ $archiveUrl }}" class="inline-flex items-center gap-2 text-sm font-bold text-brand-navy transition hover:text-[#102B4B]">
                     Lihat Semua Arsip
                     <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                         <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -68,7 +68,7 @@
                 </div>
             @else
                 <div class="rounded-[20px] border border-dashed border-slate-300 bg-[#F8FAFC] p-10 text-center">
-                    <p class="text-sm font-black uppercase tracking-[0.18em] text-brand-navy">Arsip belum tersedia</p>
+                    <p class="text-sm font-bold uppercase tracking-[0.18em] text-brand-navy">Arsip belum tersedia</p>
                     <p class="mt-2 text-sm leading-6 text-slate-600">Dokumentasi program selesai akan tampil di sini.</p>
                 </div>
             @endif

@@ -34,12 +34,12 @@
                 {{-- Header --}}
                 <div>
                     <div class="max-w-full">
-                        <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-teal shadow-sm ring-1 ring-slate-200">
+                        <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-teal shadow-sm ring-1 ring-slate-200">
                             <span class="h-2 w-2 rounded-full bg-brand-teal"></span>
                             Multimedia
                         </p>
 
-                        <h2 class="mt-1.5 max-w-none text-2xl font-extrabold tracking-normal text-brand-ink sm:text-3xl lg:whitespace-nowrap lg:text-[1.95rem] xl:text-[2rem]">
+                        <h2 class="mt-1.5 max-w-none text-2xl font-bold tracking-normal text-brand-ink sm:text-3xl lg:whitespace-nowrap lg:text-[1.95rem] xl:text-[2rem]">
                             Konten Visual dan Dokumentasi
                         </h2>
                     </div>
@@ -72,10 +72,10 @@
                                 @else
                                     <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-charcoal to-brand-teal">
                                         <div class="rounded-2xl border border-white/15 bg-white/10 px-5 py-4 text-center text-white shadow-sm backdrop-blur">
-                                            <p class="text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber">
+                                            <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">
                                                 Multimedia Edulaw
                                             </p>
-                                            <p class="mt-2 text-sm font-semibold text-white/80">
+                                            <p class="mt-2 text-sm font-bold text-white/80">
                                                 Thumbnail sedang disiapkan
                                             </p>
                                         </div>
@@ -86,7 +86,7 @@
                                 <div class="absolute inset-0 bg-linear-to-r from-brand-navy/40 via-transparent to-transparent"></div>
 
                                 <div class="absolute left-5 top-5">
-                                    <span class="inline-flex rounded-full bg-brand-amber px-3 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-brand-black shadow-sm">
+                                    <span class="inline-flex rounded-full bg-brand-amber px-3 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-brand-black shadow-sm">
                                         {{ $mainMultimedia->display_type }}
                                     </span>
                                 </div>
@@ -108,7 +108,7 @@
                                 @endif
 
                                 <div class="absolute bottom-0 left-0 right-0 p-3 sm:p-4">
-                                    <h3 class="max-w-2xl text-xl font-extrabold leading-tight tracking-normal text-white sm:text-2xl">
+                                    <h3 class="max-w-2xl text-xl font-bold leading-tight tracking-normal text-white sm:text-2xl">
                                         {{ $mainMultimedia->title }}
                                     </h3>
 
@@ -125,7 +125,7 @@
                     </article>
                 @else
                     <div class="mt-3 rounded-2xl border border-dashed border-slate-300 bg-white p-5 text-center shadow-sm">
-                        <p class="text-sm font-black text-brand-ink">
+                        <p class="text-sm font-bold text-brand-ink">
                             Konten sedang disiapkan.
                         </p>
                         <p class="mt-1 type-role-meta leading-5 text-slate-500">
@@ -155,7 +155,7 @@
                                         >
                                     @else
                                         <div class="flex h-full w-full items-center justify-center bg-linear-to-br from-brand-navy via-brand-blue to-brand-teal">
-                                            <span class="rounded-full bg-white/15 px-3 py-1 text-[11px] font-black uppercase tracking-[0.11em] text-white">
+                                            <span class="rounded-full bg-white/15 px-3 py-1 text-[11px] font-bold uppercase tracking-[0.11em] text-white">
                                                 Multimedia
                                             </span>
                                         </div>
@@ -164,7 +164,7 @@
                                     <div class="absolute inset-0 bg-linear-to-t from-brand-navy/70 via-brand-navy/10 to-transparent"></div>
 
                                     <div class="absolute left-3 top-3">
-                                        <span class="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.09em] text-brand-ink shadow-sm">
+                                        <span class="rounded-full bg-white/90 px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.09em] text-brand-ink shadow-sm">
                                             {{ $item->display_type }}
                                         </span>
                                     </div>
@@ -185,7 +185,7 @@
                                 </div>
 
                                 <div class="p-3">
-                                    <h4 class="line-clamp-2 text-sm font-extrabold leading-snug text-brand-ink">
+                                    <h4 class="line-clamp-2 text-sm font-bold leading-snug text-brand-ink">
                                         {{ $item->title }}
                                     </h4>
                                 </div>
@@ -202,12 +202,12 @@
             {{-- Opportunities --}}
             <aside class="rounded-2xl border border-brand-amber/25 bg-[#fbf7ef] p-4 shadow-sm shadow-brand-ink/5 lg:mt-13">
                 <div>
-                    <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-black uppercase tracking-[0.18em] text-brand-amber shadow-sm ring-1 ring-brand-amber/25">
+                    <p class="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber shadow-sm ring-1 ring-brand-amber/25">
                         <span class="h-2 w-2 rounded-full bg-brand-amber"></span>
                         Opportunities
                     </p>
 
-                    <h2 class="mt-1.5 text-2xl font-extrabold tracking-normal text-brand-ink">
+                    <h2 class="mt-1.5 text-2xl font-bold tracking-normal text-brand-ink">
                         Opportunities Terbaru
                     </h2>
 
@@ -221,7 +221,7 @@
                         @foreach ($opportunities as $opportunity)
                             <article class="group rounded-2xl border border-brand-ink/10 bg-white p-3 shadow-sm shadow-brand-ink/5 transition duration-300 hover:-translate-y-0.5 hover:border-brand-amber/50 hover:shadow-lg hover:shadow-brand-ink/10">
                                 <div class="flex items-start justify-between gap-3">
-                                    <span class="inline-flex shrink-0 rounded-full bg-brand-amber-soft px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.09em] text-brand-ink">
+                                    <span class="inline-flex shrink-0 rounded-full bg-brand-amber-soft px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.09em] text-brand-ink">
                                         {{ $opportunity->display_type }}
                                     </span>
 
@@ -230,7 +230,7 @@
                                     </span>
                                 </div>
 
-                                <h3 class="mt-2 text-[15px] font-extrabold leading-snug text-brand-ink">
+                                <h3 class="mt-2 text-[15px] font-bold leading-snug text-brand-ink">
                                     {{ $opportunity->title }}
                                 </h3>
 
@@ -240,11 +240,11 @@
 
                                 <div class="mt-3 flex items-end justify-between gap-4 border-t border-brand-ink/10 pt-3">
                                     <div>
-                                        <p class="text-[11px] font-black uppercase tracking-[0.11em] text-brand-blue/70">
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.11em] text-brand-blue/70">
                                             Batas Akhir
                                         </p>
 
-                                        <p class="mt-1 text-[15px] font-extrabold text-brand-ink">
+                                        <p class="mt-1 text-[15px] font-bold text-brand-ink">
                                             {{ optional($opportunity->deadline)->translatedFormat('d M Y') ?: 'Tidak dibatasi' }}
                                         </p>
                                     </div>
@@ -252,7 +252,7 @@
                                     <a
                                         href="{{ $externalOpportunityUrl($opportunity) }}"
                                         @if ($isExternalOpportunityUrl($opportunity)) target="_blank" rel="noopener noreferrer" @endif
-                                        class="inline-flex shrink-0 items-center justify-end gap-1.5 pb-0.5 text-right text-xs font-extrabold text-brand-ink transition hover:text-brand-navy"
+                                        class="inline-flex shrink-0 items-center justify-end gap-1.5 pb-0.5 text-right text-xs font-bold text-brand-ink transition hover:text-brand-navy"
                                     >
                                         {{ $opportunityButtonLabel($opportunity) }}
                                         <svg class="h-3.5 w-3.5 transition group-hover:translate-x-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -272,7 +272,7 @@
                             </svg>
                         </div>
 
-                        <h3 class="mt-3 text-sm font-extrabold text-brand-ink">
+                        <h3 class="mt-3 text-sm font-bold text-brand-ink">
                             Opportunities segera hadir
                         </h3>
 

@@ -111,7 +111,7 @@
 
                     <button
                         type="submit"
-                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-brand-navy hover:text-white"
+                        class="inline-flex items-center justify-center gap-2 rounded-2xl bg-brand-black px-6 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-brand-navy hover:text-white"
                     >
                         Cari
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -130,11 +130,11 @@
                 @if ($query)
                     <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                         <div>
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">
                                 Hasil Pencarian
                             </p>
 
-                            <h2 class="mt-3 text-2xl font-extrabold tracking-tight text-brand-ink sm:text-3xl">
+                            <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-ink sm:text-3xl">
                                 Hasil untuk “{{ $query }}”
                             </h2>
 
@@ -171,7 +171,7 @@
                                         </span>
                                     </div>
 
-                                    <h3 class="mt-4 text-xl font-extrabold leading-tight text-brand-ink sm:text-2xl">
+                                    <h3 class="mt-4 text-xl font-bold leading-tight text-brand-ink sm:text-2xl">
                                         {{ $result['title'] }}
                                     </h3>
 
@@ -184,7 +184,7 @@
                                             {{ $result['date'] }}
                                         </p>
 
-                                        <span class="inline-flex items-center gap-2 text-sm font-extrabold text-brand-ink transition group-hover:text-brand-ink">
+                                        <span class="inline-flex items-center gap-2 text-sm font-bold text-brand-ink transition group-hover:text-brand-ink">
                                             Buka
                                             <svg class="h-4 w-4 transition group-hover:translate-x-1" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                                 <path d="M5 12h14m-6-6 6 6-6 6" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
@@ -201,7 +201,7 @@
                                     </svg>
                                 </div>
 
-                                <h2 class="mt-5 text-2xl font-extrabold text-brand-ink">
+                                <h2 class="mt-5 text-2xl font-bold text-brand-ink">
                                     Tidak ada hasil ditemukan.
                                 </h2>
 
@@ -221,7 +221,7 @@
                             </svg>
                         </div>
 
-                        <h2 class="mt-6 max-w-2xl text-3xl font-extrabold leading-tight tracking-tight text-brand-ink sm:text-4xl">
+                        <h2 class="mt-6 max-w-2xl text-3xl font-bold leading-tight tracking-tight text-brand-ink sm:text-4xl">
                             Masukkan kata kunci untuk mulai mencari.
                         </h2>
 
@@ -231,7 +231,7 @@
                         </p>
 
                         <div class="mt-8">
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">
                                 Kata Kunci Populer
                             </p>
 
@@ -253,7 +253,7 @@
             {{-- Sidebar --}}
             <aside class="space-y-6">
                 <div class="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-navy">
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">
                         Jenis Konten
                     </p>
 
@@ -274,11 +274,11 @@
                 </div>
 
                 <div class="rounded-4xl bg-brand-navy p-6 text-white shadow-sm">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-brand-silver">
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-silver">
                         Jelajahi Kanal
                     </p>
 
-                    <h3 class="mt-4 text-xl font-extrabold leading-tight">
+                    <h3 class="mt-4 text-xl font-bold leading-tight">
                         Temukan konten berdasarkan kanal utama.
                     </h3>
 

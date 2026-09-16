@@ -131,6 +131,7 @@ footer p {
 
 footer a {
     font-size: 14px;
+    font-weight: var(--type-weight-heading, 700);
 }
 
 footer a:not(:hover), footer p {
@@ -187,15 +188,15 @@ footer a:not(:hover), footer p {
 
 
 /* Bold signals headings, actions and explicit emphasis; supporting copy stays regular. */
-#main-content :is(p, li, dd):not(.section-kicker):not(.home-section-eyebrow):not(.home-card-kicker):not(.uppercase) {
+#main-content :is(p, li, dd):not(.font-bold):not(.type-role-label):not(.section-kicker):not(.home-section-eyebrow):not(.home-card-kicker):not(.uppercase) {
     font-weight: var(--type-weight-body);
 }
-#main-content :is(strong, b, button, .btn),
+#main-content :is(strong, b, button, .btn, label, dt),
 #main-content [data-home-impact-stat] dd {
     font-weight: var(--type-weight-heading);
 }
-#main-content :is(.home-card-meta, time, figcaption),
-#main-content :is(.home-card-meta, time, figcaption) :is(span, a) {
+#main-content :is(.home-card-meta, .home-publication-meta, .type-role-meta, time, figcaption),
+#main-content :is(.home-card-meta, .home-publication-meta, .type-role-meta, time, figcaption) :is(span, a) {
     font-weight: var(--type-weight-body);
 }
 /* Compact card titles retain a readable line height on every channel. */

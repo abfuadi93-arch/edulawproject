@@ -90,8 +90,8 @@
                 ['label' => 'Dokumentasi', 'meta' => 'Google Photos', 'href' => '#album-foto', 'icon' => '▦'],
             ] as $channel)
                 <a href="{{ $channel['href'] }}" class="flex min-h-14 min-w-0 items-center gap-2.5 rounded-xl px-2.5 py-2 text-white transition hover:bg-white/10 sm:min-w-32">
-                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-sm font-black text-brand-navy">{{ $channel['icon'] }}</span>
-                    <span class="min-w-0"><strong class="block text-xs font-black">{{ $channel['label'] }}</strong><span class="mt-0.5 block truncate text-[11px] font-bold text-white/70">{{ $channel['meta'] }}</span></span>
+                    <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-sm font-bold text-brand-navy">{{ $channel['icon'] }}</span>
+                    <span class="min-w-0"><strong class="block text-xs font-bold">{{ $channel['label'] }}</strong><span class="mt-0.5 block truncate text-[11px] font-bold text-white/70">{{ $channel['meta'] }}</span></span>
                 </a>
             @endforeach
         </div>
@@ -116,7 +116,7 @@
                 />
 
                 @if ($youtubeUrl)
-                    <a href="{{ $youtubeUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat kanal YouTube Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-black text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
+                    <a href="{{ $youtubeUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat kanal YouTube Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-bold text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
                         Lihat Kanal YouTube
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
@@ -144,7 +144,7 @@
             <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
                 <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
                 @if ($instagramUrl)
-                    <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat Instagram Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-black text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
+                    <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat Instagram Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-bold text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
                         Lihat Instagram
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                     </a>
@@ -165,7 +165,7 @@
                                     <x-multimedia.platform-badge :platform="$platform" :label="$platform === 'youtube' ? 'YouTube Shorts' : 'Instagram'" :dark="true" class="absolute left-3 top-3" />
                                     <div class="absolute inset-x-0 bottom-0 p-4">
                                         <div class="flex items-start justify-between gap-2">
-                                            <h3 class="type-role-compact line-clamp-2 text-sm font-black leading-snug text-white sm:text-base">{{ $item->title }}</h3>
+                                            <h3 class="type-role-compact line-clamp-2 text-sm font-bold leading-snug text-white sm:text-base">{{ $item->title }}</h3>
                                             <svg class="mt-0.5 h-4 w-4 shrink-0 text-brand-amber transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                         </div>
                                         <p class="mt-2 text-xs font-bold text-white/65">{{ $dateLabel($item) }}</p>
@@ -199,8 +199,8 @@
 
                                 <div class="flex flex-1 flex-col p-5">
                                     <p class="type-role-meta font-normal text-slate-500">{{ $dateLabel($item) }}@if ($item->photo_count) · {{ number_format($item->photo_count, 0, ',', '.') }} foto @endif</p>
-                                    <h3 class="type-role-card line-clamp-2 mt-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $item->title }}</h3>
-                                    <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-black text-brand-navy">
+                                    <h3 class="type-role-card line-clamp-2 mt-2 text-lg font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $item->title }}</h3>
+                                    <span class="mt-4 inline-flex items-center gap-1.5 text-sm font-bold text-brand-navy">
                                         Buka Album
                                         <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
                                     </span>

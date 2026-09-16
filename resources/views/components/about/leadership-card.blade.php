@@ -22,8 +22,8 @@
             <img src="{{ $person['photo'] }}" alt="{{ $person['name'] }}" loading="lazy" class="absolute inset-0 size-full object-cover object-top transition duration-500 group-hover:scale-[1.02]" onerror="this.onerror=null;this.src='{{ $fallbackImage }}'">
         </div>
         <div class="flex min-w-0 {{ $stacked || $mini ? 'flex-1' : '' }} flex-col {{ $mini ? 'p-2' : 'justify-center p-5 sm:p-6' }}">
-            <span class="w-fit rounded-full bg-brand-amber-soft font-extrabold uppercase text-brand-navy {{ $mini ? 'px-2 py-0.5 text-[11px] tracking-[0.05em]' : 'px-3 py-1 text-[11px] tracking-[0.09em]' }}">{{ $role }}</span>
-            <h3 class="type-role-compact font-display font-black leading-tight text-brand-navy {{ $mini ? 'mt-1.5 line-clamp-2 text-xs' : 'mt-3 '.($compact ? 'text-xl' : 'text-2xl') }}">{{ $person['name'] }}</h3>
+            <span class="w-fit rounded-full bg-brand-amber-soft font-bold uppercase text-brand-navy {{ $mini ? 'px-2 py-0.5 text-[11px] tracking-[0.05em]' : 'px-3 py-1 text-[11px] tracking-[0.09em]' }}">{{ $role }}</span>
+            <h3 class="type-role-compact font-display font-bold leading-tight text-brand-navy {{ $mini ? 'mt-1.5 line-clamp-2 text-xs' : 'mt-3 '.($compact ? 'text-xl' : 'text-2xl') }}">{{ $person['name'] }}</h3>
             @if (filled($person['organization_position'] ?? null) && $person['organization_position'] !== $role)
                 <p class="mt-1 text-xs font-bold leading-5 text-brand-coral">{{ $person['organization_position'] }}</p>
             @endif
@@ -33,7 +33,7 @@
                 <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{{ $description }}</p>
             @endif
             @if ($hasProfile && ! $mini)
-                <span class="mt-4 inline-flex text-xs font-extrabold text-brand-navy">Lihat Profil <span class="ml-1" aria-hidden="true">→</span></span>
+                <span class="mt-4 inline-flex text-xs font-bold text-brand-navy">Lihat Profil <span class="ml-1" aria-hidden="true">→</span></span>
             @endif
         </div>
 

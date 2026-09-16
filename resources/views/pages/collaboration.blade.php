@@ -62,7 +62,7 @@
         <div class="grid gap-2 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
             <a
                 href="#form-kolaborasi"
-                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-black text-brand-navy transition hover:bg-[#ffd670]"
+                class="inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-brand-amber px-5 py-3 text-sm font-bold text-brand-navy transition hover:bg-[#ffd670]"
             >
                 Ajukan Kolaborasi
                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -72,7 +72,7 @@
 
             <a
                 href="{{ url('/program') }}"
-                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/10 px-5 py-3 text-sm font-black text-white backdrop-blur transition hover:bg-white/15"
+                class="inline-flex min-h-11 items-center justify-center rounded-lg border border-white/20 bg-white/10 px-5 py-3 text-sm font-bold text-white backdrop-blur transition hover:bg-white/15"
             >
                 Lihat Program
             </a>
@@ -83,11 +83,11 @@
     <section class="bg-white channel-section">
         <div class="section-shell">
             <div class="max-w-3xl">
-                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
+                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-teal">
                     Bentuk Kolaborasi
                 </p>
 
-                <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">
+                <h2 class="mt-2 font-display text-2xl font-bold leading-tight text-brand-navy sm:text-3xl">
                     Ruang kerja sama yang dapat dikembangkan bersama.
                 </h2>
 
@@ -100,11 +100,11 @@
             <div class="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($collaborationScopes as $index => $scope)
                     <article class="rounded-[14px] bg-[#f7f8fa] p-5">
-                        <div class="grid size-9 place-items-center rounded-full bg-brand-amber-soft text-[10px] font-black text-brand-navy">
+                        <div class="grid size-9 place-items-center rounded-full bg-brand-amber-soft text-[10px] font-bold text-brand-navy">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                         </div>
 
-                        <h3 class="mt-4 text-lg font-black leading-tight text-brand-navy">
+                        <h3 class="mt-4 text-lg font-bold leading-tight text-brand-navy">
                             {{ $scope['title'] }}
                         </h3>
 
@@ -121,11 +121,11 @@
     <section class="channel-section">
         <div class="section-shell">
             <div>
-                <p class="text-[11px] font-black uppercase tracking-[0.16em] text-brand-teal">
+                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-teal">
                     Alur Kolaborasi
                 </p>
 
-                <h2 class="mt-2 font-display text-2xl font-black leading-tight text-brand-navy sm:text-3xl">
+                <h2 class="mt-2 font-display text-2xl font-bold leading-tight text-brand-navy sm:text-3xl">
                     Dari usulan hingga pelaksanaan program.
                 </h2>
 
@@ -138,12 +138,12 @@
             <div class="mt-6 grid gap-3 md:grid-cols-2 lg:grid-cols-4">
                 @foreach ($steps as $index => $step)
                     <article class="rounded-[14px] bg-white p-5">
-                        <div class="grid size-9 place-items-center rounded-full bg-brand-teal-soft text-[10px] font-black text-brand-navy">
+                        <div class="grid size-9 place-items-center rounded-full bg-brand-teal-soft text-[10px] font-bold text-brand-navy">
                             {{ str_pad($index + 1, 2, '0', STR_PAD_LEFT) }}
                         </div>
 
                         <div class="mt-4">
-                            <h3 class="text-lg font-black text-brand-navy">
+                            <h3 class="text-lg font-bold text-brand-navy">
                                 {{ $step['title'] }}
                             </h3>
 
@@ -162,11 +162,11 @@
         <div class="section-shell grid gap-5 lg:grid-cols-[0.9fr_1.1fr] lg:items-start">
             <aside>
                 <div class="sticky top-24 rounded-[14px] bg-brand-navy p-6 text-white sm:p-7">
-                    <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-amber">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-amber">
                         Ajukan Kolaborasi
                     </p>
 
-                    <h2 class="mt-2 font-display text-2xl font-black leading-tight text-white sm:text-3xl">
+                    <h2 class="mt-2 font-display text-2xl font-bold leading-tight text-white sm:text-3xl">
                         Ceritakan gagasan kerja sama Anda.
                     </h2>
 
@@ -177,23 +177,23 @@
 
                     <div class="mt-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-1 xl:grid-cols-2">
                         <div class="rounded-[12px] bg-white/8 p-4">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-amber">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-amber">
                                 Respons
                             </p>
-                            <p class="mt-2 text-sm font-semibold leading-6 text-white/75">
+                            <p class="mt-2 text-sm font-bold leading-6 text-white/75">
                                 Tim Edulaw Project akan meninjau usulan dan menghubungi Anda melalui kontak yang tersedia.
                             </p>
                         </div>
 
                         <div class="rounded-[12px] bg-white/8 p-4">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-brand-amber">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-amber">
                                 Kontak Cepat
                             </p>
                             <a
                                 href="https://wa.me/6281529927677"
                                 target="_blank"
                                 rel="noopener noreferrer"
-                                class="mt-3 inline-flex items-center gap-2 text-sm font-black text-white transition hover:text-brand-amber"
+                                class="mt-3 inline-flex items-center gap-2 text-sm font-bold text-white transition hover:text-brand-amber"
                             >
                                 Hubungi via WhatsApp
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">

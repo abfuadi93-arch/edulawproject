@@ -11,7 +11,7 @@
     <div class="section-shell">
         <div class="mb-5 flex items-center gap-4">
             <span class="h-px flex-1 bg-slate-200"></span>
-            <h2 id="home-audience-title" class="text-xs font-extrabold uppercase tracking-[0.2em] text-[#1f3c69]">Untuk Siapa Edulaw</h2>
+            <h2 id="home-audience-title" class="text-xs font-bold uppercase tracking-[0.2em] text-[#1f3c69]">Untuk Siapa Edulaw</h2>
             <span class="h-px flex-1 bg-slate-200"></span>
         </div>
 
@@ -19,11 +19,11 @@
             @foreach ($audiences as $audience)
                 <article class="border-slate-200 lg:border-r lg:last:border-r-0" data-home-audience-card>
                     <a href="{{ $audience['url'] }}" class="group flex min-h-40 items-start gap-3 p-4 transition hover:bg-slate-50">
-                        <span class="grid size-10 shrink-0 place-items-center rounded-full text-sm font-black {{ $audience['accent'] }}" aria-hidden="true">{{ $audience['symbol'] }}</span>
+                        <span class="grid size-10 shrink-0 place-items-center rounded-full text-sm font-bold {{ $audience['accent'] }}" aria-hidden="true">{{ $audience['symbol'] }}</span>
                         <div class="flex min-w-0 flex-1 self-stretch flex-col">
-                            <h3 class="text-[17px] font-extrabold leading-snug tracking-[-0.012em] text-[#142f57]">{{ $audience['title'] }}</h3>
+                            <h3 class="text-[17px] font-bold leading-snug tracking-[-0.012em] text-[#142f57]">{{ $audience['title'] }}</h3>
                             <p class="mt-2 text-sm leading-5 text-slate-500">{{ $audience['description'] }}</p>
-                            <span class="mt-2 inline-flex text-[13px] font-extrabold text-[#1f3c69] transition group-hover:text-brand-teal">{{ $audience['label'] }} →</span>
+                            <span class="mt-2 inline-flex text-[13px] font-bold text-[#1f3c69] transition group-hover:text-brand-teal">{{ $audience['label'] }} →</span>
                         </div>
                     </a>
                 </article>

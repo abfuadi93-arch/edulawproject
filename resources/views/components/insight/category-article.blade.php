@@ -25,7 +25,7 @@
         </div>
 
         <div class="min-w-0">
-            <h4 class="type-role-compact insight-clamp-2 text-sm font-semibold leading-snug text-brand-ink underline-offset-4 transition group-hover/article:text-brand-navy group-hover/article:underline">
+            <h4 class="type-role-compact insight-clamp-2 text-sm font-bold leading-snug text-brand-ink underline-offset-4 transition group-hover/article:text-brand-navy group-hover/article:underline">
                 {{ $article->title }}
             </h4>
 

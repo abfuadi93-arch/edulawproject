@@ -33,8 +33,8 @@
                             @endswitch
                         </span>
                         <div class="min-w-0">
-                            <dd class="text-xl font-black leading-none text-brand-navy sm:text-[22px]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
-                            <dt class="mt-1.5 text-xs font-semibold leading-4 text-slate-500">{{ $stat['label'] }}</dt>
+                            <dd class="text-xl font-bold leading-none text-brand-navy sm:text-[22px]">{{ number_format($stat['value'], 0, ',', '.') }}</dd>
+                            <dt class="mt-1.5 text-xs font-bold leading-4 text-slate-500">{{ $stat['label'] }}</dt>
                         </div>
                     </div>
                 @endforeach

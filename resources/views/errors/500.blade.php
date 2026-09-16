@@ -19,7 +19,7 @@
                     Error 500
                 </div>
 
-                <h1 class="mt-6 text-4xl font-extrabold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
+                <h1 class="mt-6 text-4xl font-bold leading-tight tracking-tight text-slate-950 sm:text-5xl lg:text-6xl">
                     Terjadi kesalahan pada server.
                 </h1>
 
@@ -31,7 +31,7 @@
                 <div class="mt-8 flex flex-col gap-3 sm:flex-row">
                     <a
                         href="{{ url('/') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3.5 text-sm font-extrabold text-white shadow-sm transition hover:bg-amber-500 hover:text-slate-950"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl bg-slate-950 px-6 py-3.5 text-sm font-bold text-white shadow-sm transition hover:bg-amber-500 hover:text-slate-950"
                     >
                         Kembali ke Beranda
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -41,7 +41,7 @@
 
                     <a
                         href="{{ url('/kontak') }}"
-                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-extrabold text-slate-950 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
+                        class="inline-flex items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-6 py-3.5 text-sm font-bold text-slate-950 shadow-sm transition hover:border-amber-300 hover:bg-amber-50"
                     >
                         Hubungi Kami
                         <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -51,13 +51,13 @@
                 </div>
 
                 <div class="mt-10 rounded-4xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6">
-                    <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-600">
+                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-600">
                         Yang dapat Anda lakukan
                     </p>
 
                     <div class="mt-5 grid gap-4 sm:grid-cols-3">
                         <div class="rounded-2xl bg-[#fbf7ef] p-4">
-                            <p class="text-sm font-extrabold text-slate-950">
+                            <p class="text-sm font-bold text-slate-950">
                                 Muat ulang halaman
                             </p>
                             <p class="mt-1 type-role-meta leading-5 text-slate-500">
@@ -66,7 +66,7 @@
                         </div>
 
                         <div class="rounded-2xl bg-[#fbf7ef] p-4">
-                            <p class="text-sm font-extrabold text-slate-950">
+                            <p class="text-sm font-bold text-slate-950">
                                 Kembali ke beranda
                             </p>
                             <p class="mt-1 type-role-meta leading-5 text-slate-500">
@@ -75,7 +75,7 @@
                         </div>
 
                         <div class="rounded-2xl bg-[#fbf7ef] p-4">
-                            <p class="text-sm font-extrabold text-slate-950">
+                            <p class="text-sm font-bold text-slate-950">
                                 Laporkan kendala
                             </p>
                             <p class="mt-1 type-role-meta leading-5 text-slate-500">
@@ -94,25 +94,25 @@
                         <div class="pointer-events-none absolute -left-16 bottom-0 h-52 w-52 rounded-full bg-amber-300/20 blur-2xl"></div>
 
                         <div class="relative">
-                            <p class="text-xs font-black uppercase tracking-[0.18em] text-amber-300">
+                            <p class="text-xs font-bold uppercase tracking-[0.18em] text-amber-300">
                                 Internal Server Error
                             </p>
 
                             <div class="mt-10 flex items-end gap-3">
-                                <span class="text-8xl font-black leading-none tracking-tight text-white sm:text-9xl">
+                                <span class="text-8xl font-bold leading-none tracking-tight text-white sm:text-9xl">
                                     5
                                 </span>
 
-                                <span class="mb-3 flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-4xl font-black text-amber-300 backdrop-blur sm:h-24 sm:w-24 sm:text-5xl">
+                                <span class="mb-3 flex h-20 w-20 items-center justify-center rounded-full border border-white/20 bg-white/10 text-4xl font-bold text-amber-300 backdrop-blur sm:h-24 sm:w-24 sm:text-5xl">
                                     0
                                 </span>
 
-                                <span class="text-8xl font-black leading-none tracking-tight text-white sm:text-9xl">
+                                <span class="text-8xl font-bold leading-none tracking-tight text-white sm:text-9xl">
                                     0
                                 </span>
                             </div>
 
-                            <h2 class="mt-8 max-w-md text-2xl font-extrabold leading-tight sm:text-3xl">
+                            <h2 class="mt-8 max-w-md text-2xl font-bold leading-tight sm:text-3xl">
                                 Sistem sedang mengalami gangguan sementara.
                             </h2>
 
@@ -125,23 +125,23 @@
 
                     <div class="mt-6 grid gap-4 sm:grid-cols-2">
                         <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-300">
                                 Saran Teknis
                             </p>
 
-                            <p class="mt-2 text-sm font-semibold leading-6 text-white/75">
+                            <p class="mt-2 text-sm font-bold leading-6 text-white/75">
                                 Periksa file log Laravel jika error masih muncul.
                             </p>
                         </div>
 
                         <div class="rounded-2xl border border-white/10 bg-white/5 p-5">
-                            <p class="text-[10px] font-black uppercase tracking-[0.14em] text-amber-300">
+                            <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-amber-300">
                                 Bantuan
                             </p>
 
                             <a
                                 href="{{ url('/kontak') }}"
-                                class="mt-2 inline-flex items-center gap-2 text-sm font-extrabold text-white transition hover:text-amber-300"
+                                class="mt-2 inline-flex items-center gap-2 text-sm font-bold text-white transition hover:text-amber-300"
                             >
                                 Hubungi Edulaw
                                 <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true">

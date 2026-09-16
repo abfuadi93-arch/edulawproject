@@ -251,7 +251,7 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="grid items-start gap-6 lg:grid-cols-2 lg:gap-8">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.12em] text-brand-navy">{{ $aboutWhy?->eyebrow ?? 'Mengapa Edulaw Hadir?' }}</p>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy">{{ $aboutWhy?->eyebrow ?? 'Mengapa Edulaw Hadir?' }}</p>
                     <h2 id="why-edulaw-heading" class="type-role-feature channel-feature-title">{{ $aboutWhy?->title ?? 'Mengapa Edulaw Hadir?' }}</h2>
                     <div class="mt-3 space-y-3 text-sm leading-6 text-slate-600 sm:text-base">
                         @forelse ($whyParagraphs as $paragraph)
@@ -261,11 +261,11 @@
                             <p>Kami menjembatani kesenjangan tersebut melalui pendidikan, riset berbasis bukti, dan kolaborasi lintas sektor agar pengetahuan hukum berpihak pada kepentingan publik.</p>
                         @endforelse
                     </div>
-                    <blockquote class="mt-6 border-l-4 border-brand-amber pl-5 font-display text-xl font-black leading-snug text-brand-navy">“Pengetahuan hukum seharusnya menjadi milik semua, bukan hanya mereka yang berada di ruang kuasa.”</blockquote>
+                    <blockquote class="mt-6 border-l-4 border-brand-amber pl-5 font-display text-xl font-bold leading-snug text-brand-navy">“Pengetahuan hukum seharusnya menjadi milik semua, bukan hanya mereka yang berada di ruang kuasa.”</blockquote>
                 </div>
                 <div class="min-w-0">
                     <div class="rounded-xl bg-[#f7f8fa] p-4">
-                        <h3 class="type-role-label text-[11px] font-extrabold uppercase tracking-[0.12em] text-brand-navy">Founder &amp; Co-Founder</h3>
+                        <h3 class="type-role-label text-[11px] font-bold uppercase tracking-[0.12em] text-brand-navy">Founder &amp; Co-Founder</h3>
                         <div class="about-founder-grid mt-4 grid grid-cols-2 gap-3 sm:grid-cols-4">
                             @foreach ($leaders as $leader)
                                 <x-about.leadership-card :person="$leader" :profile="$profileFor($leader)" :role="$leader['profile_role']" mini />
@@ -279,21 +279,21 @@
 
     <section class="channel-section" aria-labelledby="vision-mission-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">Visi &amp; Misi</p>
-            <h2 id="vision-mission-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Arah kerja Edulaw Project</h2>
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral">Visi &amp; Misi</p>
+            <h2 id="vision-mission-heading" class="mt-2 font-display text-3xl font-bold text-brand-navy sm:text-4xl">Arah kerja Edulaw Project</h2>
             <div class="mt-6 grid items-stretch gap-6 lg:grid-cols-2">
                 <article class="relative flex h-full flex-col overflow-hidden rounded-[14px] bg-brand-navy p-5 text-white sm:p-6">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-amber">Visi</p>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">Visi</p>
                     <img src="{{ asset('images/logo/edulaw-logo-white.png') }}" alt="Edulaw Project" class="absolute right-5 top-5 h-7 w-auto object-contain opacity-90 sm:right-6 sm:top-6 sm:h-8" loading="lazy">
-                    <h3 class="mt-8 text-balance font-display text-xl font-black leading-snug text-white sm:text-2xl lg:my-auto lg:pt-8">{{ $vision }}</h3>
+                    <h3 class="mt-8 text-balance font-display text-xl font-bold leading-snug text-white sm:text-2xl lg:my-auto lg:pt-8">{{ $vision }}</h3>
                 </article>
                 <article class="h-full rounded-[14px] bg-white p-5 sm:p-6">
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.18em] text-brand-navy">Misi</p>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-navy">Misi</p>
                     <div class="mt-3 divide-y divide-slate-200">
                         @foreach ($missions as $mission)
                             <div class="grid grid-cols-[32px_minmax(0,1fr)] gap-3 py-3 first:pt-0 last:pb-0">
-                                <span class="grid size-8 place-items-center rounded-full bg-brand-amber-soft text-[11px] font-black text-brand-navy">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
-                                <p class="self-center text-base font-semibold leading-7 text-slate-700">{{ $mission }}</p>
+                                <span class="grid size-8 place-items-center rounded-full bg-brand-amber-soft text-[11px] font-bold text-brand-navy">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                <p class="self-center text-base font-bold leading-7 text-slate-700">{{ $mission }}</p>
                             </div>
                         @endforeach
                     </div>
@@ -304,8 +304,8 @@
 
     <section class="channel-section bg-white" aria-labelledby="about-pillars-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutFocusIntro?->eyebrow ?? 'Pilar Edulaw' }}</p>
-            <h2 id="about-pillars-heading" class="mt-2 w-full font-display text-3xl font-black leading-tight text-brand-navy sm:text-4xl">Pendidikan, Riset &amp; Kolaborasi untuk Dampak Nyata</h2>
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutFocusIntro?->eyebrow ?? 'Pilar Edulaw' }}</p>
+            <h2 id="about-pillars-heading" class="mt-2 w-full font-display text-3xl font-bold leading-tight text-brand-navy sm:text-4xl">Pendidikan, Riset &amp; Kolaborasi untuk Dampak Nyata</h2>
             <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
                 @foreach ($focusAreas->take(4) as $item)
                     <article class="rounded-[14px] border border-slate-200 bg-white p-5">
@@ -321,7 +321,7 @@
                                     <svg class="size-5" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M16 11a4 4 0 1 0-8 0M4 21a8 8 0 0 1 16 0" stroke="currentColor" stroke-width="1.8"/></svg>
                                 @endif
                             </span>
-                            <h3 class="min-w-0 text-lg font-black leading-tight text-brand-navy">{{ $item['title'] }}</h3>
+                            <h3 class="min-w-0 text-lg font-bold leading-tight text-brand-navy">{{ $item['title'] }}</h3>
                         </div>
                         <p class="mt-4 text-base leading-7 text-slate-600">{{ $item['description'] }}</p>
                     </article>
@@ -332,8 +332,8 @@
 
     <section class="channel-section" aria-labelledby="about-timeline-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutTimelineIntro?->eyebrow ?? 'Perjalanan Edulaw' }}</p>
-            <h2 id="about-timeline-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Perjalanan Edulaw</h2>
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral">{{ $aboutTimelineIntro?->eyebrow ?? 'Perjalanan Edulaw' }}</p>
+            <h2 id="about-timeline-heading" class="mt-2 font-display text-3xl font-bold text-brand-navy sm:text-4xl">Perjalanan Edulaw</h2>
             <p class="mt-2 text-base leading-7 text-slate-600">{{ $aboutTimelineIntro?->title ?? 'Dari Forum Kecil Menuju Ekosistem Literasi Hukum' }}</p>
 
             <div class="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -341,10 +341,10 @@
                     <article class="relative min-w-0 overflow-hidden rounded-[13px] border border-slate-200 bg-white p-5 pl-6">
                         <span class="absolute inset-y-0 left-0 w-1 bg-brand-amber"></span>
                         <div class="flex items-center justify-between gap-4">
-                            <p class="text-base font-black text-brand-coral">{{ $item['year'] }}</p>
+                            <p class="text-base font-bold text-brand-coral">{{ $item['year'] }}</p>
                             <span class="type-role-meta font-normal tabular-nums text-slate-400">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                         </div>
-                        <h3 class="type-role-compact mt-3 text-base font-black leading-snug text-brand-navy">{{ $item['title'] }}</h3>
+                        <h3 class="type-role-compact mt-3 text-base font-bold leading-snug text-brand-navy">{{ $item['title'] }}</h3>
                         <p class="mt-2 text-[15px] leading-6 text-slate-600">{{ $item['description'] }}</p>
                     </article>
                 @endforeach
@@ -354,15 +354,15 @@
 
     <section id="tim" class="channel-section scroll-mt-20 bg-white" aria-labelledby="about-team-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral">Penggerak</p>
-            <h2 id="about-team-heading" class="mt-2 font-display text-3xl font-black text-brand-navy sm:text-4xl">Penggerak Edulaw Project</h2>
+            <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral">Penggerak</p>
+            <h2 id="about-team-heading" class="mt-2 font-display text-3xl font-bold text-brand-navy sm:text-4xl">Penggerak Edulaw Project</h2>
             <p class="mt-2 w-full text-base leading-7 text-slate-600">Orang-orang yang membangun arah institusi, mengembangkan program, serta menjaga kualitas pengetahuan hukum Edulaw.</p>
 
             @if ($directors->isNotEmpty() || $managers->isNotEmpty())
                 <div @class(['about-leadership-grid mt-8 grid gap-4', 'lg:grid-cols-3' => $directors->isNotEmpty() && $managers->isNotEmpty()])>
                     @if ($directors->isNotEmpty())
                         <div class="flex min-w-0 flex-col">
-                            <div class="flex items-center gap-4"><h3 class="type-role-label shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">Director / Leadership</h3><span class="h-px flex-1 bg-slate-200"></span></div>
+                            <div class="flex items-center gap-4"><h3 class="type-role-label shrink-0 text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">Director / Leadership</h3><span class="h-px flex-1 bg-slate-200"></span></div>
                             <div class="about-leadership-list mt-5 grid flex-1 gap-4">
                                 @foreach ($directors as $director)
                                     <x-about.team-card :person="$director" :profile="$profileFor($director)" />
@@ -372,7 +372,7 @@
                     @endif
                     @if ($managers->isNotEmpty())
                         <div @class(['flex min-w-0 flex-col', 'lg:col-span-2' => $directors->isNotEmpty()])>
-                            <div class="flex items-center gap-4"><h3 class="type-role-label shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">Manager</h3><span class="h-px flex-1 bg-slate-200"></span></div>
+                            <div class="flex items-center gap-4"><h3 class="type-role-label shrink-0 text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">Manager</h3><span class="h-px flex-1 bg-slate-200"></span></div>
                             <div class="about-leadership-list mt-5 grid flex-1 gap-4 lg:grid-cols-2 lg:grid-rows-2 lg:grid-flow-col">
                                 @foreach ($managers as $manager)
                                     <x-about.team-card :person="$manager" :profile="$profileFor($manager)" />
@@ -386,7 +386,7 @@
             @foreach ($teamGroups as $group)
                 <div class="mt-10">
                     <div class="flex items-center gap-4">
-                        <h3 class="type-role-label shrink-0 text-xs font-extrabold uppercase tracking-[0.18em] text-brand-navy">{{ $group['label'] }}</h3>
+                        <h3 class="type-role-label shrink-0 text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">{{ $group['label'] }}</h3>
                         <span class="h-px flex-1 bg-slate-200"></span>
                         <span class="shrink-0 type-role-meta font-normal text-slate-500">{{ $group['members']->count() }} profil</span>
                     </div>

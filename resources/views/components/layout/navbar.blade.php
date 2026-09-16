@@ -75,7 +75,7 @@
                 >
 
                 <div>
-                    <div class="text-xs font-black uppercase tracking-[0.14em] text-brand-navy sm:text-sm sm:tracking-[0.18em]">
+                    <div class="text-xs font-bold uppercase tracking-[0.14em] text-brand-navy sm:text-sm sm:tracking-[0.18em]">
                         {{ $siteName }}
                     </div>
 
@@ -91,7 +91,7 @@
                     <a
                         href="{{ $item['url'] }}"
                         @if($item['active']) aria-current="page" @endif
-                        class="group relative whitespace-nowrap text-sm font-semibold transition duration-300
+                        class="group relative whitespace-nowrap text-sm font-bold transition duration-300
                             {{ $item['active']
                                 ? 'text-brand-navy'
                                 : 'text-slate-600 hover:text-brand-navy' }}"
@@ -128,7 +128,7 @@
                             stroke-linecap="round"
                         />
                     </svg>
-                    <span class="truncate text-xs font-semibold">Cari artikel, topik, atau publikasi...</span>
+                    <span class="truncate text-xs font-bold">Cari artikel, topik, atau publikasi...</span>
                 </a>
 
                 <a
@@ -197,7 +197,7 @@
                     data-mobile-first-link
                     href="{{ route('home') }}"
                     @if ($isHome) aria-current="page" @endif
-                    class="block rounded-xl px-4 py-3 text-sm font-semibold
+                    class="block rounded-xl px-4 py-3 text-sm font-bold
                         {{ $isHome
                             ? 'bg-brand-navy text-white'
                             : 'text-slate-700 hover:bg-slate-100 hover:text-brand-navy' }}"
@@ -209,7 +209,7 @@
                     <a
                         href="{{ $item['url'] }}"
                         @if($item['active']) aria-current="page" @endif
-                        class="block rounded-xl px-4 py-3 text-sm font-semibold
+                        class="block rounded-xl px-4 py-3 text-sm font-bold
                             {{ $item['active']
                                 ? 'bg-brand-navy text-white'
                                 : 'text-slate-700 hover:bg-slate-100 hover:text-brand-navy' }}"
@@ -222,7 +222,7 @@
 
                 <a
                     href="{{ route('search.index') }}"
-                    class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-semibold text-slate-700 hover:bg-slate-100 hover:text-brand-navy"
+                    class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-brand-navy"
                 >
                     <span>Cari</span>
 

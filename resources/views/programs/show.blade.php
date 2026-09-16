@@ -189,12 +189,12 @@
                     {{ $categoryLabel }}
                 </p>
 
-                <h1 class="mt-4 max-w-5xl text-4xl font-black leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
+                <h1 class="mt-4 max-w-5xl text-4xl font-bold leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
                     {{ $programTitle }}
                 </h1>
 
                 @if ($subtitle)
-                    <p class="mt-4 max-w-3xl text-xl font-black leading-snug text-brand-amber sm:text-2xl">
+                    <p class="mt-4 max-w-3xl text-xl font-bold leading-snug text-brand-amber sm:text-2xl">
                         {{ $subtitle }}
                     </p>
                 @endif
@@ -233,10 +233,10 @@
                             </span>
 
                             <div class="min-w-0">
-                                <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">
                                     {{ $item['label'] }}
                                 </p>
-                                <p class="mt-1 text-sm font-black leading-snug text-brand-navy">
+                                <p class="mt-1 text-sm font-bold leading-snug text-brand-navy">
                                     {{ $item['value'] }}
                                 </p>
                             </div>
@@ -253,10 +253,10 @@
 
             @if ($detailDescription)
                 <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <p class="text-xs font-black uppercase tracking-[0.26em] text-brand-teal">
+                    <p class="text-xs font-bold uppercase tracking-[0.26em] text-brand-teal">
                         Tentang Program
                     </p>
-                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy sm:text-3xl">
+                    <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy sm:text-3xl">
                         Gambaran umum program
                     </h2>
 
@@ -274,10 +274,10 @@
 
             @if ($learningItems->isNotEmpty())
                 <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <p class="text-xs font-black uppercase tracking-[0.26em] text-brand-teal">
+                    <p class="text-xs font-bold uppercase tracking-[0.26em] text-brand-teal">
                         Yang Dipelajari
                     </p>
-                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                    <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy">
                         Kompetensi dan pemahaman yang dibangun
                     </h2>
 
@@ -289,7 +289,7 @@
                                         <path d="m5 10 3 3 7-7" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" />
                                     </svg>
                                 </span>
-                                <p class="text-sm font-semibold leading-7 text-slate-600">
+                                <p class="text-sm font-bold leading-7 text-slate-600">
                                     {{ $item }}
                                 </p>
                             </li>
@@ -300,10 +300,10 @@
 
             @if ($speakers->isNotEmpty() || $moderator)
                 <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <p class="text-xs font-black uppercase tracking-[0.26em] text-brand-teal">
+                    <p class="text-xs font-bold uppercase tracking-[0.26em] text-brand-teal">
                         Narasumber
                     </p>
-                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                    <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy">
                         Fasilitator dan pemantik diskusi
                     </h2>
 
@@ -312,7 +312,7 @@
                             @foreach ($speakers as $speaker)
                                 <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
                                     <div class="flex gap-4">
-                                        <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-brand-navy text-lg font-black text-white">
+                                        <div class="h-16 w-16 shrink-0 overflow-hidden rounded-2xl bg-brand-navy text-lg font-bold text-white">
                                             @if ($speaker['image'])
                                                 <img
                                                     src="{{ $speaker['image'] }}"
@@ -328,10 +328,10 @@
                                         </div>
 
                                         <div class="min-w-0 pt-1">
-                                            <h3 class="type-role-compact text-base font-black leading-snug text-brand-navy">
+                                            <h3 class="type-role-compact text-base font-bold leading-snug text-brand-navy">
                                                 {{ $speaker['name'] }}
                                             </h3>
-                                            <p class="mt-1 text-sm font-semibold leading-6 text-slate-500">
+                                            <p class="mt-1 text-sm font-bold leading-6 text-slate-500">
                                                 {{ $speaker['title'] ?: ($speaker['type'] === 'PerformingGroup' ? 'Kelompok' : 'Narasumber') }}
                                             </p>
                                         </div>
@@ -350,16 +350,16 @@
                     @if ($moderator)
                         <div class="mt-5 flex flex-col gap-2 rounded-2xl border border-brand-teal/15 bg-brand-teal/5 p-5 sm:flex-row sm:items-center sm:justify-between">
                             <div>
-                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-teal">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-teal">
                                     Moderator
                                 </p>
-                                <p class="mt-2 text-base font-black text-brand-navy">
+                                <p class="mt-2 text-base font-bold text-brand-navy">
                                     {{ $moderator['name'] }}
                                 </p>
                             </div>
 
                             @if ($moderator['title'])
-                                <p class="text-sm font-semibold leading-6 text-slate-600 sm:max-w-xs sm:text-right">
+                                <p class="text-sm font-bold leading-6 text-slate-600 sm:max-w-xs sm:text-right">
                                     {{ $moderator['title'] }}
                                 </p>
                             @endif
@@ -370,10 +370,10 @@
 
             @if ($programPlanCards->isNotEmpty())
                 <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                    <p class="text-xs font-black uppercase tracking-[0.26em] text-brand-teal">
+                    <p class="text-xs font-bold uppercase tracking-[0.26em] text-brand-teal">
                         Rancangan Program
                     </p>
-                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                    <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy">
                         Orientasi, metode, dan output
                     </h2>
 
@@ -398,7 +398,7 @@
                                         @endif
                                     </span>
 
-                                    <h3 class="type-role-compact min-w-0 text-sm font-black text-brand-navy">
+                                    <h3 class="type-role-compact min-w-0 text-sm font-bold text-brand-navy">
                                         {{ $card['label'] }}
                                     </h3>
                                 </div>
@@ -414,7 +414,7 @@
 
             @if (filled($program->gallery_images))
                 <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="program-gallery-title">
-                    <h2 id="program-gallery-title" class="text-2xl font-black text-brand-navy">Galeri Acara</h2>
+                    <h2 id="program-gallery-title" class="text-2xl font-bold text-brand-navy">Galeri Acara</h2>
                     <div class="mt-5 grid grid-cols-2 gap-3 sm:grid-cols-3">
                         @foreach ($program->gallery_images as $galleryImage)
                             <a href="{{ edulaw_file_url($galleryImage) }}" target="_blank" rel="noopener" class="overflow-hidden rounded-xl bg-slate-100">
@@ -427,10 +427,10 @@
 
             @if ($program->notes)
                 <aside class="rounded-2xl border border-brand-amber/25 bg-brand-amber-soft/70 p-5">
-                    <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-navy">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-navy">
                         Catatan
                     </p>
-                    <p class="mt-2 text-sm font-semibold leading-7 text-slate-700">
+                    <p class="mt-2 text-sm font-bold leading-7 text-slate-700">
                         {{ $program->notes }}
                     </p>
                 </aside>
@@ -440,10 +440,10 @@
         <aside class="space-y-6 lg:sticky lg:top-28 lg:self-start">
             <section class="overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm">
                 <div class="border-b border-slate-100 px-6 py-5">
-                    <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-teal">
+                    <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-teal">
                         Poster Kegiatan
                     </p>
-                    <h2 class="type-role-subheading mt-2 text-lg font-black tracking-tight text-brand-navy">
+                    <h2 class="type-role-subheading mt-2 text-lg font-bold tracking-tight text-brand-navy">
                         Visual program
                     </h2>
                 </div>
@@ -463,17 +463,17 @@
                             href="{{ $programPoster }}"
                             target="_blank"
                             rel="noopener"
-                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-4 py-2.5 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
+                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-4 py-2.5 text-sm font-bold text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
                         >
                             Lihat Poster Penuh
                         </a>
                     @else
                         <div class="flex aspect-[4/5] items-center justify-center rounded-2xl bg-linear-to-br from-brand-navy via-[#102f55] to-brand-teal/80 p-6 text-center">
                             <div>
-                                <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-amber">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-amber">
                                     Edulaw Program
                                 </p>
-                                <h3 class="mt-3 text-xl font-black leading-tight text-white">
+                                <h3 class="mt-3 text-xl font-bold leading-tight text-white">
                                     {{ $programTitle }}
                                 </h3>
                                 <p class="mt-3 text-sm leading-relaxed text-white/72">
@@ -488,10 +488,10 @@
             <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
                 <div class="flex items-start justify-between gap-4 border-b border-slate-100 pb-5">
                     <div>
-                        <p class="text-[10px] font-black uppercase tracking-[0.22em] text-brand-teal">
+                        <p class="text-[10px] font-bold uppercase tracking-[0.22em] text-brand-teal">
                             Informasi Program
                         </p>
-                        <h2 class="type-role-subheading mt-2 text-lg font-black text-brand-navy">
+                        <h2 class="type-role-subheading mt-2 text-lg font-bold text-brand-navy">
                             Pendaftaran & tiket
                         </h2>
                     </div>
@@ -503,7 +503,7 @@
 
                 <div class="border-b border-slate-100 py-5">
                     <p class="type-role-meta font-normal uppercase tracking-wide text-slate-500">Biaya</p>
-                    <p class="mt-2 text-2xl font-black text-brand-navy">{{ $program->display_price ?: 'Belum diumumkan' }}</p>
+                    <p class="mt-2 text-2xl font-bold text-brand-navy">{{ $program->display_price ?: 'Belum diumumkan' }}</p>
                     @if ($program->registration_status_label)
                         <p class="mt-3 rounded-xl bg-brand-mist px-3 py-2 text-sm font-bold text-brand-navy">{{ $program->registration_status_label }}</p>
                     @endif
@@ -520,7 +520,7 @@
                         @foreach ($sidebarRows as $row)
                             <div class="flex justify-between gap-4 py-3.5">
                                 <dt class="font-bold text-slate-500">{{ $row['label'] }}</dt>
-                                <dd class="text-right font-black text-brand-navy">{{ $row['value'] }}</dd>
+                                <dd class="text-right font-bold text-brand-navy">{{ $row['value'] }}</dd>
                             </div>
                         @endforeach
                     </dl>
@@ -530,7 +530,7 @@
                     <a
                         href="{{ $primaryButtonUrl }}"
                         @if (Str::startsWith($primaryButtonUrl, ['http://', 'https://'])) target="_blank" rel="noopener" @endif
-                        class="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-amber px-5 py-3 text-sm font-black text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]"
+                        class="inline-flex min-h-12 w-full items-center justify-center rounded-xl bg-brand-amber px-5 py-3 text-sm font-bold text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]"
                     >
                         {{ $primaryButtonLabel }}
                     </a>
@@ -539,7 +539,7 @@
                         <a
                             href="{{ $secondaryButtonUrl }}"
                             @if (Str::startsWith($secondaryButtonUrl, ['http://', 'https://'])) target="_blank" rel="noopener" @endif
-                            class="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-sm font-black text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
+                            class="inline-flex min-h-12 w-full items-center justify-center rounded-xl border border-brand-navy/20 bg-white px-5 py-3 text-sm font-bold text-brand-navy transition hover:border-brand-navy hover:bg-brand-navy hover:text-white"
                         >
                             {{ $secondaryButtonLabel }}
                         </a>
@@ -548,7 +548,7 @@
 
                 @if ($supportLinks->isNotEmpty())
                     <div class="mt-6 border-t border-slate-100 pt-5">
-                        <p class="text-[10px] font-black uppercase tracking-[0.20em] text-slate-400">
+                        <p class="text-[10px] font-bold uppercase tracking-[0.20em] text-slate-400">
                             Tautan Tambahan
                         </p>
                         <div class="mt-3 grid gap-2">
@@ -573,10 +573,10 @@
     @if ($relatedPrograms->isNotEmpty())
         <section class="mx-auto max-w-7xl px-5 pb-14 sm:px-6 lg:px-8">
             <div class="mb-6">
-                <p class="text-xs font-black uppercase tracking-[0.26em] text-brand-teal">
+                <p class="text-xs font-bold uppercase tracking-[0.26em] text-brand-teal">
                     Program Terkait
                 </p>
-                <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy">
                     Program lain dalam kategori {{ $categoryLabel }}
                 </h2>
             </div>
@@ -607,7 +607,7 @@
                                 {{ $related->display_status }}
                             </span>
 
-                            <h3 class="type-role-card mt-4 line-clamp-2 text-lg font-black leading-snug text-brand-navy">
+                            <h3 class="type-role-card mt-4 line-clamp-2 text-lg font-bold leading-snug text-brand-navy">
                                 <a href="{{ route('programs.show', $related->slug) }}" class="transition hover:text-brand-teal">
                                     {{ $related->display_title }}
                                 </a>
@@ -617,7 +617,7 @@
                                 {{ $relatedMeta }}
                             </p>
 
-                            <a href="{{ route('programs.show', $related->slug) }}" class="mt-4 inline-flex text-sm font-black text-brand-navy transition hover:text-brand-teal">
+                            <a href="{{ route('programs.show', $related->slug) }}" class="mt-4 inline-flex text-sm font-bold text-brand-navy transition hover:text-brand-teal">
                                 Lihat Detail →
                             </a>
                         </div>

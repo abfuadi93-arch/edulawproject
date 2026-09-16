@@ -42,10 +42,10 @@
                 </span>
 
                 <div class="absolute inset-x-0 bottom-0 p-6 sm:p-8">
-                    <p class="text-xs font-extrabold uppercase tracking-[0.12em] text-[#f0c55e]">Video Pilihan</p>
-                    <h3 class="type-role-card mt-2 line-clamp-2 text-2xl font-black leading-[1.2] text-white drop-shadow-sm sm:text-3xl">{{ $item->title }}</h3>
+                    <p class="text-xs font-bold uppercase tracking-[0.12em] text-[#f0c55e]">Video Pilihan</p>
+                    <h3 class="type-role-card mt-2 line-clamp-2 text-2xl font-bold leading-[1.2] text-white drop-shadow-sm sm:text-3xl">{{ $item->title }}</h3>
                     <p class="mt-3 type-role-meta font-normal text-white/75">{{ $meta }}</p>
-                    <span class="mt-4 inline-flex text-sm font-black text-white">Tonton Video →</span>
+                    <span class="mt-4 inline-flex text-sm font-bold text-white">Tonton Video →</span>
                 </div>
             </div>
         </a>

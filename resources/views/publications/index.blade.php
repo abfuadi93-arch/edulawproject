@@ -195,17 +195,17 @@
                             <div class="channel-feature-meta border-y border-slate-100 py-3">
                                 <dl class="grid gap-3 sm:grid-cols-2 {{ $featured->page_count ? 'lg:grid-cols-3' : '' }}">
                                     <div>
-                                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Penulis</dt>
-                                        <dd class="mt-1 text-sm font-black text-brand-ink [overflow-wrap:anywhere]">{{ $publicationAuthors($featured) }}</dd>
+                                        <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Penulis</dt>
+                                        <dd class="mt-1 text-sm font-bold text-brand-ink [overflow-wrap:anywhere]">{{ $publicationAuthors($featured) }}</dd>
                                     </div>
                                     <div>
-                                        <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Tanggal Terbit</dt>
-                                        <dd class="mt-1 text-sm font-black text-brand-ink"><time datetime="{{ optional($featured->published_at)->toDateString() }}">{{ $publicationDate($featured) }}</time></dd>
+                                        <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Tanggal Terbit</dt>
+                                        <dd class="mt-1 text-sm font-bold text-brand-ink"><time datetime="{{ optional($featured->published_at)->toDateString() }}">{{ $publicationDate($featured) }}</time></dd>
                                     </div>
                                     @if ($featured->page_count)
                                         <div>
-                                            <dt class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Halaman</dt>
-                                            <dd class="mt-1 text-sm font-black text-brand-ink">{{ $featured->page_count }}</dd>
+                                            <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Halaman</dt>
+                                            <dd class="mt-1 text-sm font-bold text-brand-ink">{{ $featured->page_count }}</dd>
                                         </div>
                                     @endif
                                 </dl>
@@ -227,8 +227,8 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                 <div>
-                    <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy">Repository Publikasi</p>
-                    <h2 id="publication-catalog-heading" class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">Jelajahi Riset & Publikasi</h2>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-navy">Repository Publikasi</p>
+                    <h2 id="publication-catalog-heading" class="mt-1 font-display text-2xl font-bold text-brand-navy sm:text-3xl">Jelajahi Riset & Publikasi</h2>
                     <p class="mt-1.5 max-w-3xl text-base leading-7 text-slate-600">Temukan dokumen berdasarkan judul, topik, dan jenis publikasi yang dibutuhkan.</p>
                 </div>
                 <p class="text-sm font-bold text-slate-500"><strong class="text-brand-navy">{{ number_format($totalPublications, 0, ',', '.') }}</strong> dokumen tersedia</p>
@@ -251,7 +251,7 @@
                     @endforeach
                 </select>
 
-                <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white transition hover:bg-brand-ink">Terapkan</button>
+                <button type="submit" class="inline-flex h-11 items-center justify-center rounded-lg bg-brand-navy px-5 text-sm font-bold text-white transition hover:bg-brand-ink">Terapkan</button>
 
                 <div class="flex h-11 items-center rounded-lg border border-slate-200 bg-[#f8fafc] p-1" aria-label="Pilihan tampilan publikasi">
                     <a href="{{ route('publications.index', array_filter(['q' => $search, 'type' => $selectedType, 'view' => 'grid'])) }}#publication-catalog" aria-label="Tampilan grid" aria-current="{{ $selectedView === 'grid' ? 'true' : 'false' }}" class="grid h-9 w-9 place-items-center rounded-md {{ $selectedView === 'grid' ? 'bg-brand-navy text-white' : 'text-slate-500 hover:text-brand-navy' }}">
@@ -263,7 +263,7 @@
                 </div>
 
                 @if (filled($search) || filled($selectedType))
-                    <a href="{{ route('publications.index') }}#publication-catalog" class="inline-flex h-11 items-center justify-center rounded-lg px-4 text-sm font-black text-slate-500 transition hover:bg-slate-50 hover:text-brand-navy">Atur Ulang</a>
+                    <a href="{{ route('publications.index') }}#publication-catalog" class="inline-flex h-11 items-center justify-center rounded-lg px-4 text-sm font-bold text-slate-500 transition hover:bg-slate-50 hover:text-brand-navy">Atur Ulang</a>
                 @endif
             </form>
 
@@ -296,17 +296,17 @@
                         </a>
                         <div class="repository-content min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-1.5">
-                                <span class="rounded-full bg-brand-navy/8 px-2 py-1 text-[10px] font-black uppercase tracking-wide text-brand-navy">{{ $publicationTypeName($publication) }}</span>
+                                <span class="rounded-full bg-brand-navy/8 px-2 py-1 text-[10px] font-bold uppercase tracking-wide text-brand-navy">{{ $publicationTypeName($publication) }}</span>
                                 @if ($publication->featured)
                                     <span class="rounded-full bg-[#fff1c9] px-2 py-1 text-[10px] font-bold text-[#875b12]">Pilihan</span>
                                 @endif
                             </div>
-                            <h3 class="type-role-compact mt-2 text-base font-black leading-snug text-brand-ink sm:text-lg [overflow-wrap:anywhere]">
+                            <h3 class="type-role-compact mt-2 text-base font-bold leading-snug text-brand-ink sm:text-lg [overflow-wrap:anywhere]">
                                 <a href="{{ route('publications.show', $publication->slug) }}">{{ $publication->title }}</a>
                             </h3>
                             <div class="mt-4 grid grid-cols-[minmax(0,7fr)_minmax(0,3fr)] items-center gap-3" data-publication-card-footer>
                                 <div class="min-w-0">
-                            <div class="flex items-center gap-2 text-xs font-semibold text-slate-600">
+                            <div class="flex items-center gap-2 text-xs font-bold text-slate-600">
                                 @php $primaryAuthor = $authorProfiles->first(); @endphp
                                 @if ($primaryAuthor?->photo_url)
                                     <img src="{{ $primaryAuthor->photo_url }}" alt="" width="24" height="24" class="size-6 shrink-0 rounded-full object-cover" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
@@ -324,10 +324,10 @@
                     </article>
                 @empty
                     <div class="col-span-full rounded-[14px] border border-dashed border-slate-300 bg-white px-6 py-10 text-center">
-                        <h3 class="font-display text-xl font-black text-brand-navy">Publikasi belum ditemukan</h3>
+                        <h3 class="font-display text-xl font-bold text-brand-navy">Publikasi belum ditemukan</h3>
                         <p class="mx-auto mt-2 max-w-lg text-base leading-7 text-slate-600">Coba gunakan kata kunci lain, pilih jenis publikasi berbeda, atau hapus filter untuk melihat seluruh koleksi.</p>
                         @if (filled($search) || filled($selectedType))
-                            <a href="{{ route('publications.index') }}#publication-catalog" class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-brand-navy px-5 text-sm font-black text-white">Hapus Filter</a>
+                            <a href="{{ route('publications.index') }}#publication-catalog" class="mt-4 inline-flex min-h-11 items-center rounded-lg bg-brand-navy px-5 text-sm font-bold text-white">Hapus Filter</a>
                         @endif
                     </div>
                 @endforelse

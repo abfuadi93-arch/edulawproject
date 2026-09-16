@@ -125,11 +125,11 @@
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy">Kategori Editorial</p>
-                        <h2 id="editorial-categories-heading" class="mt-1 text-balance font-display text-2xl font-black text-brand-navy sm:text-3xl">Jelajahi Berdasarkan Tema</h2>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-navy">Kategori Editorial</p>
+                        <h2 id="editorial-categories-heading" class="mt-1 text-balance font-display text-2xl font-bold text-brand-navy sm:text-3xl">Jelajahi Berdasarkan Tema</h2>
                         <p class="mt-1.5 max-w-2xl text-base leading-7 text-slate-600">Empat kanal editorial untuk membantu pembaca menemukan jenis analisis yang paling relevan.</p>
                     </div>
-                    <a href="{{ $latestArchiveUrl }}" class="text-sm font-extrabold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Semua Kategori <span aria-hidden="true">→</span></a>
+                    <a href="{{ $latestArchiveUrl }}" class="text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Semua Kategori <span aria-hidden="true">→</span></a>
                 </div>
 
                 <div class="mt-7 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
@@ -159,15 +159,15 @@
             <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
                 <div class="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
                     <div>
-                        <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-navy">Arsip Editorial</p>
-                        <h2 class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">{{ $featuredOnly ? 'Semua Pilihan Editor' : ($hasEditorialFilters ? 'Hasil Jelajah Editorial' : 'Semua Editorial') }}</h2>
+                        <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-navy">Arsip Editorial</p>
+                        <h2 class="mt-1 font-display text-2xl font-bold text-brand-navy sm:text-3xl">{{ $featuredOnly ? 'Semua Pilihan Editor' : ($hasEditorialFilters ? 'Hasil Jelajah Editorial' : 'Semua Editorial') }}</h2>
                         <p class="mt-1.5 text-base leading-7 text-slate-600">Cari dan telusuri artikel berdasarkan kategori, kata kunci, dan urutan publikasi.</p>
                         @if (filled($selectedTag))
                             <p class="mt-2 text-sm font-bold text-brand-teal">Topik: {{ $selectedTagName ?? $selectedTag }}</p>
                         @endif
                     </div>
                     @if ($hasEditorialFilters)
-                        <a href="{{ route('insights.index', ['archive' => 'latest']) }}#insight-archive" class="text-sm font-extrabold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Atur ulang</a>
+                        <a href="{{ route('insights.index', ['archive' => 'latest']) }}#insight-archive" class="text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Atur ulang</a>
                     @endif
                 </div>
 
@@ -194,8 +194,8 @@
                                         @endif
                                     </div>
                                     <div class="pt-4">
-                                        <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                        <h3 class="type-role-compact mt-1.5 line-clamp-3 text-base font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
+                                        <h3 class="type-role-compact mt-1.5 line-clamp-3 text-base font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
                                         <p class="mt-2.5 type-role-meta font-normal text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
                                     </div>
                                 </a>
@@ -211,8 +211,8 @@
                                         @endif
                                     </div>
                                     <div class="min-w-0 self-center">
-                                        <p class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                        <h3 class="type-role-card mt-1.5 line-clamp-2 text-lg font-black leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                        <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
+                                        <h3 class="type-role-card mt-1.5 line-clamp-2 text-lg font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</h3>
                                         @if ($excerpt($article, 150) !== '')
                                             <p class="mt-2 line-clamp-2 text-base leading-7 text-slate-600">{{ $excerpt($article, 150) }}</p>
                                         @endif
@@ -222,7 +222,7 @@
                             </article>
                         @endif
                     @empty
-                        <div class="col-span-full rounded-[13px] border border-dashed border-slate-300 bg-white py-10 text-center text-sm font-semibold text-slate-500">Editorial belum ditemukan.</div>
+                        <div class="col-span-full rounded-[13px] border border-dashed border-slate-300 bg-white py-10 text-center text-sm font-bold text-slate-500">Editorial belum ditemukan.</div>
                     @endforelse
                 </div>
 

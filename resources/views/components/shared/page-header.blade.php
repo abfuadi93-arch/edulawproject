@@ -112,7 +112,7 @@
                 @endif
             @endif
 
-            <h1 class="{{ $eyebrow ? ($channelHeader ? 'mt-1' : 'mt-2') : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} {{ $titleWidthClass }} font-black leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
+            <h1 class="{{ $eyebrow ? ($channelHeader ? 'mt-1' : 'mt-2') : (! empty($breadcrumbs) ? ($compact ? 'mt-4' : 'mt-7') : '') }} {{ $titleWidthClass }} font-bold leading-[1.06] tracking-tight {{ $isDarkHero ? 'text-white' : 'text-brand-ink' }} {{ $titleClass ?: $defaultTitleClass }}">
                 @if ($titleParts)
                     <span class="block">{{ trim($titleParts[0]) }}:</span>
                     <span class="block">{{ trim($titleParts[1]) }}</span>

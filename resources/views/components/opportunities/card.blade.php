@@ -29,16 +29,16 @@
                 @if ($opportunity->poster_url)
                     <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" class="size-full object-contain" width="640" height="800" loading="lazy" decoding="async">
                 @else
-                    <div class="grid size-full place-items-center bg-linear-to-br from-[#e8eef4] to-[#d8e3ec] text-2xl font-black text-brand-navy/55">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
+                    <div class="grid size-full place-items-center bg-linear-to-br from-[#e8eef4] to-[#d8e3ec] text-2xl font-bold text-brand-navy/55">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
                 @endif
             </div>
         </a>
         <div class="flex min-w-0 flex-col justify-center p-5 sm:p-6">
             <div class="flex flex-wrap items-center justify-between gap-2">
-                <span class="rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
+                <span class="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
                 <span class="type-role-meta font-normal text-slate-500">{{ $opportunity->display_format }} · {{ $opportunity->location ?: 'Lokasi menyesuaikan' }}</span>
             </div>
-            <h2 class="type-role-card mt-3 line-clamp-2 text-xl font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
+            <h2 class="type-role-card mt-3 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer">{{ $opportunity->title }}</a>
             </h2>
             @if ($summary)
@@ -53,14 +53,14 @@
             @endif
             <div class="mt-4 grid gap-4 border-t border-slate-100 pt-4 sm:grid-cols-[minmax(0,1fr)_minmax(18rem,auto)] sm:items-end">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</p>
-                    <p class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</p>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Deadline</p>
+                    <p class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</p>
                     <p class="mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
                 <div class="grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
-                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-3 text-center text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 sm:text-sm">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
+                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-3 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 sm:text-sm">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
                     @if ($additionalLabel)
-                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-3 text-center text-xs font-black text-white transition hover:bg-brand-ink sm:text-sm">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
+                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-3 text-center text-xs font-bold text-white transition hover:bg-brand-ink sm:text-sm">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
                     @endif
                 </div>
             </div>
@@ -73,18 +73,18 @@
                 @if ($opportunity->poster_url)
                     <img src="{{ $opportunity->poster_url }}" alt="Poster {{ $opportunity->title }}" class="size-full object-contain transition duration-500 group-hover:scale-[1.015]" width="640" height="800" loading="lazy" decoding="async">
                 @else
-                    <div class="grid size-full place-items-center bg-linear-to-br from-[#e8eef4] to-[#d8e3ec] text-2xl font-black text-brand-navy/55">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
+                    <div class="grid size-full place-items-center bg-linear-to-br from-[#e8eef4] to-[#d8e3ec] text-2xl font-bold text-brand-navy/55">{{ mb_substr($opportunity->display_type, 0, 1) }}</div>
                 @endif
             </div>
         </a>
 
         <div class="flex flex-1 flex-col p-5">
             <div class="flex items-start justify-between gap-2">
-                <span class="rounded-full px-2.5 py-1 text-[11px] font-black uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
+                <span class="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
                 <span class="line-clamp-1 text-right text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }} · {{ $opportunity->location ?: 'Menyesuaikan' }}</span>
             </div>
 
-            <h2 class="type-role-card mt-3 line-clamp-3 text-lg font-black leading-snug text-brand-ink transition group-hover:text-brand-navy">
+            <h2 class="type-role-card mt-3 line-clamp-3 text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                 <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer">{{ $opportunity->title }}</a>
             </h2>
             @if ($summary)
@@ -100,14 +100,14 @@
 
             <div class="mt-auto border-t border-slate-100 pt-4">
                 <div>
-                    <p class="text-[11px] font-black uppercase tracking-[0.11em] text-slate-500">Deadline</p>
-                    <p class="mt-1 text-sm font-black text-brand-ink">{{ $opportunity->deadline_display }}</p>
+                    <p class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Deadline</p>
+                    <p class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</p>
                     <p class="mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
                 <div class="mt-4 grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
-                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-black text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
+                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
                     @if ($additionalLabel)
-                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-black text-white transition hover:bg-brand-ink">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
+                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
                     @endif
                 </div>
             </div>

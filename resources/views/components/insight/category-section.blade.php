@@ -13,7 +13,7 @@
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
         <div class="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <div>
-                <h2 class="text-3xl font-black leading-tight text-brand-ink">
+                <h2 class="text-3xl font-bold leading-tight text-brand-ink">
                     Jelajahi Kanal Editorial
                 </h2>
             </div>

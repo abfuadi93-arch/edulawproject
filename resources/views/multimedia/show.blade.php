@@ -34,7 +34,7 @@
             allowfullscreen
         ></iframe>
     </div>
-    <h1 class="mt-5 text-2xl font-black text-brand-navy sm:text-3xl">{{ $video->title }}</h1>
+    <h1 class="mt-5 text-2xl font-bold text-brand-navy sm:text-3xl">{{ $video->title }}</h1>
     @if ($video->published_at)
         <p class="mt-3 text-sm text-slate-500"><time datetime="{{ $video->published_at->toIso8601String() }}">{{ $video->published_at->translatedFormat('d F Y') }}</time></p>
     @endif

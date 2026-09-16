@@ -35,7 +35,7 @@
                                     <span class="edulaw-badge edulaw-badge-navy normal-case tracking-normal">{{ $result['type'] }}</span>
                                     <span class="edulaw-badge edulaw-badge-muted normal-case tracking-normal">{{ $result['meta'] }}</span>
                                 </div>
-                                <h3 class="mt-3 text-lg font-extrabold text-brand-ink">{{ $result['title'] }}</h3>
+                                <h3 class="mt-3 text-lg font-bold text-brand-ink">{{ $result['title'] }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $result['excerpt'] }}</p>
                                 <p class="mt-2 type-role-meta text-slate-500">{{ $result['date'] }}</p>
                                 <a href="{{ $result['url'] }}" @if(!empty($result['external'])) target="_blank" rel="noopener noreferrer" @endif class="mt-3 inline-flex text-sm font-bold text-brand-navy">Buka Hasil →</a>

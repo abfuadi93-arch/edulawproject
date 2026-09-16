@@ -156,7 +156,7 @@
                     {{ $typeName }}
                 </span>
 
-                <h1 class="mt-5 max-w-5xl text-4xl font-black leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+                <h1 class="mt-5 max-w-5xl text-4xl font-bold leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
                     {{ $publication->title }}
                 </h1>
 
@@ -168,10 +168,10 @@
                         ['label' => 'Format', 'value' => $documentFormat],
                     ] as $item)
                         <div class="rounded-2xl border border-white/40 bg-white px-4 py-3 shadow-sm shadow-slate-950/10">
-                            <dt class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+                            <dt class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">
                                 {{ $item['label'] }}
                             </dt>
-                            <dd class="mt-1 line-clamp-2 text-sm font-black leading-snug text-brand-navy">
+                            <dd class="mt-1 line-clamp-2 text-sm font-bold leading-snug text-brand-navy">
                                 {{ $item['value'] }}
                             </dd>
                         </div>
@@ -187,7 +187,7 @@
                 <div class="space-y-7">
                     @if (! $summaryIsGeneric)
                         <article id="ringkasan" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">
                                 Ringkasan Publikasi
                             </p>
 
@@ -205,7 +205,7 @@
 
                     @if ($researchQuestions->isNotEmpty())
                         <section id="fokus-penelitian" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Pertanyaan / Fokus Penelitian</p>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">Pertanyaan / Fokus Penelitian</p>
                             <ul class="mt-5 space-y-3 text-base leading-7 text-slate-700">
                                 @foreach ($researchQuestions as $question)
                                     <li class="flex gap-3"><span class="mt-2 size-2 shrink-0 rounded-full bg-brand-amber" aria-hidden="true"></span><span>{{ $question }}</span></li>
@@ -216,11 +216,11 @@
 
                     @if ($keyFindings->isNotEmpty())
                         <section id="temuan-utama" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Temuan Utama</p>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">Temuan Utama</p>
                             <ol class="mt-5 space-y-4">
                                 @foreach ($keyFindings as $finding)
                                     <li class="grid grid-cols-[36px_minmax(0,1fr)] gap-3 text-base leading-7 text-slate-700">
-                                        <span class="grid size-9 place-items-center rounded-full bg-brand-amber-soft text-xs font-black text-brand-navy">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
+                                        <span class="grid size-9 place-items-center rounded-full bg-brand-amber-soft text-xs font-bold text-brand-navy">{{ str_pad((string) $loop->iteration, 2, '0', STR_PAD_LEFT) }}</span>
                                         <span class="pt-1">{{ $finding }}</span>
                                     </li>
                                 @endforeach
@@ -230,7 +230,7 @@
 
                     @foreach ($substantiveSections as $section)
                         <section id="{{ $section['id'] }}" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">{{ $section['title'] }}</p>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">{{ $section['title'] }}</p>
                             <div class="edulaw-readable mt-5 max-w-3xl text-slate-700">
                                 @foreach ($paragraphsFor($section['body']) as $paragraph)
                                     <p>{{ $paragraph }}</p>
@@ -241,10 +241,10 @@
 
                     @if ($tags->isNotEmpty())
                         <section id="kata-kunci" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                            <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Kata Kunci</p>
+                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">Kata Kunci</p>
                             <div class="mt-4 flex flex-wrap gap-2">
                                 @foreach ($tags as $tag)
-                                    <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-black text-brand-navy">#{{ $tag->name }}</span>
+                                    <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-bold text-brand-navy">#{{ $tag->name }}</span>
                                 @endforeach
                             </div>
                         </section>
@@ -253,14 +253,14 @@
                     <article id="preview-pdf" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
                         <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
                             <div>
-                                <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Dokumen</p>
-                                <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy sm:text-3xl">Preview PDF</h2>
+                                <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">Dokumen</p>
+                                <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy sm:text-3xl">Preview PDF</h2>
                             </div>
 
                             @if ($pdfUrl)
-                                <a href="{{ $pdfUrl }}" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]">Unduh Publikasi</a>
+                                <a href="{{ $pdfUrl }}" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-bold text-brand-black shadow-sm transition hover:-translate-y-0.5 hover:bg-[#e7a72d]">Unduh Publikasi</a>
                             @elseif ($externalUrl)
-                                <a href="{{ $externalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-black text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-black">Buka Sumber Publikasi</a>
+                                <a href="{{ $externalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-11 shrink-0 items-center justify-center rounded-xl bg-brand-navy px-4 py-2.5 text-sm font-bold text-white shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-black">Buka Sumber Publikasi</a>
                             @endif
                         </div>
 
@@ -269,7 +269,7 @@
                                 <iframe src="{{ $pdfPreviewUrl }}" title="Preview dokumen {{ $publication->title }}" loading="lazy" class="h-[520px] w-full bg-white lg:h-[720px]"></iframe>
                             @else
                                 <div class="flex min-h-[240px] items-center justify-center bg-linear-to-br from-brand-navy via-[#102f55] to-brand-teal/80 p-8 text-center text-white">
-                                    <div class="max-w-md"><p class="text-xs font-black uppercase tracking-[0.24em] text-brand-amber">Dokumen PDF belum tersedia.</p><p class="mt-4 text-base font-semibold leading-7 text-white/78">Gunakan sumber publikasi jika tersedia, atau kembali ke katalog untuk membaca publikasi lain.</p></div>
+                                    <div class="max-w-md"><p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-amber">Dokumen PDF belum tersedia.</p><p class="mt-4 text-base font-bold leading-7 text-white/78">Gunakan sumber publikasi jika tersedia, atau kembali ke katalog untuk membaca publikasi lain.</p></div>
                                 </div>
                             @endif
                         </div>
@@ -279,15 +279,15 @@
                         <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
                             <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
                                 <div>
-                                    <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                                    <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">
                                         Publikasi Terkait
                                     </p>
-                                    <h2 class="mt-3 text-2xl font-black tracking-tight text-brand-navy">
+                                    <h2 class="mt-3 text-2xl font-bold tracking-tight text-brand-navy">
                                         Baca publikasi lainnya.
                                     </h2>
                                 </div>
 
-                                <a href="{{ $indexUrl }}" class="text-sm font-black text-brand-navy underline-offset-4 transition hover:text-brand-teal hover:underline">
+                                <a href="{{ $indexUrl }}" class="text-sm font-bold text-brand-navy underline-offset-4 transition hover:text-brand-teal hover:underline">
                                     Semua Publikasi
                                 </a>
                             </div>
@@ -295,16 +295,16 @@
                             <div class="mt-6 grid gap-4 md:grid-cols-3">
                                 @foreach ($relatedCollection->take(3) as $relatedPublication)
                                     <article class="rounded-2xl border border-slate-200 bg-slate-50 p-5">
-                                        <p class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-teal">
+                                        <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">
                                             {{ $relatedTypeName($relatedPublication) }}
                                         </p>
-                                        <h3 class="type-role-compact mt-3 line-clamp-2 text-base font-black leading-snug text-brand-navy">
+                                        <h3 class="type-role-compact mt-3 line-clamp-2 text-base font-bold leading-snug text-brand-navy">
                                             {{ $relatedPublication->title }}
                                         </h3>
                                         <p class="mt-3 text-sm font-bold text-slate-500">
                                             {{ $relatedYear($relatedPublication) }} · {{ $relatedPublication->pdf_file ? 'PDF digital' : 'Dokumen digital' }}
                                         </p>
-                                        <a href="{{ route('publications.show', $relatedPublication->slug) }}" class="mt-4 inline-flex text-sm font-black text-brand-navy transition hover:text-brand-teal">
+                                        <a href="{{ route('publications.show', $relatedPublication->slug) }}" class="mt-4 inline-flex text-sm font-bold text-brand-navy transition hover:text-brand-teal">
                                             Lihat Detail →
                                         </a>
                                     </article>
@@ -316,7 +316,7 @@
 
                 <aside class="space-y-6 self-start lg:sticky lg:top-24">
                     <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm">
-                        <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">
                             Detail Publikasi
                         </p>
 
@@ -324,19 +324,19 @@
                             @foreach ($metadataRows as $row)
                                 <div class="flex justify-between gap-5 py-3.5 first:pt-0">
                                     <dt class="font-bold text-slate-500">{{ $row['label'] }}</dt>
-                                    <dd class="max-w-[58%] text-right font-black text-brand-navy">{{ $row['value'] }}</dd>
+                                    <dd class="max-w-[58%] text-right font-bold text-brand-navy">{{ $row['value'] }}</dd>
                                 </div>
                             @endforeach
                         </dl>
 
                         @if ($tags->isNotEmpty())
                             <div class="mt-5 border-t border-slate-100 pt-5">
-                                <p class="text-[10px] font-black uppercase tracking-[0.20em] text-slate-400">
+                                <p class="text-[10px] font-bold uppercase tracking-[0.20em] text-slate-400">
                                     Kata Kunci
                                 </p>
                                 <div class="mt-3 flex flex-wrap gap-2">
                                     @foreach ($tags as $tag)
-                                        <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-black text-brand-navy">
+                                        <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-bold text-brand-navy">
                                             #{{ $tag->name }}
                                         </span>
                                     @endforeach
@@ -349,10 +349,10 @@
                         class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
                         data-publication-citation
                     >
-                        <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">
+                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">
                             Referensi Akademik
                         </p>
-                        <h2 class="type-role-subheading mt-2 text-xl font-black tracking-tight text-brand-navy">
+                        <h2 class="type-role-subheading mt-2 text-xl font-bold tracking-tight text-brand-navy">
                             Cara Mengutip
                         </h2>
                         <p class="mt-2 text-sm leading-6 text-slate-500">
@@ -361,14 +361,14 @@
 
                         <label
                             for="citation-style-{{ $publication->getKey() }}"
-                            class="mt-5 block text-xs font-black uppercase tracking-[0.16em] text-slate-500"
+                            class="mt-5 block text-xs font-bold uppercase tracking-[0.16em] text-slate-500"
                         >
                             Format Sitasi
                         </label>
                         <select
                             id="citation-style-{{ $publication->getKey() }}"
                             data-citation-style
-                            class="mt-2 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-extrabold text-brand-navy shadow-sm outline-none transition focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/15"
+                            class="mt-2 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-brand-navy shadow-sm outline-none transition focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/15"
                         >
                             <option value="apa">APA</option>
                             <option value="chicago">Chicago</option>
@@ -380,7 +380,7 @@
                         <div
                             data-citation-text
                             aria-live="polite"
-                            class="mt-4 break-words rounded-2xl border border-brand-amber/25 bg-[#f8f5ee] p-4 text-sm font-semibold leading-7 text-slate-700"
+                            class="mt-4 break-words rounded-2xl border border-brand-amber/25 bg-[#f8f5ee] p-4 text-sm font-bold leading-7 text-slate-700"
                         >
                             {{ $citationText }}
                         </div>
@@ -390,7 +390,7 @@
                         <button
                             type="button"
                             data-copy-citation
-                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-black text-brand-ink shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-amber-dark focus:outline-none focus:ring-4 focus:ring-brand-amber/25"
+                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-amber-dark focus:outline-none focus:ring-4 focus:ring-brand-amber/25"
                         >
                             <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                 <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>

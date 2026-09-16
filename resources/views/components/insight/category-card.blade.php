@@ -57,7 +57,7 @@
                 </p>
             </div>
 
-            <span class="shrink-0 rounded-full bg-[#EAF2FF] px-3 py-1 text-[11px] font-black uppercase tracking-[0.08em] text-brand-navy">
+            <span class="shrink-0 rounded-full bg-[#EAF2FF] px-3 py-1 text-[11px] font-bold uppercase tracking-[0.08em] text-brand-navy">
                 {{ number_format($articleCount, 0, ',', '.') }} artikel
             </span>
         </div>

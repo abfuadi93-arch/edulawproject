@@ -23,11 +23,11 @@
                     <a href="{{ $featuredOpportunity->external_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka informasi resmi {{ $featuredOpportunity->title }} (membuka tab baru)" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber md:grid-cols-[minmax(0,3fr)_minmax(200px,2fr)]">
                         <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
                             <p class="home-card-kicker">{{ $featuredOpportunity->display_type }}</p>
-                            <h3 class="mt-3 line-clamp-3 text-2xl font-extrabold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
+                            <h3 class="mt-3 line-clamp-3 text-2xl font-bold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
 
                             <div class="home-opportunity-deadline mt-5 border-l-2 border-[#f5c451] pl-4">
                                 <p class="type-role-meta font-normal uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
-                                <p class="mt-1 text-lg font-extrabold text-[#a45e08]">{{ $featuredOpportunity->deadline_display }}</p>
+                                <p class="mt-1 text-lg font-bold text-[#a45e08]">{{ $featuredOpportunity->deadline_display }}</p>
                                 <p class="mt-1 type-role-meta font-normal text-slate-500">{{ $featuredOpportunity->deadline_relative_label }}</p>
                             </div>
 
@@ -39,7 +39,7 @@
                                 </p>
                             @endif
 
-                            <span class="mt-5 inline-flex w-fit text-sm font-extrabold text-[#102f56] transition group-hover:text-brand-teal">Informasi Resmi ↗</span>
+                            <span class="mt-5 inline-flex w-fit text-sm font-bold text-[#102f56] transition group-hover:text-brand-teal">Informasi Resmi ↗</span>
                         </div>
 
                         <div class="relative order-last h-44 overflow-hidden md:h-auto md:min-h-full">
@@ -69,7 +69,7 @@
                                             <p class="mt-2 line-clamp-1 type-role-meta font-normal text-slate-500">{{ $opportunity->organizer }}</p>
                                         @endif
                                         <div class="mt-auto pt-3">
-                                            <p class="text-xs font-extrabold text-[#a45e08]">Deadline {{ $opportunity->deadline_display }}</p>
+                                            <p class="text-xs font-bold text-[#a45e08]">Deadline {{ $opportunity->deadline_display }}</p>
                                         </div>
                                     </div>
                                 </a>

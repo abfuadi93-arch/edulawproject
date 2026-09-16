@@ -29,8 +29,8 @@
                         @endswitch
                     </span>
                     <div class="flex min-w-0 flex-1 flex-col">
-                        <h3 class="text-[15px] font-extrabold leading-snug text-brand-navy transition group-hover:text-brand-teal">{{ $topic['name'] }}</h3>
-                        <p class="mt-2 text-sm font-extrabold text-brand-navy">{{ number_format($topic['count'], 0, ',', '.') }} tulisan</p>
+                        <h3 class="text-[15px] font-bold leading-snug text-brand-navy transition group-hover:text-brand-teal">{{ $topic['name'] }}</h3>
+                        <p class="mt-2 text-sm font-bold text-brand-navy">{{ number_format($topic['count'], 0, ',', '.') }} tulisan</p>
                     </div>
                 </a>
             @endforeach

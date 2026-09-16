@@ -53,7 +53,7 @@
                             value="{{ $archiveSearch }}"
                             placeholder="Search Arsip"
                             oninput="clearTimeout(this._programArchiveTimer); this._programArchiveTimer = setTimeout(() => this.form.requestSubmit(), 450)"
-                            class="h-11 w-full rounded-xl border border-slate-200 bg-white pl-4 pr-10 text-sm font-semibold text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
+                            class="h-11 w-full rounded-xl border border-slate-200 bg-white pl-4 pr-10 text-sm font-bold text-brand-ink shadow-sm outline-none transition placeholder:text-slate-400 focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
                         >
                         <svg class="pointer-events-none absolute right-3 top-1/2 h-4 w-4 -translate-y-1/2 text-brand-navy" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="m21 21-4.35-4.35M10.5 18a7.5 7.5 0 1 1 0-15 7.5 7.5 0 0 1 0 15Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
@@ -65,7 +65,7 @@
                         <select
                             name="archive_category"
                             onchange="this.form.requestSubmit()"
-                            class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-brand-navy shadow-sm outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
+                            class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-brand-navy shadow-sm outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
                         >
                             <option value="">Semua Kategori</option>
                             @foreach ($programCategories as $category)
@@ -79,7 +79,7 @@
                         <select
                             name="archive_year"
                             onchange="this.form.requestSubmit()"
-                            class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-black text-brand-navy shadow-sm outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
+                            class="h-11 w-full rounded-xl border border-slate-200 bg-white px-3 text-sm font-bold text-brand-navy shadow-sm outline-none transition focus:border-brand-navy focus:ring-4 focus:ring-brand-navy/10"
                         >
                             <option value="">Semua Tahun</option>
                             @foreach ($archiveYears as $year)
@@ -102,7 +102,7 @@
                 </div>
             @else
                 <div class="rounded-[24px] border border-dashed border-slate-300 bg-white p-10 text-center shadow-sm">
-                    <p class="text-sm font-black uppercase tracking-[0.18em] text-brand-navy">Arsip belum ditemukan</p>
+                    <p class="text-sm font-bold uppercase tracking-[0.18em] text-brand-navy">Arsip belum ditemukan</p>
                     <p class="mt-2 text-sm leading-6 text-slate-600">Coba gunakan kata kunci, kategori, atau tahun yang berbeda.</p>
                 </div>
             @endif

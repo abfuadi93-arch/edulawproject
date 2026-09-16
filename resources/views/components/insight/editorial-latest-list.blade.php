@@ -20,8 +20,8 @@
     <section class="channel-section bg-white" aria-labelledby="editorial-pulse-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div>
-                <p class="text-[11px] font-extrabold uppercase tracking-[0.16em] text-brand-coral"><span class="mr-1 text-brand-amber" aria-hidden="true">●</span> Editorial Pulse</p>
-                <h2 id="editorial-pulse-heading" class="mt-1 font-display text-2xl font-black text-brand-navy sm:text-3xl">Paling Dibaca &amp; Penulis Produktif</h2>
+                <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral"><span class="mr-1 text-brand-amber" aria-hidden="true">●</span> Editorial Pulse</p>
+                <h2 id="editorial-pulse-heading" class="mt-1 font-display text-2xl font-bold text-brand-navy sm:text-3xl">Paling Dibaca &amp; Penulis Produktif</h2>
                 <p class="mt-1.5 text-base leading-7 text-slate-600">Tulisan yang paling banyak dibaca dan kontributor paling aktif di kanal Editorial Edulaw.</p>
             </div>
 
@@ -30,10 +30,10 @@
                     <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="popular-editorial-heading" data-editorial-popular-panel>
                         <div class="flex items-end justify-between gap-4">
                             <div>
-                                <p class="text-[11px] font-extrabold uppercase tracking-[0.13em] text-slate-500">Tulisan Terpopuler</p>
-                                <h3 id="popular-editorial-heading" class="mt-1 font-display text-xl font-black text-brand-navy">Paling Banyak Dibaca</h3>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">Tulisan Terpopuler</p>
+                                <h3 id="popular-editorial-heading" class="mt-1 font-display text-xl font-bold text-brand-navy">Paling Banyak Dibaca</h3>
                             </div>
-                            <a href="{{ $archiveUrl }}" class="text-xs font-extrabold text-brand-navy">Lihat semua <span aria-hidden="true">→</span></a>
+                            <a href="{{ $archiveUrl }}" class="text-xs font-bold text-brand-navy">Lihat semua <span aria-hidden="true">→</span></a>
                         </div>
 
                         <div class="mt-4 grid gap-4 sm:grid-cols-[minmax(0,1.15fr)_minmax(240px,0.85fr)]">
@@ -44,10 +44,10 @@
                                     <div class="absolute inset-0 bg-linear-to-br from-brand-navy via-[#244972] to-[#0f766e]"></div>
                                 @endif
                                 <div class="absolute inset-0 bg-linear-to-t from-black/90 via-black/25 to-transparent"></div>
-                                <span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-brand-amber text-sm font-black text-brand-navy">01</span>
+                                <span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-brand-amber text-sm font-bold text-brand-navy">01</span>
                                 <span class="relative mt-auto p-4 text-white sm:p-5">
-                                    <span class="text-[11px] font-extrabold uppercase tracking-[0.1em] text-brand-amber">{{ $categoryName($leadPopular) }}</span>
-                                    <span class="mt-1.5 block line-clamp-3 text-lg font-black leading-snug">{{ $leadPopular->title }}</span>
+                                    <span class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-amber">{{ $categoryName($leadPopular) }}</span>
+                                    <span class="mt-1.5 block line-clamp-3 text-lg font-bold leading-snug">{{ $leadPopular->title }}</span>
                                     <span class="mt-2 block type-role-meta font-normal text-white/75">{{ $publishedDate($leadPopular) }} · {{ number_format((int) $leadPopular->getAttribute('visit_count'), 0, ',', '.') }} kali dibaca</span>
                                 </span>
                             </a>
@@ -56,10 +56,10 @@
                                 @foreach ($popularArticles->skip(1)->values() as $index => $article)
                                     <li data-most-read-item>
                                         <a href="{{ route('insights.show', $article->slug) }}" class="group grid grid-cols-[34px_minmax(0,1fr)] gap-3 py-3 first:pt-0 last:pb-0 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
-                                            <span class="font-display text-xl font-black tabular-nums text-brand-navy/25">{{ str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT) }}</span>
+                                            <span class="font-display text-xl font-bold tabular-nums text-brand-navy/25">{{ str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT) }}</span>
                                             <span class="min-w-0">
-                                                <span class="block text-[11px] font-extrabold uppercase tracking-[0.09em] text-brand-coral">{{ $categoryName($article) }}</span>
-                                                <span class="mt-1 block line-clamp-2 text-sm font-extrabold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</span>
+                                                <span class="block text-[11px] font-bold uppercase tracking-[0.09em] text-brand-coral">{{ $categoryName($article) }}</span>
+                                                <span class="mt-1 block line-clamp-2 text-sm font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</span>
                                                 <span class="mt-1 block text-[11px] font-medium text-slate-500">{{ number_format((int) $article->getAttribute('visit_count'), 0, ',', '.') }} kali dibaca</span>
                                             </span>
                                         </a>
@@ -74,21 +74,21 @@
                     <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="productive-heading" data-editorial-contributor-panel>
                         <div class="flex items-end justify-between gap-3">
                             <div>
-                                <p class="text-[11px] font-extrabold uppercase tracking-[0.13em] text-slate-500">Kontributor Editorial</p>
-                                <h3 id="productive-heading" class="mt-1 font-display text-xl font-black text-brand-navy">Penulis Terproduktif</h3>
+                                <p class="text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">Kontributor Editorial</p>
+                                <h3 id="productive-heading" class="mt-1 font-display text-xl font-bold text-brand-navy">Penulis Terproduktif</h3>
                             </div>
-                            <a href="{{ route('about') }}#tim" class="text-right text-[11px] font-extrabold text-brand-navy">Lihat Semua Kontributor <span aria-hidden="true">→</span></a>
+                            <a href="{{ route('about') }}#tim" class="text-right text-[11px] font-bold text-brand-navy">Lihat Semua Kontributor <span aria-hidden="true">→</span></a>
                         </div>
 
                         <a href="{{ route('profiles.show', $leadContributor->slug) }}" class="mt-4 flex items-center gap-3 rounded-xl bg-[#eef4f8] p-3 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber" data-editorial-contributor="{{ $leadContributor->id }}">
-                            <span class="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-navy text-sm font-black text-white">
+                            <span class="relative grid h-14 w-14 shrink-0 place-items-center overflow-hidden rounded-full bg-brand-navy text-sm font-bold text-white">
                                 <span aria-hidden="true">{{ $leadContributor->initials }}</span>
                                 @if ($leadContributor->photo_url)
                                     <img src="{{ $leadContributor->photo_url }}" alt="Foto profil {{ $leadContributor->name }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover" onerror="this.remove()">
                                 @endif
                             </span>
                             <span class="min-w-0">
-                                <span class="block text-[11px] font-extrabold uppercase tracking-[0.09em] text-brand-coral">#1 Penulis Terproduktif</span>
+                                <span class="block text-[11px] font-bold uppercase tracking-[0.09em] text-brand-coral">#1 Penulis Terproduktif</span>
                                 <strong class="mt-1 block truncate text-base text-brand-ink">{{ $leadContributor->name }}</strong>
                                 <span class="mt-1 block text-[11px] font-bold text-brand-navy">{{ $leadContributor->published_insights_count }} tulisan terbit</span>
                             </span>
