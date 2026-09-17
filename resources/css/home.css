@@ -184,19 +184,19 @@
 }
 }
 
-/* Latest editorial: one lead beside four equally sized horizontal rows. */
+/* Latest editorial: balanced lead and compact supporting rows. */
 @media (min-width: 1024px) {
     .home-latest-insights > .home-latest-grid {
         display: grid;
-        grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
         gap: 24px;
         align-items: stretch;
     }
     .home-latest-grid > .home-latest-secondary {
         margin-top: 0;
         grid-template-columns: minmax(0, 1fr);
-        grid-auto-rows: 1fr;
-        gap: 12px;
+        grid-auto-rows: auto;
+        gap: 0;
     }
     #artikel-terbaru .home-latest-secondary [data-home-insight] {
         min-width: 0;
@@ -467,14 +467,14 @@ section[aria-labelledby="home-collaboration-title"] a {
 #artikel-terbaru .home-latest-secondary .home-card-kicker { font-size: 12px; line-height: 1.5; }
 #artikel-terbaru .home-latest-secondary [data-home-insight] > a { align-items: start; }
 #artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:first-child { aspect-ratio: 1; }
-#artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:last-child { min-height: 96px; }
+#artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:last-child { min-height: 80px; }
 #artikel-terbaru [data-home-insight-latest] h3 { overflow-wrap: anywhere; }
 @media (min-width: 1024px) {
     #artikel-terbaru .home-latest-secondary [data-home-insight] { border: 0; border-bottom: 1px solid #e2e8f0; border-radius: 0; }
     #artikel-terbaru .home-latest-secondary [data-home-insight] > a { padding: 12px 0; }
     #artikel-terbaru .home-latest-secondary [data-home-insight]:first-child > a { padding-top: 0; }
     #artikel-terbaru .home-latest-secondary { grid-auto-rows: auto; align-content: start; }
-    #artikel-terbaru [data-home-insight-latest] > a > div:first-child { flex: none; }
-    #artikel-terbaru [data-home-insight-latest] > a > div:last-child { flex: 1; display: flex; flex-direction: column; }
-    #artikel-terbaru [data-home-insight-latest] > a > div:last-child > div:last-child { margin-top: auto; padding-top: 16px; }
+    #artikel-terbaru [data-home-insight-latest] > a > div:first-child { flex: 1 0 260px; }
+    #artikel-terbaru [data-home-insight-latest] > a > div:last-child { flex: none; }
+    #artikel-terbaru [data-home-insight-latest] > a > div:last-child > div:last-child { margin-top: 16px; }
 }

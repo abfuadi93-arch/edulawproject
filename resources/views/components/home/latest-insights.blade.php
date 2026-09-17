@@ -23,13 +23,13 @@
             </div>
 
             @if ($primaryItem)
-                <div class="home-latest-grid mt-7 flex min-w-0 flex-1 flex-col">
+                <div class="home-latest-grid mt-5 flex min-w-0 flex-1 flex-col">
                     <article data-home-insight data-home-insight-latest class="group overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-200 hover:border-slate-300 hover:shadow-sm">
                         <a href="{{ route('insights.show', $primaryItem->slug) }}" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                             <div class="relative h-52 overflow-hidden sm:h-60 lg:h-[260px] xl:h-[270px]">
                                 <x-home.media-fallback kind="editorial" :label="$primaryItem->display_category" />
                                 @if ($primaryItem->cover_image_url)
-                                    <x-responsive-image :src="$primaryItem->cover_image_url" alt="Sampul {{ $primaryItem->title }}" :widths="[480, 640, 960]" sizes="(min-width: 1280px) 596px, (min-width: 1024px) 48vw, 100vw" width="760" height="428" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
+                                    <x-responsive-image :src="$primaryItem->cover_image_url" alt="Sampul {{ $primaryItem->title }}" :widths="[480, 640, 960]" sizes="(min-width: 1280px) 536px, (min-width: 1024px) 43vw, 100vw" width="760" height="428" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                                 @endif
                             </div>
                             <div class="p-5 sm:p-6">
@@ -50,7 +50,7 @@
                     </article>
 
                     @if ($secondaryItems->isNotEmpty())
-                        <div class="home-latest-secondary mt-4 grid gap-4 sm:grid-cols-2">
+                        <div class="home-latest-secondary mt-4 grid gap-x-4 gap-y-0 sm:grid-cols-2">
                             @foreach ($secondaryItems as $item)
                                 <article data-home-insight class="group min-w-0 border-b border-slate-200">
                                     <a href="{{ route('insights.show', $item->slug) }}" class="grid h-full grid-cols-[72px_minmax(0,1fr)] gap-3 py-3.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
@@ -63,7 +63,7 @@
                                         <div class="flex min-w-0 flex-col py-0.5">
                                             <p class="home-card-kicker line-clamp-1">{{ $item->display_category }}</p>
                                             <h3 class="mt-1.5 line-clamp-3 text-[15px] font-bold leading-[1.4] text-brand-navy sm:text-base">{{ $item->title }}</h3>
-                                            <div class="mt-auto flex flex-wrap gap-x-2 pt-2 type-role-meta font-normal text-slate-500">
+                                            <div class="mt-2 flex flex-wrap gap-x-2 type-role-meta font-normal text-slate-500">
                                                 @if ($item->published_at)<span>{{ $item->published_at->translatedFormat('d M Y') }}</span>@endif
                                                 @if ($item->reading_time)<span>· {{ $item->reading_time }} menit</span>@endif
                                             </div>
