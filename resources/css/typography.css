@@ -1,22 +1,21 @@
-/* Golden-ratio scale, based on 16px body text.
- * Major steps: 16 → 25.89 → 41.89 (× phi).
- * Half/quarter steps keep card titles and captions proportionate.
+/* Responsive editorial type scale, shared by all public pages.
+ * Roles: hero → page → section → featured → card → body → metadata.
  */
 #main-content {
-    --type-phi: 1.618034;
-    --type-half-step: 1.27202;
-    --type-quarter-step: 1.127838;
+    --type-phi: 1.65;
+    --type-half-step: 1.3;
+    --type-quarter-step: 1.15;
     --type-weight-body: 400;
     --type-weight-heading: 700;
     --site-text-body: 16px;
-    --site-text-small: calc(var(--site-text-body) / var(--type-half-step));
-    --site-text-card: calc(var(--site-text-body) * var(--type-quarter-step));
-    --site-text-subheading: calc(var(--site-text-body) * var(--type-half-step));
-    --site-text-section: var(--site-text-card);
-    --site-text-display: calc(var(--site-text-body) * var(--type-phi));
-    --site-text-feature: var(--site-text-subheading);
-    --site-text-callout: calc(var(--site-text-display) * var(--type-half-step));
-    --site-text-title: calc(var(--site-text-display) * var(--type-phi));
+    --site-text-small: 13px;
+    --site-text-card: clamp(18px, 1.5vw, 20px);
+    --site-text-subheading: clamp(20px, 1.8vw, 24px);
+    --site-text-section: clamp(24px, 2.3vw, 32px);
+    --site-text-display: clamp(22px, 2.2vw, 28px);
+    --site-text-feature: var(--site-text-display);
+    --site-text-callout: clamp(24px, 2.2vw, 30px);
+    --site-text-title: clamp(32px, 3.5vw, 44px);
     font-family: var(--font-sans);
     font-size: var(--site-text-body);
     line-height: var(--type-phi);
@@ -29,18 +28,15 @@
 }
 
 #main-content h1 {
-    font-size: clamp(36px, 3.3vw, var(--site-text-title));
+    font-size: var(--site-text-title);
     line-height: var(--type-quarter-step);
     letter-spacing: -.025em;
 }
 
-/* Home hero: one half-step above the standard title on the golden scale. */
+/* Hero has the strongest emphasis without overpowering small screens. */
 #main-content [data-home-hero] h1 {
-    font-size: clamp(
-        calc(36px * var(--type-half-step)),
-        calc(3.3vw * var(--type-half-step)),
-        calc(var(--site-text-title) * var(--type-half-step))
-    );
+    font-size: clamp(36px, 4.1vw, 56px);
+    line-height: 1.1;
 }
 
 #main-content h2 {
@@ -121,12 +117,12 @@
 }
 
 footer h2 {
-    font-size: 12.578px;
+    font-size: 13px;
     font-weight: var(--type-weight-heading, 700);
 }
 
 footer p {
-    font-size: 12px;
+    font-size: 13px;
     line-height: 1.7;
 }
 
@@ -150,7 +146,7 @@ footer a:not(:hover), footer p {
     margin-block: 1.618em .618em;
 }
 #main-content :is(.home-section-title, .section-title, .section-title-sm) {
-    font-size: var(--site-text-card);
+    font-size: var(--site-text-section);
     line-height: var(--type-half-step);
     margin-top: .618rem;
 }
@@ -206,7 +202,7 @@ footer a:not(:hover), footer p {
 
 /* Metadata also appears in navigation, pagination and standalone error views. */
 .type-role-meta {
-    font-size: var(--site-text-small, 12.578px);
+    font-size: var(--site-text-small, 13px);
     font-weight: 400;
     line-height: 1.618034;
 }
