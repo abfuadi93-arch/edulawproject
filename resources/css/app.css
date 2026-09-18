@@ -2,6 +2,7 @@
 @import './font-stack.css';
 @import './typography.css';
 @import './navigation.css';
+@import './design-system.css';
 
 /* Shared public theme; typography roles live in typography.css. */
 @theme {
@@ -13,16 +14,21 @@
     --font-weight-black: 700;
 
     --color-brand-navy: #1f3c69;
-    --color-brand-ink: #231f20;
+    --color-brand-ink: #1f3c69;
     --color-brand-blue: #556b8d;
-    --color-brand-silver: #aeb9c9;
+    --color-brand-silver: #94a3b8;
+    --color-brand-ice: #edf3fa;
+    --color-section-heading: #1f3c69;
+    --color-section-body: #475569;
     --color-brand-mist: #e8ebef;
-    --color-brand-paper: #f4f6f8;
+    --color-brand-paper: #ffffff;
     --color-brand-black: #111111;
-    --color-brand-charcoal: #2b313e;
+    --color-brand-charcoal: #0f172a;
 
-    --color-brand-amber: #f5b943;
-    --color-brand-amber-soft: #fff3cf;
+    --color-brand-amber: #e5b128;
+    --color-brand-gold-hover: #d8a020;
+    --color-brand-gold-border: #926718;
+    --color-brand-amber-soft: #fbf4dc;
 
     --color-brand-coral: #f26f5e;
     --color-brand-coral-soft: #ffe3dd;

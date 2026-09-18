@@ -48,7 +48,7 @@ function initializeMobileNavigation() {
         }
     });
 
-    window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
+    window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
         if (isOpen && event.matches) {
             setOpen(false);
         }

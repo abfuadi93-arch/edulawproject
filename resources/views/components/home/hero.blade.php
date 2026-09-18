@@ -17,7 +17,7 @@
 
 @endphp
 
-<section class="relative isolate min-h-[600px] overflow-hidden bg-[#082344] py-3 text-white sm:min-h-[640px]" data-home-hero>
+<section class="relative isolate min-h-[640px] overflow-hidden bg-[#082344] py-3 text-white sm:min-h-[680px] lg:min-h-[700px]" data-home-hero>
     <x-responsive-image
         :src="$heroImage"
         :alt="$heroAlt"
@@ -32,7 +32,7 @@
     <div class="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(5,25,51,.98)_0%,rgba(8,36,70,.94)_44%,rgba(8,34,65,.64)_72%,rgba(8,34,65,.42)_100%)]"></div>
     <div class="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-[#061b36] to-transparent"></div>
 
-    <div class="section-shell flex min-h-[600px] items-center pb-24 pt-16 sm:min-h-[640px] sm:pb-28 lg:py-20 lg:pb-28">
+    <div class="section-shell flex min-h-[640px] items-center pb-24 pt-20 sm:min-h-[680px] lg:min-h-[700px] sm:pb-28 lg:py-24 lg:pb-28">
         <div class="max-w-[720px] lg:w-[58%]">
             <p class="text-xs font-bold uppercase tracking-[0.2em] text-[#f0c55e]">{{ $heroEyebrow }}</p>
             <h1 class="mt-5 font-display text-[2.5rem] font-bold leading-[1.06] tracking-[-0.035em] text-white sm:text-5xl lg:text-[58px]">

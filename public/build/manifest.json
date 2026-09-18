@@ -12,7 +12,7 @@
     "src": "_lato-700-normal-D0hIvJyG.woff2"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Ij0tOQUx.css",
+    "file": "assets/app-BfG1AK-W.css",
     "name": "app",
     "names": [
       "app.css"
@@ -30,7 +30,7 @@
     "isEntry": true
   },
   "resources/css/home.css": {
-    "file": "assets/home-C5NqA0Uv.css",
+    "file": "assets/home-BLR_Uce6.css",
     "name": "home",
     "names": [
       "home.css"
@@ -39,7 +39,7 @@
     "isEntry": true
   },
   "resources/js/app.js": {
-    "file": "assets/app-B5kVnbiR.js",
+    "file": "assets/app-B8TxJ1pF.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true

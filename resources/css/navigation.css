@@ -7,15 +7,15 @@
 
 [data-site-header] > div > div:first-child {
     height: 72px;
-    gap: 16px;
+    gap: 24px;
 }
 
 [data-site-header] img {
-    height: 39px;
+    height: 40px;
 }
 
 [data-site-header] nav[aria-label="Navigasi utama"] {
-    gap: 18px;
+    gap: 4px;
 }
 
 [data-site-header] nav[aria-label="Navigasi utama"] a {
@@ -23,7 +23,7 @@
 }
 
 [data-site-header] a[aria-label="Cari artikel, topik, atau publikasi"] {
-    width: 184px;
+    width: 40px;
 }
 
 [data-site-header] nav + div > a:last-child {
@@ -42,3 +42,11 @@
         height: 68px;
     }
 }
+
+/* Keep the compact desktop header comfortable before the full-width breakpoint. */
+@media (min-width: 1024px) and (max-width: 1279px) {
+    [data-site-header] > div > div:first-child { gap: 12px; }
+    [data-site-header] > div > div:first-child > a > div:last-child { display: none; }
+}
+[data-site-header] #mobile-navigation nav a[aria-current="page"] { color: #fff; }
+[data-site-header] nav a:is(:hover, :focus-visible, [aria-current="page"]) { text-decoration: none; }

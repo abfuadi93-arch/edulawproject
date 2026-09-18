@@ -54,69 +54,76 @@
 
 <header
     data-site-header
-    class="sticky top-0 z-50 border-b border-slate-200 bg-white/95 backdrop-blur"
+    class="sticky top-0 z-50 border-b border-slate-200/80 bg-white/95 backdrop-blur-xl"
 >
     <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-        <div class="flex h-[72px] items-center justify-between gap-5">
+        <div class="flex h-[72px] items-center justify-between gap-6">
 
-            {{-- Brand --}}
+            {{-- BRAND --}}
             <a
                 href="{{ route('home') }}"
-                class="flex shrink-0 items-center gap-3"
+                class="group flex min-w-0 shrink-0 items-center gap-3"
                 aria-label="{{ $siteName }}"
             >
-                <img
-                    src="{{ $logo }}"
-                    alt="{{ $siteName }}"
-                    width="378"
-                    height="512"
-                    class="h-9 w-auto"
-                    decoding="async"
-                >
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center">
+                    <img
+                        src="{{ $logo }}"
+                        alt="{{ $siteName }}"
+                        width="378"
+                        height="512"
+                        class="h-10 w-auto object-contain transition duration-300 group-hover:scale-[1.03]"
+                        decoding="async"
+                    >
+                </div>
 
-                <div>
-                    <div class="text-xs font-bold uppercase tracking-[0.14em] text-brand-navy sm:text-sm sm:tracking-[0.18em]">
+                <div class="min-w-0 leading-none">
+                    <div
+                        class="whitespace-nowrap text-[13px] font-extrabold uppercase tracking-[0.17em] text-brand-navy sm:text-sm"
+                    >
                         {{ $siteName }}
                     </div>
 
-                    <div class="hidden type-role-meta font-medium text-slate-500 sm:block">
+                    <div
+                        class="mt-1 hidden whitespace-nowrap text-xs font-medium tracking-[0.02em] text-slate-500 sm:block"
+                    >
                         {{ $navSubtitle }}
                     </div>
                 </div>
             </a>
 
-            {{-- Desktop Navigation --}}
-            <nav class="hidden flex-1 items-center justify-center gap-6 xl:flex" aria-label="Navigasi utama">
-                @foreach($navItems as $item)
-                    <a
-                        href="{{ $item['url'] }}"
-                        @if($item['active']) aria-current="page" @endif
-                        class="group relative whitespace-nowrap text-sm font-bold transition duration-300
-                            {{ $item['active']
-                                ? 'text-brand-navy'
-                                : 'text-slate-600 hover:text-brand-navy' }}"
-                    >
-                        {{ $item['label'] }}
 
-                        <span
-                            class="absolute -bottom-[25px] left-0 h-0.5 bg-brand-amber transition-all duration-300
-                                {{ $item['active']
-                                    ? 'w-full'
-                                    : 'w-0 group-hover:w-full' }}"
-                        ></span>
-                    </a>
-                @endforeach
+            {{-- DESKTOP NAV --}}
+            <nav
+                class="hidden min-w-0 flex-1 items-center justify-center lg:flex"
+                aria-label="Navigasi utama"
+            >
+                    @foreach ($navItems as $item)
+                        <a href="{{ $item['url'] }}" @if ($item['active']) aria-current="page" @endif
+                           class="relative whitespace-nowrap rounded-lg px-3 py-2 text-[13px] font-bold transition hover:bg-slate-50 hover:text-brand-navy {{ $item['active'] ? 'bg-slate-50 text-brand-navy' : 'text-slate-600' }}">
+                            {{ $item['label'] }}
+                            @if ($item['active'])
+                                <span class="absolute inset-x-3 -bottom-[17px] h-0.5 rounded-full bg-brand-amber" aria-hidden="true"></span>
+                            @endif
+                        </a>
+                    @endforeach
             </nav>
 
-            {{-- Desktop Actions --}}
-            <div class="hidden shrink-0 items-center gap-3 xl:flex">
+
+            {{-- DESKTOP ACTIONS --}}
+            <div class="hidden shrink-0 items-center gap-2.5 lg:flex">
+
+                {{-- SEARCH ICON --}}
                 <a
                     href="{{ route('search.index') }}"
                     aria-label="Cari artikel, topik, atau publikasi"
-                    class="inline-flex h-10 w-48 items-center gap-2.5 rounded-lg border border-slate-200 bg-slate-50 px-3.5 text-slate-500 transition duration-200 hover:border-slate-300 hover:bg-white hover:text-brand-navy"
+                    title="Cari"
+                    class="inline-flex h-10 w-10 items-center justify-center rounded-lg
+                           border border-slate-200 bg-white text-slate-500
+                           transition duration-200
+                           hover:border-slate-300 hover:bg-slate-50 hover:text-brand-navy"
                 >
                     <svg
-                        class="h-4.5 w-4.5 shrink-0"
+                        class="h-[18px] w-[18px]"
                         viewBox="0 0 24 24"
                         fill="none"
                         aria-hidden="true"
@@ -128,22 +135,28 @@
                             stroke-linecap="round"
                         />
                     </svg>
-                    <span class="truncate text-xs font-bold">Cari artikel, topik, atau publikasi...</span>
                 </a>
 
+                {{-- CTA --}}
                 <a
                     href="{{ route('collaboration.index') }}"
-                    class="inline-flex min-h-11 items-center justify-center rounded-lg bg-brand-navy px-5 py-2.5 text-sm font-bold text-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:bg-slate-900"
+                    class="inline-flex h-10 items-center justify-center rounded-lg
+                           bg-brand-navy px-4 text-[13px] font-bold text-white
+                           shadow-sm transition duration-300
+                           hover:-translate-y-px hover:bg-slate-900 hover:shadow-sm"
                 >
                     Ajukan Kolaborasi
                 </a>
             </div>
 
-            {{-- Mobile Trigger --}}
+
+            {{-- MOBILE MENU BUTTON --}}
             <button
                 type="button"
                 data-mobile-menu-button
-                class="inline-flex h-11 w-11 items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-700 transition hover:border-brand-navy hover:text-brand-navy xl:hidden"
+                class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-lg
+                       border border-slate-200 bg-white text-slate-700
+                       transition hover:border-slate-300 hover:bg-slate-50 hover:text-brand-navy lg:hidden"
                 aria-expanded="false"
                 aria-label="Buka menu"
                 aria-controls="mobile-navigation"
@@ -183,51 +196,41 @@
         </div>
     </div>
 
-    {{-- Mobile Menu --}}
+
+    {{-- MOBILE NAVIGATION --}}
     <div
         id="mobile-navigation"
         data-mobile-navigation
         hidden
-        class="border-t border-slate-200 bg-white xl:hidden"
+        class="border-t border-slate-200 bg-white shadow-lg lg:hidden"
     >
-        <div class="mx-auto max-w-7xl px-5 py-4">
+        <div class="mx-auto max-w-7xl px-5 py-4 sm:px-6">
+
             <nav class="space-y-1" aria-label="Navigasi mobile">
-
-                <a
-                    data-mobile-first-link
-                    href="{{ route('home') }}"
-                    @if ($isHome) aria-current="page" @endif
-                    class="block rounded-xl px-4 py-3 text-sm font-bold
-                        {{ $isHome
-                            ? 'bg-brand-navy text-white'
-                            : 'text-slate-700 hover:bg-slate-100 hover:text-brand-navy' }}"
-                >
-                    Beranda
-                </a>
-
-                @foreach($navItems as $item)
-                    <a
-                        href="{{ $item['url'] }}"
-                        @if($item['active']) aria-current="page" @endif
-                        class="block rounded-xl px-4 py-3 text-sm font-bold
-                            {{ $item['active']
-                                ? 'bg-brand-navy text-white'
-                                : 'text-slate-700 hover:bg-slate-100 hover:text-brand-navy' }}"
-                    >
-                        {{ $item['label'] }}
+                <a data-mobile-first-link href="{{ route('home') }}" @if ($isHome) aria-current="page" @endif
+                   class="block rounded-lg px-3.5 py-2.5 text-sm font-bold {{ $isHome ? 'bg-brand-navy text-white' : 'text-slate-700 hover:bg-slate-50' }}">Beranda</a>
+                @foreach ($navItems as $item)
+                    <a href="{{ $item['url'] }}" @if ($item['active']) aria-current="page" @endif
+                       class="flex items-center justify-between rounded-lg px-3.5 py-2.5 text-sm font-bold {{ $item['active'] ? 'bg-brand-navy text-white' : 'text-slate-700 hover:bg-slate-50 hover:text-brand-navy' }}">
+                        <span>{{ $item['label'] }}</span>
+                        @if ($item['active'])<span class="h-1.5 w-1.5 rounded-full bg-brand-amber" aria-hidden="true"></span>@endif
                     </a>
                 @endforeach
+            </nav>
 
-                <div class="my-4 border-t border-slate-200"></div>
+
+            {{-- MOBILE ACTIONS --}}
+            <div class="mt-4 grid grid-cols-1 gap-2 border-t border-slate-100 pt-4 sm:grid-cols-2">
 
                 <a
                     href="{{ route('search.index') }}"
-                    class="flex items-center justify-between rounded-xl px-4 py-3 text-sm font-bold text-slate-700 hover:bg-slate-100 hover:text-brand-navy"
+                    class="inline-flex h-11 items-center justify-center gap-2 rounded-lg
+                           border border-slate-200 bg-white px-4 text-sm font-bold
+                           text-slate-700 transition
+                           hover:border-slate-300 hover:bg-slate-50 hover:text-brand-navy"
                 >
-                    <span>Cari</span>
-
                     <svg
-                        class="h-4.5 w-4.5"
+                        class="h-4 w-4"
                         viewBox="0 0 24 24"
                         fill="none"
                         aria-hidden="true"
@@ -239,16 +242,20 @@
                             stroke-linecap="round"
                         />
                     </svg>
+
+                    Cari
                 </a>
 
                 <a
                     href="{{ route('collaboration.index') }}"
-                    class="mt-3 block rounded-xl bg-brand-navy px-4 py-3 text-center text-sm font-bold text-white transition hover:bg-slate-900"
+                    class="inline-flex h-11 items-center justify-center rounded-lg
+                           bg-brand-navy px-4 text-sm font-bold text-white
+                           transition hover:bg-slate-900"
                 >
                     Ajukan Kolaborasi
                 </a>
 
-            </nav>
+            </div>
         </div>
     </div>
 </header>

@@ -80,10 +80,10 @@
     line-height: var(--type-half-step);
 }
 
-#main-content #home-collaboration-title {
+#main-content .shared-cta-title {
     font-size: var(--site-text-callout);
     line-height: var(--type-half-step);
-    max-width: 36ch;
+    max-width: none;
 }
 
 #main-content :is(.edulaw-readable, .home-section-description, .section-description) {
@@ -222,4 +222,13 @@ footer a:not(:hover), footer p {
 }
 #main-content :is(.article-content, .edulaw-readable) h3 {
     font-size: var(--site-text-subheading);
+}
+
+/* Consistent text/action proportions across shared collaboration banners. */
+@media (min-width: 1024px) {
+    #main-content .shared-cta-title {
+        font-size: clamp(18px, 1.8vw, 26px);
+        white-space: nowrap;
+        letter-spacing: -0.02em;
+    }
 }

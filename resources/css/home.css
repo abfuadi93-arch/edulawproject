@@ -1,43 +1,39 @@
 /* Homepage-only polish; shared component styling stays unchanged elsewhere. */
 
+/* Reserve space for the entire statistics panel inside the hero. */
 .home-hero-impact {
+    position: relative;
     display: flow-root;
 }
 
 .home-hero-impact > [data-home-impact] {
-    --impact-rows: var(--impact-mobile-rows);
-    margin-top: calc(-46px * var(--impact-rows) - 1px);
+    position: absolute;
+    inset-inline: 0;
+    bottom: 28px;
+    margin: 0;
 }
-
-/* Each 92px statistics row overlaps the hero by half its height. */
 
 .home-hero-impact [data-home-impact] dl {
     grid-auto-rows: 92px;
 }
 
 .home-hero-impact:has([data-home-impact]) [data-home-hero] .section-shell {
-    padding-bottom: 180px;
+    padding-bottom: 356px;
 }
 
 @media (min-width: 640px) {
-    .home-hero-impact > [data-home-impact] {
-    --impact-rows: var(--impact-tablet-rows);
-}
     .home-hero-impact:has([data-home-impact]) [data-home-hero] .section-shell {
-    padding-bottom: 136px;
-}
+        padding-bottom: 264px;
+    }
 }
 
 @media (min-width: 1024px) {
-    .home-hero-impact > [data-home-impact] {
-    --impact-rows: 1;
-}
     .home-hero-impact:has([data-home-impact]) [data-home-hero] .section-shell {
-    padding-bottom: 112px;
-}
+        padding-bottom: 172px;
+    }
 }
 
-#main-content > section:not([data-home-hero]):not(:has([data-home-impact-stat])) {
+#main-content > section:not([data-home-hero]):not(.shared-cta-section):not(:has([data-home-impact-stat])) {
     padding-block: 32px;
 }
 
@@ -45,10 +41,10 @@
     padding-block: 32px;
 }
 
-/* Full-width sections use alternating backgrounds to mark each content group. */
+/* Full-width content sections share the public ice-blue surface. */
 
 .home-program-curation {
-    background: #fbf6eb;
+    background: var(--section-surface, var(--color-brand-ice));
     padding: 20px 0 32px;
 }
 
@@ -125,45 +121,42 @@
 }
 
 #main-content #program-edulaw {
-    background: #fbf6eb;
+    background: var(--section-surface, var(--color-brand-ice));
     padding-top: 24px;
 }
 
 .home-hero-impact {
-    background: #fbf6eb;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #editorial-pilihan {
-    background: #edf3fa;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #artikel-terbaru {
-    background: #fff;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #topik-editorial {
-    background: #edf5f3;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #riset-publikasi {
-    background: #fff;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #opportunities {
-    background: #fbf6eb;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #multimedia {
-    background: #edf3fa;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
 #main-content #tentang-edulaw {
-    background: #fff;
+    background: var(--section-surface, var(--color-brand-ice));
 }
 
-#main-content > section[aria-labelledby="home-collaboration-title"] {
-    background: #edf5f3;
-}
 
 #editorial-pilihan [data-home-insight-featured] {
     aspect-ratio: auto;
@@ -347,7 +340,7 @@ section[aria-labelledby="home-collaboration-title"] a {
     [data-home-hero] .section-shell {
     padding-inline: 40px;
 }
-    #main-content > section:not([data-home-hero]):not(:has([data-home-impact-stat])) {
+    #main-content > section:not([data-home-hero]):not(.shared-cta-section):not(:has([data-home-impact-stat])) {
     padding-block: 32px;
 }
     #main-content #topik-editorial, #main-content #riset-publikasi {
@@ -397,7 +390,7 @@ section[aria-labelledby="home-collaboration-title"] a {
 }
 
 #tentang-edulaw article:last-child {
-    background: #1f3c69;
+    background: var(--color-brand-navy);
 }
 
 #tentang-edulaw [data-home-stat] dt {

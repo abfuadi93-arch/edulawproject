@@ -1,0 +1,64 @@
+/* Shared public design system. Keep admin screens and media artwork untouched. */
+#main-content,
+#main-content main {
+    background-color: #edf3fa;
+    color: #1f3c69;
+}
+
+/* Count content sections only: heroes, CTA bands, and inset cards are excluded. */
+#main-content section:nth-child(odd of section:not(.text-white):not(.shared-cta-section):not([class*="rounded-"]):not([data-home-hero])) {
+    --section-surface: #edf3fa;
+}
+#main-content section:nth-child(even of section:not(.text-white):not(.shared-cta-section):not([class*="rounded-"]):not([data-home-hero])) {
+    --section-surface: #ffffff;
+}
+#main-content :is(.channel-section, main > section, #main-content > section):not(.text-white):not(.shared-cta-section):not([class*="rounded-"]):not([data-home-hero]) {
+    background-color: var(--section-surface, #edf3fa);
+}
+
+/* Homepage groups share one band, including the paired program/editorial block. */
+#main-content .home-program-curation { --section-surface: #ffffff; }
+#main-content #artikel-terbaru { --section-surface: #edf3fa; }
+#main-content #topik-editorial { --section-surface: #ffffff; }
+#main-content #riset-publikasi { --section-surface: #edf3fa; }
+#main-content #opportunities { --section-surface: #ffffff; }
+#main-content #multimedia { --section-surface: #edf3fa; }
+#main-content #tentang-edulaw { --section-surface: #ffffff; }
+
+#main-content :is(article, aside, section, div).bg-white[class*="rounded-"] {
+    background-color: #ffffff;
+}
+#main-content :is(.home-section-title, .section-title, .section-title-sm, .text-brand-ink, .text-brand-navy) {
+    color: #1f3c69;
+}
+#main-content :is(.home-section-description, .section-description, .text-slate-500, .text-slate-600) {
+    color: #475569;
+}
+#main-content :is(.home-section-eyebrow, .home-card-kicker) { color: #1f3c69; }
+
+/* Gold is a surface/highlight, never small text on a light background. */
+#main-content :is(a, button).bg-brand-amber { color: #1f3c69; }
+#main-content .text-brand-amber:not(.text-white *, .bg-brand-navy *) { color: #1f3c69; }
+[data-site-header] { color: #1f3c69; }
+[data-site-header] nav a { color: #1f3c69; }
+[data-site-header] svg { color: #1f3c69; }
+#main-content :is(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid #1f3c69;
+    outline-offset: 3px;
+}
+#main-content :is(.text-white, .shared-cta-panel) :is(a, button):focus-visible {
+    outline-color: #ffffff;
+}
+
+/* Crisp gold actions with an opaque hover state and a defined edge. */
+:is(#main-content, [data-site-header]) :is(a, button):is(.bg-brand-amber, .btn-primary) {
+    background-color: var(--color-brand-amber);
+    color: #1f3c69;
+    border: 1px solid var(--color-brand-gold-border);
+    font-weight: 700;
+    box-shadow: 0 1px 2px rgb(31 60 105 / 12%);
+}
+:is(#main-content, [data-site-header]) :is(a, button):is(.bg-brand-amber, .btn-primary):hover {
+    background-color: var(--color-brand-gold-hover);
+    box-shadow: 0 2px 3px rgb(31 60 105 / 16%);
+}

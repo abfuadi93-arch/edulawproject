@@ -8,6 +8,7 @@
     'secondaryLabel' => null,
     'titleClass' => '',
     'headingId' => null,
+    'sectionSpacing' => 'py-[9px]',
 ])
 
 @php
@@ -18,24 +19,24 @@
 @endphp
 
 <section
-    {{ $attributes->class(['bg-white pb-5 sm:pb-7 lg:pb-8']) }}
+    {{ $attributes->class(['shared-cta-section bg-brand-ice', $sectionSpacing]) }}
     aria-labelledby="{{ $resolvedHeadingId }}"
 >
     <div class="section-shell">
-        <div class="rounded-xl bg-[linear-gradient(105deg,#102f56_0%,#123f69_100%)] px-6 py-8 text-white sm:px-8 lg:grid lg:grid-cols-[minmax(0,1fr)_auto] lg:items-center lg:gap-8 lg:px-10 lg:py-9">
-            <div>
-                <p class="text-xs font-bold uppercase tracking-[0.16em] text-[#f5c451]">{{ $eyebrow }}</p>
-                <h2 id="{{ $resolvedHeadingId }}" class="mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl {{ $titleClass }}">{{ $title }}</h2>
+        <div class="shared-cta-panel rounded-xl bg-brand-navy px-6 py-8 text-white sm:px-8 lg:grid lg:grid-cols-[minmax(0,4fr)_minmax(0,1fr)] lg:items-center lg:gap-6 lg:px-10 lg:py-9">
+            <div class="min-w-0">
+                <p class="text-xs font-bold uppercase tracking-[0.16em] text-white">{{ $eyebrow }}</p>
+                <h2 id="{{ $resolvedHeadingId }}" class="shared-cta-title mt-2 text-2xl font-bold leading-tight text-white sm:text-3xl {{ $titleClass }}">{{ $title }}</h2>
                 <p class="mt-2 max-w-3xl text-sm leading-6 text-slate-200">{{ $summary }}</p>
             </div>
 
-            <div class="mt-6 flex flex-col gap-3 sm:flex-row lg:mt-0 lg:flex-col">
-                <a href="{{ $primaryUrl }}" class="inline-flex min-h-11 min-w-44 items-center justify-center rounded-lg bg-[#f5c451] px-5 py-3 text-xs font-bold text-[#102f56] transition hover:bg-[#ffd670]">
+            <div class="mt-6 flex min-w-0 flex-col gap-3 sm:flex-row lg:mt-0 lg:flex-col">
+                <a href="{{ $primaryUrl }}" class="inline-flex min-h-11 min-w-0 gap-2 items-center justify-center rounded-lg bg-brand-amber px-5 py-3 text-sm font-bold text-brand-navy transition hover:bg-brand-amber/90">
                     {{ $primaryLabel }} <span aria-hidden="true">→</span>
                 </a>
 
                 @if ($hasSecondary)
-                    <a href="{{ $secondaryUrl }}" class="inline-flex min-h-11 min-w-44 items-center justify-center rounded-lg border border-white/25 bg-white/10 px-5 py-3 text-xs font-bold text-white transition hover:bg-white/15">
+                    <a href="{{ $secondaryUrl }}" class="inline-flex min-h-11 min-w-0 gap-2 items-center justify-center rounded-lg border border-white/25 bg-white/10 px-5 py-3 text-xs font-bold text-white transition hover:bg-white/15">
                         {{ $secondaryLabel }} <span aria-hidden="true">→</span>
                     </a>
                 @endif

@@ -45,10 +45,10 @@
     ])->filter(fn (array $link): bool => Route::has($link['route']));
 @endphp
 
-<footer class="border-t border-white/10 bg-[#102f56] text-white">
+<footer class="border-t border-white/10 bg-brand-navy text-white">
     <div class="mx-auto grid max-w-7xl grid-cols-1 items-start gap-8 px-5 py-8 sm:grid-cols-2 sm:px-6 lg:grid-cols-[minmax(0,4fr)_repeat(4,minmax(0,3fr))] lg:gap-6 lg:px-8 lg:py-10">
         <div class="min-w-0 sm:col-span-2 lg:col-span-1">
-            <a href="{{ route('home') }}" class="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-[#f0c55e]" aria-label="{{ $siteName }} — Beranda">
+            <a href="{{ route('home') }}" class="inline-flex focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-amber" aria-label="{{ $siteName }} — Beranda">
                 @if ($footerLogo)
                     <img src="{{ $footerLogo }}" alt="{{ $siteName }}" width="649" height="240" class="h-12 w-auto max-w-56 object-contain" loading="lazy" decoding="async">
                 @else
@@ -61,7 +61,7 @@
             @endif
 
             @if ($tagline)
-                <p class="mt-4 text-sm font-bold text-[#f0c55e]">{{ $tagline }}</p>
+                <p class="mt-4 text-sm font-bold text-brand-amber">{{ $tagline }}</p>
             @endif
         </div>
 
@@ -69,7 +69,7 @@
             <h2 class="text-sm font-bold text-white">Navigasi</h2>
             <ul class="mt-4 grid gap-2.5">
                 @foreach ($channelLinks as $link)
-                    <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $link['label'] }}</a></li>
+                    <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $link['label'] }}</a></li>
                 @endforeach
             </ul>
         </nav>
@@ -78,7 +78,7 @@
             <h2 class="text-sm font-bold text-white">Sumber Daya</h2>
             <ul class="mt-4 grid gap-2.5">
                 @foreach ($resourceLinks as $link)
-                    <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $link['label'] }}</a></li>
+                    <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $link['label'] }}</a></li>
                 @endforeach
             </ul>
         </nav>
@@ -87,10 +87,10 @@
             <h2 class="text-sm font-bold text-white">Kontak</h2>
             <ul class="mt-4 grid gap-2.5">
                 @if ($emailUrl)
-                    <li><!--email_off--><a href="{{ $emailUrl }}" class="break-words text-sm text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]">{{ $email }}</a><!--/email_off--></li>
+                    <li><!--email_off--><a href="{{ $emailUrl }}" class="break-words text-sm text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $email }}</a><!--/email_off--></li>
                 @endif
                 @if ($whatsappUrl && $whatsappLabel)
-                    <li><a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-slate-200 transition hover:text-[#f0c55e]">{{ $whatsappLabel }}</a></li>
+                    <li><a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="text-sm font-medium text-slate-200 transition hover:text-brand-amber">{{ $whatsappLabel }}</a></li>
                 @endif
                 @if ($location)<li><p class="text-sm leading-6 text-slate-300">{{ $location }}</p></li>@endif
             </ul>
@@ -100,8 +100,8 @@
             <h2 class="text-sm font-bold text-white">Ikuti Kami</h2>
             <div class="mt-4 grid grid-cols-1 gap-2.5" aria-label="Media sosial Edulaw Project">
                 @foreach ($socialLinks as $link)
-                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 text-sm font-medium text-slate-200 transition hover:text-[#f0c55e] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#f0c55e]" aria-label="{{ $link['label'] }} Edulaw Project">
-                        <span class="grid size-6 shrink-0 place-items-center rounded-md bg-white/10 text-[#f0c55e]" aria-hidden="true">
+                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 text-sm font-medium text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber" aria-label="{{ $link['label'] }} Edulaw Project">
+                        <span class="grid size-6 shrink-0 place-items-center rounded-md bg-white/10 text-brand-amber" aria-hidden="true">
                             @if ($link['label'] === 'Instagram')
                                 <svg class="size-3.5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="3.5"/><path d="M17.5 6.5h.01"/></svg>
                             @elseif ($link['label'] === 'YouTube')
