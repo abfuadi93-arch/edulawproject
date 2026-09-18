@@ -3726,3 +3726,118 @@
 .dark .fi-resource-authors.fi-resource-edit-record-page .fi-sc-form > .fi-sc-actions::before {
     color: var(--text-primary);
 }
+
+
+/* Dashboard: compact welcome area and a quieter metric hierarchy. */
+.edulaw-performance-hero-layout {
+    position: relative;
+    z-index: 1;
+    display: grid;
+    gap: 1.75rem;
+    padding: clamp(1.25rem, 3vw, 2rem);
+}
+
+.edulaw-dashboard-greeting {
+    margin-top: 1rem;
+    color: #fff;
+    font-size: clamp(1.5rem, 2.4vw, 2rem);
+    font-weight: 700;
+    line-height: 1.25;
+    letter-spacing: -0.035em;
+    overflow-wrap: anywhere;
+}
+
+.edulaw-dashboard-role,
+.edulaw-dashboard-date {
+    color: #cbd8ea;
+    font-size: 0.75rem;
+    line-height: 1.5;
+}
+
+.edulaw-dashboard-date {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.edulaw-dashboard-tools {
+    min-width: 0;
+}
+
+.edulaw-dashboard-tools .edulaw-performance-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview .fi-section.fi-section-not-contained > .fi-section-header {
+    padding: 0 0 1rem;
+    border: 0;
+    background: transparent;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview .fi-section.fi-section-not-contained > .fi-section-content-ctn {
+    padding: 0;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat.edulaw-stat {
+    border-top-width: 1px;
+    border-top-color: var(--edulaw-admin-border);
+    border-radius: 1rem;
+    min-height: 10rem;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat.edulaw-stat::after {
+    display: none;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.7rem;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-value {
+    grid-column: 1;
+    grid-row: 2;
+    text-align: left;
+    font-size: 2rem;
+    line-height: 1.15;
+    letter-spacing: -0.04em;
+    font-variant-numeric: tabular-nums;
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview-stat-label-ctn {
+    justify-content: space-between;
+}
+
+.fi-page:has(.edulaw-performance-hero) .edulaw-performance-panel-header {
+    flex-wrap: wrap;
+}
+
+@media (min-width: 1024px) {
+    .edulaw-performance-hero-layout {
+        grid-template-columns: minmax(0, 1fr) minmax(17rem, 21rem);
+        align-items: center;
+        gap: 2rem;
+    }
+}
+
+@media (max-width: 380px) {
+    .edulaw-dashboard-tools .edulaw-performance-actions {
+        grid-template-columns: minmax(0, 1fr);
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-page:has(.edulaw-performance-hero) :is(.edulaw-admin-card, .edulaw-performance-action, .fi-wi-stats-overview-stat) {
+        transition: none;
+        transform: none;
+    }
+}
+
+.fi-page:has(.edulaw-performance-hero) .fi-wi-stats-overview .fi-section.fi-section-not-contained {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    outline: none;
+    --tw-ring-shadow: 0 0 #0000;
+}

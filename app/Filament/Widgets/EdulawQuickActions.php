@@ -34,7 +34,7 @@ class EdulawQuickActions extends Widget
         return [
             'displayName' => $user?->name ?? 'Admin',
             'roleLabel' => $roleName ? Str::headline($roleName) : 'Edulaw Admin',
-            'dateLabel' => now()->translatedFormat('l, d F Y'),
+            'dateLabel' => now()->locale('id')->translatedFormat('l, d F Y'),
             'websiteUrl' => url('/'),
             'canCreateInsight' => (bool) $user?->can('create insights'),
             'canCreatePublication' => (bool) $user?->can('create publications'),
