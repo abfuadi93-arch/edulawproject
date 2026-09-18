@@ -262,7 +262,7 @@ test('super admin can open publication list create and edit forms', function () 
         ->get(PublicationResource::getUrl('create'))
         ->assertOk()
         ->assertSee('Sitasi dan Share Preview')
-        ->assertSee('SEO Publikasi')
+        ->assertSee('Alamat & SEO')
         ->assertSee('Isi jika ingin menggunakan sitasi khusus')
         ->assertDontSee('Gambar Sampul');
 

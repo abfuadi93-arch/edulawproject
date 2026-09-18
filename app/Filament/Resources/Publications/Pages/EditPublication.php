@@ -12,6 +12,31 @@ class EditPublication extends EditRecordAndReturn
 {
     protected static string $resource = PublicationResource::class;
 
+    public function getHeading(): string
+    {
+        return 'Edit Publikasi';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Kelola identitas, ringkasan, dokumen, dan informasi penerbitan publikasi.';
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [PublicationResource::getUrl('index') => 'Publikasi', 'Edit Publikasi'];
+    }
+
+    protected function getSaveFormAction(): Action
+    {
+        return parent::getSaveFormAction()->label('Simpan Perubahan');
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        return parent::getCancelFormAction()->label('Batal');
+    }
+
     protected function getHeaderActions(): array
     {
         return [

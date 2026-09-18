@@ -42,12 +42,14 @@ class TagResource extends Resource
         return $schema
             ->extraAttributes(['class' => 'edulaw-admin-reference-form'])
             ->components([
-                Section::make('Informasi')
+                Section::make('Informasi Tag')
+                    ->columnSpanFull()
                     ->icon('heroicon-o-tag')
                     ->description('Tag digunakan lintas Editorial dan Publikasi.')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama')
+                            ->label('Nama Tag')
+                            ->helperText('Gunakan nama singkat yang mudah dikenali pembaca.')
                             ->required()
                             ->maxLength(255)
                             ->placeholder('Nama tag')
@@ -68,7 +70,7 @@ class TagResource extends Resource
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(255)
-                            ->helperText('Slug digunakan sebagai identitas tag di website.'),
+                            ->helperText('Identitas unik untuk alamat tag. Gunakan huruf kecil dan tanda hubung, misalnya hukum-tata-negara.'),
                     ])
                     ->columns(2),
             ]);

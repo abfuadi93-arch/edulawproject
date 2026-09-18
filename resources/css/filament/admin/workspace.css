@@ -1,0 +1,205 @@
+/* Shared admin workspace: list, create, edit, profile and editorial pages.
+   Semantic tokens preserve the existing light and dark themes. */
+.fi-page .fi-header-heading {
+    font-size: clamp(1.5rem, 2.2vw, 2rem);
+    line-height: 1.25;
+    letter-spacing: -0.025em;
+    overflow-wrap: anywhere;
+}
+
+.fi-page .fi-header-subheading {
+    max-width: 48rem;
+    color: var(--text-secondary);
+    font-size: 0.875rem;
+    line-height: 1.65;
+}
+
+.fi-page .fi-page-content {
+    gap: 1.5rem;
+}
+
+.fi-page .fi-header-actions {
+    flex-wrap: wrap;
+    gap: 0.625rem;
+}
+
+.fi-page .fi-header-actions .fi-btn {
+    min-height: 2.75rem;
+    border-radius: 0.65rem;
+}
+
+.fi-page .fi-sc-tabs > .fi-tabs {
+    max-width: 100%;
+    margin-inline: 0;
+    padding: 0.375rem;
+    border-radius: 0.875rem;
+    background: var(--bg-card);
+    box-shadow: none;
+    overflow-x: auto;
+}
+
+.fi-page .fi-tabs-item {
+    min-height: 2.5rem;
+    flex-shrink: 0;
+}
+
+.fi-page .fi-ta-header-toolbar {
+    min-width: 0;
+    gap: 0.75rem;
+    padding-block: 1rem;
+    background: var(--bg-card);
+}
+
+.fi-page .fi-ta-search-field {
+    width: min(23rem, 100%);
+}
+
+.fi-page .fi-ta-header-cell {
+    padding-block: 0.875rem;
+    color: var(--text-secondary);
+    background: var(--bg-primary);
+    font-size: 0.75rem;
+}
+
+.fi-page .fi-ta-cell {
+    padding-block: 0.875rem;
+}
+
+.fi-page .fi-ta-row:hover {
+    background: var(--bg-card-hover);
+}
+
+.fi-page .fi-ta-pagination {
+    border-top: 1px solid var(--border);
+    padding-block: 1rem;
+    background: var(--bg-card);
+}
+
+.fi-page .fi-section-header {
+    gap: 0.75rem;
+    padding-block: 1.125rem;
+}
+
+.fi-page .fi-section-header-heading {
+    font-size: 1rem;
+    line-height: 1.5;
+}
+
+.fi-page :is(.fi-section-header-description, .fi-fo-field-wrp-helper-text) {
+    color: var(--text-secondary);
+    font-size: 0.8125rem;
+    line-height: 1.6;
+}
+
+.fi-page :is(.fi-input-wrp, .fi-fo-rich-editor) {
+    border-radius: 0.625rem;
+}
+
+.fi-page .fi-fo-field-wrp-error-message {
+    line-height: 1.5;
+}
+
+.fi-page :is(.fi-btn, .fi-tabs-item, .fi-icon-btn, .fi-ta-record-link):focus-visible {
+    outline: 2px solid var(--primary);
+    outline-offset: 3px;
+}
+
+.fi-page .edulaw-resource-content-title {
+    line-height: 1.5;
+    max-height: 4.5em;
+    -webkit-line-clamp: 3;
+}
+
+.fi-page .edulaw-resource-content-meta {
+    white-space: normal;
+    line-height: 1.6;
+    margin-top: 0.35rem;
+}
+
+.edulaw-resource-thumbnail {
+    position: relative;
+}
+
+.edulaw-resource-thumbnail img {
+    position: absolute;
+    inset: 0;
+}
+
+@media (max-width: 47.999rem) {
+    .fi-main {
+        padding-inline: 1rem;
+    }
+
+    .fi-page .fi-header-actions {
+        width: 100%;
+    }
+
+    .fi-page .fi-header-actions .fi-btn {
+        flex: 1 1 auto;
+    }
+
+    .fi-page .fi-ta-header-toolbar {
+        flex-wrap: wrap;
+        padding-inline: 0.875rem;
+    }
+
+    .fi-page .fi-ta-search-field {
+        width: 100%;
+        min-width: 0;
+    }
+
+    .fi-page .fi-ta-header-toolbar > * {
+        min-width: 0;
+        max-width: 100%;
+    }
+
+    .fi-page .fi-section-content {
+        padding: 1rem;
+    }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .fi-page *,
+    .fi-sidebar * {
+        scroll-behavior: auto;
+        transition-duration: 0.01ms !important;
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+    }
+}
+
+/* Override older per-resource compact table rules consistently. */
+.fi-page.fi-resource-list-records-page .fi-sc-tabs > .fi-tabs {
+    margin-inline: 0;
+}
+
+.fi-page.fi-resource-list-records-page .edulaw-resource-content-title {
+    display: -webkit-box;
+    height: auto;
+    white-space: normal;
+    max-height: 4.5em;
+    line-height: 1.5;
+    -webkit-line-clamp: 3;
+}
+
+.fi-page.fi-resource-list-records-page .edulaw-resource-content-meta,
+.fi-page.fi-resource-list-records-page .edulaw-resource-content-meta span {
+    white-space: normal;
+    line-height: 1.6;
+}
+
+.fi-page.fi-resource-list-records-page .fi-ta-text-item-label {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.fi-page .fi-input-wrp {
+    border: 1px solid var(--border);
+    background: var(--bg-input);
+}
+
+.fi-page .fi-input-wrp:focus-within {
+    border-color: var(--primary);
+    outline: 2px solid var(--primary);
+    outline-offset: 1px;
+}

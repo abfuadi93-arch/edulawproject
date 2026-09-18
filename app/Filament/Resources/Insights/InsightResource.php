@@ -75,8 +75,9 @@ class InsightResource extends Resource
                         Section::make('Konten')
                             ->description('Tulis dan lengkapi naskah utama.')
                             ->schema([
-                                TextInput::make('title')
-                                    ->label('Judul')
+                                Textarea::make('title')
+                                    ->label('Judul Artikel')
+                                    ->rows(3)
                                     ->required()
                                     ->maxLength(255)
                                     ->live(onBlur: true)
@@ -103,16 +104,6 @@ class InsightResource extends Resource
                                         ->searchable()
                                         ->preload(),
                                 ])->columnSpanFull(),
-                                FileUpload::make('cover_image')
-                                    ->label('Cover')
-                                    ->image()
-                                    ->disk('public')
-                                    ->directory('insights')
-                                    ->visibility('public')
-                                    ->imageEditor()
-                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
-                                    ->maxSize(4096)
-                                    ->columnSpanFull(),
                                 TinyMceEditor::make('content')
                                     ->label('Isi Artikel')
                                     ->placeholder('Tulis isi artikel di sini…')
@@ -179,7 +170,7 @@ class InsightResource extends Resource
                     ])->columnSpan(['xl' => 8]),
                     Group::make()->schema([
                         Section::make('Editorial')
-                            ->description('Informasi status—bukan konfigurasi.')
+                            ->description('Status naskah dan penugasan editor.')
                             ->schema([
                                 Placeholder::make('status_info')
                                     ->label('Status')
@@ -200,6 +191,21 @@ class InsightResource extends Resource
                                 Placeholder::make('reading_time_preview')
                                     ->label('Estimasi baca')
                                     ->content(fn ($get): string => static::estimateReadingTime($get('content')).' menit'),
+                            ]),
+                        Section::make('Gambar Sampul')
+                            ->icon('heroicon-o-photo')
+                            ->schema([
+                                FileUpload::make('cover_image')
+                                    ->label('Gambar Sampul')
+                                    ->helperText('JPG, PNG, atau WebP. Maksimal 4 MB.')
+                                    ->image()
+                                    ->disk('public')
+                                    ->directory('insights')
+                                    ->visibility('public')
+                                    ->imageEditor()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'image/webp'])
+                                    ->maxSize(4096)
+                                    ->columnSpanFull(),
                             ]),
                         Section::make('Penempatan')
                             ->schema([

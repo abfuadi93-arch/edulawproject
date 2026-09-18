@@ -14,10 +14,9 @@
 
 <div class="edulaw-insight-article">
     <div class="edulaw-insight-thumbnail" aria-hidden="true">
+        <x-filament::icon icon="heroicon-o-photo" />
         @if ($coverUrl)
-            <img src="{{ $coverUrl }}" alt="" loading="lazy">
-        @else
-            <x-filament::icon icon="heroicon-o-photo" />
+            <img src="{{ $coverUrl }}" alt="" loading="lazy" x-on:error="$el.style.display = 'none'">
         @endif
     </div>
 

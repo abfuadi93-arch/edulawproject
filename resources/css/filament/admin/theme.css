@@ -1,5 +1,6 @@
 @import '../../../../vendor/filament/filament/resources/css/theme.css';
 @import '../../font-stack.css';
+@import './workspace.css';
 
 @source '../../../../app/Filament/**/*';
 @source '../../../../resources/views/filament/**/*';
@@ -3840,4 +3841,96 @@
     box-shadow: none;
     outline: none;
     --tw-ring-shadow: 0 0 #0000;
+}
+
+
+/* Insight list: readable article rows and bounded supporting columns. */
+.fi-resource-insights.fi-resource-list-records-page .fi-sc-tabs > .fi-tabs {
+    margin-inline: 0;
+    max-width: 100%;
+    padding: 0.4rem;
+    box-shadow: none;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-header-subheading {
+    max-width: 45rem;
+    font-size: 0.875rem;
+    line-height: 1.6;
+    color: var(--edulaw-admin-muted);
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-header-toolbar {
+    padding-block: 1rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-search-field {
+    width: min(23rem, 100%);
+}
+
+.fi-resource-insights.fi-resource-list-records-page .fi-ta-cell {
+    padding-block: 1rem;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-title {
+    line-height: 1.5;
+    max-height: 4.5em;
+    -webkit-line-clamp: 3;
+}
+
+.fi-resource-insights.fi-resource-list-records-page .edulaw-insight-meta {
+    white-space: normal;
+    line-height: 1.6;
+    margin-top: 0.4rem;
+}
+
+.edulaw-insight-thumbnail {
+    position: relative;
+}
+
+.edulaw-insight-thumbnail img {
+    position: absolute;
+    inset: 0;
+}
+
+.edulaw-insight-table :is(.edulaw-insight-editor-cell, .edulaw-insight-status-cell) .fi-ta-text-item-label {
+    white-space: normal;
+    overflow-wrap: anywhere;
+}
+
+.edulaw-insight-table .edulaw-insight-status-cell .fi-badge {
+    white-space: normal;
+    text-align: center;
+}
+
+@media (min-width: 72rem) {
+    .edulaw-insight-table :is(.edulaw-insight-status-header, .edulaw-insight-status-cell) {
+        width: 7rem;
+    }
+
+    .edulaw-insight-table :is(.edulaw-insight-editor-header, .edulaw-insight-editor-cell) {
+        width: 9rem;
+    }
+
+    .edulaw-insight-table :is(.edulaw-insight-submitted-header, .edulaw-insight-submitted-cell) {
+        width: 9rem;
+    }
+
+    .edulaw-insight-table :is(.edulaw-insight-article-header, .edulaw-insight-article-cell) {
+        width: auto;
+    }
+}
+
+@media (max-width: 47.999rem) {
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-article {
+        align-items: flex-start;
+        gap: 0.6rem;
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-thumbnail {
+        display: none;
+    }
+
+    .fi-resource-insights.fi-resource-list-records-page .edulaw-insight-title {
+        font-size: 0.8125rem;
+    }
 }

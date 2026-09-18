@@ -79,8 +79,9 @@ class PublicationResource extends Resource
                                     ->icon('heroicon-o-document-text')
                                     ->description('Identitas, penulis, dan status publikasi yang tampil kepada pembaca.')
                                     ->schema([
-                                        TextInput::make('title')
-                                            ->label('Judul')
+                                        Textarea::make('title')
+                                            ->label('Judul Publikasi')
+                                            ->rows(3)
                                             ->required()
                                             ->maxLength(255)
                                             ->live(onBlur: true)
@@ -184,23 +185,23 @@ class PublicationResource extends Resource
                                                     ->required(),
 
                                                 DatePicker::make('published_at')
-                                                    ->label('Tanggal Publikasi Eksak')
+                                                    ->label('Tanggal Terbit')
                                                     ->native(false)
                                                     ->displayFormat('d/m/Y')
                                                     ->live()
                                                     ->required(fn ($get): bool => $get('status') === 'published' && blank($get('publication_date_text')))
-                                                    ->helperText('Isi jika tanggal lengkap diketahui. Dipakai untuk pengurutan dan penjadwalan publikasi.')
+                                                    ->helperText('Isi tanggal lengkap jika diketahui.')
                                                     ->validationMessages([
                                                         'required' => 'Isi tanggal eksak atau keterangan tahun/tanggal publikasi.',
                                                     ]),
 
                                                 TextInput::make('publication_date_text')
-                                                    ->label('Tahun / Tanggal Publikasi')
+                                                    ->label('Jika tanggal tidak lengkap')
                                                     ->maxLength(255)
                                                     ->live(onBlur: true)
                                                     ->required(fn ($get): bool => $get('status') === 'published' && blank($get('published_at')))
                                                     ->placeholder('Contoh: Desember 2024')
-                                                    ->helperText('Gunakan untuk tanggal parsial atau keterangan bibliografis, misalnya “2022” atau “2024 / tersedia daring 13 Januari 2025”.')
+                                                    ->helperText('Cukup isi salah satu: tanggal terbit atau tahun/bulan di sini.')
                                                     ->validationMessages([
                                                         'required' => 'Isi tahun/tanggal publikasi atau tanggal eksak.',
                                                     ]),
@@ -211,21 +212,14 @@ class PublicationResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
-                                        TextInput::make('slug')
-                                            ->label('Slug')
-                                            ->required()
-                                            ->unique(ignoreRecord: true)
-                                            ->maxLength(255)
-                                            ->helperText('Otomatis dari judul, boleh diedit sebelum terbit.')
-                                            ->columnSpanFull(),
                                     ]),
 
-                                Section::make('Ringkasan dan Metadata')
+                                Section::make('Ringkasan')
                                     ->icon('heroicon-o-list-bullet')
-                                    ->description('Ringkasan mandiri dan metadata bibliografis publikasi.')
+                                    ->description('Cukup tulis satu ringkasan singkat. Detail tambahan bersifat opsional.')
                                     ->schema([
                                         Textarea::make('excerpt')
-                                            ->label('Ringkasan / Excerpt')
+                                            ->label('Ringkasan')
                                             ->rows(4)
                                             ->maxLength(500)
                                             ->live(onBlur: true)
@@ -236,6 +230,51 @@ class PublicationResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
+                                    ]),
+
+                                Section::make('File dan Dokumen')
+                                    ->icon('heroicon-o-paper-clip')
+                                    ->description('Gunakan PDF internal atau tautan sumber eksternal yang valid.')
+                                    ->schema([
+                                        Grid::make(['default' => 1, 'lg' => 2])
+                                            ->schema([
+                                                FileUpload::make('pdf_file')
+                                                    ->label('File PDF')
+                                                    ->disk('public')
+                                                    ->directory('publications/pdfs')
+                                                    ->visibility('public')
+                                                    ->acceptedFileTypes(['application/pdf'])
+                                                    ->maxSize(20480)
+                                                    ->downloadable()
+                                                    ->openable()
+                                                    ->previewable(false)
+                                                    ->required(fn ($get): bool => $get('status') === 'published' && blank($get('external_url')))
+                                                    ->helperText('Pilih salah satu: unggah PDF (maks. 20 MB) atau isi tautan dokumen.')
+                                                    ->validationMessages([
+                                                        'required' => 'Publikasi yang diterbitkan wajib memiliki PDF atau External URL.',
+                                                        'mimetypes' => 'File dokumen harus berformat PDF.',
+                                                    ]),
+
+                                                TextInput::make('external_url')
+                                                    ->label('Tautan Dokumen')
+                                                    ->url()
+                                                    ->maxLength(255)
+                                                    ->live(onBlur: true)
+                                                    ->required(fn ($get): bool => $get('status') === 'published' && blank($get('pdf_file')))
+                                                    ->placeholder('https://...')
+                                                    ->helperText('Gunakan URL sumber resmi jika dokumen tidak diunggah ke Edulaw.')
+                                                    ->validationMessages([
+                                                        'required' => 'Publikasi yang diterbitkan wajib memiliki PDF atau External URL.',
+                                                        'url' => 'External URL harus berupa alamat http atau https yang valid.',
+                                                    ]),
+                                            ])
+                                            ->columnSpanFull(),
+
+                                    ]),
+
+                                Section::make('Detail Tambahan')
+                                    ->description('Opsional: deskripsi panjang, penerbit, bahasa, dan kata kunci.')
+                                    ->schema([
                                         TinyMceEditor::make('description')
                                             ->label('Deskripsi Lengkap')
                                             ->helperText('Opsional. Sasaran 200–400 kata untuk ringkasan mandiri yang menjelaskan masalah, konteks, pendekatan, dan hasil utama.')
@@ -299,7 +338,9 @@ class PublicationResource extends Resource
                                                     ->helperText('Pilih beberapa kata kunci atau buat kata kunci baru langsung dari form.'),
                                             ])
                                             ->columnSpanFull(),
-                                    ]),
+                                    ])
+                                    ->collapsible()
+                                    ->collapsed(),
 
                                 Section::make('Substansi Penelitian')
                                     ->icon('heroicon-o-magnifying-glass-circle')
@@ -340,47 +381,9 @@ class PublicationResource extends Resource
                                             ->rows(5)
                                             ->columnSpanFull(),
                                     ])
-                                    ->collapsible(),
+                                    ->collapsible()
+                                    ->collapsed(),
 
-                                Section::make('File dan Dokumen')
-                                    ->icon('heroicon-o-paper-clip')
-                                    ->description('Gunakan PDF internal atau tautan sumber eksternal yang valid.')
-                                    ->schema([
-                                        Grid::make(['default' => 1, 'lg' => 2])
-                                            ->schema([
-                                                FileUpload::make('pdf_file')
-                                                    ->label('File PDF')
-                                                    ->disk('public')
-                                                    ->directory('publications/pdfs')
-                                                    ->visibility('public')
-                                                    ->acceptedFileTypes(['application/pdf'])
-                                                    ->maxSize(20480)
-                                                    ->downloadable()
-                                                    ->openable()
-                                                    ->previewable(false)
-                                                    ->required(fn ($get): bool => $get('status') === 'published' && blank($get('external_url')))
-                                                    ->helperText('Unggah PDF jika dokumen tersedia. Jika publikasi berasal dari sumber luar, gunakan External URL.')
-                                                    ->validationMessages([
-                                                        'required' => 'Publikasi yang diterbitkan wajib memiliki PDF atau External URL.',
-                                                        'mimetypes' => 'File dokumen harus berformat PDF.',
-                                                    ]),
-
-                                                TextInput::make('external_url')
-                                                    ->label('External URL')
-                                                    ->url()
-                                                    ->maxLength(255)
-                                                    ->live(onBlur: true)
-                                                    ->required(fn ($get): bool => $get('status') === 'published' && blank($get('pdf_file')))
-                                                    ->placeholder('https://...')
-                                                    ->helperText('Gunakan URL sumber resmi jika dokumen tidak diunggah ke Edulaw.')
-                                                    ->validationMessages([
-                                                        'required' => 'Publikasi yang diterbitkan wajib memiliki PDF atau External URL.',
-                                                        'url' => 'External URL harus berupa alamat http atau https yang valid.',
-                                                    ]),
-                                            ])
-                                            ->columnSpanFull(),
-
-                                    ]),
                             ])
                             ->columnSpan(['xl' => 8])
                             ->extraAttributes(['class' => 'edulaw-admin-main-column']),
@@ -426,10 +429,18 @@ class PublicationResource extends Resource
                                     ->collapsible()
                                     ->collapsed(),
 
-                                Section::make('SEO Publikasi')
+                                Section::make('Alamat & SEO')
                                     ->icon('heroicon-o-magnifying-glass')
-                                    ->description('Metadata mesin pencari dan gambar share publikasi.')
+                                    ->description('Opsional. Judul dan ringkasan digunakan otomatis jika isian SEO kosong.')
                                     ->schema([
+                                        TextInput::make('slug')
+                                            ->label('Slug')
+                                            ->required()
+                                            ->unique(ignoreRecord: true)
+                                            ->maxLength(255)
+                                            ->helperText('Otomatis dari judul, boleh diedit sebelum terbit.')
+                                            ->columnSpanFull(),
+
                                         TextInput::make('seo_title')
                                             ->label('Judul SEO')
                                             ->maxLength(300)

@@ -8,10 +8,9 @@
 
 <div @class(['edulaw-resource-content', 'edulaw-resource-content-portrait' => $isPortrait])>
     <div class="edulaw-resource-thumbnail" aria-hidden="true">
+        <x-filament::icon icon="heroicon-o-photo" />
         @if ($imageUrl)
-            <img src="{{ $imageUrl }}" alt="" loading="lazy">
-        @else
-            <x-filament::icon icon="heroicon-o-photo" />
+            <img src="{{ $imageUrl }}" alt="" loading="lazy" x-on:error="$el.style.display = 'none'">
         @endif
     </div>
 

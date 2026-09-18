@@ -21,6 +21,31 @@ class EditInsight extends EditRecordAndReturn
 {
     protected static string $resource = InsightResource::class;
 
+    public function getHeading(): string
+    {
+        return 'Edit Insight';
+    }
+
+    public function getSubheading(): ?string
+    {
+        return 'Lengkapi naskah, atur metadata, lalu kirim untuk ditinjau editor.';
+    }
+
+    public function getBreadcrumbs(): array
+    {
+        return [InsightResource::getUrl('index') => InsightResource::getNavigationLabel(), 'Edit Insight'];
+    }
+
+    protected function getSaveFormAction(): Action
+    {
+        return parent::getSaveFormAction()->label('Simpan Perubahan');
+    }
+
+    protected function getCancelFormAction(): Action
+    {
+        return parent::getCancelFormAction()->label('Batal');
+    }
+
     protected function getHeaderActions(): array
     {
         return [
