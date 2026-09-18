@@ -261,14 +261,14 @@ test('super admin can open publication list create and edit forms', function () 
     $this->actingAs($user)
         ->get(PublicationResource::getUrl('create'))
         ->assertOk()
-        ->assertSee('Sitasi dan Share Preview')
+        ->assertSee('Share Preview')
         ->assertSee('Alamat & SEO')
-        ->assertSee('Isi jika ingin menggunakan sitasi khusus')
+        ->assertDontSee('Teks Sitasi')
         ->assertDontSee('Gambar Sampul');
 
     $this->actingAs($user)
         ->get(PublicationResource::getUrl('edit', ['record' => $publication]))
         ->assertOk()
-        ->assertSee('Sitasi tersimpan.')
+        ->assertDontSee('Teks Sitasi')
         ->assertSee('Judul Share Tersimpan');
 });

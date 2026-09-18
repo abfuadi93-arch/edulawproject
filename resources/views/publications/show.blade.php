@@ -102,8 +102,6 @@
 
     $tags = collect($publication->tags ?? []);
     $relatedCollection = collect($relatedPublications ?? $related ?? collect());
-    $citationFormats = $publication->citationFormats();
-    $citationText = $citationFormats['apa'];
 
     $metadataRows = collect([
         ['label' => $creatorLabel, 'value' => $creatorValue],
@@ -124,7 +122,7 @@
 @endphp
 
 <main class="publication-show">
-    <section class="relative isolate overflow-hidden bg-brand-navy text-white">
+    <section data-publication-hero class="relative isolate overflow-hidden bg-brand-navy py-3 text-white">
         @if ($coverImage)
             <x-responsive-image
                 :src="$coverImage"
@@ -142,7 +140,7 @@
         <div class="absolute inset-0 z-0 bg-linear-to-r from-[#06132a]/96 via-[#06132a]/78 to-[#06132a]/42"></div>
         <div class="absolute inset-0 z-0 bg-linear-to-t from-[#06132a]/82 via-transparent to-[#06132a]/18"></div>
 
-        <div class="relative z-10 mx-auto max-w-7xl px-5 py-11 sm:px-6 lg:px-8 lg:py-16">
+        <div class="relative z-10 mx-auto flex min-h-[440px] max-w-7xl flex-col justify-center px-5 py-7 sm:min-h-[400px] sm:px-6 sm:py-8 lg:min-h-[240px] lg:px-8 lg:py-4">
             <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-white/72 sm:text-sm" aria-label="Breadcrumb">
                 <a href="{{ route('home') }}" class="transition hover:text-white">Beranda</a>
                 <span class="text-white/42">/</span>
@@ -151,32 +149,15 @@
                 <span class="text-white">Detail Publikasi</span>
             </nav>
 
-            <div class="mt-7 max-w-5xl">
+            <div class="mt-4 min-w-0 w-full">
                 <span class="edulaw-badge edulaw-badge-md edulaw-badge-dark">
                     {{ $typeName }}
                 </span>
 
-                <h1 class="mt-5 max-w-5xl text-4xl font-bold leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.5rem]">
+                <h1 class="mt-3 w-full break-words text-4xl font-bold leading-tight tracking-tight text-white">
                     {{ $publication->title }}
                 </h1>
 
-                <dl class="mt-7 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
-                    @foreach ([
-                        ['label' => 'Tipe', 'value' => $typeName],
-                        ['label' => $creatorLabel, 'value' => $creatorValue],
-                        ['label' => 'Tahun / Tanggal', 'value' => $publicationDate],
-                        ['label' => 'Format', 'value' => $documentFormat],
-                    ] as $item)
-                        <div class="rounded-2xl border border-white/40 bg-white px-4 py-3 shadow-sm shadow-slate-950/10">
-                            <dt class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">
-                                {{ $item['label'] }}
-                            </dt>
-                            <dd class="mt-1 line-clamp-2 text-sm font-bold leading-snug text-brand-navy">
-                                {{ $item['value'] }}
-                            </dd>
-                        </div>
-                    @endforeach
-                </dl>
             </div>
         </div>
     </section>
@@ -239,17 +220,6 @@
                         </section>
                     @endforeach
 
-                    @if ($tags->isNotEmpty())
-                        <section id="kata-kunci" class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
-                            <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">Kata Kunci</p>
-                            <div class="mt-4 flex flex-wrap gap-2">
-                                @foreach ($tags as $tag)
-                                    <span class="rounded-full bg-brand-teal-soft px-3 py-1.5 text-xs font-bold text-brand-navy">#{{ $tag->name }}</span>
-                                @endforeach
-                            </div>
-                        </section>
-                    @endif
-
                     <article id="preview-pdf" class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm sm:p-6 lg:p-8">
                         <div class="flex flex-col gap-4 border-b border-slate-100 pb-5 sm:flex-row sm:items-start sm:justify-between">
                             <div>
@@ -274,6 +244,7 @@
                             @endif
                         </div>
                     </article>
+
 
                     @if ($relatedCollection->isNotEmpty())
                         <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8">
@@ -344,62 +315,6 @@
                             </div>
                         @endif
                     </section>
-
-                    <section
-                        class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm"
-                        data-publication-citation
-                    >
-                        <p class="text-xs font-bold uppercase tracking-[0.24em] text-brand-teal">
-                            Referensi Akademik
-                        </p>
-                        <h2 class="type-role-subheading mt-2 text-xl font-bold tracking-tight text-brand-navy">
-                            Cara Mengutip
-                        </h2>
-                        <p class="mt-2 text-sm leading-6 text-slate-500">
-                            Pilih format sitasi yang sesuai, lalu salin untuk digunakan dalam tulisan Anda.
-                        </p>
-
-                        <label
-                            for="citation-style-{{ $publication->getKey() }}"
-                            class="mt-5 block text-xs font-bold uppercase tracking-[0.16em] text-slate-500"
-                        >
-                            Format Sitasi
-                        </label>
-                        <select
-                            id="citation-style-{{ $publication->getKey() }}"
-                            data-citation-style
-                            class="mt-2 min-h-11 w-full rounded-xl border border-slate-300 bg-white px-3 py-2 text-sm font-bold text-brand-navy shadow-sm outline-none transition focus:border-brand-amber focus:ring-4 focus:ring-brand-amber/15"
-                        >
-                            <option value="apa">APA</option>
-                            <option value="chicago">Chicago</option>
-                            <option value="mla">MLA</option>
-                            <option value="ieee">IEEE</option>
-                            <option value="harvard">Harvard</option>
-                        </select>
-
-                        <div
-                            data-citation-text
-                            aria-live="polite"
-                            class="mt-4 break-words rounded-2xl border border-brand-amber/25 bg-[#f8f5ee] p-4 text-sm font-bold leading-7 text-slate-700"
-                        >
-                            {{ $citationText }}
-                        </div>
-
-                        <script type="application/json" data-citation-formats>{!! json_encode($citationFormats, JSON_HEX_TAG | JSON_HEX_AMP | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE) !!}</script>
-
-                        <button
-                            type="button"
-                            data-copy-citation
-                            class="mt-4 inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-xl bg-brand-amber px-4 py-2.5 text-sm font-bold text-brand-ink shadow-sm transition hover:-translate-y-0.5 hover:bg-brand-amber-dark focus:outline-none focus:ring-4 focus:ring-brand-amber/25"
-                        >
-                            <svg aria-hidden="true" class="h-4 w-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <rect width="14" height="14" x="8" y="8" rx="2" ry="2"></rect>
-                                <path d="M4 16c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2h10c1.1 0 2 .9 2 2"></path>
-                            </svg>
-                            <span data-copy-citation-label>Salin Sitasi</span>
-                        </button>
-
-                    </section>
                 </aside>
             </div>
         </div>
@@ -416,94 +331,3 @@
     />
 </main>
 @endsection
-
-@once
-    @push('scripts')
-        <script>
-            (() => {
-                if (window.__edulawPublicationCitationReady) {
-                    return;
-                }
-
-                window.__edulawPublicationCitationReady = true;
-
-                const copyText = async (text) => {
-                    if (navigator.clipboard?.writeText && window.isSecureContext) {
-                        await navigator.clipboard.writeText(text);
-
-                        return;
-                    }
-
-                    const input = document.createElement('textarea');
-                    input.value = text;
-                    input.setAttribute('readonly', '');
-                    input.style.position = 'fixed';
-                    input.style.opacity = '0';
-                    document.body.appendChild(input);
-                    input.select();
-
-                    const copied = document.execCommand('copy');
-                    input.remove();
-
-                    if (! copied) {
-                        throw new Error('Clipboard tidak tersedia.');
-                    }
-                };
-
-                const citationData = (root) => {
-                    try {
-                        return JSON.parse(root.querySelector('[data-citation-formats]')?.textContent || '{}');
-                    } catch (error) {
-                        return {};
-                    }
-                };
-
-                document.addEventListener('change', (event) => {
-                    const select = event.target.closest('[data-citation-style]');
-
-                    if (! select) {
-                        return;
-                    }
-
-                    const root = select.closest('[data-publication-citation]');
-                    const output = root?.querySelector('[data-citation-text]');
-                    const citation = root ? citationData(root)[select.value] : null;
-
-                    if (output && citation) {
-                        output.textContent = citation;
-                    }
-                });
-
-                document.addEventListener('click', async (event) => {
-                    const button = event.target.closest('[data-copy-citation]');
-
-                    if (! button) {
-                        return;
-                    }
-
-                    const root = button.closest('[data-publication-citation]');
-                    const citation = root?.querySelector('[data-citation-text]')?.textContent?.trim();
-                    const label = button.querySelector('[data-copy-citation-label]');
-
-                    if (! citation || ! label) {
-                        return;
-                    }
-
-                    try {
-                        await copyText(citation);
-                    } catch (error) {
-                        window.prompt('Salin sitasi berikut:', citation);
-
-                        return;
-                    }
-
-                    label.textContent = 'Sitasi Disalin';
-                    window.clearTimeout(button.__citationResetTimer);
-                    button.__citationResetTimer = window.setTimeout(() => {
-                        label.textContent = 'Salin Sitasi';
-                    }, 2000);
-                });
-            })();
-        </script>
-    @endpush
-@endonce

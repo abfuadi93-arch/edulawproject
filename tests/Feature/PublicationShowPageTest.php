@@ -53,7 +53,7 @@ test('publication detail hero contains eyebrow and title without body metadata',
         ->toContain('name="twitter:card" content="summary_large_image"');
 });
 
-test('publication detail uses custom citation and share metadata with safe image fallback', function () {
+test('publication detail hides citation tools and preserves share metadata with safe image fallback', function () {
     $type = PublicationType::query()->create([
         'name' => 'Research Report',
         'slug' => 'research-report-share',
@@ -82,17 +82,10 @@ test('publication detail uses custom citation and share metadata with safe image
         ->toContain('<meta property="og:title" content="Bagikan Laporan Penelitian Hukum | Edulaw Project">')
         ->toContain('<meta property="og:description" content="Temukan hasil penelitian hukum terbaru dari Edulaw Project.">')
         ->toContain('publications/covers/laporan.webp')
-        ->toContain('Edulaw Project. (2026). Laporan Penelitian Hukum.')
-        ->toContain('Cara Mengutip')
-        ->toContain('data-citation-style')
-        ->toContain('data-citation-formats')
-        ->toContain('data-copy-citation')
-        ->toContain('Sitasi Disalin')
-        ->toContain('<option value="apa">APA</option>')
-        ->toContain('<option value="chicago">Chicago</option>')
-        ->toContain('<option value="mla">MLA</option>')
-        ->toContain('<option value="ieee">IEEE</option>')
-        ->toContain('<option value="harvard">Harvard</option>')
+        ->not->toContain('Edulaw Project. (2026). Laporan Penelitian Hukum.')
+        ->not->toContain('Cara Mengutip')
+        ->not->toContain('data-publication-citation')
+        ->not->toContain('data-copy-citation')
         ->not->toContain('data-edulaw-share-group');
 
     expect($html)

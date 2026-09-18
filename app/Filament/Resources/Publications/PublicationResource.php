@@ -278,7 +278,7 @@ class PublicationResource extends Resource
                                         TinyMceEditor::make('description')
                                             ->label('Deskripsi Lengkap')
                                             ->helperText('Opsional. Sasaran 200–400 kata untuk ringkasan mandiri yang menjelaskan masalah, konteks, pendekatan, dan hasil utama.')
-                                            ->height(520)
+                                            ->height(320)
                                             ->fileAttachmentsDisk('public')
                                             ->fileAttachmentsDirectory('publications/content-images')
                                             ->fileAttachmentsVisibility('public')
@@ -289,7 +289,7 @@ class PublicationResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
-                                        Grid::make(['default' => 1, 'lg' => 2])
+                                        Grid::make(['default' => 1, 'lg' => 3])
                                             ->schema([
                                                 TextInput::make('page_count')
                                                     ->label('Jumlah Halaman')
@@ -316,7 +316,8 @@ class PublicationResource extends Resource
                                                     ->searchable(),
 
                                                 Select::make('tags')
-                                                    ->label('Tag / Kata Kunci')
+                                                    ->label('Kata Kunci')
+                                                    ->columnSpanFull()
                                                     ->relationship('tags', 'name')
                                                     ->multiple()
                                                     ->searchable()
@@ -335,7 +336,7 @@ class PublicationResource extends Resource
 
                                                         return $tag->getKey();
                                                     })
-                                                    ->helperText('Pilih beberapa kata kunci atau buat kata kunci baru langsung dari form.'),
+                                                    ->helperText('Pilih atau tambahkan kata kunci. Ditampilkan pada panel Detail Publikasi.'),
                                             ])
                                             ->columnSpanFull(),
                                     ])
@@ -390,15 +391,10 @@ class PublicationResource extends Resource
 
                         Group::make()
                             ->schema([
-                                Section::make('Sitasi dan Share Preview')
+                                Section::make('Share Preview')
                                     ->icon('heroicon-o-clipboard-document')
-                                    ->description('Atur sitasi khusus dan teks yang digunakan saat publikasi dibagikan.')
+                                    ->description('Atur teks yang digunakan saat publikasi dibagikan.')
                                     ->schema([
-                                        Textarea::make('citation_text')
-                                            ->label('Teks Sitasi')
-                                            ->rows(5)
-                                            ->helperText('Isi jika ingin menggunakan sitasi khusus. Jika kosong, sistem akan membuat sitasi otomatis dari metadata publikasi.'),
-
                                         TextInput::make('share_title')
                                             ->label('Judul Share')
                                             ->maxLength(255)
