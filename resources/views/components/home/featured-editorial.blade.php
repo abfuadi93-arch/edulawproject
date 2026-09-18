@@ -12,7 +12,7 @@
             </div>
 
             @if ($insight)
-                <article data-home-insight-featured class="group relative mt-7 flex aspect-[4/3] flex-1 overflow-hidden rounded-xl bg-[#142f57] text-white sm:aspect-[16/10] lg:aspect-auto">
+                <article data-home-insight-featured class="group relative mt-5 flex aspect-[4/3] flex-1 overflow-hidden rounded-xl bg-[#142f57] text-white sm:aspect-[16/10] lg:aspect-auto">
                     <x-home.media-fallback kind="editorial" dark placement="corner" />
                     @if ($insight->cover_image_url)
                         <x-responsive-image :src="$insight->cover_image_url" alt="Sampul {{ $insight->title }}" :widths="[480, 640, 960]" sizes="100vw" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" onerror="this.remove()" />
@@ -31,7 +31,7 @@
                     </a>
                 </article>
             @else
-                <div class="home-empty-state mt-7 flex-1"><p class="text-sm leading-6 text-slate-600">Pilihan editor sedang disiapkan.</p></div>
+                <div class="home-empty-state mt-5 flex-1"><p class="text-sm leading-6 text-slate-600">Pilihan editor sedang disiapkan.</p></div>
             @endif
         </div>
     </div>

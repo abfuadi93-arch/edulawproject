@@ -17,7 +17,7 @@
             </div>
 
             <div @class([
-                'mt-8 grid items-stretch gap-5',
+                'mt-5 grid items-stretch gap-5',
                 'mx-auto max-w-3xl' => $items->isEmpty(),
                 'lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]' => $items->isNotEmpty(),
             ])>

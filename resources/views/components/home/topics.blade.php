@@ -10,7 +10,7 @@
             <a href="{{ route('insights.index') }}" class="home-section-link hidden sm:inline-flex">Lihat Semua Topik →</a>
         </div>
 
-        <div class="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <div class="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @foreach (collect($topics) as $index => $topic)
                 <a href="{{ $topic['url'] }}" class="group flex gap-3.5 rounded-[10px] border border-slate-200 bg-white p-4 transition duration-200 hover:-translate-y-0.5 hover:border-brand-navy hover:shadow-sm focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                     <span @class(['grid size-10 shrink-0 place-items-center rounded-full', 'bg-blue-50 text-brand-navy' => $index < 3, 'bg-amber-50 text-amber-600' => $index === 3]) aria-hidden="true">

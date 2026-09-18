@@ -9,7 +9,7 @@
 .home-hero-impact > [data-home-impact] {
     position: absolute;
     inset-inline: 0;
-    bottom: 28px;
+    bottom: 20px;
     margin: 0;
 }
 
@@ -18,34 +18,34 @@
 }
 
 .home-hero-impact:has([data-home-impact]) [data-home-hero] .section-shell {
-    padding-bottom: 356px;
+    padding-bottom: 332px;
 }
 
 @media (min-width: 640px) {
     .home-hero-impact:has([data-home-impact]) [data-home-hero] .section-shell {
-        padding-bottom: 264px;
+        padding-bottom: 240px;
     }
 }
 
 @media (min-width: 1024px) {
     .home-hero-impact:has([data-home-impact]) [data-home-hero] .section-shell {
-        padding-bottom: 172px;
+        padding-bottom: 148px;
     }
 }
 
 #main-content > section:not([data-home-hero]):not(.shared-cta-section):not(:has([data-home-impact-stat])) {
-    padding-block: 32px;
+    padding-block: 24px;
 }
 
 #main-content #topik-editorial, #main-content #riset-publikasi {
-    padding-block: 32px;
+    padding-block: 24px;
 }
 
 /* Full-width content sections share the public ice-blue surface. */
 
 .home-program-curation {
     background: var(--section-surface, var(--color-brand-ice));
-    padding: 20px 0 32px;
+    padding: 20px 0 24px;
 }
 
 .home-program-curation-grid {
@@ -77,7 +77,7 @@
 @media (min-width: 640px) {
     .home-program-curation #program-edulaw .section-shell > div:has(> [data-home-program]) {
     gap: 12px;
-    margin-top: 28px;
+    margin-top: 20px;
 }
     .home-program-curation [data-home-program] > a {
     display: flex;
@@ -113,7 +113,7 @@
 
 @media (min-width: 1024px) {
     .home-program-curation {
-    padding-bottom: 60px;
+    padding-bottom: 20px;
 }
     .home-program-curation-grid {
     grid-template-columns: minmax(0, 1.38fr) minmax(340px, 1fr);
@@ -310,7 +310,7 @@
 }
 
 section[aria-labelledby="home-collaboration-title"] .section-shell > div {
-    padding-block: 32px;
+    padding-block: 24px;
 }
 
 section[aria-labelledby="home-collaboration-title"] a {
@@ -341,10 +341,10 @@ section[aria-labelledby="home-collaboration-title"] a {
     padding-inline: 40px;
 }
     #main-content > section:not([data-home-hero]):not(.shared-cta-section):not(:has([data-home-impact-stat])) {
-    padding-block: 32px;
+    padding-block: 24px;
 }
     #main-content #topik-editorial, #main-content #riset-publikasi {
-    padding-block: 32px;
+    padding-block: 24px;
 }
 }
 
@@ -470,4 +470,28 @@ section[aria-labelledby="home-collaboration-title"] a {
     #artikel-terbaru [data-home-insight-latest] > a > div:first-child { flex: 1 0 260px; }
     #artikel-terbaru [data-home-insight-latest] > a > div:last-child { flex: none; }
     #artikel-terbaru [data-home-insight-latest] > a > div:last-child > div:last-child { margin-top: 16px; }
+}
+
+/* Compact homepage rhythm without reducing type sizes or touch targets. */
+#tentang-edulaw .section-shell > article:first-child { padding-block: 8px; }
+#tentang-edulaw .section-shell > article:last-child > div { padding-block: 24px; }
+[data-home-publication] > a { padding-block: 14px; }
+@media (min-width: 640px) {
+    .home-program-curation [data-home-program] > a > div:first-child {
+        aspect-ratio: 1;
+    }
+}
+
+/* Center the two publication summaries beside the section identity. */
+#riset-publikasi [data-home-publication] > a > div:first-child {
+    align-self: center;
+}
+
+#riset-publikasi .home-publication-intro .home-section-title {
+    margin-top: 4px;
+    line-height: 1.2;
+}
+#riset-publikasi .home-publication-intro .home-section-description {
+    margin-top: 6px;
+    line-height: 1.5;
 }

@@ -18,7 +18,7 @@
         </div>
 
         @if ($featuredOpportunity)
-            <div class="mt-8 grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
+            <div class="mt-5 grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
                 <article data-home-opportunity data-home-opportunity-featured class="group overflow-hidden rounded-xl border border-[#e7ebf0] bg-white transition hover:border-slate-300 hover:shadow-sm">
                     <a href="{{ $featuredOpportunity->external_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka informasi resmi {{ $featuredOpportunity->title }} (membuka tab baru)" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber md:grid-cols-[minmax(0,3fr)_minmax(200px,2fr)]">
                         <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
@@ -79,7 +79,7 @@
                 @endif
             </div>
         @else
-            <div class="home-empty-state mt-8"><p class="text-sm leading-6 text-slate-600">Belum ada peluang yang sedang dibuka.</p></div>
+            <div class="home-empty-state mt-5"><p class="text-sm leading-6 text-slate-600">Belum ada peluang yang sedang dibuka.</p></div>
         @endif
 
         <a href="{{ route('opportunities.index') }}" class="home-section-link mt-6 sm:hidden">Semua Peluang →</a>

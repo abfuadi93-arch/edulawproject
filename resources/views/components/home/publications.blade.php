@@ -1,22 +1,22 @@
 @props(['publications' => collect()])
 
 @php
-    $publicationCollection = collect($publications)->take(3)->values();
+    $publicationCollection = collect($publications)->take(2)->values();
 @endphp
 
 <section id="riset-publikasi" class="scroll-mt-20 bg-white py-6 sm:py-8" aria-labelledby="home-publications-title">
-    <div class="section-shell">
-        <div class="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
+    <div class="section-shell grid items-center gap-6 lg:grid-cols-3 lg:gap-8">
+        <div class="home-publication-intro flex min-w-0 flex-col items-start gap-2 lg:pr-3">
             <div class="max-w-3xl">
                 <p class="home-section-eyebrow">Pengetahuan Terbitan</p>
                 <h2 id="home-publications-title" class="home-section-title">Riset &amp; Publikasi Pilihan</h2>
                 <p class="home-section-description">Repositori kajian, policy brief, naskah akademik, dan buku digital.</p>
             </div>
-            <a href="{{ route('publications.index') }}" class="home-section-link hidden sm:inline-flex">Lihat Semua Publikasi →</a>
+            <a href="{{ route('publications.index') }}" class="home-section-link inline-flex">Lihat Semua Publikasi →</a>
         </div>
 
         @if ($publicationCollection->isNotEmpty())
-            <div class="mt-7 grid gap-x-6 gap-y-3 sm:grid-cols-2 xl:grid-cols-3">
+            <div class="grid min-w-0 gap-x-6 gap-y-3 sm:grid-cols-2 lg:col-span-2">
                 @foreach ($publicationCollection as $publication)
                     @php
                         $typeName = $publication->type?->name ?? 'Publikasi';
@@ -30,7 +30,7 @@
                     @endphp
 
                     <article data-home-publication class="group min-w-0 border-y border-slate-200 transition duration-200 hover:border-slate-300 hover:bg-slate-50/70">
-                        <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Lihat publikasi: {{ $publication->title }}" class="flex h-full gap-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                        <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Lihat publikasi: {{ $publication->title }}" class="flex h-full items-center gap-4 py-4 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                             <div class="relative w-[68px] shrink-0 self-stretch overflow-hidden rounded-md sm:w-[72px]">
                                 <x-home.media-fallback kind="publication" />
                                 @if ($publication->cover_image_url)
@@ -38,7 +38,7 @@
                                 @endif
                             </div>
 
-                            <div class="flex min-w-0 flex-1 flex-col">
+                            <div class="flex min-w-0 flex-1 flex-col justify-center">
                                 <p class="home-card-kicker">{{ $typeName }}</p>
                                 <h3 class="type-role-card mt-2 line-clamp-2 font-bold text-brand-navy transition group-hover:text-brand-teal">{{ $publication->title }}</h3>
                                 <div class="home-publication-meta mt-3 grid grid-cols-2 items-start gap-3 text-slate-500">
@@ -51,12 +51,11 @@
                 @endforeach
             </div>
         @else
-            <div class="home-empty-state mt-8">
+            <div class="home-empty-state lg:col-span-2">
                 <p class="text-sm leading-6 text-slate-600">Publikasi sedang disiapkan.</p>
                 <a href="{{ route('publications.index') }}" class="home-section-link mt-3">Buka Repositori →</a>
             </div>
         @endif
 
-        <a href="{{ route('publications.index') }}" class="home-section-link mt-6 sm:hidden">Lihat Semua Publikasi →</a>
     </div>
 </section>
