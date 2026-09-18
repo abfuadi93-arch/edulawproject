@@ -204,15 +204,15 @@
         border-radius: 12px;
         overflow: hidden;
     }
-    #artikel-terbaru .home-latest-secondary [data-home-insight] > a {
-        grid-template-columns: 96px minmax(0, 1fr);
+    #artikel-terbaru .home-latest-secondary [data-home-insight]:not([data-home-insight-latest]) > a {
+        grid-template-columns: 144px minmax(0, 1fr);
         align-items: center;
         gap: 16px;
         padding: 12px;
     }
-    #artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:first-child {
-        width: 96px;
-        aspect-ratio: 1;
+    #artikel-terbaru .home-latest-secondary [data-home-insight]:not([data-home-insight-latest]) > a > div:first-child {
+        width: 144px;
+        aspect-ratio: 16 / 9;
     }
     #artikel-terbaru [data-home-insight-latest] > a {
         display: flex;
@@ -240,12 +240,12 @@
     width: 28px;
 }
 
-[data-home-insight]:not([data-home-insight-latest]) > a {
-    grid-template-columns: 80px minmax(0,1fr);
+#artikel-terbaru [data-home-insight]:not([data-home-insight-latest]) > a {
+    grid-template-columns: 112px minmax(0,1fr);
 }
 
-[data-home-insight]:not([data-home-insight-latest]) > a > div:first-child {
-    width: 80px;
+#artikel-terbaru [data-home-insight]:not([data-home-insight-latest]) > a > div:first-child {
+    width: 112px;
 }
 
 #topik-editorial .group {
@@ -466,7 +466,7 @@ section[aria-labelledby="home-collaboration-title"] a {
 #artikel-terbaru .type-role-meta { font-size: 12px; line-height: 1.5; }
 #artikel-terbaru .home-latest-secondary .home-card-kicker { font-size: 12px; line-height: 1.5; }
 #artikel-terbaru .home-latest-secondary [data-home-insight] > a { align-items: start; }
-#artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:first-child { aspect-ratio: 1; }
+#artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:first-child { aspect-ratio: 16 / 9; }
 #artikel-terbaru .home-latest-secondary [data-home-insight] > a > div:last-child { min-height: 80px; }
 #artikel-terbaru [data-home-insight-latest] h3 { overflow-wrap: anywhere; }
 @media (min-width: 1024px) {

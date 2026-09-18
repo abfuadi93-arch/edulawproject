@@ -53,11 +53,11 @@
                         <div class="home-latest-secondary mt-4 grid gap-x-4 gap-y-0 sm:grid-cols-2">
                             @foreach ($secondaryItems as $item)
                                 <article data-home-insight class="group min-w-0 border-b border-slate-200">
-                                    <a href="{{ route('insights.show', $item->slug) }}" class="grid h-full grid-cols-[72px_minmax(0,1fr)] gap-3 py-3.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
-                                        <div class="relative aspect-[3/4] w-[72px] overflow-hidden rounded-lg">
+                                    <a href="{{ route('insights.show', $item->slug) }}" class="grid h-full grid-cols-[112px_minmax(0,1fr)] gap-3 py-3.5 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                        <div class="relative aspect-video w-[112px] overflow-hidden rounded-lg">
                                             <x-home.media-fallback kind="editorial" />
                                             @if ($item->cover_image_url)
-                                                <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[96, 240, 480, 640]" sizes="(min-width: 1024px) 96px, 80px" width="144" height="192" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
+                                                <x-responsive-image :src="$item->cover_image_url" alt="Sampul {{ $item->title }}" :widths="[96, 240, 480, 640]" sizes="(min-width: 1024px) 144px, 112px" width="256" height="144" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                                             @endif
                                         </div>
                                         <div class="flex min-w-0 flex-col py-0.5">
