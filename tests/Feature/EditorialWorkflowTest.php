@@ -379,7 +379,7 @@ test('editor dapat meminta perbaikan dan naskah kembali menjadi draft', function
         ->and($result->editorialNotes()->where('type', 'revision_request')->exists())->toBeTrue();
 });
 
-test('menyimpan catatan editor membuka kembali akses edit penulis', function () {
+test('menyimpan catatan editor mempertahankan review dan akses penulis terkunci', function () {
     $writer = simpleEditorialUser('writer');
     $admin = simpleEditorialUser('super_admin');
     $editor = simpleEditorialUser('editor');
@@ -392,14 +392,14 @@ test('menyimpan catatan editor membuka kembali akses edit penulis', function () 
 
     $result = $service->addEditorialNote($insight, $editor, 'Perjelas argumentasi pada bagian penutup.');
 
-    expect($result->status)->toBe(InsightStatus::Draft)
+    expect($result->status)->toBe(InsightStatus::Review)
         ->and($result->editor_notes)->toBe('Perjelas argumentasi pada bagian penutup.')
-        ->and($result->revision_requested_at)->not->toBeNull()
-        ->and($writer->can('update', $result))->toBeTrue()
+        ->and($result->revision_requested_at)->toBeNull()
+        ->and($writer->can('update', $result))->toBeFalse()
         ->and($result->editorialNotes()->where('type', 'note')->exists())->toBeTrue()
-        ->and($result->statusHistories()->where('from_status', 'review')->where('to_status', 'draft')->exists())->toBeTrue()
-        ->and($result->editorialActivities()->where('event', 'editor_note_saved')->where('to_status', 'draft')->exists())->toBeTrue()
-        ->and($writer->notifications()->latest()->first()?->data['notification_type'] ?? null)->toBe('revision_requested');
+        ->and($result->statusHistories()->where('from_status', 'review')->where('to_status', 'draft')->exists())->toBeFalse()
+        ->and($result->editorialActivities()->where('event', 'editor_note_saved')->whereNull('to_status')->exists())->toBeTrue()
+        ->and($writer->notifications()->latest()->first()?->data['notification_type'] ?? null)->toBeNull();
 });
 
 test('migrasi membuka catatan lama hanya jika belum ada pengiriman ulang', function () {
@@ -541,7 +541,7 @@ test('workspace editor hanya menampilkan action sederhana', function () {
         ->assertActionHidden('assign_editor');
 });
 
-test('tombol simpan workspace mengembalikan naskah ke penulis saat catatan diisi', function () {
+test('tombol simpan workspace menyimpan catatan tanpa mengembalikan naskah', function () {
     $writer = simpleEditorialUser('writer');
     $admin = simpleEditorialUser('super_admin');
     $editor = simpleEditorialUser('editor');
@@ -561,12 +561,12 @@ test('tombol simpan workspace mengembalikan naskah ke penulis saat catatan diisi
 
     $insight->refresh();
 
-    expect($insight->status)->toBe(InsightStatus::Draft)
-        ->and($writer->can('update', $insight))->toBeTrue();
+    expect($insight->status)->toBe(InsightStatus::Review)
+        ->and($writer->can('update', $insight))->toBeFalse();
 
     $this->actingAs($writer)
         ->get(InsightResource::getUrl('edit', ['record' => $insight]))
-        ->assertOk();
+        ->assertForbidden();
 });
 
 test('action Terbitkan menyimpan Jadwal Terbit dari workspace', function () {

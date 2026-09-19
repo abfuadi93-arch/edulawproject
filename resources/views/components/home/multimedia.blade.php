@@ -5,8 +5,8 @@
 
 @if ($featured)
     <section id="multimedia" class="scroll-mt-24 bg-slate-50 py-6 sm:py-10" aria-labelledby="home-multimedia-title">
-        <div class="section-shell">
-            <div class="home-section-header">
+        <div class="section-shell grid items-center gap-6 lg:grid-cols-2 lg:gap-10">
+            <div class="flex min-w-0 flex-col items-start gap-4 lg:order-2">
                 <div class="home-section-copy">
                     <p class="home-section-eyebrow">Multimedia</p>
                     <h2 id="home-multimedia-title" class="home-section-title">Belajar Hukum Melalui Beragam Format</h2>
@@ -16,20 +16,8 @@
                 <a href="{{ route('multimedia.index') }}" class="home-section-link">Lihat Semua Multimedia →</a>
             </div>
 
-            <div @class([
-                'mt-5 grid items-stretch gap-5',
-                'mx-auto max-w-3xl' => $items->isEmpty(),
-                'lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]' => $items->isNotEmpty(),
-            ])>
+            <div class="min-w-0 lg:order-1">
                 <x-multimedia.featured-card :item="$featured" variant="home" />
-
-                @if ($items->isNotEmpty())
-                    <div class="grid auto-rows-fr content-stretch divide-y divide-slate-200 overflow-hidden rounded-xl border border-slate-200 bg-white">
-                        @foreach ($items->take(3) as $item)
-                            <x-multimedia.media-card :item="$item" variant="horizontal" />
-                        @endforeach
-                    </div>
-                @endif
             </div>
         </div>
     </section>

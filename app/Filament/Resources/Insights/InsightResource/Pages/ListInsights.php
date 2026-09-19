@@ -29,6 +29,14 @@ class ListInsights extends ListRecords
     {
         return $this->makeStatusTabs([
             'all' => ['label' => 'Semua'],
+            ...(auth()->user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin']) ? [
+                'unassigned' => [
+                    'label' => 'Perlu Editor',
+                    'query' => fn (Builder $query): Builder => $query
+                        ->whereNull('assigned_editor_id')
+                        ->whereIn('status', ['draft', 'review']),
+                ],
+            ] : []),
             'draft' => [
                 'label' => 'Draft',
                 'query' => fn (Builder $query): Builder => $query->where('status', 'draft'),

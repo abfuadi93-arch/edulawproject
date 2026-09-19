@@ -77,7 +77,7 @@ class EditorialWorkQueueWidget extends Widget
 
         return [
             'key' => 'assigned',
-            'title' => 'Tugas Editor',
+            'title' => 'Tugas Saya',
             'description' => 'Naskah yang ditugaskan kepada Anda untuk ditinjau.',
             'count' => (clone $query)->count(),
             'icon' => 'heroicon-o-inbox-stack',

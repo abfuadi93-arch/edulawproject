@@ -86,7 +86,7 @@ test('dashboard memisahkan tulisan writer dan tugas editor untuk akun dengan dua
     Filament::setCurrentPanel(Filament::getPanel('admin'));
 
     expect(InsightResource::getNavigationLabel())->toBe('Tulisan Saya')
-        ->and(AssignedInsightResource::getNavigationLabel())->toBe('Tugas Editor')
+        ->and(AssignedInsightResource::getNavigationLabel())->toBe('Tugas Saya')
         ->and(InsightResource::getEloquentQuery()->pluck('id'))
         ->toContain($written->id)
         ->not->toContain($assigned->id, $unrelated->id)
@@ -102,12 +102,12 @@ test('dashboard memisahkan tulisan writer dan tugas editor untuk akun dengan dua
     Livewire::test(AdminStatsOverview::class)
         ->assertSee('Pekerjaan Editorial Saya')
         ->assertSee('Tulisan Saya')
-        ->assertSee('Tugas Editor');
+        ->assertSee('Tugas Saya');
 
     Livewire::test(EditorialWorkQueueWidget::class)
         ->assertSee('Ruang Kerja Editorial Saya')
         ->assertSee('Tulisan Saya')
-        ->assertSee('Tugas Editor')
+        ->assertSee('Tugas Saya')
         ->assertSee('Tulisan Buatan Saya')
         ->assertSee('Naskah Tugas Editor Saya')
         ->assertDontSee('Naskah Milik Pengguna Lain');

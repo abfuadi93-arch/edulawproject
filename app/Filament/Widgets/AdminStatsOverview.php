@@ -263,7 +263,7 @@ class AdminStatsOverview extends StatsOverviewWidget
                 ->icon('heroicon-o-document-magnifying-glass')
                 ->url(AssignedInsightResource::getUrl('index', ['activeTab' => 'review']))
                 ->extraAttributes(['class' => 'edulaw-stat edulaw-stat-amber']);
-            $stats[] = Stat::make('Tugas Editor', number_format($counts['assigned'], 0, ',', '.'))
+            $stats[] = Stat::make('Tugas Saya', number_format($counts['assigned'], 0, ',', '.'))
                 ->description('seluruh naskah yang ditugaskan')
                 ->descriptionIcon('heroicon-o-inbox-stack')
                 ->color('success')

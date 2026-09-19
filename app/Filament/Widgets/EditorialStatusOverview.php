@@ -59,7 +59,7 @@ class EditorialStatusOverview extends StatsOverviewWidget
     {
         return auth()->user()?->hasAnyRole(['super_admin', 'Super Admin', 'SuperAdmin'])
             ? parent::getHeading()
-            : 'Status Tugas Editor';
+            : 'Status Tugas Saya';
     }
 
     protected function getDescription(): ?string

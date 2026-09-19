@@ -66,7 +66,7 @@ class ViewEditorialWorkspace extends EditRecord
                     }, 'Editor berhasil ditugaskan.');
                 }),
             Action::make('request_revision')
-                ->label('Minta Perbaikan')
+                ->label('Minta Revisi')
                 ->icon('heroicon-o-arrow-uturn-left')
                 ->color('warning')
                 ->schema([

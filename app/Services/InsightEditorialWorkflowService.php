@@ -143,6 +143,7 @@ class InsightEditorialWorkflowService
         $insight = DB::transaction(function () use ($insight, $actor, $note): Insight {
             $locked = $this->lock($insight);
             $this->assertStatus($locked, InsightStatus::Review);
+            Gate::forUser($actor)->authorize('review', $locked);
             $note = trim($note);
 
             $locked->editorialNotes()->create([
@@ -154,21 +155,15 @@ class InsightEditorialWorkflowService
                 'is_visible_to_writer' => true,
             ]);
 
-            return $this->transition(
-                $locked,
-                $actor,
-                InsightStatus::Draft,
-                'editor_note_saved',
-                'Editor menyimpan catatan untuk Penulis dan membuka kembali akses edit.',
-                [
-                    'editor_notes' => $note,
-                    'revision_requested_at' => now(),
-                    'updated_by' => $actor->id,
-                ],
-            );
-        });
+            $locked->forceFill([
+                'editor_notes' => $note,
+                'updated_by' => $actor->id,
+            ])->save();
 
-        app(InsightNotificationService::class)->notifyRevisionRequested($insight);
+            $this->recordActivity($locked, $actor, 'editor_note_saved', 'Editor menyimpan catatan tanpa mengubah status naskah.');
+
+            return $locked->refresh();
+        });
 
         return $insight;
     }

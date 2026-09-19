@@ -29,7 +29,7 @@
                             <div class="relative h-52 overflow-hidden sm:h-60 lg:h-[260px] xl:h-[270px]">
                                 <x-home.media-fallback kind="editorial" :label="$primaryItem->display_category" />
                                 @if ($primaryItem->cover_image_url)
-                                    <x-responsive-image :src="$primaryItem->cover_image_url" alt="Sampul {{ $primaryItem->title }}" :widths="[480, 640, 960]" sizes="(min-width: 1280px) 536px, (min-width: 1024px) 43vw, 100vw" width="760" height="428" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
+                                    <x-responsive-image :src="$primaryItem->cover_image_url" alt="Sampul {{ $primaryItem->title }}" :widths="[480, 640, 960]" sizes="(min-width: 1280px) 596px, (min-width: 1024px) 48vw, 100vw" width="760" height="428" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                                 @endif
                             </div>
                             <div class="p-5 sm:p-6">

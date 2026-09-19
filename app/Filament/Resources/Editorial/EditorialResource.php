@@ -186,7 +186,7 @@ class EditorialResource extends Resource
                         ->extraAttributes(['class' => 'edulaw-editorial-body-section'])
                         ->columnSpanFull(),
                     Section::make('Catatan Editor')
-                        ->description('Catatan untuk Penulis saat naskah dikembalikan ke Draft.')
+                        ->description('Simpan catatan tanpa mengubah status. Gunakan Minta Revisi untuk mengembalikan naskah kepada penulis.')
                         ->schema([
                             Textarea::make('editor_notes')
                                 ->label('Catatan untuk Penulis')

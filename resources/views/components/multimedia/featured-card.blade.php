@@ -15,8 +15,8 @@
 
 @if ($isHome)
     <article data-home-multimedia data-home-multimedia-featured {{ $attributes->class('group min-w-0 overflow-hidden rounded-xl bg-brand-navy') }}>
-        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="block h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
-            <div class="relative aspect-video h-full overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] lg:aspect-auto lg:min-h-72">
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="block focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy">
+            <div class="relative aspect-video min-h-[320px] overflow-hidden bg-linear-to-br from-brand-navy via-[#123d68] to-[#28659d] sm:min-h-0">
                 <div class="absolute inset-0 grid place-items-center text-white/55" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
                 </div>
@@ -26,7 +26,7 @@
                         :src="$item->thumbnail_url"
                         :alt="$item->title"
                         :widths="[640, 960, 1280]"
-                        sizes="(min-width: 1024px) 845px, 100vw"
+                        sizes="(min-width: 1280px) 588px, (min-width: 1024px) 48vw, 100vw"
                         data-fallback="{{ $fallbackThumbnail }}"
                         onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
                         class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]"
