@@ -7,10 +7,24 @@ use App\Filament\Resources\ProgramResource;
 use Filament\Actions\Action;
 use Filament\Actions\ActionGroup;
 use Filament\Actions\DeleteAction;
+use Filament\Support\Enums\Alignment;
 
 class EditProgram extends EditRecordAndReturn
 {
     protected static string $resource = ProgramResource::class;
+
+    public function getFormActionsAlignment(): string|Alignment
+    {
+        return Alignment::End;
+    }
+
+    protected function getFormActions(): array
+    {
+        return [
+            $this->getCancelFormAction(),
+            $this->getSaveFormAction(),
+        ];
+    }
 
     protected function getHeaderActions(): array
     {
@@ -51,6 +65,7 @@ class EditProgram extends EditRecordAndReturn
     protected function getCancelFormAction(): Action
     {
         return parent::getCancelFormAction()
-            ->label('Batal');
+            ->label('Batal')
+            ->extraAttributes(['class' => 'edulaw-program-cancel']);
     }
 }

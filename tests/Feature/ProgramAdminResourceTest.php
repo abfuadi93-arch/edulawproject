@@ -74,6 +74,10 @@ test('program admin validates and saves ticket price and the actual end date', f
         ->and($program->registration_opens_date->toIso8601String())->toBe('2026-09-01T10:00:00+08:00')
         ->and($program->venue_country)->toBe('ID');
 
+    $this->actingAs($user)->get(ProgramResource::getUrl('edit', ['record' => $program]))
+        ->assertOk()
+        ->assertSeeInOrder(['Informasi Program', 'Pelaksanaan Program', 'Pembelajaran &amp; Fasilitator', 'Deskripsi Lengkap', 'Detail Pelaksanaan (Opsional)', 'Pengaturan Opsional', 'Jadwal Program', 'Tampilan Publik'], false);
+
     Livewire::actingAs($user)->test(EditProgram::class, ['record' => $program->getRouteKey()])
         ->assertFormSet(['event_time' => '19:00', 'end_time' => '21:00', 'event_timezone' => 'Asia/Makassar'])
         ->call('save')->assertHasNoFormErrors();
@@ -95,8 +99,9 @@ test('program create form presents a simplified primary flow', function () {
         ->assertOk()
         ->assertSeeInOrder([
             'Informasi Program',
-            'Pembelajaran &amp; Fasilitator',
             'Pelaksanaan Program',
+            'Pembelajaran &amp; Fasilitator',
+            'Deskripsi Lengkap',
             'Detail Pelaksanaan (Opsional)',
             'Pengaturan Opsional',
             'Jadwal Program',
@@ -114,7 +119,9 @@ test('program create form presents a simplified primary flow', function () {
         ->assertSee('Meta Title')
         ->assertSee('Meta Description')
         ->assertSee('Jadwal Lanjutan (Opsional)')
-        ->assertSee('Tampilkan sebagai Unggulan');
+        ->assertSee('Unggulan')
+        ->assertSee('Simpan Program')
+        ->assertSee('Simpan &amp; Buat Lagi', false);
 });
 
 test('program admin accepts an upcoming virtual internship without announced dates', function () {
@@ -167,8 +174,10 @@ test('program admin accepts an upcoming virtual internship without announced dat
             'seo_title' => 'Virtual Internship Edulaw Project',
             'seo_description' => 'Program magang virtual Edulaw Project untuk belajar riset hukum, legal writing, produksi konten edukatif, dan kerja kolaboratif.',
         ])
-        ->call('create')
-        ->assertHasNoFormErrors();
+        ->call('createAnother')
+        ->assertHasNoFormErrors()
+        ->assertNoRedirect()
+        ->assertFormSet(['name' => null, 'status' => 'upcoming']);
 
     $program = Program::query()->where('slug', 'virtual-internship-edulaw-project')->firstOrFail();
 

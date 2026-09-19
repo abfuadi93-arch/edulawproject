@@ -3935,13 +3935,23 @@
     }
 }
 
-/* Keep the opportunity editor and its publication sidebar together on desktop. */
+/* Keep program and opportunity forms beside their scheduling sidebars on desktop. */
 @media (min-width: 1280px) {
-    .fi-sc-form .edulaw-opportunity-form > .fi-sc.fi-grid {
+    .fi-sc-form .edulaw-opportunity-form > .fi-sc.fi-grid,
+    .fi-sc-form .edulaw-program-form > .fi-sc.fi-grid {
         grid-template-columns: minmax(0, 2fr) minmax(17rem, 1fr) !important;
     }
 
-    .fi-sc-form .edulaw-opportunity-form > .fi-sc.fi-grid > .fi-grid-col {
+    .fi-sc-form .edulaw-opportunity-form > .fi-sc.fi-grid > .fi-grid-col,
+    .fi-sc-form .edulaw-program-form > .fi-sc.fi-grid > .fi-grid-col {
         grid-column: auto !important;
     }
+}
+
+.fi-actions:has(> .edulaw-program-cancel) {
+    width: 100%;
+}
+
+.fi-actions > .edulaw-program-cancel {
+    margin-inline-end: auto;
 }
