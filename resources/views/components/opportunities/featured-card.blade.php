@@ -92,7 +92,7 @@
                         class="channel-feature-secondary-action group text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
                         aria-label="Lihat informasi resmi {{ $opportunity->title }}"
                     >
-                        Lihat Informasi Resmi
+                        Informasi Resmi
                         <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                             <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>

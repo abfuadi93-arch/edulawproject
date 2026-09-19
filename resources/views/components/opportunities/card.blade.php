@@ -55,7 +55,7 @@
                     <p class="mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
                 <div class="grid gap-2 {{ match (count($optionalLinks)) { 2 => 'grid-cols-3', 1 => 'grid-cols-2', default => 'grid-cols-1' } }}">
-                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-3 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 sm:text-sm">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
+                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-3 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 sm:text-sm">Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
                     @foreach ($optionalLinks as $optionalLink)
                         <a href="{{ $optionalLink['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-3 text-center text-xs font-bold text-white transition hover:bg-brand-ink sm:text-sm">{{ $optionalLink['label'] }} <span class="ml-1" aria-hidden="true">↗</span></a>
                     @endforeach
@@ -102,7 +102,7 @@
                     <p class="opportunity-relative-date ml-auto mt-0.5 text-right type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
                 <div class="mt-2 grid gap-2 {{ match (count($optionalLinks)) { 2 => 'grid-cols-3', 1 => 'grid-cols-2', default => 'grid-cols-1' } }}">
-                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
+                    <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
                     @foreach ($optionalLinks as $optionalLink)
                         <a href="{{ $optionalLink['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink">{{ $optionalLink['label'] }} <span class="ml-1" aria-hidden="true">↗</span></a>
                     @endforeach

@@ -47,7 +47,7 @@
                                 @if ($isExternalOpportunity($featuredOpportunity)) target="_blank" rel="noopener noreferrer" @endif
                                 class="mt-6 inline-flex rounded-xl bg-brand-black px-4 py-2 text-sm font-bold text-white"
                             >
-                                Lihat Informasi Resmi ↗
+                                Informasi Resmi ↗
                             </a>
                         </div>
                     </div>
@@ -90,7 +90,7 @@
                                 <h3 class="mt-3 text-xl font-bold text-brand-ink">{{ $opportunity->title }}</h3>
                                 <p class="mt-2 text-sm text-slate-600">{{ $opportunity->excerpt }}</p>
                                 <div class="mt-3 type-role-meta text-slate-500">Batas akhir: {{ optional($opportunity->deadline)->translatedFormat('d M Y') }}</div>
-                                <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Lihat Informasi Resmi ↗</span>
+                                <span class="mt-4 inline-flex text-sm font-bold text-brand-navy">Informasi Resmi ↗</span>
                             </div>
                         </a>
                     </article>

@@ -22,7 +22,7 @@
     $isExternalOpportunityUrl = fn ($opportunity) => filled($opportunity?->external_url);
 
     $opportunityButtonLabel = function ($opportunity) {
-        return 'Lihat Informasi Resmi';
+        return 'Informasi Resmi';
     };
 @endphp
 

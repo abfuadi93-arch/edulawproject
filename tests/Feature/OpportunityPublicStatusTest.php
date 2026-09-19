@@ -59,7 +59,7 @@ test('public opportunities page only renders active opportunities with external 
         ->assertSee('https://example.test/peluang', false)
         ->assertSee('target="_blank"', false)
         ->assertSee('rel="noopener noreferrer"', false)
-        ->assertSee('Lihat Informasi Resmi')
+        ->assertSee('Informasi Resmi')
         ->assertDontSee(route('opportunities.show', 'peluang-dibuka'), false)
         ->assertDontSee('Peluang Ditutup')
         ->assertDontSee('Peluang Arsip')
