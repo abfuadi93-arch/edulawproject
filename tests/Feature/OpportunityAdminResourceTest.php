@@ -177,8 +177,16 @@ test('saving an opportunity and creating another resets the form', function () {
             'status' => 'open',
             'format' => 'Hybrid',
             'application_link' => 'https://example.com/riset',
+            'additional_link_label' => 'Kirim Lamaran',
+            'additional_link_url' => 'javascript:alert(1)',
             'second_link_label' => 'Daftar',
-            'second_link_url' => 'https://example.com/daftar',
+            'second_link_url' => 'mailto:bukan-email',
+        ])
+        ->call('createAnother')
+        ->assertHasFormErrors(['additional_link_url', 'second_link_url'])
+        ->fillForm([
+            'additional_link_url' => 'mailto:contact@juristresia.com',
+            'second_link_url' => 'mailto:contact@juristresia.com?subject=Lamaran',
         ])
         ->call('createAnother')
         ->assertHasNoFormErrors()
@@ -189,6 +197,7 @@ test('saving an opportunity and creating another resets the form', function () {
         'slug' => 'kesempatan-riset-baru',
         'format' => 'Hybrid',
         'second_link_label' => 'Daftar',
-        'second_link_url' => 'https://example.com/daftar',
+        'additional_link_url' => 'mailto:contact@juristresia.com',
+        'second_link_url' => 'mailto:contact@juristresia.com?subject=Lamaran',
     ]);
 });

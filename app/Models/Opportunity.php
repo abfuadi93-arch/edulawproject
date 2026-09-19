@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Support\EdulawSite;
+use App\Support\OpportunityLink;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -102,7 +103,7 @@ class Opportunity extends Model
     {
         $url = trim((string) ($this->attributes['additional_link_url'] ?? ''));
 
-        return Str::startsWith($url, ['https://', 'http://']) ? $url : null;
+        return OpportunityLink::isValid($url) ? $url : null;
     }
 
     public function getOptionalLinksAttribute(): array
@@ -112,7 +113,7 @@ class Opportunity extends Model
             ['label' => $this->second_link_label, 'url' => $this->second_link_url],
         ])
             ->map(fn (array $link): array => array_map(fn ($value): string => trim((string) $value), $link))
-            ->filter(fn (array $link): bool => filled($link['label']) && Str::startsWith($link['url'], ['https://', 'http://']))
+            ->filter(fn (array $link): bool => filled($link['label']) && OpportunityLink::isValid($link['url']))
             ->values()
             ->all();
     }

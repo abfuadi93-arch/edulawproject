@@ -6,7 +6,9 @@ use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
 use App\Filament\Resources\Opportunities\Pages\EditOpportunity;
 use App\Filament\Resources\Opportunities\Pages\ListOpportunities;
 use App\Models\Opportunity;
+use App\Support\OpportunityLink;
 use BackedEnum;
+use Closure;
 use Filament\Actions;
 use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\FileUpload;
@@ -158,8 +160,12 @@ class OpportunityResource extends Resource
 
                                                 TextInput::make('additional_link_url')
                                                     ->label('URL Tautan (Opsional)')
-                                                    ->url()
-                                                    ->placeholder('https://...')
+                                                    ->rules([fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                                                        if (! OpportunityLink::isValid((string) $value)) {
+                                                            $fail('Masukkan URL http/https atau mailto: dengan alamat email yang valid.');
+                                                        }
+                                                    }])
+                                                    ->placeholder('https://... atau mailto:contact@example.com')
                                                     ->requiredWith('additional_link_label')
                                                     ->maxLength(255),
                                             ])
@@ -178,8 +184,12 @@ class OpportunityResource extends Resource
 
                                                 TextInput::make('second_link_url')
                                                     ->label('URL Tautan 2 (Opsional)')
-                                                    ->url()
-                                                    ->placeholder('https://...')
+                                                    ->rules([fn () => function (string $attribute, mixed $value, Closure $fail): void {
+                                                        if (! OpportunityLink::isValid((string) $value)) {
+                                                            $fail('Masukkan URL http/https atau mailto: dengan alamat email yang valid.');
+                                                        }
+                                                    }])
+                                                    ->placeholder('https://... atau mailto:contact@example.com')
                                                     ->requiredWith('second_link_label')
                                                     ->maxLength(255),
                                             ])

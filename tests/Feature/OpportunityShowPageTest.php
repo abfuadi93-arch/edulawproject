@@ -89,3 +89,24 @@ test('opportunity directory hides an incomplete or unsafe additional link', func
 test('legacy singular opportunity path remains unavailable', function () {
     $this->get('/peluang/peluang-lama')->assertNotFound();
 });
+
+test('email application links render on regular and featured opportunity cards', function () {
+    $opportunity = Opportunity::query()->create([
+        'title' => 'Junior Researcher',
+        'slug' => 'junior-researcher-mailto',
+        'status' => 'open',
+        'application_link' => 'https://juristresia.com',
+        'additional_link_label' => 'Kirim Lamaran',
+        'additional_link_url' => 'mailto:contact@juristresia.com',
+        'second_link_label' => 'Email Pertanyaan',
+        'second_link_url' => 'mailto:contact@juristresia.com?subject=Pertanyaan',
+    ]);
+
+    expect($opportunity->additional_url)->toBe('mailto:contact@juristresia.com');
+
+    foreach (['card', 'featured-card'] as $component) {
+        $this->blade('<x-opportunities.'.$component.' :opportunity="$opportunity" />', ['opportunity' => $opportunity])
+            ->assertSee('href="mailto:contact@juristresia.com"', false)
+            ->assertSee('href="mailto:contact@juristresia.com?subject=Pertanyaan"', false);
+    }
+});
