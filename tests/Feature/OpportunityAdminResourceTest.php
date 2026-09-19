@@ -1,8 +1,10 @@
 <?php
 
 use App\Filament\Resources\Opportunities\OpportunityResource;
+use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
 test('opportunity admin resource derives excerpt seo and og image from content', function () {
@@ -115,12 +117,18 @@ test('opportunity create form presents a simplified primary flow', function () {
     $this->actingAs($user)
         ->get(OpportunityResource::getUrl('create'))
         ->assertOk()
-        ->assertSeeInOrder(['Informasi Peluang', 'Pengaturan Lanjutan', 'Publikasi', 'Poster'])
+        ->assertSeeInOrder(['Informasi Utama', 'Detail Kesempatan', 'Tautan &amp; Sumber', 'Pengaturan Lanjutan', 'Publikasi', 'Deadline', 'Poster'], false)
         ->assertSee('Poster Utama')
         ->assertSee('Poster Lain (Opsional)')
-        ->assertSee('Tautan Tambahan (Opsional)')
+        ->assertDontSee('Tautan Tambahan (Opsional)')
+        ->assertDontSee('Informasi Lengkap')
         ->assertSee('Teks Tautan')
-        ->assertSee('URL Tautan')
+        ->assertSee('URL Tautan (Opsional)')
+        ->assertSee('Teks Tautan 2 (Opsional)')
+        ->assertSee('URL Tautan 2 (Opsional)')
+        ->assertSee('Create Opportunity')
+        ->assertSee('Simpan Opportunity')
+        ->assertSee('Simpan &amp; Buat Lagi', false)
         ->assertSee('Unggah Poster Utama untuk mengaktifkan pilihan ini.');
 });
 
@@ -147,4 +155,40 @@ test('opportunity deadline labels are localized and null safe', function () {
         ->and(OpportunityResource::deadlineRelativeLabel(today()))->toBe('Berakhir hari ini')
         ->and(OpportunityResource::deadlineRelativeLabel(today()->addDays(3)))->toBe('3 hari lagi')
         ->and(OpportunityResource::deadlineRelativeLabel(today()->subDays(2)))->toBe('Lewat 2 hari');
+});
+
+test('saving an opportunity and creating another resets the form', function () {
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+
+    $user = User::query()->create([
+        'name' => 'Opportunity Editor',
+        'email' => 'opportunity-editor@example.test',
+        'password' => 'secret-password',
+        'is_active' => true,
+    ]);
+    $user->assignRole(Role::findOrCreate('super_admin'));
+    $this->actingAs($user);
+
+    Livewire::test(CreateOpportunity::class)
+        ->fillForm([
+            'title' => 'Kesempatan Riset Baru',
+            'slug' => 'kesempatan-riset-baru',
+            'type' => 'fellowship',
+            'status' => 'open',
+            'format' => 'Hybrid',
+            'application_link' => 'https://example.com/riset',
+            'second_link_label' => 'Daftar',
+            'second_link_url' => 'https://example.com/daftar',
+        ])
+        ->call('createAnother')
+        ->assertHasNoFormErrors()
+        ->assertNoRedirect()
+        ->assertFormSet(['title' => null]);
+
+    $this->assertDatabaseHas('opportunities', [
+        'slug' => 'kesempatan-riset-baru',
+        'format' => 'Hybrid',
+        'second_link_label' => 'Daftar',
+        'second_link_url' => 'https://example.com/daftar',
+    ]);
 });

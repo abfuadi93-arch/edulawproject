@@ -26,6 +26,8 @@ class Opportunity extends Model
         'application_link',
         'additional_link_label',
         'additional_link_url',
+        'second_link_label',
+        'second_link_url',
         'format',
         'location',
         'eligibility',
@@ -101,6 +103,18 @@ class Opportunity extends Model
         $url = trim((string) ($this->attributes['additional_link_url'] ?? ''));
 
         return Str::startsWith($url, ['https://', 'http://']) ? $url : null;
+    }
+
+    public function getOptionalLinksAttribute(): array
+    {
+        return collect([
+            ['label' => $this->additional_link_label, 'url' => $this->additional_link_url],
+            ['label' => $this->second_link_label, 'url' => $this->second_link_url],
+        ])
+            ->map(fn (array $link): array => array_map(fn ($value): string => trim((string) $value), $link))
+            ->filter(fn (array $link): bool => filled($link['label']) && Str::startsWith($link['url'], ['https://', 'http://']))
+            ->values()
+            ->all();
     }
 
     public function getTargetAudienceAttribute(): ?string

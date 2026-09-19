@@ -5,10 +5,7 @@
         ? Illuminate\Support\Str::limit(Illuminate\Support\Str::squish(strip_tags($opportunity->excerpt)), 180)
         : null;
     $officialUrl = $opportunity->external_url;
-    $additionalUrl = $opportunity->additional_url;
-    $additionalLabel = filled($additionalUrl) && filled($opportunity->additional_link_label)
-        ? trim($opportunity->additional_link_label)
-        : null;
+    $optionalLinks = $opportunity->optional_links;
 @endphp
 
 <article class="channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity data-channel-feature-card>
@@ -100,20 +97,20 @@
                             <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                         </svg>
                     </a>
-                    @if ($additionalLabel)
+                    @foreach ($optionalLinks as $optionalLink)
                         <a
-                            href="{{ $additionalUrl }}"
+                            href="{{ $optionalLink['url'] }}"
                             target="_blank"
                             rel="noopener noreferrer"
                             class="channel-feature-primary-action group text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
-                            aria-label="{{ $additionalLabel }} untuk {{ $opportunity->title }}"
+                            aria-label="{{ $optionalLink['label'] }} untuk {{ $opportunity->title }}"
                         >
-                            {{ $additionalLabel }}
+                            {{ $optionalLink['label'] }}
                             <svg class="h-4 w-4 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5" viewBox="0 0 24 24" fill="none" aria-hidden="true">
                                 <path d="M7 17 17 7M8 7h9v9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                             </svg>
                         </a>
-                    @endif
+                    @endforeach
                 </div>
             </div>
         </div>

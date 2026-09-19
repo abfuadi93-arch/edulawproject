@@ -5,10 +5,7 @@
         ?: Illuminate\Support\Str::limit(strip_tags($opportunity->description ?? ''), 145);
     $isOpen = $opportunity->is_open_for_applications;
     $officialUrl = $opportunity->external_url;
-    $additionalUrl = $opportunity->additional_url;
-    $additionalLabel = filled($additionalUrl) && filled($opportunity->additional_link_label)
-        ? trim($opportunity->additional_link_label)
-        : null;
+    $optionalLinks = $opportunity->optional_links;
     $typeBadgeClass = match ($opportunity->type) {
         'scholarship' => 'bg-emerald-50 text-emerald-700',
         'internship' => 'bg-sky-50 text-sky-700',
@@ -57,11 +54,11 @@
                     <p class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</p>
                     <p class="mt-0.5 type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
-                <div class="grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
+                <div class="grid gap-2 {{ $optionalLinks ? 'grid-cols-2' : 'grid-cols-1' }}">
                     <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-3 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50 sm:text-sm">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
-                    @if ($additionalLabel)
-                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-3 text-center text-xs font-bold text-white transition hover:bg-brand-ink sm:text-sm">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
-                    @endif
+                    @foreach ($optionalLinks as $optionalLink)
+                        <a href="{{ $optionalLink['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-3 text-center text-xs font-bold text-white transition hover:bg-brand-ink sm:text-sm">{{ $optionalLink['label'] }} <span class="ml-1" aria-hidden="true">↗</span></a>
+                    @endforeach
                 </div>
             </div>
         </div>
@@ -104,11 +101,11 @@
                     <p class="mt-1 text-sm font-bold text-brand-ink">{{ $opportunity->deadline_display }}</p>
                     <p class="opportunity-relative-date ml-auto mt-0.5 text-right type-role-meta font-normal {{ $isOpen ? 'text-[#a56408]' : 'text-slate-500' }}">{{ $isOpen ? $opportunity->deadline_relative_label : 'Pendaftaran ditutup' }}</p>
                 </div>
-                <div class="mt-2 grid gap-2 {{ $additionalLabel ? 'grid-cols-2' : 'grid-cols-1' }}">
+                <div class="mt-2 grid gap-2 {{ $optionalLinks ? 'grid-cols-2' : 'grid-cols-1' }}">
                     <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg border border-brand-navy/20 px-2 text-center text-xs font-bold text-brand-navy transition hover:border-brand-navy hover:bg-slate-50">Lihat Informasi Resmi <span class="ml-1" aria-hidden="true">↗</span></a>
-                    @if ($additionalLabel)
-                        <a href="{{ $additionalUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink">{{ $additionalLabel }} <span class="ml-1" aria-hidden="true">↗</span></a>
-                    @endif
+                    @foreach ($optionalLinks as $optionalLink)
+                        <a href="{{ $optionalLink['url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex min-h-10 items-center justify-center rounded-lg bg-brand-navy px-2 text-center text-xs font-bold text-white transition hover:bg-brand-ink">{{ $optionalLink['label'] }} <span class="ml-1" aria-hidden="true">↗</span></a>
+                    @endforeach
                 </div>
             </div>
         </div>

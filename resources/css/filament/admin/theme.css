@@ -3934,3 +3934,14 @@
         font-size: 0.8125rem;
     }
 }
+
+/* Keep the opportunity editor and its publication sidebar together on desktop. */
+@media (min-width: 1280px) {
+    .fi-sc-form .edulaw-opportunity-form > .fi-sc.fi-grid {
+        grid-template-columns: minmax(0, 2fr) minmax(17rem, 1fr) !important;
+    }
+
+    .fi-sc-form .edulaw-opportunity-form > .fi-sc.fi-grid > .fi-grid-col {
+        grid-column: auto !important;
+    }
+}

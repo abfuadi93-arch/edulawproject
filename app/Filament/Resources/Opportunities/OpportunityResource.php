@@ -60,7 +60,7 @@ class OpportunityResource extends Resource
                     ->schema([
                         Group::make()
                             ->schema([
-                                Section::make('Informasi Peluang')
+                                Section::make('Informasi Utama')
                                     ->icon('heroicon-o-sparkles')
                                     ->description('Isi informasi utama yang akan tampil pada kartu publik.')
                                     ->schema([
@@ -87,7 +87,7 @@ class OpportunityResource extends Resource
                                         ])
                                             ->schema([
                                                 Select::make('type')
-                                                    ->label('Jenis Peluang')
+                                                    ->label('Kategori')
                                                     ->options(static::typeOptions())
                                                     ->default('open_collaboration')
                                                     ->searchable()
@@ -97,64 +97,33 @@ class OpportunityResource extends Resource
                                                     ->label('Penyelenggara')
                                                     ->maxLength(255),
 
-                                                TextInput::make('application_link')
-                                                    ->label('URL Informasi Resmi')
-                                                    ->required()
-                                                    ->url()
-                                                    ->maxLength(255)
-                                                    ->placeholder('https://...')
-                                                    ->helperText('Tautan utama menuju halaman resmi penyelenggara.')
-                                                    ->columnSpanFull(),
                                             ])
-                                            ->columnSpanFull(),
-
-                                        Section::make('Tautan Tambahan (Opsional)')
-                                            ->description('Buka jika perlu menambahkan tautan pendaftaran, guidebook, atau formulir.')
-                                            ->schema([
-                                                Grid::make([
-                                                    'default' => 1,
-                                                    'lg' => 2,
-                                                ])->schema([
-                                                    TextInput::make('additional_link_label')
-                                                        ->label('Teks Tautan')
-                                                        ->placeholder('Contoh: Pendaftaran / Guidebook')
-                                                        ->requiredWith('additional_link_url')
-                                                        ->maxLength(80),
-
-                                                    TextInput::make('additional_link_url')
-                                                        ->label('URL Tautan')
-                                                        ->url()
-                                                        ->placeholder('https://...')
-                                                        ->requiredWith('additional_link_label')
-                                                        ->maxLength(255),
-                                                ])->columnSpanFull(),
-                                            ])
-                                            ->compact()
-                                            ->collapsible()
-                                            ->collapsed()
                                             ->columnSpanFull(),
 
                                         Textarea::make('excerpt')
-                                            ->label('Ringkasan Kurasi')
+                                            ->label('Ringkasan')
                                             ->rows(3)
                                             ->maxLength(500)
-                                            ->helperText('Opsional. Cukup 1–2 kalimat; detail lengkap tetap dibaca di situs resmi.')
+                                            ->helperText('Opsional. Tulis 1–2 kalimat untuk ringkasan pada kartu peluang.')
                                             ->columnSpanFull(),
                                     ]),
 
-                                Section::make('Pengaturan Lanjutan')
-                                    ->icon('heroicon-o-cog-6-tooth')
-                                    ->description('Format, lokasi, target peserta, slug, dan SEO bersifat opsional.')
+                                Section::make('Detail Kesempatan')
                                     ->schema([
                                         Grid::make([
                                             'default' => 1,
                                             'lg' => 2,
                                         ])
                                             ->schema([
-                                                TextInput::make('format')
+                                                Select::make('format')
                                                     ->label('Format')
-                                                    ->maxLength(255)
-                                                    ->placeholder('Online / Offline / Hybrid'),
+                                                    ->options(fn ($get): array => array_filter([
+                                                        'Online' => 'Online',
+                                                        'Offline' => 'Offline',
+                                                        'Hybrid' => 'Hybrid',
+                                                        (string) $get('format') => $get('format'),
+                                                    ]))
+                                                    ->placeholder('Pilih format'),
 
                                                 TextInput::make('location')
                                                     ->label('Lokasi')
@@ -163,6 +132,64 @@ class OpportunityResource extends Resource
                                             ])
                                             ->columnSpanFull(),
 
+                                    ]),
+
+                                Section::make('Tautan & Sumber')
+                                    ->schema([
+                                        TextInput::make('application_link')
+                                            ->label('Informasi Resmi')
+                                            ->required()
+                                            ->url()
+                                            ->maxLength(255)
+                                            ->placeholder('https://...')
+                                            ->helperText('Tautan utama menuju halaman resmi penyelenggara (IG/Website).')
+                                            ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'md' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('additional_link_label')
+                                                    ->label('Teks Tautan (Opsional)')
+                                                    ->placeholder('Contoh: Pendaftaran / Guidebook')
+                                                    ->requiredWith('additional_link_url')
+                                                    ->maxLength(80),
+
+                                                TextInput::make('additional_link_url')
+                                                    ->label('URL Tautan (Opsional)')
+                                                    ->url()
+                                                    ->placeholder('https://...')
+                                                    ->requiredWith('additional_link_label')
+                                                    ->maxLength(255),
+                                            ])
+                                            ->columnSpanFull(),
+
+                                        Grid::make([
+                                            'default' => 1,
+                                            'md' => 2,
+                                        ])
+                                            ->schema([
+                                                TextInput::make('second_link_label')
+                                                    ->label('Teks Tautan 2 (Opsional)')
+                                                    ->placeholder('Contoh: Pendaftaran / Guidebook')
+                                                    ->requiredWith('second_link_url')
+                                                    ->maxLength(80),
+
+                                                TextInput::make('second_link_url')
+                                                    ->label('URL Tautan 2 (Opsional)')
+                                                    ->url()
+                                                    ->placeholder('https://...')
+                                                    ->requiredWith('second_link_label')
+                                                    ->maxLength(255),
+                                            ])
+                                            ->columnSpanFull(),
+                                    ]),
+
+                                Section::make('Pengaturan Lanjutan')
+                                    ->icon('heroicon-o-cog-6-tooth')
+                                    ->description('Target peserta, slug, dan SEO.')
+                                    ->schema([
                                         static::listRepeater('eligibility', 'Target Peserta', 'Tambah Target Peserta')
                                             ->columnSpanFull(),
 
@@ -209,7 +236,7 @@ class OpportunityResource extends Resource
                             ->schema([
                                 Section::make('Publikasi')
                                     ->icon('heroicon-o-paper-airplane')
-                                    ->description('Atur status dan batas pendaftaran.')
+                                    ->description('Atur status dan pilihan kurasi.')
                                     ->schema([
                                         Select::make('status')
                                             ->label('Status')
@@ -217,14 +244,24 @@ class OpportunityResource extends Resource
                                             ->default('open')
                                             ->required(),
 
-                                        DatePicker::make('deadline')
-                                            ->label('Batas Pendaftaran'),
-
                                         Toggle::make('featured')
-                                            ->label('Tampilkan sebagai unggulan')
+                                            ->label('Pilihan Edulaw')
                                             ->default(false),
                                     ])
                                     ->columns(1),
+
+                                Section::make('Deadline')
+                                    ->icon('heroicon-o-calendar-days')
+                                    ->schema([
+                                        DatePicker::make('deadline')
+                                            ->hiddenLabel()
+                                            ->native(false)
+                                            ->displayFormat('d M Y')
+                                            ->live()
+                                            ->helperText(fn ($state): string => filled($state)
+                                                ? static::deadlineRelativeLabel(Carbon::parse($state))
+                                                : 'Tanpa batas waktu'),
+                                    ]),
 
                                 Section::make('Poster')
                                     ->icon('heroicon-o-photo')
@@ -277,7 +314,7 @@ class OpportunityResource extends Resource
                             ->extraAttributes(['class' => 'edulaw-admin-side-column edulaw-admin-sticky-column']),
                     ])
                     ->columnSpanFull()
-                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell']),
+                    ->extraAttributes(['class' => 'edulaw-admin-edit-shell edulaw-opportunity-form']),
             ]);
     }
 
@@ -297,6 +334,12 @@ class OpportunityResource extends Resource
             : null;
         $data['additional_link_url'] = filled($data['additional_link_url'] ?? null)
             ? trim((string) $data['additional_link_url'])
+            : null;
+        $data['second_link_label'] = filled($data['second_link_label'] ?? null)
+            ? trim((string) $data['second_link_label'])
+            : null;
+        $data['second_link_url'] = filled($data['second_link_url'] ?? null)
+            ? trim((string) $data['second_link_url'])
             : null;
         $data['excerpt'] = filled($data['excerpt'] ?? null)
             ? static::excerptFromDescription((string) $data['excerpt'])

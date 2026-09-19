@@ -44,6 +44,8 @@ test('opportunity directory links directly to the official source', function () 
         'application_link' => 'https://example.test/daftar',
         'additional_link_label' => 'Unduh Guidebook',
         'additional_link_url' => 'https://example.test/guidebook.pdf',
+        'second_link_label' => 'Form Pendaftaran',
+        'second_link_url' => 'https://example.test/form',
     ]);
 
     $this->get(route('opportunities.index'))
@@ -55,6 +57,8 @@ test('opportunity directory links directly to the official source', function () 
         ->assertSee('Mahasiswa hukum')
         ->assertSee('Lihat Informasi Resmi')
         ->assertSee('Unduh Guidebook')
+        ->assertSee('Form Pendaftaran')
+        ->assertSee('href="https://example.test/form"', false)
         ->assertSee('href="'.$opportunity->additional_link_url.'"', false)
         ->assertSee('grid-cols-2', false)
         ->assertDontSee('href="'.route('opportunities.show', $opportunity->slug).'"', false);
@@ -69,12 +73,16 @@ test('opportunity directory hides an incomplete or unsafe additional link', func
         'application_link' => 'https://example.test/resmi',
         'additional_link_label' => 'Pendaftaran Internal',
         'additional_link_url' => 'javascript:alert(1)',
+        'second_link_label' => 'Tautan Kedua Tidak Aman',
+        'second_link_url' => 'javascript:alert(2)',
     ]);
 
     $this->get(route('opportunities.index'))
         ->assertOk()
         ->assertSee('Lihat Informasi Resmi')
         ->assertDontSee('Pendaftaran Internal')
+        ->assertDontSee('Tautan Kedua Tidak Aman')
+        ->assertDontSee('javascript:alert(2)', false)
         ->assertDontSee('javascript:alert(1)', false);
 });
 
