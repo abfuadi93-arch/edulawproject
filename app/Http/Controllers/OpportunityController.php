@@ -26,8 +26,9 @@ class OpportunityController extends Controller
         $selectedStatus = in_array($request->string('status')->toString(), ['open', 'closed'], true)
             ? $request->string('status')->toString()
             : 'open';
-        $selectedType = in_array($request->string('type')->toString(), array_keys(self::typeLabels()), true)
-            ? $request->string('type')->toString()
+        $requestedType = \App\Support\OpportunityCategory::normalize($request->string('type')->toString());
+        $selectedType = in_array($requestedType, array_keys(self::typeLabels()), true)
+            ? $requestedType
             : null;
         $selectedFormat = in_array($request->string('format')->toString(), ['online', 'offline', 'hybrid'], true)
             ? $request->string('format')->toString()
@@ -55,7 +56,7 @@ class OpportunityController extends Controller
                     ->orWhere('description', 'like', "%{$search}%")
                     ->orWhere('location', 'like', "%{$search}%");
             }))
-            ->when($selectedType, fn ($query, string $type) => $query->where('type', $type))
+            ->when($selectedType, fn ($query, string $type) => $query->whereIn('type', \App\Support\OpportunityCategory::values($type)))
             ->when($selectedFormat, function ($query, string $format): void {
                 if ($format === 'hybrid') {
                     $query->where(function ($query): void {
@@ -123,6 +124,7 @@ class OpportunityController extends Controller
             ->select('type')
             ->distinct()
             ->pluck('type')
+            ->map(fn (string $type): string => \App\Support\OpportunityCategory::normalize($type))
             ->filter(fn (string $type): bool => array_key_exists($type, self::typeLabels()))
             ->push('career')
             ->unique()
@@ -171,16 +173,7 @@ class OpportunityController extends Controller
 
     private static function typeLabels(): array
     {
-        return [
-            'scholarship' => 'Beasiswa',
-            'internship' => 'Magang',
-            'competition' => 'Kompetisi',
-            'call_for_paper' => 'Call for Papers',
-            'fellowship' => 'Fellowship',
-            'career' => 'Karier',
-            'open_collaboration' => 'Kolaborasi',
-            'volunteer' => 'Volunteer',
-        ];
+        return \App\Support\OpportunityCategory::options();
     }
 
     private static function formatBucket(string $format): ?string

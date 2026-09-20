@@ -205,3 +205,22 @@ test('finder statistics are calculated from public database records', function (
             && $statistics['open'] === 1
             && $statistics['nearest_deadline'] === today()->addDays(4)->locale('id')->translatedFormat('d F'));
 });
+
+
+test('program category includes legacy fellowship and volunteer records', function () {
+    $fellowship = createFinderOpportunity(['type' => 'fellowship', 'title' => 'Legacy Fellowship']);
+    createFinderOpportunity(['type' => 'volunteer', 'title' => 'Legacy Volunteer']);
+    createFinderOpportunity(['type' => 'open_collaboration', 'title' => 'Open Program']);
+    createFinderOpportunity(['type' => 'career', 'title' => 'Excluded Career']);
+
+    expect(\App\Support\OpportunityCategory::options())->toHaveCount(6);
+    expect($fellowship->display_type)->toBe('Program & Kolaborasi');
+    foreach (['open_collaboration', 'fellowship'] as $type) {
+        $this->get(route('opportunities.index', ['type' => $type]))
+            ->assertOk()
+            ->assertSee('Legacy Fellowship')
+            ->assertSee('Legacy Volunteer')
+            ->assertSee('Open Program')
+            ->assertDontSee('Excluded Career');
+    }
+});

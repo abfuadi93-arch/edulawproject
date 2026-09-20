@@ -173,7 +173,7 @@ test('saving an opportunity and creating another resets the form', function () {
         ->fillForm([
             'title' => 'Kesempatan Riset Baru',
             'slug' => 'kesempatan-riset-baru',
-            'type' => 'fellowship',
+            'type' => 'open_collaboration',
             'status' => 'open',
             'format' => 'Hybrid',
             'application_link' => 'https://example.com/riset',

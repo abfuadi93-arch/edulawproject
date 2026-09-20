@@ -25,16 +25,7 @@
 
 @section('content')
 @php
-    $typeLabels = [
-        'scholarship' => 'Beasiswa',
-        'internship' => 'Magang',
-        'competition' => 'Kompetisi',
-        'call_for_paper' => 'Call for Papers',
-        'fellowship' => 'Fellowship',
-        'career' => 'Karier',
-        'open_collaboration' => 'Kolaborasi',
-        'volunteer' => 'Volunteer',
-    ];
+    $typeLabels = \App\Support\OpportunityCategory::options();
     $deadlineLabels = [
         '7_days' => '7 hari ke depan',
         '30_days' => '30 hari ke depan',

@@ -91,6 +91,8 @@ class OpportunityResource extends Resource
                                                 Select::make('type')
                                                     ->label('Kategori')
                                                     ->options(static::typeOptions())
+                                                    ->afterStateHydrated(fn ($component, $state) => $component->state(\App\Support\OpportunityCategory::normalize($state)))
+                                                    ->helperText('Program & Kolaborasi mencakup fellowship, exchange, pelatihan, summer school, volunteer, dan kolaborasi terbuka.')
                                                     ->default('open_collaboration')
                                                     ->searchable()
                                                     ->required(),
@@ -448,16 +450,7 @@ class OpportunityResource extends Resource
 
     public static function typeOptions(): array
     {
-        return [
-            'scholarship' => 'Beasiswa',
-            'internship' => 'Magang',
-            'volunteer' => 'Volunteer',
-            'fellowship' => 'Fellowship',
-            'call_for_paper' => 'Call for Papers',
-            'competition' => 'Kompetisi',
-            'career' => 'Karier',
-            'open_collaboration' => 'Kolaborasi Terbuka',
-        ];
+        return \App\Support\OpportunityCategory::options();
     }
 
     public static function table(Table $table): Table
@@ -493,8 +486,8 @@ class OpportunityResource extends Resource
                         default => 'gray',
                     })
                     ->limit(24)
-                    ->tooltip(fn (?string $state): ?string => filled($state) ? (static::typeOptions()[$state] ?? Str::headline($state)) : null)
-                    ->formatStateUsing(fn (?string $state): string => static::typeOptions()[$state] ?? ($state ? Str::headline(str_replace('_', ' ', $state)) : '—'))
+                    ->tooltip(fn (?string $state): ?string => filled($state) ? \App\Support\OpportunityCategory::label($state) : null)
+                    ->formatStateUsing(fn (?string $state): string => $state ? \App\Support\OpportunityCategory::label($state) : '—')
                     ->visibleFrom('lg')
                     ->extraHeaderAttributes(['class' => 'edulaw-resource-classification-header'])
                     ->extraCellAttributes(['class' => 'edulaw-resource-classification-cell']),
@@ -548,7 +541,8 @@ class OpportunityResource extends Resource
             ->filters([
                 SelectFilter::make('type')
                     ->label('Jenis')
-                    ->options(static::typeOptions()),
+                    ->options(static::typeOptions())
+                    ->query(fn ($query, array $data) => $query->when($data['value'] ?? null, fn ($query, $type) => $query->whereIn('type', \App\Support\OpportunityCategory::values($type)))),
 
                 SelectFilter::make('status')
                     ->label('Status')

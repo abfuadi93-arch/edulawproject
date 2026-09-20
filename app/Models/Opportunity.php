@@ -161,17 +161,7 @@ class Opportunity extends Model
 
     public function getDisplayTypeAttribute(): string
     {
-        return match ($this->attributes['type'] ?? null) {
-            'scholarship' => 'Beasiswa',
-            'internship' => 'Magang',
-            'volunteer' => 'Volunteer',
-            'fellowship' => 'Fellowship',
-            'call_for_paper' => 'Call for Papers',
-            'competition' => 'Kompetisi',
-            'career' => 'Karier',
-            'open_collaboration' => 'Kolaborasi',
-            default => ucfirst(str_replace('_', ' ', (string) ($this->attributes['type'] ?? 'Opportunity'))),
-        };
+        return \App\Support\OpportunityCategory::label($this->attributes['type'] ?? null);
     }
 
     public function getTypeLabelAttribute(): string
