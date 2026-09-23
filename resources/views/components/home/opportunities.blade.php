@@ -42,10 +42,10 @@
                             <span class="mt-5 inline-flex w-fit text-sm font-bold text-[#102f56] transition group-hover:text-brand-teal">Informasi Resmi ↗</span>
                         </div>
 
-                        <div class="relative order-last aspect-[4/5] w-full self-center overflow-hidden border border-slate-200 p-0">
+                        <div class="relative order-last aspect-[4/5] w-full self-center overflow-hidden border border-slate-200 p-0 md:aspect-auto md:min-h-0 md:self-stretch">
                             <x-home.media-fallback kind="opportunity" :label="$featuredOpportunity->display_type" data-home-opportunity-fallback />
                             @if ($featuredOpportunity->poster_url)
-                                <x-responsive-image :src="$featuredOpportunity->poster_url" alt="Poster {{ $featuredOpportunity->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1024px) 40vw, (min-width: 768px) 40vw, 100vw" width="640" height="800" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
+                                <x-responsive-image :src="$featuredOpportunity->poster_url" alt="Poster {{ $featuredOpportunity->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1024px) 40vw, (min-width: 768px) 40vw, 100vw" width="640" height="800" class="absolute inset-0 h-full max-h-full w-full object-contain" onerror="this.remove()" />
                             @endif
                         </div>
                     </a>
