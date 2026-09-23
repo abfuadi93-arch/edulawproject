@@ -66,7 +66,7 @@
         </div>
 
         <nav class="min-w-0" aria-label="Navigasi footer">
-            <h2 class="text-sm font-bold text-white">Navigasi</h2>
+            <h2 class="text-base font-bold text-brand-amber">Navigasi</h2>
             <ul class="mt-4 grid gap-2.5">
                 @foreach ($channelLinks as $link)
                     <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $link['label'] }}</a></li>
@@ -75,7 +75,7 @@
         </nav>
 
         <nav class="min-w-0" aria-label="Sumber daya footer">
-            <h2 class="text-sm font-bold text-white">Sumber Daya</h2>
+            <h2 class="text-base font-bold text-brand-amber">Sumber Daya</h2>
             <ul class="mt-4 grid gap-2.5">
                 @foreach ($resourceLinks as $link)
                     <li><a href="{{ route($link['route']) }}" class="text-sm font-medium text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $link['label'] }}</a></li>
@@ -84,7 +84,7 @@
         </nav>
 
         <div class="min-w-0">
-            <h2 class="text-sm font-bold text-white">Kontak</h2>
+            <h2 class="text-base font-bold text-brand-amber">Kontak</h2>
             <ul class="mt-4 grid gap-2.5">
                 @if ($emailUrl)
                     <li><!--email_off--><a href="{{ $emailUrl }}" class="break-words text-sm text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">{{ $email }}</a><!--/email_off--></li>
@@ -97,7 +97,7 @@
         </div>
 
         <div class="min-w-0">
-            <h2 class="text-sm font-bold text-white">Ikuti Kami</h2>
+            <h2 class="text-base font-bold text-brand-amber">Ikuti Kami</h2>
             <div class="mt-4 grid grid-cols-1 gap-2.5" aria-label="Media sosial Edulaw Project">
                 @foreach ($socialLinks as $link)
                     <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="flex items-center gap-2.5 text-sm font-medium text-slate-200 transition hover:text-brand-amber focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber" aria-label="{{ $link['label'] }} Edulaw Project">
