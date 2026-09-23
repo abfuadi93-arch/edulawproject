@@ -257,8 +257,7 @@
                         @forelse ($whyParagraphs as $paragraph)
                             <p>{{ $paragraph }}</p>
                         @empty
-                            <p>Edulaw hadir karena persoalan hukum publik kerap kompleks dan sulit dipahami. Kesenjangan literasi hukum dapat memperlebar ketidakadilan serta melemahkan partisipasi masyarakat.</p>
-                            <p>Kami menjembatani kesenjangan tersebut melalui pendidikan, riset berbasis bukti, dan kolaborasi lintas sektor agar pengetahuan hukum berpihak pada kepentingan publik.</p>
+                            <p>Edulaw hadir karena persoalan hukum publik kerap kompleks dan sulit dipahami. Kesenjangan literasi hukum dapat memperlebar ketidakadilan serta melemahkan partisipasi masyarakat. Kami menjembatani kesenjangan tersebut melalui pendidikan, riset berbasis bukti, dan kolaborasi lintas sektor agar pengetahuan hukum berpihak pada kepentingan publik.</p>
                         @endforelse
                     </div>
                     <blockquote class="mt-6 border-l-4 border-brand-amber pl-5 font-display text-xl font-bold leading-snug text-brand-navy">“Pengetahuan hukum seharusnya menjadi milik semua, bukan hanya mereka yang berada di ruang kuasa.”</blockquote>
@@ -281,7 +280,7 @@
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <p class="text-[11px] font-bold uppercase tracking-[0.16em] text-brand-coral">Visi &amp; Misi</p>
             <h2 id="vision-mission-heading" class="mt-2 font-display text-3xl font-bold text-brand-navy sm:text-4xl">Arah kerja Edulaw Project</h2>
-            <div class="mt-6 grid items-stretch gap-6 lg:grid-cols-2">
+            <div class="mt-6 grid items-stretch gap-6 lg:grid-cols-[minmax(0,9fr)_minmax(0,11fr)]">
                 <article class="relative flex h-full flex-col overflow-hidden rounded-[14px] bg-brand-navy p-5 text-white sm:p-6">
                     <p class="text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">Visi</p>
                     <img src="{{ asset('images/logo/edulaw-logo-white.png') }}" alt="Edulaw Project" class="absolute right-5 top-5 h-7 w-auto object-contain opacity-90 sm:right-6 sm:top-6 sm:h-8" loading="lazy">

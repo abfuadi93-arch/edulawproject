@@ -1025,7 +1025,7 @@ article[data-channel-feature-card] .channel-feature-actions {
 .about-leadership-list > article > :is(a, div) {
     display: grid;
     grid-template-columns: var(--leadership-photo-size) minmax(0, 1fr);
-    grid-template-rows: auto auto auto;
+    grid-template-rows: 1fr auto auto auto 1fr;
     align-content: center;
     column-gap: 16px;
     height: 100%;
@@ -1035,7 +1035,7 @@ article[data-channel-feature-card] .channel-feature-actions {
     background: #f7f8fa;
 }
 .about-leadership-list > article > :is(a, div) > div:first-child {
-    grid-row: 1 / 4;
+    grid-row: 1 / 6;
     width: var(--leadership-photo-size);
     height: var(--leadership-photo-size);
     align-self: center;
@@ -1045,6 +1045,7 @@ article[data-channel-feature-card] .channel-feature-actions {
     padding-right: 12px;
 }
 .about-leadership-list h4 {
+    grid-row: 2;
     margin-top: 0;
     padding-top: 12px;
 }
@@ -1053,13 +1054,14 @@ article[data-channel-feature-card] .channel-feature-actions {
     height: 100%;
 }
 .about-leadership-list p {
+    grid-row: 3;
     margin-top: 4px;
     line-height: 1.5;
 }
 .about-leadership-list > article > :is(a, div) > span {
-    margin-top: 8px;
+    grid-row: 4;
+    margin-top: 4px;
     padding-bottom: 12px;
-    align-self: end;
 }
 .about-leadership-list > article > div > p:last-child {
     padding-bottom: 12px;
@@ -1077,17 +1079,12 @@ article[data-channel-feature-card] .channel-feature-actions {
 }
 .about-team-grid > article > :is(a, div) {
     display: grid;
-    grid-template-rows: auto auto auto 1fr;
+    grid-template-rows: auto auto auto auto;
+    align-content: start;
     height: 100%;
 }
-.about-team-grid h4 {
-    min-height: 2.75em;
-}
-.about-team-grid p {
-    min-height: 2.5rem;
-}
 .about-team-grid > article > a > span {
-    align-self: end;
+    margin-top: 4px;
 }
 .about-leadership-list :is(h4, p) {
     display: block;
