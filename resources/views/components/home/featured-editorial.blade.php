@@ -17,7 +17,7 @@
                     @if ($insight->cover_image_url)
                         <x-responsive-image :src="$insight->cover_image_url" alt="Sampul {{ $insight->title }}" :widths="[480, 640, 960]" sizes="100vw" class="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" onerror="this.remove()" />
                     @endif
-                    <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-[#07172e]/95 via-[#07172e]/85 to-[#07172e]/75" aria-hidden="true"></div>
+                    <div class="pointer-events-none absolute inset-0 bg-linear-to-t from-[#07172e]/85 via-[#07172e]/60 to-[#07172e]/30" aria-hidden="true"></div>
                     <a href="{{ route('insights.show', $insight->slug) }}" aria-label="Baca editorial: {{ $insight->title }}" class="relative flex flex-1 flex-col justify-end p-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand-amber sm:p-8">
                         <span class="w-fit rounded bg-[#f8bd38] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[#142f57]">Editor's Pick</span>
                         <p class="home-card-kicker mt-5 text-[#f0c55e]">{{ $insight->display_category }}</p>
