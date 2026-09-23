@@ -171,6 +171,18 @@
     max-width: 760px;
 }
 
+#main-content [data-home-insight-featured] > a {
+    color: #ffffff;
+}
+
+#main-content [data-home-insight-featured] :is(h3, p) {
+    color: #ffffff;
+}
+
+#main-content [data-home-insight-featured] .home-card-kicker {
+    color: #f0c55e;
+}
+
 @media (min-width: 640px) {
     #program-edulaw .section-shell > div:has(> [data-home-program]) {
     grid-template-columns: repeat(3, minmax(0, 1fr));
