@@ -52,8 +52,8 @@
     </article>
 @else
     <article data-featured-media data-channel-feature-card {{ $attributes->class('channel-feature-card group min-w-0 overflow-hidden rounded-3xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-xl hover:shadow-slate-900/10') }}>
-        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
-            <div class="relative flex min-h-[300px] items-center justify-center overflow-hidden bg-white sm:min-h-[340px] lg:aspect-video lg:h-auto lg:min-h-0 lg:self-center">
+        <a href="{{ $itemUrl }}" @if ($opensExternally) target="_blank" rel="noopener noreferrer" @endif aria-label="Tonton {{ $item->title }} {{ $opensExternally ? 'di YouTube (membuka tab baru)' : '' }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-4 focus-visible:outline-brand-navy lg:grid-cols-2">
+            <div class="relative flex aspect-video min-h-0 items-center justify-center self-center overflow-hidden bg-white">
                 <div class="absolute inset-0 grid place-items-center text-brand-navy/35" aria-hidden="true">
                     <svg class="h-14 w-14" viewBox="0 0 24 24" fill="none"><path d="M8 5v14l11-7L8 5Z" stroke="currentColor" stroke-width="1.7"/></svg>
                 </div>
@@ -63,10 +63,10 @@
                         :src="$item->thumbnail_url"
                         :alt="$item->title"
                         :widths="[480, 640, 960]"
-                        sizes="(min-width: 1024px) 53vw, 100vw"
+                        sizes="(min-width: 1280px) 608px, (min-width: 1024px) 50vw, 100vw"
                         data-fallback="{{ $fallbackThumbnail }}"
                         onerror="if (this.dataset.fallback) { this.src = this.dataset.fallback; this.dataset.fallback = ''; } else { this.remove(); }"
-                        class="relative z-10 h-full w-full object-contain transition duration-700 group-hover:scale-[1.025]"
+                        class="absolute inset-0 z-10 h-full w-full object-contain transition duration-700 group-hover:scale-[1.025]"
                     />
                 @endif
 
