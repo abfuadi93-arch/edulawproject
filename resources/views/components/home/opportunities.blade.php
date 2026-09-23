@@ -19,7 +19,7 @@
 
         @if ($featuredOpportunity)
             <div class="mt-5 grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
-                <article data-home-opportunity data-home-opportunity-featured class="group bg-white">
+                <article data-home-opportunity data-home-opportunity-featured class="group border-y border-slate-200 bg-white">
                     <a href="{{ $featuredOpportunity->external_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka informasi resmi {{ $featuredOpportunity->title }} (membuka tab baru)" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber md:grid-cols-[minmax(0,3fr)_minmax(200px,2fr)]">
                         <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
                             <p class="home-card-kicker">{{ $featuredOpportunity->display_type }}</p>
