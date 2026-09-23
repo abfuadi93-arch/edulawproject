@@ -42,7 +42,7 @@
                             <span class="mt-5 inline-flex w-fit text-sm font-bold text-[#102f56] transition group-hover:text-brand-teal">Informasi Resmi ↗</span>
                         </div>
 
-                        <div class="relative order-last h-44 overflow-hidden md:h-auto md:min-h-full">
+                        <div class="relative order-last aspect-[4/5] w-full self-center overflow-hidden">
                             <x-home.media-fallback kind="opportunity" :label="$featuredOpportunity->display_type" data-home-opportunity-fallback />
                             @if ($featuredOpportunity->poster_url)
                                 <x-responsive-image :src="$featuredOpportunity->poster_url" alt="Poster {{ $featuredOpportunity->title }}" :widths="[320, 480, 640]" sizes="(min-width: 1024px) 40vw, (min-width: 768px) 40vw, 100vw" width="640" height="800" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
@@ -56,7 +56,7 @@
                         @foreach ($secondaryOpportunities as $opportunity)
                             <article data-home-opportunity data-home-opportunity-secondary class="group min-w-0 transition duration-200 hover:bg-slate-50/70">
                                 <a href="{{ $opportunity->external_url }}" target="_blank" rel="noopener noreferrer" class="grid h-full grid-cols-[80px_minmax(0,1fr)] gap-4 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
-                                    <div class="relative h-20 overflow-hidden rounded-lg">
+                                    <div class="relative aspect-[4/5] w-full self-center overflow-hidden rounded-lg">
                                         <x-home.media-fallback kind="opportunity" data-home-opportunity-fallback />
                                         @if ($opportunity->poster_url)
                                             <x-responsive-image :src="$opportunity->poster_url" alt="Poster {{ $opportunity->title }}" :widths="[96, 160, 240]" sizes="80px" width="160" height="200" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />

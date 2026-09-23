@@ -291,7 +291,7 @@
 }
 
 [data-home-opportunity-secondary] a {
-    padding-block: 16px;
+    padding-block: 10px;
 }
 
 [data-home-opportunity-secondary] a > div:last-child {
@@ -378,7 +378,7 @@ section[aria-labelledby="home-collaboration-title"] a {
 }
 
 [data-home-opportunity-featured] > a > div:first-child {
-    padding: 24px;
+    padding: 16px;
 }
 
 [data-home-opportunity-secondary] a {
@@ -429,7 +429,7 @@ section[aria-labelledby="home-collaboration-title"] a {
     gap: 8px;
 }
     [data-home-opportunity-featured] > a > div:first-child {
-    padding: 22px;
+    padding: 14px;
 }
     [data-home-publication] > a {
     gap: 16px;
