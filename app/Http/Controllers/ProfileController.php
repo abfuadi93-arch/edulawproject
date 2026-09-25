@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Author;
-use App\Support\PublicContentQuality;
+use App\Support\PublicContentIndexability;
 use Illuminate\View\View;
 
 class ProfileController extends Controller
@@ -57,7 +57,7 @@ class ProfileController extends Controller
             'publications' => $publications,
             'totalPublications' => $totalPublications,
             'focusTopics' => $focusTopics,
-            'isIndexable' => PublicContentQuality::author($author, $totalInsights, $totalPublications),
+            'isIndexable' => PublicContentIndexability::author($author, $totalInsights, $totalPublications),
         ]);
     }
 }

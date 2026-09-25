@@ -8,6 +8,7 @@ use App\Models\InsightCategory;
 use App\Models\Multimedia;
 use App\Models\Program;
 use App\Models\Publication;
+use App\Support\PublicContentIndexability;
 use App\Support\PublicContentQuality;
 use Illuminate\Http\Response;
 
@@ -135,7 +136,7 @@ class SitemapController extends Controller
             ->where('slug', '!=', '')
             ->latest('published_at')
             ->get()
-            ->filter(fn (Publication $publication): bool => PublicContentQuality::publication($publication))
+            ->filter(fn (Publication $publication): bool => PublicContentIndexability::publication($publication))
             ->map(fn (Publication $publication): array => [
                 'url' => route('publications.show', $publication->slug),
                 'lastmod' => $publication->updated_at,
@@ -149,7 +150,7 @@ class SitemapController extends Controller
             ->where('slug', '!=', '')
             ->latest('updated_at')
             ->get()
-            ->filter(fn (Program $program): bool => PublicContentQuality::program($program))
+            ->filter(fn (Program $program): bool => PublicContentIndexability::program($program))
             ->map(fn (Program $program): array => [
                 'url' => route('programs.show', $program->slug),
                 'lastmod' => $program->updated_at,
@@ -168,7 +169,7 @@ class SitemapController extends Controller
             ])
             ->orderBy('name')
             ->get()
-            ->filter(fn (Author $author): bool => PublicContentQuality::author(
+            ->filter(fn (Author $author): bool => PublicContentIndexability::author(
                 $author,
                 (int) $author->published_insights_count,
                 (int) $author->published_publications_count,

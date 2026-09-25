@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::program($program);
+    $indexReady = $isIndexable ?? \App\Support\PublicContentIndexability::program($program);
 @endphp
 
 @section('title', $program->seo_title ?: $program->display_title)

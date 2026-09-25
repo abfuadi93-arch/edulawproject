@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @php
-    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::publication($publication);
+    $indexReady = $isIndexable ?? \App\Support\PublicContentIndexability::publication($publication);
 @endphp
 
 @section('title', $publication->share_preview_title)
@@ -68,9 +68,7 @@
         default => Str::headline((string) ($publication->status ?: 'Dokumen')),
     };
 
-    $summarySource = filled($publication->description)
-        ? $publication->description
-        : $publication->excerpt;
+    $summarySource = \App\Support\PublicContentIndexability::publicationSummary($publication);
     $summaryText = trim(strip_tags((string) $summarySource));
     $genericSummaryNeedles = [
         'publikasi edulaw project untuk mendukung literasi hukum',

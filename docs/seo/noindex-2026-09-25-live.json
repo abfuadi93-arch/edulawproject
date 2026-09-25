@@ -1,0 +1,1018 @@
+{
+  "checked_at_utc": "2026-09-25",
+  "method": "Public GET, follow redirects, no authentication; before local deployment",
+  "results": [
+    {
+      "url": "https://edulawproject.id/riset-publikasi/merancang-konstitusionalisme-dalam-amandemen-penguatan-dpd-ri/download",
+      "last_crawled": "2026-09-22",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi/merancang-konstitusionalisme-dalam-amandemen-penguatan-dpd-ri/download",
+      "robots": [],
+      "canonical": [],
+      "x_robots": [
+        "noindex, noarchive"
+      ],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Download",
+      "decision": "Pertahankan noindex header; halaman publikasi menjadi target indeks."
+    },
+    {
+      "url": "https://edulawproject.id/insight?author=muhamad-riziq-maulana&archive=latest",
+      "last_crawled": "2026-09-22",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight?author=muhamad-riziq-maulana&archive=latest",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=call_for_paper",
+      "last_crawled": "2026-09-22",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=call_for_paper",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi/menakar-ulang-kedudukan-tap-mpr-dalam-konstelasi-peraturan-perudang-udangan-pasca-amandemen",
+      "last_crawled": "2026-09-22",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi/menakar-ulang-kedudukan-tap-mpr-dalam-konstelasi-peraturan-perudang-udangan-pasca-amandemen",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi/menakar-ulang-kedudukan-tap-mpr-dalam-konstelasi-peraturan-perudang-udangan-pasca-amandemen"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?view=list&type=career",
+      "last_crawled": "2026-09-21",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?view=list&type=career",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi/redesain-presiden-berhalangan-sementara-dalam-lembaga-kepresidenan",
+      "last_crawled": "2026-09-20",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi/redesain-presiden-berhalangan-sementara-dalam-lembaga-kepresidenan",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi/redesain-presiden-berhalangan-sementara-dalam-lembaga-kepresidenan"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/profil/fadila-sharfina",
+      "last_crawled": "2026-09-20",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/profil/fadila-sharfina",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/profil/fadila-sharfina"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=fellowship",
+      "last_crawled": "2026-09-20",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=fellowship",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi/dialektika-emergency-of-state-dan-tujuan-hukum-dalam-penetapan-perppu-22022-menjadi-undang-undang",
+      "last_crawled": "2026-09-19",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi/dialektika-emergency-of-state-dan-tujuan-hukum-dalam-penetapan-perppu-22022-menjadi-undang-undang",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi/dialektika-emergency-of-state-dan-tujuan-hukum-dalam-penetapan-perppu-22022-menjadi-undang-undang"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/program/diskusi-diseminasi-disertasi-penafsiran-hak-konstitusional",
+      "last_crawled": "2026-09-19",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/program/diskusi-diseminasi-disertasi-penafsiran-hak-konstitusional",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/program/diskusi-diseminasi-disertasi-penafsiran-hak-konstitusional"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?view=list&type=competition",
+      "last_crawled": "2026-09-19",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?view=list&type=competition",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi/diskrepansi-sistem-pemerintahan-daerah-khusus-ibu-kota-negara-ikn-nusantara/download",
+      "last_crawled": "2026-09-19",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi/diskrepansi-sistem-pemerintahan-daerah-khusus-ibu-kota-negara-ikn-nusantara/download",
+      "robots": [],
+      "canonical": [],
+      "x_robots": [
+        "noindex, noarchive"
+      ],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Download",
+      "decision": "Pertahankan noindex header; halaman publikasi menjadi target indeks."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?view=list&type=fellowship",
+      "last_crawled": "2026-09-19",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?view=list&type=fellowship",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=scholarship",
+      "last_crawled": "2026-09-18",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=scholarship",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/insight?featured=1",
+      "last_crawled": "2026-09-15",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight?featured=1",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/program/pelatihan-sidang-semu-konstitusi",
+      "last_crawled": "2026-09-12",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/program/pelatihan-sidang-semu-konstitusi",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/program/pelatihan-sidang-semu-konstitusi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/program/virtual-internship-edulaw-project",
+      "last_crawled": "2026-09-11",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/program/virtual-internship-edulaw-project",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/program/virtual-internship-edulaw-project"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/program/pelatihan-debat",
+      "last_crawled": "2026-09-11",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/program/pelatihan-debat",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/program/pelatihan-debat"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Detail publik",
+      "decision": "Perbaiki aturan / tinjau konten sesuai daftar prioritas di bawah."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=call_for_paper&view=grid",
+      "last_crawled": "2026-09-11",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=call_for_paper&view=grid",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://www.edulawproject.id/insight/ai-dalam-kampanye-pemilu-indonesia-belajar-dari-korea-selatan?source=home-highlight",
+      "last_crawled": "2026-09-07",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/ai-dalam-kampanye-pemilu-indonesia-belajar-dari-korea-selatan",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/ai-dalam-kampanye-pemilu-indonesia-belajar-dari-korea-selatan"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/ai-dalam-kampanye-pemilu-indonesia-belajar-dari-korea-selatan"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=career&view=grid",
+      "last_crawled": "2026-09-03",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=career&view=grid",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?view=list",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?view=list",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Tampilan",
+      "decision": "Sudah benar: index dengan canonical URL daftar bersih."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=semua&view=grid",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?view=grid",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/riset-publikasi?view=grid"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Semua tipe",
+      "decision": "Sudah benar: 301 menghapus type=semua, pertahankan view bila ada."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=fellowship&view=list",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=fellowship&view=list",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=competition&view=list",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=competition&view=list",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=internship&view=list",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=internship&view=list",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=fellowship&view=grid",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=fellowship&view=grid",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/insight?archive=latest&featured=1&view=grid",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight?archive=latest&featured=1&view=grid",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=call_for_paper&view=list",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=call_for_paper&view=list",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/opportunities?type=competition&view=grid",
+      "last_crawled": "2026-08-30",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/opportunities?type=competition&view=grid",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/opportunities"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/insight?archive=latest&page=4",
+      "last_crawled": "2026-08-29",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight?archive=latest&page=4",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight?page=4"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Pagination",
+      "decision": "Sudah benar: index dengan canonical pagination sendiri."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=artikel-jurnal&view=list",
+      "last_crawled": "2026-08-29",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?type=artikel-jurnal&view=list",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=working-paper&view=grid",
+      "last_crawled": "2026-08-29",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?type=working-paper&view=grid",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/insight?featured=1&page=3",
+      "last_crawled": "2026-08-29",
+      "error": "",
+      "status": "404",
+      "final_url": "https://edulawproject.id/insight?featured=1&page=3",
+      "robots": [
+        "noindex,nofollow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "404"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan 404; pagination filter di luar rentang."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=working-paper&view=list",
+      "last_crawled": "2026-08-29",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?type=working-paper&view=list",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=working-paper",
+      "last_crawled": "2026-08-29",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?type=working-paper",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=jurnal",
+      "last_crawled": "2026-08-28",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi?type=jurnal",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/insight?archive=latest&page=3",
+      "last_crawled": "2026-08-26",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight?archive=latest&page=3",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight?page=3"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "200"
+      ],
+      "group": "Pagination",
+      "decision": "Sudah benar: index dengan canonical pagination sendiri."
+    },
+    {
+      "url": "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan?source=home-editor-pick",
+      "last_crawled": "2026-08-26",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan?source=home-highlight",
+      "last_crawled": "2026-08-26",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/konstitusi-membentuk-dan-membatasi-kekuasaan"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia?source=home-highlight",
+      "last_crawled": "2026-08-25",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://edulawproject.id/riset-publikasi?type=semua",
+      "last_crawled": "2026-08-25",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/riset-publikasi",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/riset-publikasi"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Semua tipe",
+      "decision": "Sudah benar: 301 menghapus type=semua, pertahankan view bila ada."
+    },
+    {
+      "url": "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia?source=home-editor-pick",
+      "last_crawled": "2026-08-24",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://www.edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang?source=home-highlight",
+      "last_crawled": "2026-08-22",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://www.edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang?source=home-editor-pick",
+      "last_crawled": "2026-08-13",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/memahami-hukum-dari-berbagai-sudut-pandang"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://www.edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia?source=home-editor-pick",
+      "last_crawled": "2026-08-11",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://www.edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia?source=home-highlight",
+      "last_crawled": "2026-08-11",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia",
+      "robots": [
+        "index,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight/dissenting-opinion-dalam-sistem-peradilan-di-indonesia"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Tracking",
+      "decision": "Sudah benar: redirect ke artikel bersih; verifikasi ulang melalui GSC."
+    },
+    {
+      "url": "https://edulawproject.id/insight?featured=1&page=1",
+      "last_crawled": "2026-08-11",
+      "error": "",
+      "status": "200",
+      "final_url": "https://edulawproject.id/insight?featured=1",
+      "robots": [
+        "noindex,follow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight"
+      ],
+      "x_robots": [],
+      "redirects": [
+        "https://edulawproject.id/insight?featured=1"
+      ],
+      "http_chain": [
+        "301",
+        "200"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan noindex untuk filter."
+    },
+    {
+      "url": "https://edulawproject.id/insight?featured=1&page=2",
+      "last_crawled": "2026-08-11",
+      "error": "",
+      "status": "404",
+      "final_url": "https://edulawproject.id/insight?featured=1&page=2",
+      "robots": [
+        "noindex,nofollow"
+      ],
+      "canonical": [
+        "https://edulawproject.id/insight"
+      ],
+      "x_robots": [],
+      "redirects": [],
+      "http_chain": [
+        "404"
+      ],
+      "group": "Filter",
+      "decision": "Pertahankan 404; pagination filter di luar rentang."
+    }
+  ]
+}

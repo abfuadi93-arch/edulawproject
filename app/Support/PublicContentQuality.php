@@ -11,10 +11,10 @@ use App\Models\Publication;
 /**
  * Conservative, repository-owned readiness checks for public landing pages.
  *
- * These are editorial safeguards, not thresholds published by Google. Records
- * remain publicly accessible when a check fails, but their detail pages should
- * not be presented to search engines as index-ready until the source content is
- * sufficiently complete.
+ * These are editorial safeguards, not thresholds published by Google.
+ * Publication, program and profile indexing uses PublicContentIndexability,
+ * which also recognizes concise pages supported by documents or structured facts.
+ * Insight and multimedia retain these conservative checks for now.
  */
 final class PublicContentQuality
 {

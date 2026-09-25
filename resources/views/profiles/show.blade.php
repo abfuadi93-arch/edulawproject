@@ -40,7 +40,7 @@
         180
     );
     $profileTitle = $author->seo_title ?: $author->name . ' - Profil';
-    $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::author(
+    $indexReady = $isIndexable ?? \App\Support\PublicContentIndexability::author(
         $author,
         (int) ($totalInsights ?? 0),
         (int) ($totalPublications ?? 0),

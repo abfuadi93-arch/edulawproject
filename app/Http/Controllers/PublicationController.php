@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Publication;
 use App\Models\PublicationType;
-use App\Support\PublicContentQuality;
+use App\Support\PublicContentIndexability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -76,7 +76,7 @@ class PublicationController extends Controller
             'publication' => $publication,
             'relatedPublications' => $relatedPublications,
             'hasPdfFile' => $hasPdfFile,
-            'isIndexable' => PublicContentQuality::publication($publication),
+            'isIndexable' => PublicContentIndexability::publication($publication),
         ]);
     }
 

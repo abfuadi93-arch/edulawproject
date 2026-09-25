@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Program;
 use App\Models\ProgramCategory;
-use App\Support\PublicContentQuality;
+use App\Support\PublicContentIndexability;
 use Illuminate\Http\Request;
 use Illuminate\Support\Arr;
 use Illuminate\Support\Str;
@@ -214,7 +214,7 @@ class ProgramController extends Controller
         return view('programs.show', [
             'program' => $program,
             'relatedPrograms' => $relatedPrograms,
-            'isIndexable' => PublicContentQuality::program($program),
+            'isIndexable' => PublicContentIndexability::program($program),
         ]);
     }
 
