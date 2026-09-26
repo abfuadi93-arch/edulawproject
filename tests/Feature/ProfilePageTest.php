@@ -260,6 +260,18 @@ test('about page team cards link to active public profiles', function () {
         'is_active' => true,
     ]);
 
+    foreach (['Opportunity Administrator', 'Designer Grafis'] as $index => $position) {
+        Author::query()->create([
+            'name' => 'Tim '.$position,
+            'slug' => 'tim-support-'.$index,
+            'position' => $position,
+            'profile_type' => 'team',
+            'organization_group' => 'research_team',
+            'sort_order' => $index,
+            'is_active' => true,
+        ]);
+    }
+
     $internshipProfile = Author::query()->create([
         'name' => 'Intern Baru',
         'slug' => 'intern-baru',
@@ -372,10 +384,12 @@ test('about page team cards link to active public profiles', function () {
         ->assertSeeInOrder(['Zed Manager', 'Manager Baru'])
         ->assertSeeInOrder([
             'Research Team',
-            'Fadlah Nur',
-            'Junior Researcher',
             'Lalu Rizqi Ramdani Alfaen',
             'Senior Researcher',
+            'Fadlah Nur',
+            'Junior Researcher',
+            'Tim Designer Grafis',
+            'Tim Opportunity Administrator',
             'Internship Member',
             'Intern Baru',
             'Internship Member',

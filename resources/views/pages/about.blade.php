@@ -212,6 +212,17 @@
         ->map(fn (array $group): array => array_merge($group, [
             'members' => $teamMembers
                 ->filter(fn (array $person): bool => $organizationGroupFor($person) === $group['key'])
+                ->when($group['key'] === 'research_team', fn ($members) => $members->sortBy(function (array $person): int {
+                    $position = Str::lower($person['organization_position'] ?? $person['position'] ?? '');
+
+                    return match (true) {
+                        Str::contains($position, 'senior') => 0,
+                        Str::contains($position, 'junior') => 1,
+                        Str::contains($position, ['designer', 'desainer']) => 2,
+                        Str::contains($position, 'administrator') => 3,
+                        default => 4,
+                    };
+                }))
                 ->values(),
         ]))
         ->filter(fn (array $group): bool => $group['members']->isNotEmpty())
