@@ -127,7 +127,7 @@
                 @if ($youtubeVideos->isNotEmpty())
                     <div class="mt-6 grid gap-5 md:grid-cols-2 xl:grid-cols-3">
                         @foreach ($youtubeVideos as $item)
-                            <x-multimedia.media-card :item="$item" />
+                            <x-multimedia.media-card :item="$item" show-summary />
                         @endforeach
                     </div>
 

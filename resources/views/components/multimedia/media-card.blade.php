@@ -1,10 +1,14 @@
 @props([
     'item',
     'variant' => 'grid',
+    'showSummary' => false,
 ])
 
 @php
     $isHorizontal = $variant === 'horizontal';
+    $summary = $showSummary
+        ? \Illuminate\Support\Str::squish(html_entity_decode(strip_tags(preg_replace('/<\/(?:p|div|li)>|<br\s*\/?\s*>/i', ' ', (string) $item->description)), ENT_QUOTES | ENT_HTML5, 'UTF-8'))
+        : '';
     $type = \App\Models\Multimedia::normalizeType($item->type);
     $platform = match (true) {
         $item->platform === 'instagram' => 'instagram',
@@ -68,6 +72,9 @@
                 @endif
                 <h3 @class(['line-clamp-2 font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy', 'text-sm' => $isHorizontal, 'text-base' => ! $isHorizontal])>{{ $item->title }}</h3>
                 <p class="mt-1.5 type-role-meta font-normal text-slate-500">{{ $meta }}</p>
+                @if ($summary !== '')
+                    <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600" data-media-summary>{{ \Illuminate\Support\Str::limit($summary, 280) }}</p>
+                @endif
                 @unless ($isHorizontal)
                     <p class="mt-2 text-[11px] font-bold text-brand-navy">{{ $ctaLabel }}</p>
                 @endunless
