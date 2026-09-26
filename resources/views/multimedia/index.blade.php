@@ -74,7 +74,7 @@
         title="Multimedia Literasi Hukum Edulaw"
         eyebrow="Kanal Multimedia"
         description="Video, Shorts/Reels, dan dokumentasi kegiatan Edulaw dari kanal resmi kami."
-        background-image="https://images.unsplash.com/photo-1551818255-e6e10975bc17?auto=format&fit=crop&w=1800&q=85"
+        :background-image="asset('images/hero/channels/multimedia-1600.webp')"
         background-alt="Kegiatan produksi konten dan diskusi Edulaw"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],

@@ -26,7 +26,7 @@
                         width="640"
                         height="800"
                         decoding="async"
-                        fetchpriority="high"
+                        loading="lazy"
                         onerror="this.remove()"
                     >
                 @endif

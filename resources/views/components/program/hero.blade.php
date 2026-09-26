@@ -1,6 +1,6 @@
 @props([
     'stats' => [],
-    'backgroundImage' => 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1800&q=85',
+    'backgroundImage' => asset('images/hero/channels/programs-1600.webp'),
 ])
 
 @php

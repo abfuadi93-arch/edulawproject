@@ -12,6 +12,7 @@
 ])
 
 @php
+    $heroSrcset = \App\Support\ChannelHero::srcset($backgroundImage);
     $statItems = collect($stats)
         ->map(fn ($item): array => is_array($item) ? $item : [])
         ->filter(fn (array $item): bool => filled($item['label'] ?? null))
@@ -19,10 +20,18 @@
         ->values();
 @endphp
 
+@if ($heroSrcset)
+    @push('head')
+        <link rel="preload" as="image" type="image/webp" href="{{ $backgroundImage }}" imagesrcset="{{ $heroSrcset }}" imagesizes="100vw" fetchpriority="high">
+    @endpush
+@endif
+
 <section class="relative isolate overflow-hidden bg-brand-navy py-3 text-white" @if ($uniformHeight) data-uniform-channel-hero @endif>
     @if ($backgroundImage)
         <img
             src="{{ $backgroundImage }}"
+            @if ($heroSrcset) srcset="{{ $heroSrcset }}" sizes="100vw" @endif
+            loading="eager"
             alt="{{ $backgroundAlt ?: $title }}"
             class="absolute inset-0 -z-20 size-full object-cover opacity-30"
             style="object-position: {{ $backgroundPosition }};"

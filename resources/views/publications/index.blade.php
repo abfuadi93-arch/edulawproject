@@ -150,7 +150,7 @@
         title="Riset & Publikasi"
         eyebrow="Kanal Riset & Publikasi"
         description="Repository kajian, policy brief, naskah akademik, working paper, research report, dan buku digital untuk memperkuat literasi hukum dan kebijakan publik."
-        background-image="https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1800&q=85"
+        :background-image="asset('images/hero/channels/publications-1600.webp')"
         background-alt="Riset dan publikasi hukum Edulaw Project"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
@@ -178,9 +178,9 @@
                         <div class="publication-feature-media-shell min-w-0">
                             <a href="{{ route('publications.show', $featured->slug) }}" class="publication-feature-media relative block w-full bg-slate-100 overflow-hidden focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy" aria-label="Baca {{ $featured->title }}">
                                 @if ($featuredCover)
-                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover object-center" fetchpriority="high" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
+                                    <img src="{{ $featuredCover }}" alt="Sampul {{ $featured->title }}" class="publication-feature-cover object-cover object-center" loading="lazy" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                                 @endif
-                                <span @if ($featuredCover) hidden @endif class="publication-feature-fallback rounded-lg border border-slate-200 bg-white p-5 text-center text-sm text-slate-400">Pratinjau PDF belum tersedia</span>
+                                <x-publications.generic-cover :hidden="(bool) $featuredCover" class="publication-feature-fallback" />
                             </a>
                         </div>
                         <div class="flex min-w-0 flex-col justify-center channel-feature-content">
@@ -288,11 +288,11 @@
                     @endphp
 
                     <article data-repository-card class="group flex min-w-0 items-start overflow-hidden rounded-xl border border-slate-200 bg-white transition duration-200 hover:-translate-y-px hover:border-slate-300 hover:shadow-sm">
-                        <a href="{{ route('publications.show', $publication->slug) }}" class="repository-cover relative block w-[90px] shrink-0 self-start overflow-hidden bg-slate-100 sm:w-[120px]">
+                        <a href="{{ route('publications.show', $publication->slug) }}" aria-label="Baca {{ $publication->title }}" class="repository-cover relative block w-[90px] shrink-0 self-start overflow-hidden bg-slate-100 sm:w-[120px]">
                             @if ($coverImage)
                                 <img src="{{ $coverImage }}" alt="Sampul {{ $publication->title }}" loading="lazy" class="absolute inset-0 h-full w-full object-cover object-top" onerror="this.style.display='none';this.nextElementSibling.hidden=false">
                             @endif
-                            <span @if ($coverImage) hidden @endif class="aspect-[210/297] rounded-lg border border-slate-200 bg-white p-3 text-center text-xs text-slate-400">Pratinjau PDF belum tersedia</span>
+                            <x-publications.generic-cover :hidden="(bool) $coverImage" />
                         </a>
                         <div class="repository-content min-w-0 flex-1">
                             <div class="flex flex-wrap items-center gap-1.5">

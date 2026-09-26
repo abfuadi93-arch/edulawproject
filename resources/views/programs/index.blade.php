@@ -26,7 +26,7 @@
 
 @section('content')
 @php
-    $heroImage = 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=1800&q=85';
+    $heroImage = asset('images/hero/channels/programs-1600.webp');
 
     $collaborationUrl = \Illuminate\Support\Facades\Route::has('collaboration.index')
         ? route('collaboration.index')

@@ -75,7 +75,7 @@
         title="Opportunities"
         eyebrow="Kanal Opportunities"
         description="Temukan beasiswa, magang, fellowship, kompetisi, call for papers, dan peluang pengembangan di bidang hukum."
-        background-image="https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85"
+        :background-image="asset('images/hero/channels/opportunities-1600.webp')"
         background-alt="Kolaborasi dan pengembangan kapasitas melalui Opportunities Edulaw"
         :breadcrumbs="[
             ['label' => 'Beranda', 'url' => route('home')],
