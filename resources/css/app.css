@@ -1,4 +1,11 @@
-@import 'tailwindcss';
+@import 'tailwindcss' source(none);
+@source '../views';
+@source '../js';
+@source '../../app';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views';
+@source not '../views/filament';
+@source not '../js/filament';
+@source not '../../app/Filament';
 @import './font-stack.css';
 @import './typography.css';
 @import './navigation.css';

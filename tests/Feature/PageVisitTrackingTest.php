@@ -1,7 +1,10 @@
 <?php
 
+use App\Http\Middleware\TrackPageVisit;
 use App\Models\PageVisit;
 use App\Models\User;
+use Illuminate\Http\Request;
+use Illuminate\Support\Defer\DeferredCallbackCollection;
 use Illuminate\Support\Facades\Hash;
 
 test('public get requests are tracked as page visits', function () {
@@ -62,4 +65,24 @@ test('admin dashboard renders traffic widget', function () {
         ->assertSee('Traffic Website')
         ->assertSee('Halaman Teratas')
         ->assertSee('Beranda');
+});
+
+test('analytics writes happen after the response phase', function () {
+    $request = Request::create('/insight', 'GET', server: ['HTTP_USER_AGENT' => 'Mozilla/5.0']);
+    $response = app(TrackPageVisit::class)->handle($request, fn () => response('Ready'));
+
+    expect($response->getContent())->toBe('Ready')
+        ->and(PageVisit::query()->count())->toBe(0);
+
+    app(DeferredCallbackCollection::class)->invoke();
+
+    expect(PageVisit::query()->count())->toBe(1)
+        ->and(PageVisit::query()->first()->path)->toBe('insight');
+});
+
+test('preview crawlers do not receive analytics cookies or enqueue analytics writes', function () {
+    $this->withHeader('User-Agent', 'WhatsApp/2.0')->get('/')
+        ->assertOk()->assertCookieMissing('edulaw_visitor_id');
+
+    expect(PageVisit::query()->count())->toBe(0);
 });

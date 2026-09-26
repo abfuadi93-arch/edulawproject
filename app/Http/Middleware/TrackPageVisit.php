@@ -9,6 +9,8 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Symfony\Component\HttpFoundation\Response;
 
+use function Illuminate\Support\defer;
+
 class TrackPageVisit
 {
     private const COOKIE_NAME = 'edulaw_visitor_id';
@@ -20,6 +22,10 @@ class TrackPageVisit
 
         /** @var Response $response */
         $response = $next($request);
+
+        if (! $this->shouldTrack($request, $response)) {
+            return $response;
+        }
 
         if ($isNewVisitor) {
             $response->headers->setCookie(cookie(
@@ -35,29 +41,30 @@ class TrackPageVisit
             ));
         }
 
-        if (! $this->shouldTrack($request, $response)) {
-            return $response;
-        }
+        $visit = [
+            'visitor_id' => $visitorId,
+            'ip_hash' => $this->hashIp($request->ip()),
+            'method' => $request->method(),
+            'path' => $request->path(),
+            'full_url' => Str::limit($request->fullUrl(), 2048, ''),
+            'route_name' => $request->route()?->getName(),
+            'status_code' => $response->getStatusCode(),
+            'referrer' => Str::limit((string) $request->headers->get('referer'), 2000, '') ?: null,
+            'user_agent' => Str::limit((string) $request->userAgent(), 2000, '') ?: null,
+            'visited_at' => now(),
+        ];
 
-        try {
-            PageVisit::query()->create([
-                'visitor_id' => $visitorId,
-                'ip_hash' => $this->hashIp($request->ip()),
-                'method' => $request->method(),
-                'path' => $request->path(),
-                'full_url' => Str::limit($request->fullUrl(), 2048, ''),
-                'route_name' => $request->route()?->getName(),
-                'status_code' => $response->getStatusCode(),
-                'referrer' => Str::limit((string) $request->headers->get('referer'), 2000, '') ?: null,
-                'user_agent' => Str::limit((string) $request->userAgent(), 2000, '') ?: null,
-                'visited_at' => now(),
-            ]);
-        } catch (\Throwable $exception) {
-            Log::debug('Page visit tracking skipped.', [
-                'message' => $exception->getMessage(),
-                'path' => $request->path(),
-            ]);
-        }
+        // Persist analytics after the response is sent; capture request values now.
+        defer(function () use ($visit): void {
+            try {
+                PageVisit::query()->create($visit);
+            } catch (\Throwable $exception) {
+                Log::debug('Page visit tracking skipped.', [
+                    'message' => $exception->getMessage(),
+                    'path' => $visit['path'],
+                ]);
+            }
+        });
 
         return $response;
     }
