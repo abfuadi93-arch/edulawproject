@@ -107,7 +107,12 @@
                     <h2 id="opportunity-results-title" class="mt-1 font-display text-2xl font-bold text-brand-navy sm:text-3xl">{{ $resultsTitle }}</h2>
                     <p class="mt-1.5 max-w-3xl text-base leading-7 text-slate-600">Cari peluang berdasarkan kata kunci, kategori, format, lokasi, dan deadline.</p>
                 </div>
-                <p class="text-sm font-bold text-slate-500"><strong class="text-brand-navy">{{ number_format($opportunities->total()) }}</strong> kesempatan ditemukan</p>
+                <div class="text-sm text-slate-500">
+                    <p class="font-bold"><strong class="text-brand-navy">{{ number_format($opportunities->total()) }}</strong> kesempatan ditemukan</p>
+                    @if ($featuredOpportunity && ! $hasActiveFilters)
+                        <p class="mt-1">Di luar 1 peluang pada Pilihan Edulaw di atas.</p>
+                    @endif
+                </div>
             </div>
 
             <form method="GET" action="{{ $indexUrl }}#opportunity-finder" class="mt-5 rounded-[14px] bg-white p-3">

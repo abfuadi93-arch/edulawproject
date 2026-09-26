@@ -13,6 +13,7 @@ use App\Http\Controllers\ProgramController;
 use App\Http\Controllers\PublicationController;
 use App\Http\Controllers\SearchController;
 use App\Http\Controllers\SitemapController;
+use App\Http\Middleware\PreventStaleOpportunityPages;
 use App\Http\Middleware\TrackPageVisit;
 use Illuminate\Support\Facades\Route;
 
@@ -28,7 +29,7 @@ Route::get('/media/image/{token}/{width}.webp', ImageVariantController::class)
     ->name('media.variant');
 
 Route::middleware(TrackPageVisit::class)->group(function (): void {
-    Route::get('/', [HomeController::class, 'index'])->name('home');
+    Route::get('/', [HomeController::class, 'index'])->middleware(PreventStaleOpportunityPages::class)->name('home');
 
     Route::get('/tentang', [PageController::class, 'about'])->name('about');
     Route::get('/profil/{slug}', [ProfileController::class, 'show'])->name('profiles.show');
@@ -58,7 +59,7 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/program/archive', [ProgramController::class, 'archive'])->name('programs.archive');
     Route::get('/program/{slug}', [ProgramController::class, 'show'])->name('programs.show');
 
-    Route::get('/opportunities', [OpportunityController::class, 'index'])->name('opportunities.index');
+    Route::get('/opportunities', [OpportunityController::class, 'index'])->middleware(PreventStaleOpportunityPages::class)->name('opportunities.index');
     Route::get('/opportunities/{slug}', [OpportunityController::class, 'retired'])->name('opportunities.show');
     Route::redirect('/peluang', '/opportunities', 301);
 
