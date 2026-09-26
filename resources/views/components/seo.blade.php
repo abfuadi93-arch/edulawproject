@@ -8,6 +8,10 @@
     'robots' => 'index,follow',
 ])
 
+@php
+    $previewImage = \App\Support\SocialPreviewImage::metadata($image);
+@endphp
+
 <title>{{ $title }}</title>
 <meta name="description" content="{{ $description }}">
 <meta name="robots" content="{{ $robots }}">
@@ -21,16 +25,19 @@
 <meta property="og:site_name" content="Edulaw Project">
 <meta property="og:locale" content="id_ID">
 
-@if ($image)
-    <meta property="og:image" content="{{ $image }}">
-    <meta property="og:image:secure_url" content="{{ $image }}">
+    <meta property="og:image" content="{{ $previewImage['url'] }}">
+    @if ($previewImage['secure_url'])
+        <meta property="og:image:secure_url" content="{{ $previewImage['secure_url'] }}">
+    @endif
+    @if (isset($previewImage['width']))
+        <meta property="og:image:width" content="{{ $previewImage['width'] }}">
+        <meta property="og:image:height" content="{{ $previewImage['height'] }}">
+        <meta property="og:image:type" content="{{ $previewImage['type'] }}">
+    @endif
     <meta property="og:image:alt" content="{{ $imageAlt ?? $title }}">
-@endif
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="{{ $title }}">
 <meta name="twitter:description" content="{{ $description }}">
 
-@if ($image)
-    <meta name="twitter:image" content="{{ $image }}">
-@endif
+<meta name="twitter:image" content="{{ $previewImage['url'] }}">
