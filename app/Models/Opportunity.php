@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Support\EdulawSite;
+use App\Support\OpportunityCategory;
+use App\Support\OpportunityDeadline;
 use App\Support\OpportunityLink;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
@@ -72,7 +74,7 @@ class Opportunity extends Model
             ->where(function (Builder $query): void {
                 $query
                     ->whereNull('deadline')
-                    ->orWhereDate('deadline', '>=', today());
+                    ->orWhereDate('deadline', '>=', OpportunityDeadline::today()->toDateString());
             });
     }
 
@@ -161,7 +163,7 @@ class Opportunity extends Model
 
     public function getDisplayTypeAttribute(): string
     {
-        return \App\Support\OpportunityCategory::label($this->attributes['type'] ?? null);
+        return OpportunityCategory::label($this->attributes['type'] ?? null);
     }
 
     public function getTypeLabelAttribute(): string
@@ -172,7 +174,7 @@ class Opportunity extends Model
     public function getDisplayStatusAttribute(): string
     {
         return match ($this->attributes['status'] ?? null) {
-            'open' => 'Masih Dibuka',
+            'open' => $this->is_open_for_applications ? 'Masih Dibuka' : 'Sudah Ditutup',
             'closed' => 'Sudah Ditutup',
             'archived' => 'Diarsipkan',
             default => Str::headline((string) ($this->attributes['status'] ?? 'Status')),
@@ -209,7 +211,7 @@ class Opportunity extends Model
             return 'Tanpa batas waktu';
         }
 
-        $days = (int) today()->diffInDays($this->deadline->copy()->startOfDay(), false);
+        $days = OpportunityDeadline::daysRemaining($this->deadline);
 
         return match (true) {
             $days < 0 => 'Deadline berakhir',
@@ -225,6 +227,6 @@ class Opportunity extends Model
     public function getIsOpenForApplicationsAttribute(): bool
     {
         return $this->status === 'open'
-            && ($this->deadline === null || $this->deadline->isToday() || $this->deadline->isFuture());
+            && ($this->deadline === null || OpportunityDeadline::daysRemaining($this->deadline) >= 0);
     }
 }

@@ -8,6 +8,7 @@ use App\Filament\Resources\ProgramResource;
 use App\Models\Insight;
 use App\Models\Opportunity;
 use App\Models\Program;
+use App\Support\OpportunityDeadline;
 use Filament\Widgets\Widget;
 use Illuminate\Support\Facades\Cache;
 
@@ -56,7 +57,7 @@ class RequiresAttentionWidget extends Widget
                 ->count(),
             'expired_open_opportunities' => Opportunity::query()
                 ->where('status', 'open')
-                ->whereDate('deadline', '<', today())
+                ->whereDate('deadline', '<', OpportunityDeadline::today()->toDateString())
                 ->count(),
         ]);
 

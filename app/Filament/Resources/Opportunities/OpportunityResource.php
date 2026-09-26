@@ -6,6 +6,8 @@ use App\Filament\Resources\Opportunities\Pages\CreateOpportunity;
 use App\Filament\Resources\Opportunities\Pages\EditOpportunity;
 use App\Filament\Resources\Opportunities\Pages\ListOpportunities;
 use App\Models\Opportunity;
+use App\Support\OpportunityCategory;
+use App\Support\OpportunityDeadline;
 use App\Support\OpportunityLink;
 use BackedEnum;
 use Closure;
@@ -91,7 +93,7 @@ class OpportunityResource extends Resource
                                                 Select::make('type')
                                                     ->label('Kategori')
                                                     ->options(static::typeOptions())
-                                                    ->afterStateHydrated(fn ($component, $state) => $component->state(\App\Support\OpportunityCategory::normalize($state)))
+                                                    ->afterStateHydrated(fn ($component, $state) => $component->state(OpportunityCategory::normalize($state)))
                                                     ->helperText('Program & Kolaborasi mencakup fellowship, exchange, pelatihan, summer school, volunteer, dan kolaborasi terbuka.')
                                                     ->default('open_collaboration')
                                                     ->searchable()
@@ -450,7 +452,7 @@ class OpportunityResource extends Resource
 
     public static function typeOptions(): array
     {
-        return \App\Support\OpportunityCategory::options();
+        return OpportunityCategory::options();
     }
 
     public static function table(Table $table): Table
@@ -486,8 +488,8 @@ class OpportunityResource extends Resource
                         default => 'gray',
                     })
                     ->limit(24)
-                    ->tooltip(fn (?string $state): ?string => filled($state) ? \App\Support\OpportunityCategory::label($state) : null)
-                    ->formatStateUsing(fn (?string $state): string => $state ? \App\Support\OpportunityCategory::label($state) : '—')
+                    ->tooltip(fn (?string $state): ?string => filled($state) ? OpportunityCategory::label($state) : null)
+                    ->formatStateUsing(fn (?string $state): string => $state ? OpportunityCategory::label($state) : '—')
                     ->visibleFrom('lg')
                     ->extraHeaderAttributes(['class' => 'edulaw-resource-classification-header'])
                     ->extraCellAttributes(['class' => 'edulaw-resource-classification-cell']),
@@ -542,7 +544,7 @@ class OpportunityResource extends Resource
                 SelectFilter::make('type')
                     ->label('Jenis')
                     ->options(static::typeOptions())
-                    ->query(fn ($query, array $data) => $query->when($data['value'] ?? null, fn ($query, $type) => $query->whereIn('type', \App\Support\OpportunityCategory::values($type)))),
+                    ->query(fn ($query, array $data) => $query->when($data['value'] ?? null, fn ($query, $type) => $query->whereIn('type', OpportunityCategory::values($type)))),
 
                 SelectFilter::make('status')
                     ->label('Status')
@@ -648,7 +650,7 @@ class OpportunityResource extends Resource
             return null;
         }
 
-        $days = (int) today()->diffInDays($deadline->copy()->startOfDay(), false);
+        $days = OpportunityDeadline::daysRemaining($deadline);
 
         return match (true) {
             $days === 0 => 'Berakhir hari ini',
@@ -663,7 +665,7 @@ class OpportunityResource extends Resource
             return 'gray';
         }
 
-        $days = (int) today()->diffInDays($deadline->copy()->startOfDay(), false);
+        $days = OpportunityDeadline::daysRemaining($deadline);
 
         return $days >= 0 && $days <= 7 ? 'warning' : 'gray';
     }

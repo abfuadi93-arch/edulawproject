@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\Opportunity;
+use App\Support\OpportunityCategory;
+use App\Support\OpportunityDeadline;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
@@ -26,7 +28,7 @@ class OpportunityController extends Controller
         $selectedStatus = in_array($request->string('status')->toString(), ['open', 'closed'], true)
             ? $request->string('status')->toString()
             : 'open';
-        $requestedType = \App\Support\OpportunityCategory::normalize($request->string('type')->toString());
+        $requestedType = OpportunityCategory::normalize($request->string('type')->toString());
         $selectedType = in_array($requestedType, array_keys(self::typeLabels()), true)
             ? $requestedType
             : null;
@@ -45,9 +47,7 @@ class OpportunityController extends Controller
         $query = Opportunity::query()
             ->withExternalLink()
             ->where('status', $selectedStatus)
-            ->when($selectedStatus === 'open', fn ($query) => $query->where(function ($query): void {
-                $query->whereNull('deadline')->orWhereDate('deadline', '>=', today());
-            }))
+            ->when($selectedStatus === 'open', fn ($query) => $query->active())
             ->when($featuredOpportunity, fn ($query) => $query->whereKeyNot($featuredOpportunity->getKey()))
             ->when($search !== '', fn ($query) => $query->where(function ($query) use ($search): void {
                 $query
@@ -56,7 +56,7 @@ class OpportunityController extends Controller
                     ->orWhere('description', 'like', "%{$search}%")
                     ->orWhere('location', 'like', "%{$search}%");
             }))
-            ->when($selectedType, fn ($query, string $type) => $query->whereIn('type', \App\Support\OpportunityCategory::values($type)))
+            ->when($selectedType, fn ($query, string $type) => $query->whereIn('type', OpportunityCategory::values($type)))
             ->when($selectedFormat, function ($query, string $format): void {
                 if ($format === 'hybrid') {
                     $query->where(function ($query): void {
@@ -77,9 +77,9 @@ class OpportunityController extends Controller
             ->when($selectedLocation !== '', fn ($query) => $query->where('location', $selectedLocation));
 
         match ($selectedDeadline) {
-            '7_days' => $query->whereBetween('deadline', [today(), today()->addDays(7)]),
-            '30_days' => $query->whereBetween('deadline', [today(), today()->addDays(30)]),
-            'month' => $query->whereBetween('deadline', [today()->startOfMonth(), today()->endOfMonth()]),
+            '7_days' => $query->whereBetween('deadline', [OpportunityDeadline::today(), OpportunityDeadline::today()->addDays(7)]),
+            '30_days' => $query->whereBetween('deadline', [OpportunityDeadline::today(), OpportunityDeadline::today()->addDays(30)]),
+            'month' => $query->whereBetween('deadline', [OpportunityDeadline::today()->startOfMonth(), OpportunityDeadline::today()->endOfMonth()]),
             default => null,
         };
 
@@ -124,7 +124,7 @@ class OpportunityController extends Controller
             ->select('type')
             ->distinct()
             ->pluck('type')
-            ->map(fn (string $type): string => \App\Support\OpportunityCategory::normalize($type))
+            ->map(fn (string $type): string => OpportunityCategory::normalize($type))
             ->filter(fn (string $type): bool => array_key_exists($type, self::typeLabels()))
             ->push('career')
             ->unique()
@@ -173,7 +173,7 @@ class OpportunityController extends Controller
 
     private static function typeLabels(): array
     {
-        return \App\Support\OpportunityCategory::options();
+        return OpportunityCategory::options();
     }
 
     private static function formatBucket(string $format): ?string
