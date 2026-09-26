@@ -537,7 +537,7 @@ test('most read section renders five visited insights', function () {
     expect(substr_count($response->getContent(), 'data-most-read-item'))->toBe(5);
 });
 
-test('most read section stays hidden when no visit data exists', function () {
+test('most read section keeps period navigation available without visit data', function () {
     $category = InsightCategory::query()->create([
         'name' => 'Opini Publik',
         'slug' => 'opini-publik',
@@ -557,7 +557,8 @@ test('most read section stays hidden when no visit data exists', function () {
 
     $this->get(route('insights.index'))
         ->assertOk()
-        ->assertDontSee('Paling Banyak Dibaca')
+        ->assertSee('Paling Banyak Dibaca')
+        ->assertSee('Belum ada artikel yang dibaca pada periode ini.')
         ->assertViewHas('popularInsights', fn ($insights): bool => $insights->isEmpty());
 });
 
@@ -897,10 +898,49 @@ test('empty optional editorial sections stay hidden and featured article is not 
 
     $response = $this->get(route('insights.index'))
         ->assertOk()
-        ->assertDontSee('Paling Banyak Dibaca')
+        ->assertSee('Paling Banyak Dibaca')
+        ->assertSee('Belum ada artikel yang dibaca pada periode ini.')
         ->assertDontSee('Kontributor Editorial');
 
     expect($response->getContent())
         ->toContain('data-featured-editorial="'.$featured->id.'"')
         ->not->toContain('data-latest-editorial="'.$featured->id.'"');
+});
+
+
+test('popular periods rank successful visits within calendar boundaries and keep five published articles', function () {
+    $this->travelTo(\Illuminate\Support\Carbon::parse('2026-09-26 12:00:00', config('app.timezone')));
+    $articles = collect(range(1, 6))->map(fn ($i) => Insight::query()->create([
+        'title' => "Period Article {$i}", 'slug' => "period-article-{$i}",
+        'content' => '<p>Period test</p>', 'status' => 'published',
+        'published_at' => now()->subYear(),
+    ]));
+    $visit = function ($article, $time, $status = 200) {
+        PageVisit::query()->create([
+            'visitor_id' => 'period-reader', 'method' => 'GET',
+            'path' => 'insight/'.$article->slug, 'full_url' => route('insights.show', $article->slug),
+            'route_name' => 'insights.show', 'status_code' => $status, 'visited_at' => $time,
+        ]);
+    };
+    foreach ($articles as $article) $visit($article, now());
+    $visit($articles[0], now()->startOfDay());
+    $visit($articles[1], now()->startOfDay()->subSecond());
+    $visit($articles[1], now()->startOfWeek());
+    foreach (range(1, 4) as $i) $visit($articles[2], now()->startOfWeek()->subSecond());
+    $visit($articles[2], now()->startOfMonth());
+    foreach (range(1, 7) as $i) $visit($articles[3], now()->startOfMonth()->subSecond());
+    foreach (range(1, 10) as $i) {
+        $visit($articles[4], now()->addDay());
+        $visit($articles[5], now(), 404);
+    }
+    foreach (['today' => [0, 2], 'week' => [1, 3], 'month' => [2, 6], 'all' => [3, 8]] as $period => [$index, $count]) {
+        $response = $this->get(route('insights.index', ['popular_period' => $period]))->assertOk();
+        $response->assertViewHas('popularInsights', fn ($items) => $items->count() === 5
+            && $items->first()->id === $articles[$index]->id
+            && $items->first()->visit_count === $count);
+        expect(substr_count($response->getContent(), 'data-most-read-item'))->toBe(5);
+        foreach (['Hari Ini', 'Minggu Ini', 'Bulan Ini', 'Semua'] as $label) $response->assertSee($label);
+    }
+    $this->get(route('insights.index', ['popular_period' => 'invalid']))->assertOk()->assertViewHas('popularPeriod', 'all');
+    $this->travelBack();
 });

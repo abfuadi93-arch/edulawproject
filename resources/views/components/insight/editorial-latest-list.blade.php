@@ -1,6 +1,7 @@
 @props([
     'popularArticles' => [],
     'popularHasViews' => false,
+    'popularPeriod' => 'all',
     'contributors' => [],
     'categoryName',
     'publishedDate',
@@ -16,7 +17,6 @@
 
 @endphp
 
-@if (($popularHasViews && $popularArticles->isNotEmpty()) || $contributors->isNotEmpty())
     <section class="channel-section bg-white" aria-labelledby="editorial-pulse-heading">
         <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
             <div>
@@ -26,8 +26,7 @@
             </div>
 
             <div class="mt-6 grid items-start gap-6 lg:grid-cols-[minmax(0,1.65fr)_minmax(300px,0.85fr)]" data-editorial-pulse-grid>
-                @if ($popularHasViews && $popularArticles->isNotEmpty())
-                    <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="popular-editorial-heading" data-editorial-popular-panel>
+                    <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" id="editorial-popular" aria-labelledby="popular-editorial-heading" data-editorial-popular-panel>
                         <div class="flex items-end justify-between gap-4">
                             <div>
                                 <p class="text-[11px] font-bold uppercase tracking-[0.13em] text-slate-500">Tulisan Terpopuler</p>
@@ -36,6 +35,22 @@
                             <a href="{{ $archiveUrl }}" class="text-xs font-bold text-brand-navy">Lihat semua <span aria-hidden="true">→</span></a>
                         </div>
 
+                        <nav class="mt-3 flex gap-5 border-b border-slate-200 sm:gap-6" aria-label="Periode tulisan terpopuler">
+                            @foreach (['today' => 'Hari Ini', 'week' => 'Minggu Ini', 'month' => 'Bulan Ini', 'all' => 'Semua'] as $period => $label)
+                                @php
+                                    $periodColor = $popularPeriod === $period
+                                        ? 'text-violet-600'
+                                        : 'text-teal-600 hover:text-violet-600';
+                                @endphp
+                                <a href="{{ request()->fullUrlWithQuery(['popular_period' => $period]) }}#editorial-popular"
+                                   @if ($popularPeriod === $period) aria-current="true" @endif
+                                   class="inline-flex shrink-0 items-center border-b-2 px-0 py-2 text-xs font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-current {{ $periodColor }} {{ $popularPeriod === $period ? 'border-current' : 'border-transparent hover:border-current' }}">
+                                    {{ $label }}
+                                </a>
+                            @endforeach
+                        </nav>
+
+                        @if ($leadPopular)
                         <div class="mt-4 grid gap-4 sm:grid-cols-[minmax(0,1.15fr)_minmax(240px,0.85fr)]">
                             <a href="{{ route('insights.show', $leadPopular->slug) }}" class="group relative flex min-h-[250px] overflow-hidden rounded-xl bg-brand-navy focus-visible:outline-2 focus-visible:outline-offset-3 focus-visible:outline-brand-amber" data-most-read-item>
                                 @if ($hasImage($leadPopular))
@@ -67,8 +82,10 @@
                                 @endforeach
                             </ol>
                         </div>
+                        @else
+                            <p class="mt-4 py-6 text-sm text-slate-500" role="status">Belum ada artikel yang dibaca pada periode ini.</p>
+                        @endif
                     </section>
-                @endif
 
                 @if ($contributors->isNotEmpty())
                     <section class="rounded-[14px] bg-[#f7f8fa] p-4 sm:p-5" aria-labelledby="productive-heading" data-editorial-contributor-panel>
@@ -118,4 +135,3 @@
             </div>
         </div>
     </section>
-@endif

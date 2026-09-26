@@ -147,6 +147,7 @@
 
     <x-insight.editorial-latest-list
         :popular-articles="$popularEditorials"
+        :popular-period="$popularPeriod"
         :popular-has-views="$popularHasViews ?? false"
         :contributors="$contributors"
         :category-name="$categoryName"

@@ -132,10 +132,10 @@ class InsightController extends Controller
             ->take(4)
             ->values();
 
-        $popularInsights = $this->popularInsights();
-        $popularEditorials = $popularInsights->isNotEmpty()
-            ? $popularInsights->take(10)->values()
-            : $latestInsights->take(10)->values();
+        $popularPeriod = in_array($request->query('popular_period'), ['today', 'week', 'month', 'all'], true)
+            ? $request->query('popular_period')
+            : 'all';
+        $popularInsights = $this->popularInsights($popularPeriod);
 
         $query = match ($sort) {
             'oldest' => $query->orderBy('published_at')->orderBy('id'),
@@ -155,7 +155,8 @@ class InsightController extends Controller
             'editorialPicks' => $editorialPicks,
             'categorySections' => $categorySections,
             'latestEditorials' => $latestEditorials,
-            'popularEditorials' => $popularEditorials,
+            'popularEditorials' => $popularInsights->take(5)->values(),
+            'popularPeriod' => $popularPeriod,
             'popularHasViews' => $popularInsights->isNotEmpty(),
             'insightChannels' => $insightChannels,
             'popularInsights' => $popularInsights,
@@ -305,20 +306,28 @@ class InsightController extends Controller
             ->get();
     }
 
-    private function popularInsights(): Collection
+    private function popularInsights(string $period = 'all'): Collection
     {
+        $now = now();
+        $start = match ($period) {
+            'today' => $now->copy()->startOfDay(),
+            'week' => $now->copy()->startOfWeek(\Carbon\CarbonInterface::MONDAY),
+            'month' => $now->copy()->startOfMonth(),
+            default => null,
+        };
+
         $visitsBySlug = PageVisit::query()
             ->selectRaw('path, COUNT(*) as visit_count')
             ->where('route_name', 'insights.show')
             ->where('status_code', 200)
-            ->since(now()->subDays(30)->startOfDay())
+            ->where('method', 'GET')
+            ->when($start, fn ($query) => $query->since($start))
+            ->where('visited_at', '<=', $now)
             ->groupBy('path')
             ->orderByDesc('visit_count')
-            ->limit(50)
             ->get()
-            ->mapWithKeys(fn (PageVisit $visit): array => [
-                Str::afterLast(rawurldecode($visit->path), '/') => (int) $visit->visit_count,
-            ]);
+            ->groupBy(fn (PageVisit $visit): string => Str::afterLast(rtrim(rawurldecode($visit->path), '/'), '/'))
+            ->map(fn (Collection $visits): int => (int) $visits->sum('visit_count'));
 
         if ($visitsBySlug->isEmpty()) {
             return collect();
@@ -342,7 +351,8 @@ class InsightController extends Controller
                 return $insight;
             })
             ->filter()
-            ->take(20)
+            ->sort(fn (Insight $a, Insight $b): int => ($b->visit_count <=> $a->visit_count) ?: ($a->id <=> $b->id))
+            ->take(5)
             ->values();
     }
 
