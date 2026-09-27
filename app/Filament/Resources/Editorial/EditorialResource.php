@@ -6,6 +6,7 @@ use App\Enums\InsightStatus;
 use App\Filament\Forms\Components\TinyMceEditor;
 use App\Filament\Resources\Editorial\Pages\ListEditorialInsights;
 use App\Filament\Resources\Editorial\Pages\ViewEditorialWorkspace;
+use App\Filament\Resources\Insights\InsightResource;
 use App\Models\Insight;
 use App\Models\User;
 use App\Services\InsightEditorialWorkflowService;
@@ -105,6 +106,10 @@ class EditorialResource extends Resource
                                 ->columnSpanFull(),
                         ])
                         ->columnSpan(['xl' => 4]),
+                    Placeholder::make('publication_checklist')
+                        ->label('Kelengkapan Naskah')
+                        ->content(fn ($get): string => InsightResource::formCompletenessSummary($get))
+                        ->columnSpanFull(),
                     Section::make('Naskah')
                         ->description('Identitas dan materi pendukung artikel.')
                         ->schema([

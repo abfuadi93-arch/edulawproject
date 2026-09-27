@@ -3,6 +3,7 @@
     $dateLabel = $record->published_at ? 'Rilis' : 'Dibuat';
     $coverUrl = filled($record->cover_image) ? edulaw_file_url($record->cover_image) : null;
     $placements = collect([
+        $record->needsRevision() ? ['label' => 'Perlu Revisi', 'color' => 'warning'] : null,
         \App\Filament\Resources\Insights\InsightResource::isPublishReady($record) ? ['label' => 'Siap Tayang', 'color' => 'success'] : null,
         $record->featured ? ['label' => 'Unggulan', 'color' => 'primary'] : null,
         $record->editor_pick ? ['label' => 'Pilihan Editor', 'color' => 'warning'] : null,

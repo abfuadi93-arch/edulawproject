@@ -84,21 +84,17 @@ class ViewEditorialWorkspace extends EditRecord
                     'Naskah dikembalikan ke Draft.',
                 )),
             Action::make('publish')
-                ->label('Terbitkan')
+                ->label('Simpan & Terbitkan')
                 ->icon('heroicon-o-paper-airplane')
                 ->color('success')
                 ->requiresConfirmation()
-                ->modalHeading('Terbitkan artikel?')
-                ->modalDescription('Jika Jadwal Terbit kosong, artikel langsung tayang. Jika diisi waktu mendatang, artikel akan tayang otomatis sesuai jadwal.')
+                ->modalHeading('Simpan perubahan dan terbitkan artikel?')
+                ->modalDescription('Seluruh perubahan pada formulir akan disimpan terlebih dahulu. Jika Jadwal Terbit kosong, artikel langsung tayang. Jika diisi waktu mendatang, artikel akan tayang otomatis sesuai jadwal.')
                 ->visible(fn (): bool => Auth::user()?->can('publish', $this->getRecord()) ?? false)
                 ->action(fn () => $this->runWorkflowAction(
                     function (): Insight {
                         Gate::authorize('publish', $this->getRecord()->refresh());
-                        $formData = $this->getSchema('form')?->getState() ?? [];
-                        $this->getRecord()->update([
-                            'published_at' => $formData['published_at'] ?? null,
-                            'updated_by' => Auth::id(),
-                        ]);
+                        $this->save(shouldRedirect: false, shouldSendSavedNotification: false);
 
                         return app(InsightEditorialWorkflowService::class)->publish($this->getRecord()->refresh(), Auth::user());
                     },

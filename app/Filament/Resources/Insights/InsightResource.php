@@ -69,6 +69,20 @@ class InsightResource extends Resource
     public static function form(Schema $schema): Schema
     {
         return $schema->components([
+            Section::make('Perlu Revisi')
+                ->description('Perbaiki naskah sesuai catatan, lalu kirim ulang ke editor yang sama.')
+                ->icon('heroicon-o-arrow-uturn-left')
+                ->visible(fn (?Insight $record): bool => $record?->needsRevision() ?? false)
+                ->schema([
+                    Placeholder::make('revision_note')
+                        ->label('Catatan Editor')
+                        ->content(fn (?Insight $record): string => $record?->editor_notes ?: 'Lihat catatan editor.'),
+                ])
+                ->columnSpanFull(),
+            Placeholder::make('submission_checklist')
+                ->label('Kelengkapan Naskah')
+                ->content(fn ($get): string => static::formCompletenessSummary($get))
+                ->columnSpanFull(),
             Grid::make(['default' => 1, 'xl' => 12])
                 ->schema([
                     Group::make()->schema([
@@ -220,6 +234,21 @@ class InsightResource extends Resource
                 ])
                 ->columnSpanFull(),
         ]);
+    }
+
+    public static function formCompletenessSummary($get): string
+    {
+        $missing = collect([
+            'judul' => blank($get('title')),
+            'kategori' => blank($get('insight_category_id')),
+            'penulis' => blank($get('authors')),
+            'isi artikel' => blank(trim(strip_tags((string) $get('content')))),
+            'sampul' => blank($get('cover_image')),
+        ])->filter()->keys();
+
+        return $missing->isEmpty()
+            ? 'Isian utama lengkap. Kelengkapan akhir diperiksa saat kirim atau terbit.'
+            : 'Belum lengkap: '.$missing->join(', ').'. Simpan untuk memperbarui pemeriksaan.';
     }
 
     public static function prepareFormDataForPersistence(array $data): array

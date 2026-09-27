@@ -12,6 +12,13 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Insight extends Model
 {
+    public function needsRevision(): bool
+    {
+        return $this->status->canonical() === InsightStatus::Draft
+            && $this->revision_requested_at !== null
+            && ($this->submitted_at === null || $this->revision_requested_at->gte($this->submitted_at));
+    }
+
     use HasFactory;
 
     private const DEFAULT_COVER_IMAGE = 'images/hero/hero-edulaw.jpg';

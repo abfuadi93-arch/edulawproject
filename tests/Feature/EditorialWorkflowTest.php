@@ -15,12 +15,15 @@ use App\Services\InsightEditorialWorkflowService;
 use Database\Seeders\RolePermissionSeeder;
 use Filament\Facades\Filament;
 use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
 use Livewire\Livewire;
 use Spatie\Permission\PermissionRegistrar;
 
 beforeEach(function (): void {
+    Storage::fake('public');
     $this->seed(RolePermissionSeeder::class);
 });
 
@@ -62,6 +65,9 @@ function simpleEditorialInsight(User $writer, array $overrides = []): Insight
         'status' => InsightStatus::Draft,
         ...$overrides,
     ]);
+    if (filled($insight->cover_image)) {
+        Storage::disk('public')->put($insight->cover_image, UploadedFile::fake()->image('cover.jpg')->getContent());
+    }
     $insight->authors()->attach($author, ['author_order' => 1, 'role' => 'Penulis']);
 
     return $insight->refresh();
@@ -584,13 +590,17 @@ test('action Terbitkan menyimpan Jadwal Terbit dari workspace', function () {
     Filament::setCurrentPanel(Filament::getPanel('admin'));
 
     Livewire::test(ViewEditorialWorkspace::class, ['record' => $insight->getRouteKey()])
+        ->set('data.title', 'Judul terbaru saat terbit')
+        ->set('data.content', '<p>Isi terbaru yang harus diterbitkan.</p>')
         ->set('data.published_at', $scheduledFor->copy()->timezone(config('edulaw.timezone'))->format('Y-m-d H:i:s'))
         ->callAction('publish')
         ->assertHasNoActionErrors();
 
     $insight->refresh();
 
-    expect($insight->status)->toBe(InsightStatus::Published)
+    expect($insight->title)->toBe('Judul terbaru saat terbit')
+        ->and($insight->content)->toContain('Isi terbaru yang harus diterbitkan.')
+        ->and($insight->status)->toBe(InsightStatus::Published)
         ->and($insight->published_at?->equalTo($scheduledFor))->toBeTrue();
 });
 
@@ -638,4 +648,22 @@ test('published tidak dapat kembali ke draft melalui transisi biasa', function (
 
     expect(fn () => app(InsightEditorialWorkflowService::class)->submit($published, $writer))
         ->toThrow(AuthorizationException::class);
+});
+
+test('revisi tampil sebagai draft dan pengiriman ulang mempertahankan editor', function () {
+    $writer = simpleEditorialUser('writer');
+    $admin = simpleEditorialUser('super_admin');
+    $editor = simpleEditorialUser('editor');
+    $service = app(InsightEditorialWorkflowService::class);
+    $insight = $service->assignEditor(simpleEditorialInsight($writer, ['status' => InsightStatus::Review]), $editor, $admin);
+    $insight = $service->requestRevision($insight, $editor, 'Lengkapi sumber primer.');
+    expect($insight->needsRevision())->toBeTrue();
+    $this->actingAs($writer);
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    Livewire::test(EditInsight::class, ['record' => $insight->getRouteKey()])
+        ->assertSee('Perlu Revisi')->assertSee('Lengkapi sumber primer.');
+    $insight = $service->submit($insight, $writer);
+    expect($insight->needsRevision())->toBeFalse()
+        ->and($insight->assigned_editor_id)->toBe($editor->id)
+        ->and($editor->notifications()->where('data->notification_type', 'submitted_for_review')->exists())->toBeTrue();
 });
