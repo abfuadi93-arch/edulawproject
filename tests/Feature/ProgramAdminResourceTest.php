@@ -7,7 +7,9 @@ use App\Models\Program;
 use App\Models\ProgramCategory;
 use App\Models\User;
 use Filament\Facades\Filament;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Storage;
 use Livewire\Livewire;
 use Spatie\Permission\Models\Role;
 
@@ -20,11 +22,7 @@ test('program admin validates and saves ticket price and the actual end date', f
         'is_active' => true,
     ]);
     $user->assignRole(Role::findOrCreate('super_admin'));
-    $category = ProgramCategory::query()->create([
-        'name' => 'Kelas Publik',
-        'slug' => 'kelas-publik-admin-schema',
-        'is_active' => true,
-    ]);
+    $category = ProgramCategory::query()->where('slug', 'pelatihan')->firstOrFail();
 
     Livewire::actingAs($user)
         ->test(CreateProgram::class)
@@ -76,7 +74,7 @@ test('program admin validates and saves ticket price and the actual end date', f
 
     $this->actingAs($user)->get(ProgramResource::getUrl('edit', ['record' => $program]))
         ->assertOk()
-        ->assertSeeInOrder(['Informasi Program', 'Pelaksanaan Program', 'Pembelajaran &amp; Fasilitator', 'Deskripsi Lengkap', 'Detail Pelaksanaan (Opsional)', 'Pengaturan Opsional', 'Jadwal Program', 'Tampilan Publik'], false);
+        ->assertSeeInOrder(['Informasi Program', 'Jadwal &amp; Pelaksanaan', 'Deskripsi Program', 'Penyelenggara &amp; Narasumber', 'Media', 'Pendaftaran', 'Tampilan Publik', 'Pengaturan Lanjutan — opsional'], false);
 
     Livewire::actingAs($user)->test(EditProgram::class, ['record' => $program->getRouteKey()])
         ->assertFormSet(['event_time' => '19:00', 'end_time' => '21:00', 'event_timezone' => 'Asia/Makassar'])
@@ -97,31 +95,13 @@ test('program create form presents a simplified primary flow', function () {
     $this->actingAs($user)
         ->get(ProgramResource::getUrl('create'))
         ->assertOk()
-        ->assertSeeInOrder([
-            'Informasi Program',
-            'Pelaksanaan Program',
-            'Pembelajaran &amp; Fasilitator',
-            'Deskripsi Lengkap',
-            'Detail Pelaksanaan (Opsional)',
-            'Pengaturan Opsional',
-            'Jadwal Program',
-            'Tampilan Publik',
-        ], false)
-        ->assertSee('Nama Program')
-        ->assertSee('Ringkasan')
-        ->assertSee('Level')
-        ->assertSee('Audiens')
-        ->assertSee('Poin Pembelajaran')
-        ->assertSee('Deskripsi Program')
-        ->assertSee('Link Pendaftaran')
-        ->assertSee('Jenis Biaya')
-        ->assertSee('Sertifikat Tersedia')
-        ->assertSee('Meta Title')
-        ->assertSee('Meta Description')
-        ->assertSee('Jadwal Lanjutan (Opsional)')
-        ->assertSee('Unggulan')
-        ->assertSee('Simpan Program')
-        ->assertSee('Simpan &amp; Buat Lagi', false);
+        ->assertSeeInOrder(['Informasi Program', 'Jadwal &amp; Pelaksanaan', 'Deskripsi Program', 'Penyelenggara &amp; Narasumber', 'Media', 'Pendaftaran', 'Tampilan Publik', 'Pengaturan Lanjutan — opsional'], false)
+        ->assertSee('Mulai dari template')
+        ->assertSee('Status Publikasi')
+        ->assertSee('Memerlukan pendaftaran?')
+        ->assertSee('Simpan Draft')
+        ->assertSee('Publikasikan')
+        ->assertDontSee('Simpan &amp; Buat Lagi', false);
 });
 
 test('program admin accepts an upcoming virtual internship without announced dates', function () {
@@ -133,11 +113,7 @@ test('program admin accepts an upcoming virtual internship without announced dat
         'is_active' => true,
     ]);
     $user->assignRole(Role::findOrCreate('super_admin'));
-    $category = ProgramCategory::query()->create([
-        'name' => 'Magang / Internship',
-        'slug' => 'magang-internship',
-        'is_active' => true,
-    ]);
+    $category = ProgramCategory::query()->where('slug', 'internship')->firstOrFail();
     $summary = 'Program magang virtual Edulaw Project sebagai ruang belajar, berkontribusi, dan berkembang melalui riset, penulisan hukum, serta produksi konten edukatif.';
     $learningPoints = [
         'Melatih kemampuan riset hukum dasar dan penelusuran sumber hukum yang relevan.',
@@ -230,8 +206,8 @@ test('program admin resource derives short description seo and cta fallback', fu
         ->and(mb_strlen($data['short_description']))->toBeLessThanOrEqual(220)
         ->and($data['publication_status'])->toBe('published')
         ->and($data['status'])->toBe('upcoming')
-        ->and($data['primary_button_text'])->toBe('Daftar Program')
-        ->and($data['primary_button_url'])->toBe('https://example.test/daftar')
+        ->and($data['primary_button_text'])->toBeNull()
+        ->and($data['primary_button_url'])->toBeNull()
         ->and($data['secondary_button_text'])->toBe('Diskusikan Kolaborasi')
         ->and($data['secondary_button_url'])->toBe('/kolaborasi')
         ->and($data['seo_title'])->toBe('Kemerdekaan Kekuasaan Kehakiman')
@@ -303,4 +279,92 @@ test('program admin resource exposes simplified statuses with archived fallback 
         ->and(ProgramResource::normalizePublicationStatusForForm('archived'))->toBe('draft')
         ->and(ProgramResource::normalizeStatusForForm('completed'))->toBe('archived')
         ->and(ProgramResource::normalizeStatusForForm('portfolio'))->toBe('archived');
+});
+
+test('program draft stays private and automatic CTA respects lifecycle', function () {
+    $data = ProgramResource::prepareFormDataForPersistence([
+        'name' => 'Draft Baru', 'publication_status' => 'draft',
+        'requires_registration' => true, 'price_type' => 'Gratis',
+    ]);
+    expect($data['publication_status'])->toBe('draft')->and($data['ticket_price'])->toBe(0);
+    $program = new Program([
+        'publication_status' => 'published', 'event_date' => now()->addDays(2)->toDateString(),
+        'requires_registration' => true, 'registration_status' => 'soon',
+        'registration_link' => 'https://example.test/register',
+    ]);
+    expect($program->program_cta)->toBe(['label' => 'Segera Dibuka', 'url' => null]);
+    $program->registration_status = 'open';
+    expect($program->program_cta)->toBe(['label' => 'Daftar Program', 'url' => 'https://example.test/register']);
+    $program->registration_status = 'closed';
+    expect($program->program_cta)->toBeNull();
+    $program->event_date = now()->subDays(2)->toDateString();
+    $program->primary_button_text = 'Join Zoom Meeting';
+    $program->primary_button_url = 'https://example.test/old-meeting';
+    expect($program->program_cta)->toBeNull();
+    $program->youtube_url = 'https://youtube.com/watch?v=example';
+    expect($program->program_cta)->toBe(['label' => 'Tonton Dokumentasi', 'url' => $program->youtube_url]);
+});
+
+test('program template and conditional registration keep the main form concise', function () {
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    $user = User::query()->create(['name' => 'Template Admin', 'email' => 'template@example.test', 'password' => 'password', 'is_active' => true]);
+    $user->assignRole(Role::findOrCreate('super_admin'));
+    $category = ProgramCategory::query()->where('slug', 'diskusi')->firstOrFail();
+    Livewire::actingAs($user)->test(CreateProgram::class)
+        ->set('data.program_template', 'diksi')
+        ->assertFormSet(['program_category_id' => $category->id, 'format' => 'online', 'platform' => 'Zoom / YouTube', 'price_type' => 'Gratis'])
+        ->assertFormFieldIsHidden('location')
+        ->assertFormFieldIsVisible('platform')
+        ->assertFormFieldIsHidden('registration_link')
+        ->set('data.requires_registration', true)
+        ->assertFormFieldIsVisible('registration_link')
+        ->assertFormFieldIsHidden('ticket_price')
+        ->set('data.price_type', 'Berbayar')
+        ->assertFormFieldIsVisible('ticket_price')
+        ->set('data.format', 'hybrid')
+        ->assertFormFieldIsVisible('location')
+        ->assertFormFieldIsVisible('platform')
+        ->set('data.format', 'offline')
+        ->assertFormFieldIsHidden('platform');
+});
+
+test('draft and publish actions enforce separate publication requirements', function () {
+    Storage::fake('public');
+    Filament::setCurrentPanel(Filament::getPanel('admin'));
+    $user = User::query()->create(['name' => 'Publish Admin', 'email' => 'publish-admin@example.test', 'password' => 'password', 'is_active' => true]);
+    $user->assignRole(Role::findOrCreate('super_admin'));
+    $category = ProgramCategory::query()->where('slug', 'diskusi')->firstOrFail();
+    $form = ['name' => 'Draft Sederhana', 'slug' => 'draft-sederhana', 'tags' => ['Konstitusi', 'Legal Writing'], 'short_description' => 'Ringkasan program.', 'program_category_id' => $category->id, 'format' => 'online'];
+    Livewire::actingAs($user)->test(CreateProgram::class)->fillForm($form)
+        ->call('createWithStatus', 'draft')->assertHasNoFormErrors();
+    $draft = Program::query()->where('slug', 'draft-sederhana')->firstOrFail();
+    expect($draft->tags)->toBe(['Konstitusi', 'Legal Writing'])
+        ->and($draft->publication_status)->toBe('draft')
+        ->and(Program::query()->visible()->whereKey($draft)->exists())->toBeFalse();
+    Livewire::actingAs($user)->test(CreateProgram::class)
+        ->fillForm([...$form, 'name' => 'Program Terbit', 'slug' => 'program-terbit'])
+        ->call('createWithStatus', 'published')
+        ->assertHasFormErrors(['event_date' => 'required', 'image' => 'required'])
+        ->fillForm(['event_date' => now()->addWeek()->toDateString(), 'image' => UploadedFile::fake()->image('poster.jpg')])
+        ->call('createWithStatus', 'published')->assertHasNoFormErrors();
+    expect(Program::query()->visible()->where('slug', 'program-terbit')->exists())->toBeTrue();
+});
+
+test('manual archive removes future programs from active counts and suppresses meeting CTA', function () {
+    $program = Program::query()->create([
+        'name' => 'Arsip Manual', 'slug' => 'arsip-manual', 'publication_status' => 'published',
+        'event_date' => now()->addWeek()->toDateString(), 'is_manually_archived' => true,
+        'primary_button_text' => 'Join Zoom Meeting', 'primary_button_url' => 'https://example.test/meeting',
+    ]);
+    expect($program->fresh()->status)->toBe('archived')
+        ->and($program->fresh()->program_cta)->toBeNull()
+        ->and(Program::query()->active()->whereKey($program)->exists())->toBeFalse()
+        ->and(Program::query()->archived()->whereKey($program)->exists())->toBeTrue();
+    $program->update(['is_manually_archived' => false]);
+    expect($program->fresh()->status)->toBe('upcoming');
+});
+
+test('program category choices contain only the four simplified categories', function () {
+    expect(ProgramCategory::query()->where('is_active', true)->orderBy('sort_order')->pluck('name')->all())
+        ->toBe(['Diskusi', 'Pelatihan', 'Internship', 'Workshop/Webinar']);
 });

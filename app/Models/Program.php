@@ -19,6 +19,8 @@ class Program extends Model
     protected static array $schemaColumnCache = [];
 
     protected $fillable = [
+        'tags',
+        'platform', 'collaborators', 'requires_registration', 'registration_status', 'ticket_provider', 'is_manually_archived',
         'program_category_id',
         'type',
         'name',
@@ -86,6 +88,10 @@ class Program extends Model
     protected $casts = [
         'learning_points' => 'array',
         'speakers' => 'array',
+        'tags' => 'array',
+        'collaborators' => 'array',
+        'requires_registration' => 'boolean',
+        'is_manually_archived' => 'boolean',
         'gallery_images' => 'array',
         'event_date' => 'datetime',
         'end_date' => 'datetime',
@@ -181,7 +187,8 @@ class Program extends Model
 
         return $query->where(function (Builder $query) use ($today): void {
             $query
-                ->where(function (Builder $query) use ($today): void {
+                ->where('is_manually_archived', true)
+                ->orWhere(function (Builder $query) use ($today): void {
                     $query
                         ->whereNotNull('event_date')
                         ->where(function (Builder $query) use ($today): void {
@@ -204,6 +211,7 @@ class Program extends Model
 
     public function scopeUpcoming(Builder $query): Builder
     {
+        $query->where('is_manually_archived', false);
         $today = now()->toDateString();
 
         return $query->where(function (Builder $query) use ($today): void {
@@ -219,6 +227,7 @@ class Program extends Model
 
     public function scopeOngoing(Builder $query): Builder
     {
+        $query->where('is_manually_archived', false);
         $today = now()->toDateString();
 
         return $query->where(function (Builder $query) use ($today): void {
@@ -382,7 +391,7 @@ class Program extends Model
 
     public function getRegistrationUrlAttribute(): ?string
     {
-        return $this->attributes['registration_link'] ?? null;
+        return $this->requires_registration === false ? null : ($this->attributes['registration_link'] ?? null);
     }
 
     public function getRegistrationPriceAttribute(): ?string
@@ -477,15 +486,50 @@ class Program extends Model
             : null;
     }
 
+    public function getProgramCtaAttribute(): ?array
+    {
+        if ($this->is_archived || ($this->end_time && $this->eventDateTime(true)?->isPast())) {
+            return filled($this->youtube_url) ? ['label' => 'Tonton Dokumentasi', 'url' => $this->youtube_url] : null;
+        }
+
+        if (in_array($this->event_status, ['EventCancelled', 'EventPostponed'], true)) {
+            return null;
+        }
+
+        if ($this->status === 'ongoing' && filled($this->online_url)) {
+            return ['label' => 'Ikuti Program', 'url' => $this->online_url];
+        }
+
+        if ($this->requires_registration !== false && $this->registration_status_label === 'Belum dibuka') {
+            return ['label' => 'Segera Dibuka', 'url' => null];
+        }
+
+        if ($this->registration_unavailable) {
+            return null;
+        }
+
+        if (filled($this->primary_button_text) && filled($this->primary_button_url)) {
+            return ['label' => $this->primary_button_text, 'url' => $this->primary_button_url];
+        }
+
+        return $this->requires_registration !== false && filled($this->registration_link)
+            ? ['label' => 'Daftar Program', 'url' => $this->registration_link]
+            : null;
+    }
+
     public function getRegistrationStatusLabelAttribute(): ?string
     {
         return match (true) {
+            $this->requires_registration === false => null,
+            $this->registration_status === 'closed' => 'Pendaftaran ditutup',
+            $this->registration_status === 'soon' => 'Belum dibuka',
             $this->event_status === 'EventCancelled' => 'Acara dibatalkan',
             $this->event_status === 'EventPostponed' => 'Pendaftaran ditunda',
             $this->is_archived || ($this->end_time && $this->eventDateTime(true)?->isPast()) => 'Pendaftaran ditutup',
             $this->ticket_availability === 'SoldOut' => 'Kuota habis',
             $this->registration_opens_date?->isFuture() === true => 'Belum dibuka',
             $this->ticket_availability === 'PreOrder' => 'Prapendaftaran',
+            $this->registration_status === 'open' => 'Pendaftaran dibuka',
             $this->ticket_availability === 'InStock' => 'Pendaftaran dibuka',
             default => null,
         };
@@ -530,6 +574,10 @@ class Program extends Model
 
     public function getStatusAttribute(?string $storedStatus): string
     {
+        if ($this->is_manually_archived) {
+            return 'archived';
+        }
+
         return static::statusFromDates(
             $this->attributes['event_date'] ?? null,
             $this->attributes['end_date'] ?? null,

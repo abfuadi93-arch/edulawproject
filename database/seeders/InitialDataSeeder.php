@@ -77,7 +77,7 @@ class InitialDataSeeder extends Seeder
 
         foreach ($categories as $index => $category) {
             InsightCategory::firstOrCreate(
-                ['slug' => Str::slug($category['name'])],
+                ['slug' => $category['name'] === 'Workshop/Webinar' ? 'workshop-webinar' : Str::slug($category['name'])],
                 [
                     'name' => $category['name'],
                     'description' => $category['description'],
@@ -91,13 +91,10 @@ class InitialDataSeeder extends Seeder
     private function seedProgramCategories(): void
     {
         $categories = [
-            ['name' => 'DIKSI', 'description' => 'Diskusi Literasi Konstitusi.'],
-            ['name' => 'Kelas Hukum', 'description' => 'Kelas pembelajaran hukum tematik.'],
-            ['name' => 'Workshop / Webinar', 'description' => 'Forum pelatihan dan diskusi daring maupun luring.'],
+            ['name' => 'Diskusi', 'description' => 'Forum diskusi dan pembahasan isu hukum.'],
             ['name' => 'Pelatihan', 'description' => 'Program peningkatan kapasitas hukum.'],
-            ['name' => 'Bootcamp', 'description' => 'Program intensif berbasis keterampilan hukum.'],
-            ['name' => 'Klinik Hukum', 'description' => 'Ruang pembelajaran dan konsultasi literasi hukum.'],
-            ['name' => 'Short Course', 'description' => 'Kursus singkat hukum dan kebijakan publik.'],
+            ['name' => 'Internship', 'description' => 'Program magang dan pengalaman kerja.'],
+            ['name' => 'Workshop/Webinar', 'description' => 'Lokakarya dan webinar hukum.'],
         ];
 
         foreach ($categories as $index => $category) {

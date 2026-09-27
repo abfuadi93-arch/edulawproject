@@ -51,17 +51,13 @@
     $heroBackground = $programImage ?: 'https://images.unsplash.com/photo-1517048676732-d65bc937f952?auto=format&fit=crop&w=1800&q=85';
 
     $collaborationUrl = Route::has('collaboration.index') ? route('collaboration.index') : url('/kolaborasi');
-    $registrationUrl = $program->registration_url ?: null;
-    $primaryButtonLabel = $program->primary_button_text ?: ($registrationUrl ? 'Daftar Program' : 'Diskusikan Kolaborasi');
-    $primaryButtonUrl = $program->primary_button_url ?: ($registrationUrl ?: $collaborationUrl);
-    if (($program->registration_unavailable && ($primaryButtonUrl === $registrationUrl || $primaryButtonLabel === 'Daftar Program'))
-        || (! $registrationUrl && $primaryButtonLabel === 'Daftar Program' && rtrim(url($primaryButtonUrl), '/') === rtrim(route('programs.show', $program->slug), '/'))) {
-        $primaryButtonLabel = $program->youtube_url ? 'Lihat Dokumentasi' : 'Diskusikan Kolaborasi';
-        $primaryButtonUrl = $program->youtube_url ?: $collaborationUrl;
-    }
+    $registrationUrl = $program->requires_registration === false || $program->registration_unavailable ? null : ($program->registration_url ?: null);
+    $programCta = $program->program_cta;
+    $primaryButtonLabel = $programCta['label'] ?? null;
+    $primaryButtonUrl = $programCta['url'] ?? null;
     $secondaryButtonLabel = $program->secondary_button_text ?: 'Diskusikan Kolaborasi';
     $secondaryButtonUrl = $program->secondary_button_url ?: $collaborationUrl;
-    $showSecondaryButton = rtrim(url($secondaryButtonUrl), '/') !== rtrim(url($primaryButtonUrl), '/');
+    $showSecondaryButton = rtrim(url($secondaryButtonUrl), '/') !== rtrim(url($primaryButtonUrl ?: '/'), '/');
 
     $statusClass = function ($status) {
         return match ($status) {
@@ -97,6 +93,7 @@
                 return [
                     'name' => $speaker,
                     'title' => null,
+                    'role' => null,
                     'image' => null,
                     'bio' => null,
                     'type' => 'Person',
@@ -116,7 +113,8 @@
             return [
                 'name' => $speaker['name'] ?? null,
                 'type' => $speaker['type'] ?? 'Person',
-                'title' => $speaker['title'] ?? $speaker['role'] ?? $speaker['position'] ?? null,
+                'title' => $speaker['title'] ?? $speaker['position'] ?? null,
+                'role' => $speaker['role'] ?? null,
                 'image' => $resolveImageUrl($image),
                 'bio' => filled($speaker['bio'] ?? null) ? trim(strip_tags((string) $speaker['bio'])) : null,
             ];
@@ -332,7 +330,7 @@
                                                 {{ $speaker['name'] }}
                                             </h3>
                                             <p class="mt-1 text-sm font-bold leading-6 text-slate-500">
-                                                {{ $speaker['title'] ?: ($speaker['type'] === 'PerformingGroup' ? 'Kelompok' : 'Narasumber') }}
+                                                {{ collect([$speaker['role'] ?? null, $speaker['title'] ?: ($speaker['type'] === 'PerformingGroup' ? 'Kelompok' : 'Narasumber')])->filter()->join(' · ') }}
                                             </p>
                                         </div>
                                     </div>
@@ -526,7 +524,17 @@
                     </dl>
                 @endif
 
+                <div class="mt-6 space-y-2 text-sm text-slate-600">
+                    <p><strong>Penyelenggara:</strong> {{ $program->organizer }}</p>
+                    @if (filled($program->platform) && in_array($program->format, ['online', 'hybrid']))
+                        <p><strong>Platform:</strong> {{ $program->platform }}</p>
+                    @endif
+                    @if (filled($program->collaborators))
+                        <p><strong>Mitra:</strong> {{ collect($program->collaborators)->pluck('name')->filter()->join(', ') }}</p>
+                    @endif
+                </div>
                 <div class="mt-6 grid gap-3">
+                    @if ($primaryButtonUrl)
                     <a
                         href="{{ $primaryButtonUrl }}"
                         @if (Str::startsWith($primaryButtonUrl, ['http://', 'https://'])) target="_blank" rel="noopener" @endif
@@ -534,6 +542,10 @@
                     >
                         {{ $primaryButtonLabel }}
                     </a>
+
+                    @elseif ($primaryButtonLabel)
+                        <span class="text-center text-sm font-semibold text-slate-500">{{ $primaryButtonLabel }}</span>
+                    @endif
 
                     @if ($showSecondaryButton)
                         <a

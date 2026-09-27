@@ -4,6 +4,7 @@ namespace App\Filament\Resources\ProgramResource\Pages;
 
 use App\Filament\Resources\Pages\CreateRecordAndReturn;
 use App\Filament\Resources\ProgramResource;
+use Filament\Actions\Action;
 use Filament\Support\Enums\Alignment;
 
 class CreateProgram extends CreateRecordAndReturn
@@ -24,9 +25,18 @@ class CreateProgram extends CreateRecordAndReturn
     {
         return [
             $this->getCancelFormAction()->label('Batal')->extraAttributes(['class' => 'edulaw-program-cancel']),
-            $this->getCreateAnotherFormAction()->label('Simpan & Buat Lagi'),
-            $this->getCreateFormAction()->label('Simpan Program'),
+            Action::make('save_draft')->label('Simpan Draft')->color('gray')
+                ->action(fn () => $this->createWithStatus('draft')),
+            Action::make('publish_program')->label('Publikasikan')
+                ->action(fn () => $this->createWithStatus('published')),
         ];
+    }
+
+    public function createWithStatus(string $status): void
+    {
+        abort_unless(in_array($status, ['draft', 'published'], true), 422);
+        $this->data['publication_status'] = $status;
+        $this->create();
     }
 
     public function createAnother(): void

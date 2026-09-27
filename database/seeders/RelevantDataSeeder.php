@@ -709,8 +709,16 @@ class RelevantDataSeeder extends Seeder
 
     private function programCategoryByName(string $name, ?string $description = null, int $sortOrder = 0): ProgramCategory
     {
+        $keyword = Str::lower($name);
+        [$name, $slug, $sortOrder] = match (true) {
+            Str::contains($keyword, ['internship', 'magang']) => ['Internship', 'internship', 3],
+            Str::contains($keyword, ['workshop', 'webinar', 'lecture']) => ['Workshop/Webinar', 'workshop-webinar', 4],
+            Str::contains($keyword, ['pelatihan', 'training', 'kelas', 'class', 'bootcamp', 'course', 'community']) => ['Pelatihan', 'pelatihan', 2],
+            default => ['Diskusi', 'diskusi', 1],
+        };
+
         return ProgramCategory::updateOrCreate(
-            ['slug' => Str::slug($name)],
+            ['slug' => $slug],
             [
                 'name' => $name,
                 'description' => $description,

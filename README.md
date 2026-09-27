@@ -212,3 +212,18 @@ Location serta respons akhir URL contoh. Validasi yang dimulai 10/09/26 tidak
 mengharuskan semua URL sumber menjadi terindeks. Jangan menghapus redirect domain
 atau URL lama hanya untuk mengurangi angka laporan Search Console.
 Rujukan: https://support.google.com/webmasters/answer/7440203
+
+## Form Program sederhana
+
+Form Program menyediakan template awal, isian inti, dan satu bagian Pengaturan
+Lanjutan. `Simpan Draft` tidak memublikasikan program; `Publikasikan` mewajibkan
+jadwal mulai dan poster selain identitas utama. Program lama tetap dapat dibaca.
+Tanggal menentukan status kegiatan, sedangkan arsip manual memindahkan program
+keluar dari daftar aktif tanpa mengubah tanggalnya.
+
+Sebelum menerapkan versi ini di server, jalankan `php artisan migrate --force`
+untuk kolom platform, mitra, pendaftaran, provider tiket, dan arsip manual.
+Migrasi tidak mengisi ulang konten atau menimpa data program lama. Jalankan
+`npm run build` jika menerapkan dari source, lalu `php artisan view:clear`.
+Tautan acara daring pada form adalah tautan publik; tautan tersebut dapat tampil
+pada halaman acara dan data terstrukturnya.
