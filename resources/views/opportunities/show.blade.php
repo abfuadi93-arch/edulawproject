@@ -6,6 +6,7 @@
     $detailUrl = route('opportunities.show', $opportunity->slug);
     $posterImages = collect($opportunity->poster_urls)->filter()->values();
     $summary = Str::limit(Str::squish(strip_tags($opportunity->seo_description ?: $opportunity->excerpt ?: $opportunity->description ?: '')), 160, '…');
+    $excerpt = Str::squish(strip_tags((string) $opportunity->excerpt));
     $description = trim((string) $opportunity->getRawOriginal('description'));
     $descriptionIsHtml = Str::contains($description, ['<p', '<br', '<ul', '<ol', '<div', '<h2', '<h3']);
     $descriptionParagraphs = collect(preg_split('/\R{2,}/', $description) ?: [])->map(fn ($paragraph) => trim($paragraph))->filter();
@@ -19,6 +20,7 @@
         ['label' => 'Lokasi', 'value' => $opportunity->location ?: 'Fleksibel'],
         ['label' => 'Penyelenggara', 'value' => $opportunity->organizer],
         ['label' => 'Jenis', 'value' => $opportunity->display_type],
+        ['label' => 'Kurasi', 'value' => $opportunity->featured ? 'Pilihan Edulaw' : null],
     ])->filter(fn (array $row): bool => filled($row['value']));
     $eligibilityItems = collect($opportunity->eligibility ?? [])
         ->map(fn ($item) => is_array($item) ? ($item['item'] ?? $item['text'] ?? $item['value'] ?? null) : $item)
@@ -45,30 +47,36 @@
 
 @section('content')
 <main class="bg-[#f7f8fa] text-brand-ink">
-    <section class="relative isolate overflow-hidden bg-brand-navy text-white">
+    <section class="relative isolate overflow-hidden bg-brand-navy py-3 text-white">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_15%,rgba(60,181,165,.28),transparent_34%),linear-gradient(135deg,#07162d_0%,#173b67_62%,#205f73_100%)]"></div>
-        <div class="relative mx-auto max-w-7xl px-5 py-12 sm:px-6 lg:px-8 lg:py-16">
-            <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-white/70 sm:text-sm" aria-label="Breadcrumb">
-                <a href="{{ route('home') }}" class="hover:text-white">Beranda</a>
-                <span aria-hidden="true">/</span>
-                <a href="{{ route('opportunities.index') }}" class="hover:text-white">Opportunities</a>
-                <span aria-hidden="true">/</span>
-                <span class="text-white">Detail Peluang</span>
-            </nav>
+        <div class="relative mx-auto grid h-[440px] max-w-7xl content-center gap-6 px-5 py-7 sm:h-[400px] sm:px-6 sm:py-8 lg:h-[240px] lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-4">
+            <div class="min-w-0">
+                <nav class="flex flex-wrap items-center gap-1.5 text-xs font-medium text-white/60" aria-label="Breadcrumb">
+                    <a href="{{ route('home') }}" class="transition hover:text-white">Beranda</a>
+                    <span aria-hidden="true">/</span>
+                    <a href="{{ route('opportunities.index') }}" class="transition hover:text-white">Opportunities</a>
+                    <span aria-hidden="true">/</span>
+                    <span class="text-white">Detail Peluang</span>
+                </nav>
 
-            <div class="mt-7 max-w-5xl">
-                <span class="edulaw-badge edulaw-badge-md edulaw-badge-dark">{{ $opportunity->display_type }}</span>
-                <h1 class="mt-4 max-w-5xl text-3xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">{{ $opportunity->title }}</h1>
-                @if ($summary)
-                    <p class="mt-5 max-w-3xl text-base leading-8 text-white/80 sm:text-lg">{{ $summary }}</p>
-                @endif
+                <div class="mt-2 flex flex-wrap items-center gap-2">
+                    <span class="edulaw-badge edulaw-badge-md edulaw-badge-dark">{{ $opportunity->display_type }}</span>
+                    @if ($opportunity->featured)
+                        <span class="edulaw-badge edulaw-badge-md bg-brand-amber text-brand-ink">Pilihan Edulaw</span>
+                    @endif
+                </div>
+                <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:line-clamp-2">{{ $opportunity->title }}</h1>
             </div>
 
-            <dl class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+            <dl class="grid grid-cols-2 overflow-hidden rounded-[14px] border border-white/15 bg-white/10 backdrop-blur-sm" aria-label="Ringkasan peluang">
                 @foreach ($detailRows->take(4) as $row)
-                    <div class="rounded-2xl border border-white/15 bg-white/10 p-4 backdrop-blur-sm">
-                        <dt class="text-[10px] font-black uppercase tracking-[0.18em] text-brand-amber">{{ $row['label'] }}</dt>
-                        <dd class="mt-1 text-sm font-black leading-snug text-white">{{ $row['value'] }}</dd>
+                    <div @class([
+                        'min-w-0 border-white/15 p-3',
+                        'border-l' => $loop->iteration % 2 === 0,
+                        'border-t' => $loop->iteration > 2,
+                    ])>
+                        <dt class="text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-white/70">{{ $row['label'] }}</dt>
+                        <dd class="mt-1 line-clamp-2 text-sm font-bold leading-snug text-brand-amber">{{ $row['value'] }}</dd>
                     </div>
                 @endforeach
             </dl>
@@ -104,6 +112,14 @@
                             @endforeach
                         </div>
                     @endif
+                </section>
+            @endif
+
+            @if ($excerpt !== '')
+                <section class="rounded-3xl border border-slate-200 bg-white p-6 shadow-sm sm:p-8" aria-labelledby="opportunity-summary-heading">
+                    <p class="text-xs font-black uppercase tracking-[0.24em] text-brand-teal">Ringkasan Peluang</p>
+                    <h2 id="opportunity-summary-heading" class="mt-3 text-2xl font-black tracking-tight text-brand-navy sm:text-3xl">Informasi singkat</h2>
+                    <p class="mt-5 max-w-3xl text-base leading-8 text-slate-700">{{ $excerpt }}</p>
                 </section>
             @endif
 

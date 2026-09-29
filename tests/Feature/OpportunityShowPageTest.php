@@ -15,6 +15,7 @@ test('opportunity detail page renders public information and official actions', 
         'eligibility' => ['Mahasiswa hukum', 'Peneliti muda'],
         'benefits' => ['Mentoring', 'Dukungan riset'],
         'status' => 'open',
+        'featured' => true,
         'deadline' => now()->addDays(10)->toDateString(),
         'application_link' => 'https://example.test/daftar',
     ]);
@@ -23,6 +24,9 @@ test('opportunity detail page renders public information and official actions', 
         ->assertOk()
         ->assertSee('Fellowship Riset Hukum')
         ->assertSee('Tentang Peluang')
+        ->assertSee('Ringkasan Peluang')
+        ->assertSee('Program fellowship untuk peneliti hukum muda.')
+        ->assertSee('Pilihan Edulaw')
         ->assertSee('Detail Peluang')
         ->assertSee('Kriteria peserta')
         ->assertSee('Yang diperoleh')
