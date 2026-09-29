@@ -5,13 +5,14 @@
         ? Illuminate\Support\Str::limit(Illuminate\Support\Str::squish(strip_tags($opportunity->excerpt)), 180)
         : null;
     $officialUrl = $opportunity->external_url;
+    $detailUrl = route('opportunities.show', $opportunity->slug);
     $optionalLinks = $opportunity->optional_links;
 @endphp
 
 <article class="channel-feature-card overflow-hidden rounded-[14px] border border-[#dbe2ea] bg-white" data-featured-opportunity data-channel-feature-card>
     <div class="grid h-full md:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]">
         <div class="relative flex min-h-[300px] items-center justify-center sm:min-h-[365px] lg:min-h-0">
-            <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="relative flex size-full min-h-[300px] items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Lihat informasi resmi {{ $opportunity->title }}">
+            <a href="{{ $detailUrl }}" class="relative flex size-full min-h-[300px] items-center justify-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-3px] focus-visible:outline-brand-navy sm:min-h-[365px] lg:min-h-0" aria-label="Lihat detail {{ $opportunity->title }}">
                 <div class="absolute inset-0 flex flex-col items-center justify-center bg-linear-to-br from-[#e9eef4] to-[#dbe5ed] px-6 text-center text-brand-navy" aria-hidden="true">
                     <span class="grid size-12 place-items-center rounded-xl border border-brand-navy/10 bg-white/70">
                         <svg class="size-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"><path d="M5 4h14v16H5zM8 8h8M8 12h8M8 16h5"/></svg>
@@ -44,7 +45,7 @@
             </div>
 
             <h2 class="type-role-feature channel-feature-title">
-                <a href="{{ $officialUrl }}" target="_blank" rel="noopener noreferrer" class="rounded-sm transition hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
+                <a href="{{ $detailUrl }}" class="rounded-sm transition hover:text-brand-navy focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">
                     {{ $opportunity->title }}
                 </a>
             </h2>
@@ -85,6 +86,13 @@
                 </dl>
 
                 <div class="channel-feature-actions">
+                    <a
+                        href="{{ $detailUrl }}"
+                        class="channel-feature-primary-action group text-center focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy"
+                        aria-label="Lihat detail {{ $opportunity->title }}"
+                    >
+                        Lihat Detail
+                    </a>
                     <a
                         href="{{ $officialUrl }}"
                         target="_blank"

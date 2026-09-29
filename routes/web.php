@@ -60,7 +60,7 @@ Route::middleware(TrackPageVisit::class)->group(function (): void {
     Route::get('/program/{slug}', [ProgramController::class, 'show'])->name('programs.show');
 
     Route::get('/opportunities', [OpportunityController::class, 'index'])->middleware(PreventStaleOpportunityPages::class)->name('opportunities.index');
-    Route::get('/opportunities/{slug}', [OpportunityController::class, 'retired'])->name('opportunities.show');
+    Route::get('/opportunities/{slug}', [OpportunityController::class, 'show'])->middleware(PreventStaleOpportunityPages::class)->name('opportunities.show');
     Route::redirect('/peluang', '/opportunities', 301);
 
     Route::get('/multimedia', [MultimediaController::class, 'index'])->name('multimedia.index');

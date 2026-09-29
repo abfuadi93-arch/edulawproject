@@ -12,7 +12,7 @@
             ->unique('id')
             ->map(fn ($item): array => [
                 'name' => $item->title,
-                'url' => $item->external_url,
+                'url' => route('opportunities.show', $item->slug),
                 'image' => $item->poster_url,
             ])
             ->values()

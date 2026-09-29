@@ -2,18 +2,37 @@
 
 use App\Models\Opportunity;
 
-test('legacy opportunity detail URLs permanently redirect to the directory', function () {
+test('opportunity detail page renders public information and official actions', function () {
     $opportunity = Opportunity::query()->create([
         'title' => 'Fellowship Riset Hukum',
         'slug' => 'fellowship-riset-hukum',
+        'type' => 'fellowship',
+        'organizer' => 'Lembaga Riset Hukum',
+        'excerpt' => 'Program fellowship untuk peneliti hukum muda.',
+        'description' => '<p>Program pengembangan kapasitas riset hukum.</p>',
+        'format' => 'hybrid',
+        'location' => 'Jakarta',
+        'eligibility' => ['Mahasiswa hukum', 'Peneliti muda'],
+        'benefits' => ['Mentoring', 'Dukungan riset'],
         'status' => 'open',
         'deadline' => now()->addDays(10)->toDateString(),
         'application_link' => 'https://example.test/daftar',
     ]);
 
-    $this->get(route('opportunities.show', $opportunity->slug))
-        ->assertRedirect(route('opportunities.index'))
-        ->assertStatus(301);
+    $response = $this->get(route('opportunities.show', $opportunity->slug))
+        ->assertOk()
+        ->assertSee('Fellowship Riset Hukum')
+        ->assertSee('Tentang Peluang')
+        ->assertSee('Detail Peluang')
+        ->assertSee('Kriteria peserta')
+        ->assertSee('Yang diperoleh')
+        ->assertSee('Bagikan Peluang')
+        ->assertSee('href="https://example.test/daftar"', false)
+        ->assertSee('rel="noopener noreferrer"', false);
+
+    expect($response->headers->get('Cache-Control'))
+        ->toContain('private')
+        ->toContain('no-store');
 });
 
 test('unknown legacy opportunity detail URLs return not found', function () {
@@ -60,8 +79,26 @@ test('opportunity directory links directly to the official source', function () 
         ->assertSee('Form Pendaftaran')
         ->assertSee('href="https://example.test/form"', false)
         ->assertSee('href="'.$opportunity->additional_link_url.'"', false)
-        ->assertSee('grid-cols-3', false)
-        ->assertDontSee('href="'.route('opportunities.show', $opportunity->slug).'"', false);
+        ->assertSee('Lihat Detail')
+        ->assertSee('href="'.route('opportunities.show', $opportunity->slug).'"', false);
+});
+
+test('archived opportunity detail is not public while closed detail remains readable', function () {
+    $closed = Opportunity::query()->create([
+        'title' => 'Peluang yang Telah Ditutup',
+        'slug' => 'peluang-yang-telah-ditutup',
+        'status' => 'closed',
+    ]);
+    $archived = Opportunity::query()->create([
+        'title' => 'Peluang Arsip Internal',
+        'slug' => 'peluang-arsip-internal',
+        'status' => 'archived',
+    ]);
+
+    $this->get(route('opportunities.show', $closed->slug))
+        ->assertOk()
+        ->assertSee('Sudah Ditutup');
+    $this->get(route('opportunities.show', $archived->slug))->assertNotFound();
 });
 
 test('opportunity directory hides an incomplete or unsafe additional link', function () {

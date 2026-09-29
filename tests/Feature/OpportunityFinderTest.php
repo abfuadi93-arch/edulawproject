@@ -39,15 +39,15 @@ test('finder separates featured opportunity from the paginated results', functio
     $response
         ->assertViewHas('featuredOpportunity', fn (?Opportunity $item): bool => $item?->is($featured) === true)
         ->assertViewHas('opportunities', fn ($items): bool => $items->total() === 1 && $items->first()->is($regular))
-        ->assertSee('lg:grid-cols-[365px_minmax(0,1fr)]', false)
+        ->assertSee('md:grid-cols-[minmax(0,40fr)_minmax(0,60fr)]', false)
         ->assertSee('sm:min-h-[365px] lg:min-h-0', false)
         ->assertSee('absolute inset-0 z-10 size-full object-contain', false)
         ->assertSee('onerror="this.remove()"', false)
         ->assertSee('Edulaw Opportunity')
         ->assertSee($featured->application_link, false)
         ->assertSee($regular->application_link, false)
-        ->assertDontSee(route('opportunities.show', $featured->slug), false)
-        ->assertDontSee(route('opportunities.show', $regular->slug), false);
+        ->assertSee(route('opportunities.show', $featured->slug), false)
+        ->assertSee(route('opportunities.show', $regular->slug), false);
 });
 
 test('finder renders its advanced filters without a public Alpine dependency', function () {
@@ -205,7 +205,6 @@ test('finder statistics are calculated from public database records', function (
             && $statistics['open'] === 1
             && $statistics['nearest_deadline'] === today()->addDays(4)->locale('id')->translatedFormat('d F'));
 });
-
 
 test('program category includes legacy fellowship and volunteer records', function () {
     $fellowship = createFinderOpportunity(['type' => 'fellowship', 'title' => 'Legacy Fellowship']);
