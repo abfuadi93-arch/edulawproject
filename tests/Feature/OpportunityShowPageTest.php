@@ -79,7 +79,8 @@ test('opportunity directory links directly to the official source', function () 
         ->assertSee('Form Pendaftaran')
         ->assertSee('href="https://example.test/form"', false)
         ->assertSee('href="'.$opportunity->additional_link_url.'"', false)
-        ->assertSee('Lihat Detail')
+        ->assertDontSee('Lihat Detail')
+        ->assertSee('data-card-detail-link', false)
         ->assertSee('href="'.route('opportunities.show', $opportunity->slug).'"', false);
 });
 
