@@ -116,7 +116,7 @@
     padding-bottom: 20px;
 }
     .home-program-curation-grid {
-    grid-template-columns: minmax(0, 1.38fr) minmax(340px, 1fr);
+    grid-template-columns: minmax(340px, 1fr) minmax(0, 1.38fr);
 }
 }
 
@@ -478,7 +478,11 @@ section[aria-labelledby="home-collaboration-title"] a {
     #artikel-terbaru .home-latest-secondary [data-home-insight] { border: 0; border-bottom: 1px solid #e2e8f0; border-radius: 0; }
     #artikel-terbaru .home-latest-secondary [data-home-insight] > a { padding: 12px 0; }
     #artikel-terbaru .home-latest-secondary [data-home-insight]:first-child > a { padding-top: 0; }
-    #artikel-terbaru .home-latest-secondary { grid-auto-rows: auto; align-content: start; }
+    #artikel-terbaru .home-latest-secondary {
+        align-self: stretch;
+        grid-auto-rows: 1fr;
+        align-content: stretch;
+    }
     #artikel-terbaru [data-home-insight-latest] > a > div:first-child { flex: 1 0 260px; }
     #artikel-terbaru [data-home-insight-latest] > a > div:last-child { flex: none; }
     #artikel-terbaru [data-home-insight-latest] > a > div:last-child > div:last-child { margin-top: 16px; }

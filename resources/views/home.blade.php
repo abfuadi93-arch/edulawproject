@@ -13,14 +13,14 @@
         <x-home.hero :hero="$homeHero" :values="$homeValues" />
         <x-home.impact :stats="$credibilityStats" />
     </div>
-    <div class="home-program-curation">
-        <div class="section-shell home-program-curation-grid">
-            <x-home.programs :programs="$latestPrograms" />
-            <x-home.featured-editorial :insight="$featuredInsight" />
-        </div>
-    </div>
     <x-home.latest-insights :insight="$featuredInsight" :insights="$latestInsights" />
     <x-home.topics :topics="$homeTopics" />
+    <div class="home-program-curation">
+        <div class="section-shell home-program-curation-grid">
+            <x-home.featured-editorial :insight="$featuredInsight" />
+            <x-home.programs :programs="$latestPrograms" />
+        </div>
+    </div>
     <x-home.publications :publications="$latestPublications" />
     <x-home.opportunities :opportunities="$latestOpportunities" />
     <x-home.multimedia :featured="$homepageFeaturedMultimedia" :items="$homepageSecondaryMultimedia" />
