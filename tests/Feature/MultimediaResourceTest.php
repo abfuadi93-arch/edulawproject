@@ -85,6 +85,30 @@ test('youtube video can be saved without an exposed slug or thumbnail', function
         ->and($record->featured)->toBeTrue();
 });
 
+test('multimedia description accepts content longer than three hundred characters', function () {
+    $user = multimediaAdmin();
+    $description = str_repeat('Ringkasan multimedia yang lebih lengkap untuk menjelaskan konteks video. ', 15);
+
+    expect(mb_strlen($description))->toBeGreaterThan(300)
+        ->and(mb_strlen($description))->toBeLessThanOrEqual(2000);
+
+    Livewire::actingAs($user)
+        ->test(CreateMultimedia::class)
+        ->fillForm([
+            'title' => 'Video dengan Ringkasan Panjang',
+            'description' => $description,
+            'type' => 'video',
+            'platform' => 'youtube',
+            'media_url' => 'https://youtu.be/longDescription1',
+            'status' => 'draft',
+        ])
+        ->call('create')
+        ->assertHasNoFormErrors();
+
+    expect(Multimedia::query()->where('title', 'Video dengan Ringkasan Panjang')->value('description'))
+        ->toBe($description);
+});
+
 test('shorts and reels can be saved without a thumbnail', function () {
     Storage::fake('public');
     Http::fake([

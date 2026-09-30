@@ -74,10 +74,10 @@ class MultimediaResource extends Resource
 
                                         Textarea::make('description')
                                             ->label('Ringkasan')
-                                            ->rows(3)
-                                            ->maxLength(300)
+                                            ->rows(6)
+                                            ->maxLength(2000)
                                             ->live(onBlur: true)
-                                            ->helperText('Tampil sebagai deskripsi singkat pada kartu konten utama.')
+                                            ->helperText('Maksimal 2.000 karakter. Pada halaman publik, teks akan diringkas otomatis agar kartu tetap rapi.')
                                             ->columnSpanFull(),
 
                                         Grid::make([
