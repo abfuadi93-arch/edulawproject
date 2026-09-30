@@ -20,7 +20,7 @@
         @if ($featuredOpportunity)
             <div class="mt-5 grid gap-5 lg:grid-cols-[minmax(0,3fr)_minmax(320px,2fr)]">
                 <article data-home-opportunity data-home-opportunity-featured class="group border-y border-slate-200 bg-white">
-                    <a href="{{ $featuredOpportunity->external_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka informasi resmi {{ $featuredOpportunity->title }} (membuka tab baru)" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber md:grid-cols-[minmax(0,3fr)_minmax(200px,2fr)]">
+                    <a href="{{ route('opportunities.show', $featuredOpportunity->slug) }}" aria-label="Lihat detail {{ $featuredOpportunity->title }}" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber md:grid-cols-[minmax(0,3fr)_minmax(200px,2fr)]">
                         <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
                             <p class="home-card-kicker">{{ $featuredOpportunity->display_type }}</p>
                             <h3 class="mt-3  text-2xl font-bold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
@@ -39,7 +39,7 @@
                                 </p>
                             @endif
 
-                            <span class="mt-5 inline-flex w-fit text-sm font-bold text-[#102f56] transition group-hover:text-brand-teal">Informasi Resmi ↗</span>
+                            <span class="mt-5 inline-flex w-fit text-sm font-bold text-[#102f56] transition group-hover:text-brand-teal">Lihat Detail →</span>
                         </div>
 
                         <div class="relative order-last aspect-[4/5] w-full self-center overflow-hidden border border-slate-200 p-0 md:aspect-auto md:min-h-0 md:self-stretch">
@@ -55,7 +55,7 @@
                     <div class="grid content-start divide-y divide-slate-200 border-y border-slate-200">
                         @foreach ($secondaryOpportunities as $opportunity)
                             <article data-home-opportunity data-home-opportunity-secondary class="group min-w-0 transition duration-200 hover:bg-slate-50/70">
-                                <a href="{{ $opportunity->external_url }}" target="_blank" rel="noopener noreferrer" class="grid h-full grid-cols-[80px_minmax(0,1fr)] gap-4 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
+                                <a href="{{ route('opportunities.show', $opportunity->slug) }}" class="grid h-full grid-cols-[80px_minmax(0,1fr)] gap-4 py-3 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber">
                                     <div class="relative aspect-[4/5] w-full self-center overflow-hidden border border-slate-200 p-0">
                                         <x-home.media-fallback kind="opportunity" data-home-opportunity-fallback />
                                         @if ($opportunity->poster_url)

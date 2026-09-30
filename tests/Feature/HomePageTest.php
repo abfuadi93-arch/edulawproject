@@ -685,17 +685,18 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->assertDontSee($expired->title)
         ->assertDontSee($closed->title)
         ->assertDontSee($invalid->title)
-        ->assertSee('href="https://example.test/apply/1"', false)
-        ->assertDontSee('href="'.route('opportunities.show', $opportunities[0]->slug).'"', false)
+        ->assertDontSee('href="https://example.test/apply/1"', false)
+        ->assertSee('href="'.route('opportunities.show', $opportunities[0]->slug).'"', false)
         ->assertSee('alt="Poster Peluang Aktif 1"', false)
         ->assertSee('Jakarta')
         ->assertSee('Hybrid')
-        ->assertSee('Informasi Resmi ↗')
+        ->assertSee('Lihat Detail →')
         ->assertDontSee('Lihat Peluang')
         ->assertSee('Ragam kesempatan untuk belajar, berkembang, dan memberi dampak nyata.');
 
     foreach ($opportunities->take(4) as $opportunity) {
-        $response->assertDontSee($opportunity->excerpt);
+        $response->assertDontSee($opportunity->excerpt)
+            ->assertSee('href="'.route('opportunities.show', $opportunity->slug).'"', false);
     }
 
     expect($xpath->query('//*[@data-home-opportunity]')->length)->toBe(4)
@@ -704,8 +705,8 @@ it('shows at most four active opportunities ordered by nearest deadline in a one
         ->and($xpath->query('//*[@data-home-opportunity-bottom]')->length)->toBe(0)
         ->and($xpath->query('//*[@data-home-opportunity]//img')->length)->toBe(4)
         ->and($xpath->query('//*[@data-home-opportunity]//*[@data-home-opportunity-fallback]')->length)->toBe(4)
-        ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "example.test/apply/")]')->length)->toBe(4)
-        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(4)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[contains(@href, "example.test/apply/")]')->length)->toBe(0)
+        ->and($xpath->query('//*[@data-home-opportunity]//a[@target="_blank" and @rel="noopener noreferrer"]')->length)->toBe(0)
         ->and($xpath->query('//*[@data-home-opportunity-secondary]//*[contains(text(), "Deadline")]')->length)->toBe(3);
 });
 
