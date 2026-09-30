@@ -37,7 +37,6 @@
     $eventDateLabel = $program->eventDateLabel();
     $languageLabel = $program->language ?: 'Indonesia';
     $subtitle = $program->subtitle;
-    $shortDescription = (strip_tags((string) $program->short_description));
     $detailDescription = $program->getRawOriginal('description');
     $descriptionIsHtml = Str::contains((string) $detailDescription, ['<p', '<br', '<ul', '<ol', '<div']);
     $descriptionParagraphs = collect(preg_split('/\R{2,}/', trim((string) $detailDescription)) ?: [])
@@ -197,11 +196,6 @@
                     </p>
                 @endif
 
-                @if ($shortDescription)
-                    <p class="mt-5 max-w-3xl text-base font-medium leading-8 text-white/82 sm:text-lg">
-                        {{ $shortDescription }}
-                    </p>
-                @endif
             </div>
 
             @if ($heroInfoItems->isNotEmpty())
