@@ -593,7 +593,7 @@
     font-weight: 400;
     letter-spacing: 0;
     line-height: 1.75;
-    text-align: justify;
+    text-align: left;
 }
 
 .edulaw-readable:is(p),
