@@ -10,7 +10,14 @@
 
         $image = edulaw_file_url($program->image ?? null);
         $title = $program->display_title ?? $program->name ?? 'Program Edulaw';
-        $excerpt = $program->display_description ?? $program->short_description ?? '';
+        $description = $program->description ?: ($program->short_description ?? '');
+        preg_match_all('/<p\b[^>]*>(.*?)<\/p\s*>/is', $description, $paragraphMatches);
+        $paragraphs = $paragraphMatches[1] ?: preg_split('/(?:\r?\n\s*){2,}/', $description);
+        $excerpt = collect($paragraphs)
+            ->map(fn ($paragraph) => \Illuminate\Support\Str::squish(html_entity_decode(strip_tags(
+                preg_replace('/<br\s*\/?\s*>/i', ' ', $paragraph)
+            ), ENT_QUOTES | ENT_HTML5, 'UTF-8')))
+            ->first(fn ($paragraph) => $paragraph !== '') ?? '';
         $category = $program->display_category ?? $program->categoryRelation?->name ?? 'Program';
         $date = $program->event_date ? $program->event_date->translatedFormat('d M Y') : 'Tanggal menyusul';
         $format = $program->display_format ?? \Illuminate\Support\Str::headline((string) ($program->format ?? 'Fleksibel'));
