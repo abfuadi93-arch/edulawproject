@@ -38,7 +38,7 @@
         @media (min-width: 1024px) {
             .edulaw-page-header-right,
             .edulaw-page-header-right .edulaw-page-header-description {
-                text-align: right !important;
+                text-align: left !important;
             }
 
             .edulaw-page-header-right .edulaw-page-header-description,
@@ -47,12 +47,12 @@
             }
 
             .edulaw-page-header-right .edulaw-page-header-content {
-                align-items: flex-end !important;
-                text-align: right !important;
+                align-items: flex-start !important;
+                text-align: left !important;
             }
 
             .edulaw-page-header-right .edulaw-page-header-content > .flex {
-                justify-content: flex-end !important;
+                justify-content: flex-start !important;
             }
         }
     </style>
@@ -129,9 +129,9 @@
         </div>
 
         @if ((! $channelHeader && $description) || ! $slot->isEmpty())
-            <div class="edulaw-page-header-right min-w-0 lg:ml-auto lg:w-full lg:justify-self-end lg:text-right">
+            <div class="edulaw-page-header-right min-w-0 lg:ml-auto lg:w-full lg:justify-self-end lg:text-left">
                 @if (! $channelHeader && $description)
-                    <p class="edulaw-page-header-description {{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-base leading-7' : 'text-base leading-8').' '.($isDarkHero ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto lg:text-right' }}">
+                    <p class="edulaw-page-header-description {{ $descriptionClass ?: 'max-w-[calc(100vw-2rem)] '.($compact ? 'text-base leading-7' : 'text-base leading-8').' '.($isDarkHero ? 'text-white/84' : 'text-slate-600').' sm:max-w-2xl lg:ml-auto lg:text-left' }}">
                         {{ $description }}
                     </p>
 
@@ -141,7 +141,7 @@
                 @endif
 
                 @if (! $slot->isEmpty())
-                    <div class="edulaw-page-header-content {{ ! $channelHeader && $description ? ($compact ? 'mt-4' : 'mt-7') : '' }} {{ $contentClass ?: 'lg:ml-auto lg:flex lg:max-w-2xl lg:flex-col lg:items-end lg:text-right' }}">
+                    <div class="edulaw-page-header-content {{ ! $channelHeader && $description ? ($compact ? 'mt-4' : 'mt-7') : '' }} {{ $contentClass ?: 'lg:ml-auto lg:flex lg:max-w-2xl lg:flex-col lg:items-start lg:text-left' }}">
                         {{ $slot }}
                     </div>
                 @endif

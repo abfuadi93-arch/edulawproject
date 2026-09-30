@@ -285,7 +285,7 @@ class PublicationResource extends Resource
                                             ->fileAttachmentsAcceptedFileTypes(['image/jpeg', 'image/png', 'image/webp', 'image/gif'])
                                             ->fileAttachmentsMaxSize(4096)
                                             ->editorConfig([
-                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
+                                                'toolbar' => 'undo redo | blocks | bold italic underline strikethrough superscript subscript | bullist numlist outdent indent blockquote | link unlink image table hr charmap | removeformat searchreplace code fullscreen',
                                             ])
                                             ->columnSpanFull(),
 

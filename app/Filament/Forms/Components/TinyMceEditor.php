@@ -90,7 +90,7 @@ class TinyMceEditor extends Field implements CanBeLengthConstrainedContract
             'table_sizing_mode' => 'responsive',
             'toolbar' => implode(' ', [
                 'undo redo | blocks | bold italic underline strikethrough superscript subscript |',
-                'alignleft aligncenter alignright alignjustify | bullist numlist outdent indent blockquote |',
+                'bullist numlist outdent indent blockquote |',
                 'link unlink image table hr charmap footnote | removeformat searchreplace code fullscreen',
             ]),
             'toolbar_mode' => 'sliding',

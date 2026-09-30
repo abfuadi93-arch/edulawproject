@@ -11,6 +11,12 @@
 @import './navigation.css';
 @import './design-system.css';
 
+/* Keep all public page copy left-aligned, including rich editor content. */
+#main-content,
+#main-content :where(*) {
+    text-align: left !important;
+}
+
 /* Shared public theme; typography roles live in typography.css. */
 @theme {
     --font-sans: var(--font-brand);
