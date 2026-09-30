@@ -110,8 +110,8 @@
 
     <meta name="theme-color" content="#1f3c69">
 
-    {{-- Favicon placeholder --}}
-    <link rel="icon" href="{{ asset('favicon.ico') }}">
+    {{-- Edulaw favicon --}}
+    <link rel="icon" type="image/x-icon" sizes="16x16 32x32 48x48 64x64" href="{{ asset('favicon.ico') }}?v={{ filemtime(public_path('favicon.ico')) }}">
 
     @fonts('lato')
     @vite(['resources/css/app.css', 'resources/js/app.js'])
