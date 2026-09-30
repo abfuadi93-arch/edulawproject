@@ -159,7 +159,7 @@
 @endphp
 
 <main class="bg-transparent">
-    <section class="relative isolate overflow-hidden bg-brand-navy text-white">
+    <section class="relative isolate overflow-hidden bg-brand-navy py-3 text-white">
         <x-responsive-image
             :src="$heroBackground"
             :alt="$programTitle"
@@ -172,7 +172,8 @@
         <div class="absolute inset-0 z-0 bg-linear-to-r from-[#06132a]/96 via-[#06132a]/78 to-[#06132a]/24"></div>
         <div class="absolute inset-0 z-0 bg-linear-to-t from-[#06132a]/78 via-transparent to-[#06132a]/24"></div>
 
-        <div class="relative z-10 mx-auto max-w-7xl px-5 py-11 sm:px-6 lg:px-8 lg:py-16">
+        <div class="relative z-10 mx-auto grid max-w-7xl content-center gap-6 px-5 py-7 sm:px-6 sm:py-8 lg:min-h-[240px] lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-4">
+            <div class="min-w-0">
             <nav class="flex flex-wrap items-center gap-2 text-xs font-bold text-white/70 sm:text-sm" aria-label="Breadcrumb">
                 <a href="{{ url('/') }}" class="transition hover:text-white">Beranda</a>
                 <span class="text-white/40">/</span>
@@ -181,25 +182,26 @@
                 <span class="text-white">Detail Program</span>
             </nav>
 
-            <div class="mt-6 max-w-5xl">
+            <div class="mt-2 max-w-5xl">
                 <p class="edulaw-badge edulaw-badge-md edulaw-badge-dark">
                     {{ $categoryLabel }}
                 </p>
 
-                <h1 class="mt-4 max-w-5xl text-4xl font-bold leading-[1.04] tracking-tight text-white sm:text-5xl lg:text-[3.6rem]">
+                <h1 class="mt-1.5 max-w-5xl text-3xl font-bold leading-tight tracking-tight text-white sm:text-4xl">
                     {{ $programTitle }}
                 </h1>
 
                 @if ($subtitle)
-                    <p class="mt-4 max-w-3xl text-xl font-bold leading-snug text-brand-amber sm:text-2xl">
+                    <p class="mt-3 max-w-3xl text-base font-bold leading-snug text-brand-amber sm:text-lg">
                         {{ $subtitle }}
                     </p>
                 @endif
 
             </div>
+            </div>
 
             @if ($heroInfoItems->isNotEmpty())
-                <div class="mt-8 grid gap-3 sm:grid-cols-2 lg:grid-cols-4">
+                <div class="grid gap-3 sm:grid-cols-2">
                     @foreach ($heroInfoItems as $item)
                         <div class="flex items-center gap-3 rounded-2xl border border-white/70 bg-white px-4 py-4 shadow-xl shadow-black/10">
                             <span class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-brand-amber-soft text-brand-navy">
