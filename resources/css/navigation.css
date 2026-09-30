@@ -39,8 +39,11 @@
 
 @media (max-width: 639px) {
     [data-site-header] > div > div:first-child {
-        height: 68px;
+        height: 64px;
+        gap: 16px;
     }
+
+    [data-site-header] img { height: 36px; }
 }
 
 /* Keep the compact desktop header comfortable before the full-width breakpoint. */
@@ -48,5 +51,4 @@
     [data-site-header] > div > div:first-child { gap: 12px; }
     [data-site-header] > div > div:first-child > a > div:last-child { display: none; }
 }
-[data-site-header] #mobile-navigation nav a[aria-current="page"] { color: #fff; }
 [data-site-header] nav a:is(:hover, :focus-visible, [aria-current="page"]) { text-decoration: none; }

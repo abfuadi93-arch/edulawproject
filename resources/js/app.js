@@ -11,7 +11,9 @@ function initializeMobileNavigation() {
     const menu = header.querySelector('[data-mobile-navigation]');
     const openIcon = header.querySelector('[data-mobile-menu-open-icon]');
     const closeIcon = header.querySelector('[data-mobile-menu-close-icon]');
+    const menuLabel = header.querySelector('[data-mobile-menu-label]');
     const firstLink = header.querySelector('[data-mobile-first-link]');
+    const menuLinks = [...(menu?.querySelectorAll('a') ?? [])];
 
     if (!button || !menu || !openIcon || !closeIcon) {
         return;
@@ -22,10 +24,16 @@ function initializeMobileNavigation() {
     const setOpen = (open, restoreFocus = false) => {
         isOpen = open;
         menu.hidden = !open;
-        openIcon.hidden = open;
-        closeIcon.hidden = !open;
+        openIcon.toggleAttribute('hidden', open);
+        closeIcon.toggleAttribute('hidden', !open);
+        openIcon.classList.toggle('hidden', open);
+        closeIcon.classList.toggle('hidden', !open);
         button.setAttribute('aria-expanded', String(open));
         button.setAttribute('aria-label', open ? 'Tutup menu' : 'Buka menu');
+        if (menuLabel) {
+            menuLabel.textContent = open ? 'Tutup' : 'Menu';
+        }
+        document.body.classList.toggle('overflow-hidden', open);
 
         if (open) {
             window.requestAnimationFrame(() => firstLink?.focus());
@@ -35,10 +43,32 @@ function initializeMobileNavigation() {
     };
 
     button.addEventListener('click', () => setOpen(!isOpen));
+    menuLinks.forEach((link) => link.addEventListener('click', () => setOpen(false)));
 
     document.addEventListener('keydown', (event) => {
         if (event.key === 'Escape' && isOpen) {
             setOpen(false, true);
+            return;
+        }
+
+        if (event.key === 'Tab' && isOpen) {
+            const focusableElements = [...menu.querySelectorAll('a[href], button:not([disabled])')];
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements.at(-1);
+
+            if (event.shiftKey && document.activeElement === button) {
+                event.preventDefault();
+                lastElement?.focus();
+            } else if (event.shiftKey && document.activeElement === firstElement) {
+                event.preventDefault();
+                button.focus();
+            } else if (!event.shiftKey && document.activeElement === button) {
+                event.preventDefault();
+                firstElement?.focus();
+            } else if (!event.shiftKey && document.activeElement === lastElement) {
+                event.preventDefault();
+                button.focus();
+            }
         }
     });
 
@@ -48,7 +78,7 @@ function initializeMobileNavigation() {
         }
     });
 
-    window.matchMedia('(min-width: 1024px)').addEventListener('change', (event) => {
+    window.matchMedia('(min-width: 1280px)').addEventListener('change', (event) => {
         if (isOpen && event.matches) {
             setOpen(false);
         }

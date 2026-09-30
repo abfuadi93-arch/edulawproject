@@ -4,25 +4,6 @@
 @section('meta_description', 'Jelajahi video, Shorts/Reels, dan dokumentasi kegiatan Edulaw Project dari kanal resmi YouTube, Instagram, dan Google Photos kami.')
 @section('canonical_url', route('multimedia.index'))
 
-@push('styles')
-    <style>
-        @media (min-width: 1024px) and (max-width: 1279px) {
-            body header nav[aria-label="Navigasi utama"],
-            body header nav[aria-label="Navigasi utama"] + div {
-                display: none !important;
-            }
-
-            body header button[aria-controls="mobile-navigation"] {
-                display: inline-flex !important;
-            }
-
-            body header #mobile-navigation:not([style*="display: none"]) {
-                display: block !important;
-            }
-        }
-    </style>
-@endpush
-
 @push('head')
     @php
         $youtubeSchemaVideos = collect($youtubeVideos->items())
