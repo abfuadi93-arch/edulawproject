@@ -822,7 +822,9 @@
 }
 
 .insight-footnotes {
-    max-width: 68ch;
+    width: 100%;
+    max-width: 100%;
+    overflow-wrap: anywhere;
     margin-top: 3rem;
     padding-top: 1.5rem;
     border-top: 1px solid #cbd5e1;
