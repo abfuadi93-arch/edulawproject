@@ -35,12 +35,12 @@
                                 <x-responsive-image :src="$image" alt="Poster {{ $program->display_title }}" :widths="[320, 480, 640, 960]" sizes="(min-width: 1280px) 390px, (min-width: 768px) 50vw, 100vw" width="640" height="360" class="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.02]" onerror="this.remove()" />
                             @endif
                             <div class="absolute inset-x-3 top-3 flex items-center justify-between gap-2">
-                                <span class="max-w-40 truncate rounded bg-[#17375f]/90 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-white">{{ $program->categoryRelation?->name ?? 'Program' }}</span>
+                                <span class="max-w-40  rounded bg-[#17375f]/90 px-2.5 py-1.5 text-xs font-bold uppercase tracking-wide text-white">{{ $program->categoryRelation?->name ?? 'Program' }}</span>
                                 <span class="hidden rounded-full bg-white/95 px-2.5 py-1.5 text-xs font-bold text-[#102f56] sm:inline-flex">{{ $statusLabel }}</span>
                             </div>
                         </div>
                         <div class="flex min-w-0 flex-col p-4 sm:block sm:p-5">
-                            <h3 class="line-clamp-3 text-base font-bold leading-[1.35] text-brand-navy sm:line-clamp-2 sm:text-lg">{{ $program->display_title }}</h3>
+                            <h3 class=" text-base font-bold leading-[1.35] text-brand-navy  sm:text-lg">{{ $program->display_title }}</h3>
                             <div class="home-card-meta flex flex-wrap gap-x-3 gap-y-1">
                                 @if ($eventDate)<span>{{ $eventDate->translatedFormat('d M Y') }}</span>@endif
                                 @if ($eventDate && $format)<span>·</span>@endif

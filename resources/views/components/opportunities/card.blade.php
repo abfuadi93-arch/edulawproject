@@ -2,7 +2,7 @@
 
 @php
     $summary = $opportunity->excerpt
-        ?: Illuminate\Support\Str::limit(strip_tags($opportunity->description ?? ''), 145);
+        ?: (strip_tags($opportunity->description ?? ''));
     $isOpen = $opportunity->is_open_for_applications;
     $officialUrl = $opportunity->external_url;
     $detailUrl = route('opportunities.show', $opportunity->slug);
@@ -37,11 +37,11 @@
                 <span class="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
                 <span class="type-role-meta font-normal text-slate-500">{{ $opportunity->display_format }} · {{ $opportunity->location ?: 'Lokasi menyesuaikan' }}</span>
             </div>
-            <h2 class="type-role-card mt-3 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
+            <h2 class="type-role-card mt-3  text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                 {{ $opportunity->title }}
             </h2>
             @if ($summary)
-                <p class="mt-2 line-clamp-2 text-base leading-7 text-slate-600">{{ $summary }}</p>
+                <p class="mt-2  text-base leading-7 text-slate-600">{{ $summary }}</p>
             @endif
             @if ($opportunity->organizer || $opportunity->target_audience)
                 <p class="mt-3 type-role-meta font-normal text-slate-500">
@@ -81,17 +81,17 @@
         <div class="opportunity-landscape-content flex min-h-0 min-w-0 flex-col p-3">
             <div class="flex items-start justify-between gap-2">
                 <span class="rounded-full px-2.5 py-1 text-[11px] font-bold uppercase tracking-[0.08em] {{ $typeBadgeClass }}">{{ $opportunity->display_type }}</span>
-                <span class="line-clamp-1 text-right text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }} · {{ $opportunity->location ?: 'Menyesuaikan' }}</span>
+                <span class=" text-right text-[11px] font-bold text-slate-500">{{ $opportunity->display_format }} · {{ $opportunity->location ?: 'Menyesuaikan' }}</span>
             </div>
 
-            <h2 class="type-role-card mt-2 line-clamp-2 text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
+            <h2 class="type-role-card mt-2  text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                 {{ $opportunity->title }}
             </h2>
             @if ($summary)
-                <p class="opportunity-summary mt-2 line-clamp-3 text-sm leading-5 text-slate-600">{{ $summary }}</p>
+                <p class="opportunity-summary mt-2  text-sm leading-5 text-slate-600">{{ $summary }}</p>
             @endif
             @if ($opportunity->organizer || $opportunity->target_audience)
-                <p class="opportunity-organizer mt-2 line-clamp-1 type-role-meta font-normal leading-5 text-slate-500">
+                <p class="opportunity-organizer mt-2  type-role-meta font-normal leading-5 text-slate-500">
                     @if ($opportunity->organizer){{ $opportunity->organizer }}@endif
                     @if ($opportunity->organizer && $opportunity->target_audience)<span aria-hidden="true"> · </span>@endif
                     @if ($opportunity->target_audience)Target: {{ $opportunity->target_audience }}@endif

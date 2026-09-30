@@ -29,12 +29,12 @@
     [data-publication-page] [data-repository-card] { --cover-width: 90px; height: calc(var(--cover-width) * 297 / 210 + 2px); align-self: start; }
     [data-publication-page] .repository-cover { width: var(--cover-width); }
     [data-publication-page] .repository-content { height: 100%; display: flex; flex-direction: column; padding: 8px; gap: 4px; }
-    [data-publication-page] .repository-content h3 { margin: 0; font-size: 12px; line-height: 16px; display: -webkit-box; -webkit-box-orient: vertical; -webkit-line-clamp: 2; overflow: hidden; }
+    [data-publication-page] .repository-content h3 { margin: 0; font-size: 12px; line-height: 16px; display: -webkit-box; -webkit-box-orient: vertical;   overflow: hidden; }
     [data-publication-page] .repository-content > div:first-child { flex-wrap: nowrap; overflow: hidden; }
     [data-publication-page] .repository-content > div:first-child span { padding: 2px 6px; font-size: 9px; white-space: nowrap; }
     [data-publication-page] [data-publication-card-footer] { margin-top: auto; gap: 6px; }
     [data-publication-page] [data-publication-card-footer] > a { font-size: 10px; padding: 4px; min-height: 32px; }
-    [data-publication-page] .repository-author-name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    [data-publication-page] .repository-author-name { overflow: hidden; overflow-wrap: anywhere; white-space: normal; }
     [data-publication-page] [data-publication-card-footer] time { margin-top: 2px; font-size: 10px; }
     @media (min-width: 640px) {
         [data-publication-page] [data-repository-card] { --cover-width: 120px; }
@@ -124,10 +124,7 @@
     $publicationExcerpt = function ($publication, int $limit = 200): string {
         $text = Str::squish(strip_tags((string) ($publication->excerpt ?: ($publication->description ?? ''))));
 
-        return Str::limit(
-            $text ?: 'Publikasi Edulaw Project untuk mendukung literasi hukum, riset kebijakan, dan penguatan pengetahuan publik.',
-            $limit,
-        );
+        return ($text ?: 'Publikasi Edulaw Project untuk mendukung literasi hukum, riset kebijakan, dan penguatan pengetahuan publik.');
     };
 
     $downloadUrl = function ($publication): ?string {
@@ -191,7 +188,7 @@
                             <h2 id="featured-publication-heading" class="type-role-feature channel-feature-title">
                                 <a href="{{ route('publications.show', $featured->slug) }}" class="rounded-sm transition hover:text-brand-navy focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy">{{ $featured->title }}</a>
                             </h2>
-                            <p class="channel-feature-summary line-clamp-2">{{ $publicationExcerpt($featured, 280) }}</p>
+                            <p class="channel-feature-summary ">{{ $publicationExcerpt($featured, 280) }}</p>
                             <div class="channel-feature-meta border-y border-slate-100 py-3">
                                 <dl class="grid gap-3 sm:grid-cols-2 {{ $featured->page_count ? 'lg:grid-cols-3' : '' }}">
                                     <div>

@@ -37,7 +37,7 @@
     $categoryName = $insight->display_category;
     $publishedDate = optional($insight->published_at)->translatedFormat('d F Y') ?? 'Belum dijadwalkan';
     $description = $insight->excerpt
-        ?: \Illuminate\Support\Str::limit(strip_tags($insight->content ?? ''), 180)
+        ?: (strip_tags($insight->content ?? ''))
         ?: 'Editorial Edulaw Project menyajikan analisis hukum yang relevan, jernih, dan mudah dipahami.';
     $primaryAuthor = $insight->authors
         ->filter(fn ($author) => $author->is_active !== false)
@@ -94,7 +94,7 @@
         <div class="absolute inset-0 z-0 bg-[radial-gradient(circle_at_center,rgba(255,255,255,0.10),transparent_48%)]"></div>
         <div class="absolute bottom-0 left-0 right-0 z-0 h-px bg-white/12"></div>
 
-        <div class="relative z-10 mx-auto flex min-h-[360px] max-w-7xl flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[400px] lg:min-h-[520px] lg:px-8 lg:py-24">
+        <div class="insight-detail-hero relative z-10 mx-auto flex min-h-[360px] max-w-7xl flex-col items-center justify-center px-6 py-16 text-center sm:min-h-[400px] lg:min-h-[520px] lg:px-8 lg:py-24">
             <nav class="mb-7 flex flex-wrap items-center justify-center gap-2 text-xs font-bold text-white/70" aria-label="Breadcrumb">
                 <a href="{{ route('home') }}" class="transition hover:text-white">
                     Beranda
@@ -348,14 +348,14 @@
                                     {{ $item->display_category }}
                                 </p>
 
-                                <h3 class="type-role-compact mt-3 line-clamp-2 min-h-[2.75rem] text-base font-bold leading-snug text-brand-navy">
+                                <h3 class="type-role-compact mt-3  min-h-[2.75rem] text-base font-bold leading-snug text-brand-navy">
                                     <a href="{{ route('insights.show', $item->slug) }}">
                                         {{ $item->title }}
                                     </a>
                                 </h3>
 
                                 @if ($item->excerpt)
-                                    <p class="mt-3 line-clamp-3 text-sm leading-relaxed text-slate-500">
+                                    <p class="mt-3  text-sm leading-relaxed text-slate-500">
                                         {{ $item->excerpt }}
                                     </p>
                                 @endif

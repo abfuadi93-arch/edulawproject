@@ -62,7 +62,7 @@
                                 <span class="absolute left-3 top-3 grid h-9 w-9 place-items-center rounded-lg bg-brand-amber text-sm font-bold text-brand-navy">01</span>
                                 <span class="relative mt-auto p-4 text-white sm:p-5">
                                     <span class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-amber">{{ $categoryName($leadPopular) }}</span>
-                                    <span class="mt-1.5 block line-clamp-3 text-lg font-bold leading-snug">{{ $leadPopular->title }}</span>
+                                    <span class="mt-1.5 block  text-lg font-bold leading-snug">{{ $leadPopular->title }}</span>
                                     <span class="mt-2 block type-role-meta font-normal text-white/75">{{ $publishedDate($leadPopular) }} · {{ number_format((int) $leadPopular->getAttribute('visit_count'), 0, ',', '.') }} kali dibaca</span>
                                 </span>
                             </a>
@@ -74,7 +74,7 @@
                                             <span class="font-display text-xl font-bold tabular-nums text-brand-navy/25">{{ str_pad((string) ($index + 2), 2, '0', STR_PAD_LEFT) }}</span>
                                             <span class="min-w-0">
                                                 <span class="block text-[11px] font-bold uppercase tracking-[0.09em] text-brand-coral">{{ $categoryName($article) }}</span>
-                                                <span class="mt-1 block line-clamp-2 text-sm font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</span>
+                                                <span class="mt-1 block  text-sm font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</span>
                                                 <span class="mt-1 block text-[11px] font-medium text-slate-500">{{ number_format((int) $article->getAttribute('visit_count'), 0, ',', '.') }} kali dibaca</span>
                                             </span>
                                         </a>
@@ -106,7 +106,7 @@
                             </span>
                             <span class="min-w-0">
                                 <span class="block text-[11px] font-bold uppercase tracking-[0.09em] text-brand-coral">#1 Penulis Terproduktif</span>
-                                <strong class="mt-1 block truncate text-base text-brand-ink">{{ $leadContributor->name }}</strong>
+                                <strong class="mt-1 block  text-base text-brand-ink">{{ $leadContributor->name }}</strong>
                                 <span class="mt-1 block text-[11px] font-bold text-brand-navy">{{ $leadContributor->published_insights_count }} tulisan terbit</span>
                             </span>
                         </a>
@@ -123,7 +123,7 @@
                                             @endif
                                         </span>
                                         <span class="min-w-0">
-                                            <strong class="block truncate text-xs text-brand-ink">{{ $author->name }}</strong>
+                                            <strong class="block  text-xs text-brand-ink">{{ $author->name }}</strong>
                                         </span>
                                         <span class="text-[11px] font-bold text-slate-500">{{ $author->published_insights_count }} tulisan</span>
                                     </a>

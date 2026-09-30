@@ -23,7 +23,7 @@
                     <a href="{{ $featuredOpportunity->external_url }}" target="_blank" rel="noopener noreferrer" aria-label="Buka informasi resmi {{ $featuredOpportunity->title }} (membuka tab baru)" class="grid h-full focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-amber md:grid-cols-[minmax(0,3fr)_minmax(200px,2fr)]">
                         <div class="flex min-w-0 flex-col justify-center p-5 sm:p-7 lg:p-8">
                             <p class="home-card-kicker">{{ $featuredOpportunity->display_type }}</p>
-                            <h3 class="mt-3 line-clamp-3 text-2xl font-bold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
+                            <h3 class="mt-3  text-2xl font-bold leading-[1.18] tracking-[-0.025em] text-[#102f56] sm:text-3xl">{{ $featuredOpportunity->title }}</h3>
 
                             <div class="home-opportunity-deadline mt-5 border-l-2 border-[#f5c451] pl-4">
                                 <p class="type-role-meta font-normal uppercase tracking-[0.12em] text-slate-500">Batas akhir</p>
@@ -64,9 +64,9 @@
                                     </div>
                                     <div class="flex min-w-0 flex-col py-1.5 pr-2">
                                         <p class="home-card-kicker">{{ $opportunity->display_type }}</p>
-                                        <h3 class="mt-2 line-clamp-2 text-[15px] font-bold leading-[1.35] text-[#102f56]">{{ $opportunity->title }}</h3>
+                                        <h3 class="mt-2  text-[15px] font-bold leading-[1.35] text-[#102f56]">{{ $opportunity->title }}</h3>
                                         @if ($opportunity->organizer)
-                                            <p class="mt-2 line-clamp-1 type-role-meta font-normal text-slate-500">{{ $opportunity->organizer }}</p>
+                                            <p class="mt-2  type-role-meta font-normal text-slate-500">{{ $opportunity->organizer }}</p>
                                         @endif
                                         <div class="mt-auto pt-3">
                                             <p class="text-xs font-bold text-[#a45e08]">Deadline {{ $opportunity->deadline_display }}</p>

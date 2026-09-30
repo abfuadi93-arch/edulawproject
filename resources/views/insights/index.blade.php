@@ -91,7 +91,7 @@
             $text = ltrim(Str::substr($text, Str::length($title)), " \t\n\r\0\x0B:-–—|.");
         }
 
-        return Str::limit($text, $limit);
+        return ($text);
     };
 
     $latestArchiveUrl = route('insights.index', ['archive' => 'latest']).'#insight-archive';
@@ -196,7 +196,7 @@
                                     </div>
                                     <div class="pt-4">
                                         <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                        <h3 class="type-role-compact mt-1.5 line-clamp-3 text-base font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                        <h3 class="type-role-compact mt-1.5  text-base font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">{{ $article->title }}</h3>
                                         <p class="mt-2.5 type-role-meta font-normal text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
                                     </div>
                                 </a>
@@ -213,9 +213,9 @@
                                     </div>
                                     <div class="min-w-0 self-center">
                                         <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</p>
-                                        <h3 class="type-role-card mt-1.5 line-clamp-2 text-lg font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</h3>
+                                        <h3 class="type-role-card mt-1.5  text-lg font-bold leading-snug text-brand-ink group-hover:text-brand-navy">{{ $article->title }}</h3>
                                         @if ($excerpt($article, 150) !== '')
-                                            <p class="mt-2 line-clamp-2 text-base leading-7 text-slate-600">{{ $excerpt($article, 150) }}</p>
+                                            <p class="mt-2  text-base leading-7 text-slate-600">{{ $excerpt($article, 150) }}</p>
                                         @endif
                                         <p class="mt-2 type-role-meta font-normal text-slate-500">{{ $publishedDate($article) }} · {{ $readingTime($article) }}</p>
                                     </div>

@@ -478,8 +478,8 @@
         display: -webkit-box;
         font-size: .9rem;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
+
+
         line-height: 1.65;
         margin-top: .7rem;
         overflow: hidden;
@@ -530,8 +530,8 @@
         font-size: .98rem;
         font-weight: 900;
         -webkit-box-orient: vertical;
-        -webkit-line-clamp: 2;
-        line-clamp: 2;
+
+
         letter-spacing: 0;
         line-height: 1.28;
         overflow: hidden;
@@ -808,10 +808,7 @@
         }
     };
 
-    $excerpt = fn ($value, int $limit = 150): string => Str::limit(
-        trim(strip_tags((string) $value)),
-        $limit
-    );
+    $excerpt = fn ($value, int $limit = 150): string => (trim(strip_tags((string) $value)));
 @endphp
 
 <div class="profile-page">

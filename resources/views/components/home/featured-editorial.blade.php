@@ -21,7 +21,7 @@
                     <a href="{{ route('insights.show', $insight->slug) }}" aria-label="Baca editorial: {{ $insight->title }}" class="relative flex flex-1 flex-col justify-end p-6 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-[-4px] focus-visible:outline-brand-amber sm:p-8">
                         <span class="w-fit rounded bg-[#f8bd38] px-3 py-1.5 text-xs font-bold uppercase tracking-wide text-[#142f57]">Editor's Pick</span>
                         <p class="home-card-kicker mt-5 text-[#f0c55e]">{{ $insight->display_category }}</p>
-                        <h3 class="mt-3 line-clamp-3 text-xl font-bold leading-[1.2] tracking-[-0.015em] text-white sm:text-2xl">{{ $insight->title }}</h3>
+                        <h3 class="mt-3  text-xl font-bold leading-[1.2] tracking-[-0.015em] text-white sm:text-2xl">{{ $insight->title }}</h3>
                         <div class="mt-4 flex flex-wrap items-end justify-between gap-4">
                             <p class="min-w-0 text-sm leading-6 text-slate-200">
                                 @if ($insight->published_at){{ $insight->published_at->translatedFormat('d M Y') }} · @endif{{ $insight->display_author }}{{ $insight->reading_time ? ' · '.$insight->reading_time.' menit baca' : '' }}

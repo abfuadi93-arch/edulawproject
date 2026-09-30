@@ -189,7 +189,7 @@
                             <select name="location" class="mt-2 h-11 w-full rounded-lg border border-slate-200 bg-white px-3 text-sm font-bold text-brand-ink outline-none focus:border-brand-navy">
                                 <option value="">Semua lokasi</option>
                                 @foreach ($availableLocations as $location)
-                                    <option value="{{ $location }}" @selected($filters['location'] === $location)>{{ Illuminate\Support\Str::limit($location, 48) }}</option>
+                                    <option value="{{ $location }}" @selected($filters['location'] === $location)>{{ ($location) }}</option>
                                 @endforeach
                             </select>
                         </label>

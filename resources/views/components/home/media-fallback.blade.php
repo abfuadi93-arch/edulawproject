@@ -33,6 +33,6 @@
     </span>
 
     @if (filled($label))
-        <span @class(['max-w-full truncate text-xs font-bold uppercase tracking-[0.1em]', 'text-brand-navy/65' => ! $dark, 'text-white/70' => $dark])>{{ $label }}</span>
+        <span @class(['max-w-full  text-xs font-bold uppercase tracking-[0.1em]', 'text-brand-navy/65' => ! $dark, 'text-white/70' => $dark])>{{ $label }}</span>
     @endif
 </div>

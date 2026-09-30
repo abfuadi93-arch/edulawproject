@@ -19,7 +19,7 @@
                             <span class="font-display text-4xl font-normal tabular-nums leading-none text-brand-navy/25 sm:text-[2.75rem]">{{ str_pad((string) ($index + 1), 2, '0', STR_PAD_LEFT) }}</span>
                             <span class="min-w-0">
                                 <span class="block text-[11px] font-bold uppercase tracking-[0.1em] text-brand-coral">{{ $categoryName($article) }}</span>
-                                <span class="mt-2 block line-clamp-2 max-w-4xl text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy sm:text-xl">{{ $article->title }}</span>
+                                <span class="mt-2 block  max-w-4xl text-lg font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy sm:text-xl">{{ $article->title }}</span>
                             </span>
                             <span class="col-start-2 mt-1 type-role-meta font-normal text-slate-500 sm:col-start-auto sm:mt-0 sm:text-right">
                                 {{ $readingTime($article) }}

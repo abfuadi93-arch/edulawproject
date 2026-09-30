@@ -78,10 +78,10 @@
                 <p class="mt-2 text-[11px] font-bold uppercase tracking-[0.18em] text-brand-amber">{{ $eyebrow }}</p>
             @endif
 
-            <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:line-clamp-2">{{ $title }}</h1>
+            <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-bold leading-tight text-white sm:text-4xl ">{{ $title }}</h1>
 
             @if ($description)
-                <p class="mt-3 max-w-4xl text-pretty text-base font-bold leading-6 text-white/90 sm:text-lg sm:leading-7 lg:line-clamp-2">{{ $description }}</p>
+                <p class="mt-3 max-w-4xl text-pretty text-base font-bold leading-6 text-white/90 sm:text-lg sm:leading-7 ">{{ $description }}</p>
             @endif
 
         </div>

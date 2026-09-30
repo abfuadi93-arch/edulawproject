@@ -15,7 +15,7 @@
     $primaryUrl = $primaryUrl ?? route('collaboration.index');
     $hasSecondary = filled($secondaryUrl) && filled($secondaryLabel);
     $resolvedHeadingId = $headingId ?: Illuminate\Support\Str::slug($eyebrow).'-cta-title';
-    $summary = Illuminate\Support\Str::limit(strip_tags((string) $body), 180);
+    $summary = (strip_tags((string) $body));
 @endphp
 
 <section

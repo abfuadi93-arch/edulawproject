@@ -185,7 +185,7 @@
                                 </div>
 
                                 <div class="p-3">
-                                    <h4 class="line-clamp-2 text-sm font-bold leading-snug text-brand-ink">
+                                    <h4 class=" text-sm font-bold leading-snug text-brand-ink">
                                         {{ $item->title }}
                                     </h4>
                                 </div>
@@ -234,7 +234,7 @@
                                     {{ $opportunity->title }}
                                 </h3>
 
-                                <p class="mt-1 line-clamp-2 text-[13px] leading-5 text-slate-600">
+                                <p class="mt-1  text-[13px] leading-5 text-slate-600">
                                     {{ $opportunity->excerpt }}
                                 </p>
 

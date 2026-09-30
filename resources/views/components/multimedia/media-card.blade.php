@@ -70,10 +70,10 @@
                 @if ($isHorizontal)
                     <x-multimedia.platform-badge :platform="$platform" :label="$platformLabel" class="mb-1.5" />
                 @endif
-                <h3 @class(['line-clamp-2 font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy', 'text-sm' => $isHorizontal, 'text-base' => ! $isHorizontal])>{{ $item->title }}</h3>
+                <h3 @class([' font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy', 'text-sm' => $isHorizontal, 'text-base' => ! $isHorizontal])>{{ $item->title }}</h3>
                 <p class="mt-1.5 type-role-meta font-normal text-slate-500">{{ $meta }}</p>
                 @if ($summary !== '')
-                    <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600" data-media-summary>{{ \Illuminate\Support\Str::limit($summary, 280) }}</p>
+                    <p class="mt-2  text-sm leading-6 text-slate-600" data-media-summary>{{ ($summary) }}</p>
                 @endif
                 @unless ($isHorizontal)
                     <p class="mt-2 text-[11px] font-bold text-brand-navy">{{ $ctaLabel }}</p>

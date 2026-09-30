@@ -104,12 +104,12 @@
                             <p class="text-[10px] font-bold uppercase tracking-[0.15em] text-brand-coral">
                                 {{ $definition['name'] }}
                             </p>
-                            <h3 class="type-role-card mt-2 line-clamp-2 text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
+                            <h3 class="type-role-card mt-2  text-xl font-bold leading-snug text-brand-ink transition group-hover:text-brand-navy">
                                 {{ $article->title }}
                             </h3>
                             @if (filled($article->excerpt))
-                                <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">
-                                    {{ Str::limit(strip_tags($article->excerpt), 150) }}
+                                <p class="mt-3  text-sm leading-6 text-slate-600">
+                                    {{ (strip_tags($article->excerpt)) }}
                                 </p>
                             @endif
                             <p class="mt-4 type-role-meta font-normal text-slate-500">
@@ -149,7 +149,7 @@
                     <a href="{{ $related['url'] }}" class="group rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition hover:-translate-y-0.5 hover:border-brand-navy/30 hover:shadow-md">
                         <p class="text-[10px] font-bold uppercase tracking-[0.14em] text-brand-coral">{{ number_format($related['article_count'], 0, ',', '.') }} artikel</p>
                         <h3 class="mt-2 text-lg font-bold text-brand-ink transition group-hover:text-brand-navy">{{ $related['name'] }}</h3>
-                        <p class="mt-2 line-clamp-3 text-sm leading-6 text-slate-600">{{ $related['seo_description'] }}</p>
+                        <p class="mt-2  text-sm leading-6 text-slate-600">{{ $related['seo_description'] }}</p>
                         <span class="mt-4 inline-flex text-sm font-bold text-brand-navy underline decoration-brand-amber decoration-2 underline-offset-4">Buka kanal</span>
                     </a>
                 @endforeach

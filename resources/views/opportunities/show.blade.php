@@ -5,7 +5,7 @@
 
     $detailUrl = route('opportunities.show', $opportunity->slug);
     $posterImages = collect($opportunity->poster_urls)->filter()->values();
-    $summary = Str::limit(Str::squish(strip_tags($opportunity->seo_description ?: $opportunity->excerpt ?: $opportunity->description ?: '')), 160, '…');
+    $summary = (Str::squish(strip_tags($opportunity->seo_description ?: $opportunity->excerpt ?: $opportunity->description ?: '')));
     $excerpt = Str::squish(strip_tags((string) $opportunity->excerpt));
     $description = trim((string) $opportunity->getRawOriginal('description'));
     $descriptionIsHtml = Str::contains($description, ['<p', '<br', '<ul', '<ol', '<div', '<h2', '<h3']);
@@ -65,7 +65,7 @@
                         <span class="edulaw-badge edulaw-badge-md bg-brand-amber text-brand-ink">Pilihan Edulaw</span>
                     @endif
                 </div>
-                <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-bold leading-tight text-white sm:text-4xl lg:line-clamp-2">{{ $opportunity->title }}</h1>
+                <h1 class="mt-1.5 max-w-4xl text-balance font-display text-3xl font-bold leading-tight text-white sm:text-4xl ">{{ $opportunity->title }}</h1>
             </div>
 
             <dl class="grid grid-cols-2 overflow-hidden rounded-[14px] border border-white/15 bg-white/10 backdrop-blur-sm" aria-label="Ringkasan peluang">
@@ -76,7 +76,7 @@
                         'border-t' => $loop->iteration > 2,
                     ])>
                         <dt class="text-[10px] font-bold uppercase leading-4 tracking-[0.1em] text-white/70">{{ $row['label'] }}</dt>
-                        <dd class="mt-1 line-clamp-2 text-sm font-bold leading-snug text-brand-amber">{{ $row['value'] }}</dd>
+                        <dd class="mt-1  text-sm font-bold leading-snug text-brand-amber">{{ $row['value'] }}</dd>
                     </div>
                 @endforeach
             </dl>
@@ -163,7 +163,7 @@
                         @foreach ($relatedOpportunities as $related)
                             <a href="{{ route('opportunities.show', $related->slug) }}" class="rounded-2xl border border-slate-200 bg-slate-50 p-5 transition hover:border-brand-amber">
                                 <span class="text-[10px] font-black uppercase tracking-[0.16em] text-brand-teal">{{ $related->display_type }}</span>
-                                <span class="mt-3 block line-clamp-3 text-base font-black leading-snug text-brand-navy">{{ $related->title }}</span>
+                                <span class="mt-3 block  text-base font-black leading-snug text-brand-navy">{{ $related->title }}</span>
                                 <span class="mt-3 block text-xs font-semibold text-slate-500">{{ $related->deadline_display }}</span>
                             </a>
                         @endforeach

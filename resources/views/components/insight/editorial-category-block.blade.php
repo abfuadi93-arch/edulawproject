@@ -21,7 +21,7 @@
                     <span class="shrink-0 text-[11px] font-bold uppercase tracking-[0.08em] text-slate-500">{{ number_format((int) ($block['article_count'] ?? 0), 0, ',', '.') }} artikel</span>
                 </div>
                 @if (filled($block['description'] ?? null))
-                    <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">{{ $block['description'] }}</p>
+                    <p class="mt-2  text-sm leading-6 text-slate-600">{{ $block['description'] }}</p>
                 @endif
                 <span class="mt-3 inline-flex text-xs font-bold text-brand-navy">Jelajahi kategori <span class="ml-1" aria-hidden="true">→</span></span>
             </div>

@@ -17,6 +17,11 @@
     text-align: left !important;
 }
 
+#main-content .insight-detail-hero,
+#main-content .insight-detail-hero :where(*) {
+    text-align: center !important;
+}
+
 /* Shared public theme; typography roles live in typography.css. */
 @theme {
     --font-sans: var(--font-brand);
@@ -294,11 +299,11 @@
     }
 
     .channel-feature-title {
-        @apply mt-3 line-clamp-2 max-w-3xl text-2xl font-black leading-tight tracking-normal text-brand-ink sm:text-3xl lg:text-[2rem];
+        @apply mt-3 max-w-3xl text-2xl font-black leading-tight tracking-normal text-brand-ink sm:text-3xl lg:text-[2rem];
     }
 
     .channel-feature-summary {
-        @apply mt-3 line-clamp-2 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base;
+        @apply mt-3 max-w-3xl text-sm leading-6 text-slate-600 sm:text-base;
     }
 
     .channel-feature-meta {

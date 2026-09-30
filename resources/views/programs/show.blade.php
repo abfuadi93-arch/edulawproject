@@ -37,7 +37,7 @@
     $eventDateLabel = $program->eventDateLabel();
     $languageLabel = $program->language ?: 'Indonesia';
     $subtitle = $program->subtitle;
-    $shortDescription = Str::limit(strip_tags((string) $program->short_description), 240);
+    $shortDescription = (strip_tags((string) $program->short_description));
     $detailDescription = $program->getRawOriginal('description');
     $descriptionIsHtml = Str::contains((string) $detailDescription, ['<p', '<br', '<ul', '<ol', '<div']);
     $descriptionParagraphs = collect(preg_split('/\R{2,}/', trim((string) $detailDescription)) ?: [])
@@ -619,7 +619,7 @@
                                 {{ $related->display_status }}
                             </span>
 
-                            <h3 class="type-role-card mt-4 line-clamp-2 text-lg font-bold leading-snug text-brand-navy">
+                            <h3 class="type-role-card mt-4  text-lg font-bold leading-snug text-brand-navy">
                                 <a href="{{ route('programs.show', $related->slug) }}" class="transition hover:text-brand-teal">
                                     {{ $related->display_title }}
                                 </a>

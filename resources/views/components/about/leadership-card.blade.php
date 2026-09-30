@@ -23,14 +23,14 @@
         </div>
         <div class="flex min-w-0 {{ $stacked || $mini ? 'flex-1' : '' }} flex-col {{ $mini ? 'p-2' : 'justify-center p-5 sm:p-6' }}">
             <span class="w-fit rounded-full bg-brand-amber-soft font-bold uppercase text-brand-navy {{ $mini ? 'px-2 py-0.5 text-[11px] tracking-[0.05em]' : 'px-3 py-1 text-[11px] tracking-[0.09em]' }}">{{ $role }}</span>
-            <h3 class="type-role-compact font-display font-bold leading-tight text-brand-navy {{ $mini ? 'mt-1.5 line-clamp-2 text-xs' : 'mt-3 '.($compact ? 'text-xl' : 'text-2xl') }}">{{ $person['name'] }}</h3>
+            <h3 class="type-role-compact font-display font-bold leading-tight text-brand-navy {{ $mini ? 'mt-1.5  text-xs' : 'mt-3 '.($compact ? 'text-xl' : 'text-2xl') }}">{{ $person['name'] }}</h3>
             @if (filled($person['organization_position'] ?? null) && $person['organization_position'] !== $role)
                 <p class="mt-1 text-xs font-bold leading-5 text-brand-coral">{{ $person['organization_position'] }}</p>
             @endif
             @if ($mini)
-                <p class="mt-1 line-clamp-1 text-[11px] leading-4 text-slate-500">{{ $description }}</p>
+                <p class="mt-1  text-[11px] leading-4 text-slate-500">{{ $description }}</p>
             @else
-                <p class="mt-3 line-clamp-3 text-sm leading-6 text-slate-600">{{ $description }}</p>
+                <p class="mt-3  text-sm leading-6 text-slate-600">{{ $description }}</p>
             @endif
             @if ($hasProfile && ! $mini)
                 <span class="mt-4 inline-flex text-xs font-bold text-brand-navy">Lihat Profil <span class="ml-1" aria-hidden="true">→</span></span>

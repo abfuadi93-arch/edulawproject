@@ -267,7 +267,7 @@
                                         <p class="text-[10px] font-bold uppercase tracking-[0.18em] text-brand-teal">
                                             {{ $relatedTypeName($relatedPublication) }}
                                         </p>
-                                        <h3 class="type-role-compact mt-3 line-clamp-2 text-base font-bold leading-snug text-brand-navy">
+                                        <h3 class="type-role-compact mt-3  text-base font-bold leading-snug text-brand-navy">
                                             {{ $relatedPublication->title }}
                                         </h3>
                                         <p class="mt-3 text-sm font-bold text-slate-500">

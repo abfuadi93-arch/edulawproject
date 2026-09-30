@@ -96,7 +96,7 @@
     padding: 14px;
 }
     .home-program-curation [data-home-program] h3 {
-    -webkit-line-clamp: 3;
+    -webkit-line-clamp: unset;
 }
     .home-program-curation [data-home-program] .home-card-action {
     margin-top: auto;

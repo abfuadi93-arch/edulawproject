@@ -16,7 +16,7 @@ test('featured publication uses a compact cover and clamped description', functi
         ->assertOk()
         ->assertSee('publication-feature', false)
         ->assertSee('publication-feature-cover', false)
-        ->assertSee('channel-feature-summary line-clamp-2', false)
+        ->assertSee('channel-feature-summary', false)
         ->assertSee('data-repository-card', false);
 });
 

@@ -10,7 +10,7 @@
 
         $image = edulaw_file_url($program->image ?? null);
         $title = $program->display_title ?? $program->name ?? 'Program Edulaw';
-        $excerpt = \Illuminate\Support\Str::limit($program->display_description ?? $program->short_description ?? '', 140);
+        $excerpt = ($program->display_description ?? $program->short_description ?? '');
         $category = $program->display_category ?? $program->categoryRelation?->name ?? 'Program';
         $statusLabel = match ($program->status) {
             'upcoming' => 'Akan Datang',
@@ -49,13 +49,13 @@
         </a>
 
         <div class="flex flex-1 flex-col p-4">
-            <h3 class="type-role-compact line-clamp-2 text-base font-bold leading-snug tracking-normal text-brand-ink">
+            <h3 class="type-role-compact  text-base font-bold leading-snug tracking-normal text-brand-ink">
                 <a href="{{ $detailUrl }}" class="transition hover:text-brand-navy">
                     {{ $title }}
                 </a>
             </h3>
 
-            <p class="mt-2 line-clamp-2 text-sm leading-6 text-slate-600">
+            <p class="mt-2  text-sm leading-6 text-slate-600">
                 {{ $excerpt }}
             </p>
 

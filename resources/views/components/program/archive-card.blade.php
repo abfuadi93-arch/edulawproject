@@ -23,7 +23,7 @@
 
             <div class="p-4">
                 <p class="text-[11px] font-bold uppercase tracking-[0.1em] text-brand-teal">{{ $category }}</p>
-                <h3 class="type-role-compact mt-2 line-clamp-2 min-h-10 text-sm font-bold leading-snug tracking-normal text-brand-ink transition group-hover:text-brand-navy">{{ $title }}</h3>
+                <h3 class="type-role-compact mt-2  min-h-10 text-sm font-bold leading-snug tracking-normal text-brand-ink transition group-hover:text-brand-navy">{{ $title }}</h3>
                 <p class="mt-3 type-role-meta font-normal text-slate-500">{{ $date }}</p>
             </div>
         </a>

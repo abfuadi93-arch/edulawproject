@@ -2,7 +2,7 @@
 
 @php
     $summary = filled($opportunity->excerpt)
-        ? Illuminate\Support\Str::limit(Illuminate\Support\Str::squish(strip_tags($opportunity->excerpt)), 180)
+        ? (Illuminate\Support\Str::squish(strip_tags($opportunity->excerpt)))
         : null;
     $officialUrl = $opportunity->external_url;
     $detailUrl = route('opportunities.show', $opportunity->slug);
@@ -56,7 +56,7 @@
             @endif
 
             @if ($opportunity->organizer || $opportunity->target_audience)
-                <p class="mt-2 line-clamp-1 text-sm font-normal text-slate-500 lg:text-xs">
+                <p class="mt-2  text-sm font-normal text-slate-500 lg:text-xs">
                     @if ($opportunity->organizer){{ $opportunity->organizer }}@endif
                     @if ($opportunity->organizer && $opportunity->target_audience)<span aria-hidden="true"> · </span>@endif
                     @if ($opportunity->target_audience)Target: {{ $opportunity->target_audience }}@endif
@@ -72,11 +72,11 @@
                     </div>
                     <div>
                         <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Format</dt>
-                        <dd class="mt-1 line-clamp-1 text-sm font-bold text-brand-ink">{{ $opportunity->display_format }}</dd>
+                        <dd class="mt-1  text-sm font-bold text-brand-ink">{{ $opportunity->display_format }}</dd>
                     </div>
                     <div>
                         <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Lokasi</dt>
-                        <dd class="mt-1 line-clamp-2 text-sm font-bold text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
+                        <dd class="mt-1  text-sm font-bold text-brand-ink">{{ $opportunity->location ?: 'Menyesuaikan' }}</dd>
                     </div>
                     <div>
                         <dt class="text-[11px] font-bold uppercase tracking-[0.11em] text-slate-500">Status</dt>
