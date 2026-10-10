@@ -75,7 +75,7 @@
             @foreach ($channels as $channel)
                 @php($category = $channel['category'] ?? null)
                 @if ($category)
-                    <a href="{{ route('insights.index', ['archive' => 'latest', 'category' => $category->slug, 'tag' => $selectedTag]) }}#insight-archive" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ $selectedCategory === $category->slug ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">{{ $channel['label'] }}</a>
+                    <a href="{{ filled($selectedTag) ? route('insights.index', ['archive' => 'latest', 'category' => $category->slug, 'tag' => $selectedTag]) : $channel['url'] }}#insight-archive" class="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-xs font-bold {{ $selectedCategory === $category->slug ? 'bg-brand-navy text-white' : 'bg-slate-100 text-brand-navy' }}">{{ $channel['label'] }}</a>
                 @endif
             @endforeach
         </nav>

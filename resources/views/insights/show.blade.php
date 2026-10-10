@@ -170,7 +170,7 @@
                     <p class="mt-4 text-sm">
                         <span class="font-bold text-slate-500">Kategori:</span>
                         @if ($insight->categoryRelation?->slug)
-                            <a href="{{ route('insights.index', ['category' => $insight->categoryRelation->slug]) }}" class="font-bold text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal">{{ $categoryName }}</a>
+                            <a href="{{ $categoryUrl }}" class="font-bold text-brand-navy underline-offset-4 hover:underline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-teal">{{ $categoryName }}</a>
                         @else
                             <span class="font-bold text-brand-navy">{{ $categoryName }}</span>
                         @endif

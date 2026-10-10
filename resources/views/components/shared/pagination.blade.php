@@ -9,7 +9,14 @@
         $firstPage = max(1, $paginator->currentPage() - 2);
         $lastPage = min($paginator->lastPage(), $paginator->currentPage() + 2);
         $normalizedFragment = filled($fragment) ? ltrim((string) $fragment, '#') : null;
-        $pageUrl = static function (?string $url) use ($normalizedFragment): ?string {
+        $pageUrl = static function (?string $url) use ($normalizedFragment, $paginator): ?string {
+            if (filled($url)) {
+                $pageName = preg_quote($paginator->getPageName(), '/');
+                $url = preg_replace('/([?&])'.$pageName.'=1(?=&|#|$)/', '$1', $url);
+                $url = str_replace(['?&', '&&'], ['?', '&'], $url);
+                $url = preg_replace('/[?&](?=#|$)/', '', $url);
+            }
+
             if (blank($url) || blank($normalizedFragment) || str_contains($url, '#')) {
                 return $url;
             }

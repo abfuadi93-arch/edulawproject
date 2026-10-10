@@ -88,6 +88,7 @@ test('reported redundant parameters redirect while preserving meaningful filters
         ->and($response->headers->get('Location'))->toBe('https://edulawproject.id'.$target);
 })->with([
     ['/insight?page=1', '/insight'],
+    ['/insight/kategori/legal-101?page=1', '/insight/kategori/legal-101'],
     ['/insight?featured=1&page=1', '/insight?featured=1'],
     ['/multimedia?video_page=1', '/multimedia'],
     ['/riset-publikasi?type=semua&view=list', '/riset-publikasi?view=list'],

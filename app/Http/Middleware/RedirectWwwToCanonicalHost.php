@@ -46,6 +46,9 @@ class RedirectWwwToCanonicalHost
                 '/multimedia' => 'video_page',
                 default => null,
             };
+            if (preg_match('#^/insight/kategori/[^/]+$#', $normalizedPath) === 1) {
+                $pageKey = 'page';
+            }
             if ($pageKey !== null && ($normalizedQuery[$pageKey] ?? null) === '1') {
                 unset($normalizedQuery[$pageKey]);
             }

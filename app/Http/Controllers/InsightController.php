@@ -279,9 +279,15 @@ class InsightController extends Controller
                 ->values();
         }
 
+        $categorySlug = $insight->categoryRelation?->slug;
+        $categoryPageSlug = $categorySlug ? $this->categoryPageSlug($categorySlug) : null;
+
         return view('insights.show', [
             'insight' => $insight,
             'relatedInsights' => $relatedInsights,
+            'categoryUrl' => $categoryPageSlug
+                ? route('insights.categories.show', $categoryPageSlug)
+                : ($categorySlug ? route('insights.index', ['category' => $categorySlug]) : null),
             'isIndexable' => PublicContentQuality::insight($insight),
         ]);
     }

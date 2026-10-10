@@ -45,6 +45,11 @@ test('core editorial categories have permanent indexable landing pages', functio
                 && $wordCount <= 250;
         });
 
+    $this->get(route('insights.show', $insight->slug))
+        ->assertOk()
+        ->assertSee('href="'.$url.'"', false)
+        ->assertDontSee('href="'.route('insights.index', ['category' => $slug]).'"', false);
+
     $html = $response->getContent();
 
     expect(substr_count($html, '<h1'))->toBe(1)
@@ -92,7 +97,8 @@ test('editorial index links directly to all permanent core category URLs', funct
     $response = $this->get(route('insights.index'))->assertOk();
 
     foreach (['law-governance', 'legal-101', 'regulatory-update', 'edulaw-insight'] as $slug) {
-        $response->assertSee(route('insights.categories.show', $slug), false);
+        $response->assertSee(route('insights.categories.show', $slug), false)
+            ->assertDontSee('href="'.route('insights.index', ['archive' => 'latest', 'category' => $slug]), false);
     }
 });
 
@@ -161,7 +167,8 @@ test('category pagination is indexable with a self canonical and navigable previ
     expect($html)
         ->toContain('<title>Legal 101: Panduan Dasar-Dasar Hukum - Halaman 2 | Edulaw Project</title>')
         ->toContain('Panduan Hukum 13')
-        ->not->toContain('Panduan Hukum 1</h3>');
+        ->not->toContain('Panduan Hukum 1</h3>')
+        ->not->toContain('href="'.$baseUrl.'?page=1');
 
     $this->get($baseUrl.'?page=99')->assertNotFound();
 });
