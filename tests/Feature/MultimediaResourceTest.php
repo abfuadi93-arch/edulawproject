@@ -328,22 +328,22 @@ test('public layout adapts a single nullable video without repeated placeholders
 
     $response->assertOk()
         ->assertSee('Video Pilihan Edulaw')
-        ->assertSee('lg:grid-cols-[minmax(0,1.13fr)_minmax(360px,1fr)]', false)
+        ->assertSee('lg:grid-cols-2', false)
         ->assertDontSee('Video Lainnya')
         ->assertDontSee('Pagination video YouTube')
-        ->assertSee('Konten pendek segera hadir')
-        ->assertSee('Dokumentasi kegiatan akan segera tersedia')
+        ->assertDontSee('Konten pendek segera hadir')
+        ->assertDontSee('Dokumentasi kegiatan akan segera tersedia')
         ->assertSee('href="#video"', false)
-        ->assertSee('href="#shorts-reels"', false)
-        ->assertSee('href="#album-foto"', false)
+        ->assertDontSee('href="#shorts-reels"', false)
+        ->assertDontSee('href="#album-foto"', false)
         ->assertSee('Ajukan Kolaborasi');
 
     expect(substr_count($html, 'data-featured-media'))->toBe(1)
         ->and(substr_count($html, 'data-secondary-media'))->toBe(0)
         ->and(strpos($html, 'data-featured-media'))
         ->toBeLessThan(strpos($html, 'Video Pilihan Edulaw'))
-        ->and(substr_count($html, 'Konten pendek segera hadir'))->toBe(1)
-        ->and(substr_count($html, 'Dokumentasi kegiatan akan segera tersedia'))->toBe(1)
+        ->and(substr_count($html, 'Konten pendek segera hadir'))->toBe(0)
+        ->and(substr_count($html, 'Dokumentasi kegiatan akan segera tersedia'))->toBe(0)
         ->and($html)->toContain('overflow-x-clip');
 });
 
@@ -358,7 +358,7 @@ test('shorts and reels use the full grid without the description panel', functio
     ]));
 
     $html = $this->get(route('multimedia.index'))->assertOk()->getContent();
-    $shortSection = Str::between($html, '<section id="shorts-reels"', '<section id="album-foto"');
+    $shortSection = Str::between($html, '<section id="shorts-reels"', '</section>');
 
     expect(substr_count($shortSection, 'data-short-media'))->toBe(6)
         ->and($shortSection)->toContain('grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4')
@@ -387,7 +387,7 @@ test('youtube grid paginates six videos with video_page and keeps the video anch
     ]));
 
     $firstPage = $this->get(route('multimedia.index'))->assertOk();
-    $firstSection = Str::between($firstPage->getContent(), '<section id="video"', '<section id="shorts-reels"');
+    $firstSection = Str::between($firstPage->getContent(), '<section id="video"', '</section>');
 
     expect(substr_count($firstSection, 'data-featured-media'))->toBe(1)
         ->and(substr_count($firstSection, 'data-secondary-media'))->toBe(6)
@@ -400,7 +400,7 @@ test('youtube grid paginates six videos with video_page and keeps the video anch
         ->toContain('Halaman 1 dari 2');
 
     $secondPage = $this->get(route('multimedia.index', ['video_page' => 2]))->assertOk();
-    $secondSection = Str::between($secondPage->getContent(), '<section id="video"', '<section id="shorts-reels"');
+    $secondSection = Str::between($secondPage->getContent(), '<section id="video"', '</section>');
 
     expect(substr_count($secondSection, 'data-secondary-media'))->toBe(1)
         ->and($secondSection)->toContain($gridVideos[6]->title)
@@ -429,7 +429,7 @@ test('two youtube videos render one featured and one secondary external card', f
     ]);
 
     $html = $this->get(route('multimedia.index'))->assertOk()->getContent();
-    $videoSection = Str::between($html, '<section id="video"', '<section id="shorts-reels"');
+    $videoSection = Str::between($html, '<section id="video"', '</section>');
 
     expect(substr_count($videoSection, 'data-featured-media'))->toBe(1)
         ->and(substr_count($videoSection, 'data-secondary-media'))->toBe(1)

@@ -65,11 +65,11 @@
         uniform-height
     >
         <div class="grid gap-1.5 sm:grid-cols-3 lg:grid-cols-1 xl:grid-cols-3">
-            @foreach ([
+            @foreach (array_filter([
                 ['label' => 'Video', 'meta' => 'YouTube Edulaw', 'href' => '#video', 'icon' => '▶'],
-                ['label' => 'Shorts & Reels', 'meta' => 'Instagram', 'href' => '#shorts-reels', 'icon' => '▯'],
-                ['label' => 'Dokumentasi', 'meta' => 'Google Photos', 'href' => '#album-foto', 'icon' => '▦'],
-            ] as $channel)
+                $shortItems->isNotEmpty() ? ['label' => 'Shorts & Reels', 'meta' => 'Instagram', 'href' => '#shorts-reels', 'icon' => '▯'] : null,
+                $albumItems->isNotEmpty() ? ['label' => 'Dokumentasi', 'meta' => 'Google Photos', 'href' => '#album-foto', 'icon' => '▦'] : null,
+            ]) as $channel)
                 <a href="{{ $channel['href'] }}" class="flex min-h-14 min-w-0 items-center gap-2.5 rounded-xl px-2.5 py-2 text-white transition hover:bg-white/10 sm:min-w-32">
                     <span class="grid size-9 shrink-0 place-items-center rounded-xl bg-white text-sm font-bold text-brand-navy">{{ $channel['icon'] }}</span>
                     <span class="min-w-0"><strong class="block text-xs font-bold">{{ $channel['label'] }}</strong><span class="mt-0.5 block  text-[11px] font-bold text-white/70">{{ $channel['meta'] }}</span></span>
@@ -120,19 +120,19 @@
         </div>
     </section>
 
-    <section id="shorts-reels" class="channel-section scroll-mt-24 bg-white">
-        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
-                <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
-                @if ($instagramUrl)
-                    <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat Instagram Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-bold text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
-                        Lihat Instagram
-                        <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                    </a>
-                @endif
-            </div>
+    @if ($shortItems->isNotEmpty())
+        <section id="shorts-reels" class="channel-section scroll-mt-24 bg-white">
+            <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+                <div class="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
+                    <x-multimedia.section-heading platform="instagram" eyebrow="Instagram" title="Hukum dalam Format Singkat" description="Cuplikan ringkas, fakta hukum, dan dokumentasi pendek dari kanal Edulaw." />
+                    @if ($instagramUrl)
+                        <a href="{{ $instagramUrl }}" target="_blank" rel="noopener noreferrer" aria-label="Lihat Instagram Edulaw (membuka tab baru)" class="inline-flex items-center gap-2 self-start text-sm font-bold text-brand-navy transition hover:text-brand-coral focus-visible:rounded focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand-navy lg:self-auto">
+                            Lihat Instagram
+                            <svg class="h-4 w-4" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M7 17 17 7M9 7h8v8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                        </a>
+                    @endif
+                </div>
 
-            @if ($shortItems->isNotEmpty())
                 <div class="mt-7 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                     @foreach ($shortItems as $item)
                         @php($platform = $shortPlatform($item))
@@ -156,17 +156,15 @@
                         </article>
                     @endforeach
                 </div>
-            @else
-                <x-multimedia.empty-state platform="instagram" title="Konten pendek segera hadir" description="Nantikan video singkat seputar isu hukum, regulasi, dan kegiatan Edulaw." :url="$instagramUrl" link-label="Kunjungi Instagram" class="mt-7" />
-            @endif
-        </div>
-    </section>
+            </div>
+        </section>
+    @endif
 
-    <section id="album-foto" class="channel-section scroll-mt-24">
-        <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
-            <x-multimedia.section-heading platform="google_photos" eyebrow="Google Photos" title="Dokumentasi Kegiatan" description="Album diskusi, kelas, kolaborasi, dan kegiatan Edulaw." />
+    @if ($albumItems->isNotEmpty())
+        <section id="album-foto" class="channel-section scroll-mt-24">
+            <div class="mx-auto max-w-7xl px-5 sm:px-6 lg:px-8">
+                <x-multimedia.section-heading platform="google_photos" eyebrow="Google Photos" title="Dokumentasi Kegiatan" description="Album diskusi, kelas, kolaborasi, dan kegiatan Edulaw." />
 
-            @if ($albumItems->isNotEmpty())
                 <div class="mt-7 grid gap-5 md:grid-cols-2 lg:grid-cols-3">
                     @foreach ($albumItems as $item)
                         <article data-album-media class="group min-w-0 overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm transition duration-300 hover:-translate-y-0.5 hover:shadow-lg hover:shadow-slate-900/10">
@@ -190,11 +188,9 @@
                         </article>
                     @endforeach
                 </div>
-            @else
-                <x-multimedia.empty-state platform="google_photos" title="Dokumentasi kegiatan akan segera tersedia" description="Album kegiatan Edulaw akan ditampilkan melalui Google Photos." class="mt-7" />
-            @endif
-        </div>
-    </section>
+            </div>
+        </section>
+    @endif
 
     <x-shared.cta-section
         heading-id="multimedia-collaboration-heading"

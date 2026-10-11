@@ -1,0 +1,462 @@
+{
+ "totals": {
+ "insight": 53,
+ "publication": 4,
+ "program": 21,
+ "multimedia": 18
+ },
+ "review_count": 41,
+ "findings": [
+ {
+ "type": "publication",
+ "id": 3,
+ "slug": "redesain-presiden-berhalangan-sementara-dalam-lembaga-kepresidenan",
+ "title": "Redesain Presiden Berhalangan Sementara Dalam Lembaga Kepresidenan",
+ "words": 43,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "publication",
+ "id": 4,
+ "slug": "dialektika-emergency-of-state-dan-tujuan-hukum-dalam-penetapan-perppu-22022-menjadi-undang-undang",
+ "title": "Dialektika Emergency of State dan Tujuan Hukum Dalam Penetapan PERPPU 2/2022 Menjadi Undang-Undang",
+ "words": 47,
+ "indexable": true,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "publication",
+ "id": 5,
+ "slug": "diskrepansi-sistem-pemerintahan-daerah-khusus-ibu-kota-negara-ikn-nusantara",
+ "title": "Diskrepansi Sistem Pemerintahan Daerah Khusus Ibu Kota Negara (IKN) Nusantara",
+ "words": 65,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "publication",
+ "id": 6,
+ "slug": "merancang-konstitusionalisme-dalam-amandemen-penguatan-dpd-ri",
+ "title": "Merancang Konstitusionalisme dalam Amandemen Penguatan DPD RI",
+ "words": 25,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 12,
+ "slug": "diskusi-literasi-konstitusi-seri-12",
+ "title": "Diskusi Literasi Konstitusi #12: Perjanjian di Era Digital Ekonomi: Tinjauan Yuridis dan Praktik; Big Data: Tantangan, Ancaman dan Peluang.",
+ "words": 18,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 24,
+ "slug": "ngabuburit-virtual-warga-alien-disabilitas-memandang-hukum",
+ "title": "Ngabuburit Virtual: Warga Alien, Disabilitas Memandang Hukum",
+ "words": 15,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 28,
+ "slug": "diskusi-respons-isu-batas-usia-capres-cawapres",
+ "title": "Diskusi Respons Isu: Batas Usia Capres Cawapres",
+ "words": 19,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 29,
+ "slug": "diskusi-diseminasi-disertasi-penafsiran-hak-konstitusional",
+ "title": "Diskusi Diseminasi Disertasi: Penafsiran Hak Konstitusional dalam Perkara Pengujian Undang-Undang",
+ "words": 14,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 30,
+ "slug": "inspiring-lecture-1-dinamika-perubahan-konstitusi",
+ "title": "Inspiring Lecture #1: Dinamika Perubahan Konstitusi di Berbagai Negara",
+ "words": 15,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 32,
+ "slug": "diskusi-literasi-konstitusi-seri-11-amandemen-konstitusi",
+ "title": "Diskusi Literasi Konstitusi Seri #11: Amandemen Konstitusi",
+ "words": 14,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 33,
+ "slug": "diskusi-literasi-konstitusi-seri-10-hukum-pidana-baru-politik-hukum-pidana",
+ "title": "Diskusi Literasi Konstitusi Seri #10: Hukum Pidana Baru Indonesia dan Politik Hukum Pidana",
+ "words": 16,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 34,
+ "slug": "diskusi-literasi-konstitusi-seri-9-syarat-formil-sengketa-pilkada-perlindungan-konsumen",
+ "title": "Diskusi Literasi Konstitusi Seri #9: Syarat Formil Sengketa Pilkada dan Perlindungan Konsumen",
+ "words": 15,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 35,
+ "slug": "diskusi-literasi-konstitusi-seri-8-hak-konstitusional",
+ "title": "Diskusi Literasi Konstitusi Seri #8: Hak Konstitusional",
+ "words": 13,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 36,
+ "slug": "diskusi-literasi-konstitusi-seri-7-e-voting-dan-metaverse",
+ "title": "Diskusi Literasi Konstitusi Seri #7: E-Voting dan Metaverse",
+ "words": 16,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 37,
+ "slug": "diskusi-literasi-konstitusi-seri-6-pengaduan-konstitusional-putusan-mk-uu-pemilu",
+ "title": "Diskusi Literasi Konstitusi Seri #6: Pengaduan Konstitusional dan Putusan MK Mengubah UU Pemilu",
+ "words": 18,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 38,
+ "slug": "diskusi-literasi-konstitusi-seri-5-demokrasi-ekonomi-darurat-demokrasi",
+ "title": "Diskusi Literasi Konstitusi Seri #5: Demokrasi Ekonomi dan Darurat Demokrasi",
+ "words": 17,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 39,
+ "slug": "diskusi-literasi-konstitusi-seri-4-sejarah-hukum-konstitusi-good-court-governance",
+ "title": "Diskusi Literasi Konstitusi Seri #4: Sejarah Hukum Konstitusi dan Good Court Governance",
+ "words": 17,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 40,
+ "slug": "diskusi-literasi-konstitusi-seri-3-kebijakan-hukum-terbuka-asas-retroaktif",
+ "title": "Diskusi Literasi Konstitusi Seri #3: Kebijakan Hukum Terbuka dan Asas Retroaktif",
+ "words": 16,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 41,
+ "slug": "diskusi-literasi-konstitusi-seri-2-politik-hukum-yudisial-hak-disabilitas",
+ "title": "Diskusi Literasi Konstitusi Seri #2: Politik Hukum Yudisial dan Hak Penyandang Disabilitas",
+ "words": 15,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 42,
+ "slug": "diskusi-literasi-konstitusi-seri-1-perbandingan-hukum-kewarganegaraan-ganda",
+ "title": "Diskusi Literasi Konstitusi Seri #1: Perbandingan Hukum dan Kewarganegaraan Ganda",
+ "words": 14,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 43,
+ "slug": "diskusi-diseminasi-tesis-ambang-batas-sengketa-perselisihan-hasil-pilkada",
+ "title": "Diskusi Diseminasi Tesis: Rekonseptualisasi Ambang Batas Sengketa Perselisihan Hasil Pemilihan Kepala Daerah",
+ "words": 16,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 44,
+ "slug": "diskusi-diseminasi-tesis-politik-hukum-metode-omnibus",
+ "title": "Diskusi Diseminasi Tesis: Politik Hukum Pengaturan Metode Omnibus dalam Sistem Perundang-Undangan Indonesia",
+ "words": 13,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "program",
+ "id": 45,
+ "slug": "diskusi-diseminasi-tesis-eu-packaging-waste-law-indonesia",
+ "title": "Diskusi Diseminasi Tesis: EU Packaging Waste Law dan Negara Berkembang",
+ "words": 16,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 1,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-13-kemerdekaan-kekuasaan-kehakiman",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #13: Kemerdekaan Kekuasaan Kehakiman",
+ "words": 40,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 2,
+ "slug": "diskusi-literasi-konstitusi-1",
+ "title": "Diskusi Literasi Konstitusi #1",
+ "words": 38,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 3,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-ke-2",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri ke-2",
+ "words": 0,
+ "indexable": false,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 4,
+ "slug": "diskusi-literasi-konstitusi-seri-3",
+ "title": "Diskusi Literasi Konstitusi Seri #3",
+ "words": 0,
+ "indexable": false,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 5,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-4",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #4",
+ "words": 0,
+ "indexable": false,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 6,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-5",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #5",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 7,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-6",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #6",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 8,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-7",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #7",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 9,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-ke-8",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri ke-8",
+ "words": 36,
+ "indexable": null,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 10,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-9",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #9",
+ "words": 33,
+ "indexable": null,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 11,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-10",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #10",
+ "words": 33,
+ "indexable": null,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 12,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-11",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #11",
+ "words": 29,
+ "indexable": null,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 13,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-12",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #12",
+ "words": 32,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 14,
+ "slug": "diskusi-literasi-konstitusi-diksi-seri-14-negara-hukum-berwatak-pancasila",
+ "title": "Diskusi Literasi Konstitusi (DIKSI) Seri #14: Negara Hukum Berwatak Pancasila",
+ "words": 32,
+ "indexable": false,
+ "reasons": [
+ "Tinjau manfaat dan kelengkapan isi; belum memenuhi pedoman editorial internal."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 15,
+ "slug": "diskusi-literasi-konstitusi",
+ "title": "DISKUSI LITERASI KONSTITUSI",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 16,
+ "slug": "intip-keseruan-diksi-1",
+ "title": "Intip Keseruan DIKSI #1",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 17,
+ "slug": "diskusi-literasi-konstitusi-3",
+ "title": "DISKUSI LITERASI KONSTITUSI #3",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ },
+ {
+ "type": "multimedia",
+ "id": 18,
+ "slug": "diskusi-literasi-konstitusi-seri-3-2",
+ "title": "Diskusi Literasi Konstitusi Seri 3",
+ "words": 0,
+ "indexable": null,
+ "reasons": [
+ "Isi atau ringkasan belum tersedia."
+ ]
+ }
+ ]
+}
