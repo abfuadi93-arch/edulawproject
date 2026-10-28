@@ -23,6 +23,19 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 
 ## Edulaw Deployment Notes
 
+### AdSense ads.txt
+
+Deploy `public/ads.txt` ke document root situs (pada struktur Hostinger di bawah:
+`public_html/ads.txt`), sehingga `https://edulawproject.id/ads.txt` merespons HTTP
+200 sebagai teks biasa. Berkas memakai publisher `pub-7017591389930348`, sesuai
+client `ca-pub-7017591389930348` di `resources/js/app.js`. Cocokkan dengan snippet
+ads.txt di akun AdSense sebelum deploy; kepemilikan akun tidak dapat diverifikasi
+dari kode. Jika ID berubah, perbarui keduanya dan build ulang aset JavaScript.
+
+Setelah deploy, periksa URL publik lalu pilih **Check for updates / Periksa
+pembaruan** pada detail situs di AdSense. Status dapat membutuhkan beberapa hari
+untuk diperbarui. Perbaikan ads.txt terpisah dari peninjauan kualitas konten.
+
 Use these environment values on production:
 
 ```env
