@@ -2,6 +2,8 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     @include('partials.google-tag')
+    <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7017591389930348"
+        crossorigin="anonymous"></script>
 
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">

@@ -28,9 +28,9 @@ Laravel is accessible, powerful, and provides tools required for large, robust a
 Deploy `public/ads.txt` ke document root situs (pada struktur Hostinger di bawah:
 `public_html/ads.txt`), sehingga `https://edulawproject.id/ads.txt` merespons HTTP
 200 sebagai teks biasa. Berkas memakai publisher `pub-7017591389930348`, sesuai
-client `ca-pub-7017591389930348` di `resources/js/app.js`. Cocokkan dengan snippet
+client `ca-pub-7017591389930348` di `resources/views/layouts/app.blade.php`. Cocokkan dengan snippet
 ads.txt di akun AdSense sebelum deploy; kepemilikan akun tidak dapat diverifikasi
-dari kode. Jika ID berubah, perbarui keduanya dan build ulang aset JavaScript.
+dari kode. Jika ID berubah, perbarui keduanya.
 
 Setelah deploy, periksa URL publik lalu pilih **Check for updates / Periksa
 pembaruan** pada detail situs di AdSense. Status dapat membutuhkan beberapa hari

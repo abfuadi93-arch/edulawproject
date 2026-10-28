@@ -1,4 +1,3 @@
-const ADSENSE_CLIENT = 'ca-pub-7017591389930348';
 
 function initializeMobileNavigation() {
     const header = document.querySelector('[data-site-header]');
@@ -156,51 +155,6 @@ function initializePosterSliders() {
     });
 }
 
-function initializeDeferredAds() {
-    const adSlots = document.querySelectorAll('ins.adsbygoogle');
-
-    if (adSlots.length === 0) {
-        return;
-    }
-
-    let loaded = false;
-    const engagementEvents = ['pointerdown', 'keydown', 'scroll'];
-
-    const load = () => {
-        if (loaded) {
-            return;
-        }
-
-        loaded = true;
-        engagementEvents.forEach((eventName) => window.removeEventListener(eventName, load));
-
-        const script = document.createElement('script');
-        script.async = true;
-        script.crossOrigin = 'anonymous';
-        script.src = `https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${ADSENSE_CLIENT}`;
-        document.head.append(script);
-    };
-
-    engagementEvents.forEach((eventName) => {
-        window.addEventListener(eventName, load, { once: true, passive: true });
-    });
-
-    if (!('IntersectionObserver' in window)) {
-        load();
-
-        return;
-    }
-
-    const observer = new IntersectionObserver((entries) => {
-        if (entries.some((entry) => entry.isIntersecting)) {
-            observer.disconnect();
-            load();
-        }
-    }, { rootMargin: '600px' });
-
-    adSlots.forEach((slot) => observer.observe(slot));
-}
-
 function initializeEditorialContributorBalance() {
     document.querySelectorAll('[data-editorial-pulse-grid]').forEach((grid) => {
         const popularPanel = grid.querySelector('[data-editorial-popular-panel]');
@@ -295,7 +249,6 @@ function initialize() {
     initializeMobileNavigation();
     initializeOpportunityFilters();
     initializePosterSliders();
-    initializeDeferredAds();
     initializeEditorialContributorBalance();
 }
 

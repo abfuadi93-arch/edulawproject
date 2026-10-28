@@ -47,16 +47,23 @@ it('serves the brand fonts locally without a third-party stylesheet chain', func
         ->assertDontSee('/build/assets/lato-900-normal-', false);
 });
 
-it('keeps advertising scripts off the initial render path', function () {
+it('loads the requested async AdSense script once in the head', function () {
     $response = $this->get(route('home'))
         ->assertOk()
-        ->assertDontSee('pagead2.googlesyndication.com', false)
+        ->assertSee('https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-7017591389930348', false)
         ->assertDontSee('fundingchoicesmessages.google.com', false);
 
     $manifest = json_decode(file_get_contents(public_path('build/manifest.json')), true, flags: JSON_THROW_ON_ERROR);
     $scriptPath = public_path('build/'.$manifest['resources/js/app.js']['file']);
 
-    expect(filesize($scriptPath))->toBeLessThan(10 * 1024)
+    $document = new DOMDocument;
+    $document->loadHTML($response->getContent(), LIBXML_NOERROR | LIBXML_NOWARNING);
+    $scripts = (new DOMXPath($document))->query('//head/script[contains(@src, "pagead2.googlesyndication.com/pagead/js/adsbygoogle.js")]');
+    expect($scripts->length)->toBe(1)
+        ->and($scripts->item(0)->hasAttribute('async'))->toBeTrue()
+        ->and($scripts->item(0)->getAttribute('crossorigin'))->toBe('anonymous')
+        ->and(file_get_contents($scriptPath))->not->toContain('adsbygoogle.js')
+        ->and(filesize($scriptPath))->toBeLessThan(10 * 1024)
         ->and($response->getContent())->toContain(basename($scriptPath));
 });
 
