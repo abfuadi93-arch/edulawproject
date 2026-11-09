@@ -5,7 +5,7 @@
 
 @section('content')
 @php
-    $updatedAt = '11 Juni 2026';
+    $updatedAt = '9 November 2026';
 
     $summaryItems = [
         [
@@ -27,7 +27,7 @@
             'title' => '1. Pendahuluan',
             'content' => [
                 'Kebijakan Privasi ini menjelaskan bagaimana Edulaw Project mengelola informasi yang diberikan oleh pengguna melalui website, formulir kontak, formulir kolaborasi, atau kanal komunikasi resmi lainnya.',
-                'Dengan mengakses website Edulaw Project atau mengirimkan informasi melalui formulir yang tersedia, pengguna dianggap telah membaca dan memahami Kebijakan Privasi ini.',
+                'Membuka situs atau mengirim formulir tidak berarti Anda menyetujui penggunaan data untuk personalisasi iklan.',
             ],
         ],
         [
@@ -40,8 +40,8 @@
         [
             'title' => '3. Tujuan Penggunaan Informasi',
             'content' => [
-                'Informasi yang diberikan digunakan untuk menanggapi pertanyaan, menindaklanjuti usulan kerja sama, mengelola komunikasi, mengirimkan informasi terkait program atau kegiatan, serta meningkatkan kualitas layanan dan konten Edulaw Project.',
-                'Edulaw Project tidak menggunakan data pribadi pengguna untuk tujuan yang tidak relevan dengan komunikasi, pengelolaan program, atau pengembangan layanan literasi hukum.',
+                'Informasi yang Anda berikan melalui formulir digunakan untuk menanggapi pertanyaan, menindaklanjuti usulan kerja sama, mengelola komunikasi, mengirimkan informasi terkait program atau kegiatan, serta meningkatkan kualitas layanan dan konten Edulaw Project.',
+                'Pemrosesan data teknis oleh layanan periklanan dijelaskan pada bagian Google Ads, AdSense, dan Cookie.',
             ],
         ],
         [
@@ -55,32 +55,44 @@
             'title' => '5. Pembagian Informasi kepada Pihak Lain',
             'content' => [
                 'Edulaw Project tidak menjual, menyewakan, atau memperdagangkan data pribadi pengguna kepada pihak lain.',
-                'Informasi dapat dibagikan secara terbatas apabila diperlukan untuk menindaklanjuti kolaborasi, memenuhi kewajiban hukum, melindungi keamanan layanan, atau berdasarkan persetujuan pengguna.',
+                'Informasi yang Anda kirim melalui formulir dapat dibagikan secara terbatas apabila diperlukan untuk menindaklanjuti kolaborasi, memenuhi kewajiban hukum, melindungi keamanan layanan, atau berdasarkan persetujuan pengguna.',
             ],
         ],
         [
-            'title' => '6. Tautan ke Situs Pihak Ketiga',
+            'title' => '6. Google Ads, AdSense, dan Cookie',
+            'content' => [
+                'Edulaw Project memuat tag Google Ads untuk pengukuran iklan dan Google AdSense untuk mendukung penayangan iklan. Saat layanan Google dimuat, Google dapat menerima informasi teknis seperti alamat IP dan URL halaman yang dibuka.',
+                'Jika iklan ditayangkan, Google dan penyedia teknologi iklan pihak ketiga dapat menempatkan atau membaca cookie, serta menggunakan web beacon, alamat IP, atau pengenal lain untuk menayangkan dan mengukur iklan. Penggunaan data untuk personalisasi bergantung pada pengaturan yang berlaku dan pilihan pengguna.',
+                'Anda dapat mengelola cookie melalui pengaturan browser. Jika situs menampilkan pilihan privasi, gunakan pilihan tersebut untuk mengelola persetujuan iklan.',
+            ],
+            'link' => [
+                'url' => 'https://policies.google.com/technologies/partner-sites?hl=id',
+                'label' => 'Cara Google menggunakan data dari situs atau aplikasi partner',
+            ],
+        ],
+        [
+            'title' => '7. Tautan ke Situs Pihak Ketiga',
             'content' => [
                 'Website Edulaw Project dapat memuat tautan ke situs pihak ketiga, seperti YouTube, Instagram, Google Photos, atau laman resmi penyelenggara opportunities.',
                 'Edulaw Project tidak bertanggung jawab atas kebijakan privasi, isi, atau praktik pengelolaan data pada situs pihak ketiga tersebut. Pengguna disarankan membaca kebijakan privasi pada setiap situs yang dikunjungi.',
             ],
         ],
         [
-            'title' => '7. Hak Pengguna',
+            'title' => '8. Hak Pengguna',
             'content' => [
                 'Pengguna dapat menghubungi Edulaw Project untuk meminta klarifikasi, pembaruan, atau penghapusan informasi pribadi yang pernah dikirimkan melalui kanal komunikasi resmi.',
                 'Permintaan tersebut akan ditinjau sesuai kebutuhan, ketersediaan data, dan kewajiban pengelolaan informasi yang relevan.',
             ],
         ],
         [
-            'title' => '8. Perubahan Kebijakan Privasi',
+            'title' => '9. Perubahan Kebijakan Privasi',
             'content' => [
                 'Edulaw Project dapat memperbarui Kebijakan Privasi ini dari waktu ke waktu untuk menyesuaikan dengan pengembangan website, perubahan layanan, atau kebutuhan hukum yang relevan.',
                 'Perubahan akan ditampilkan pada halaman ini dengan mencantumkan tanggal pembaruan terakhir.',
             ],
         ],
         [
-            'title' => '9. Kontak',
+            'title' => '10. Kontak',
             'content' => [
                 'Pertanyaan mengenai Kebijakan Privasi ini dapat disampaikan melalui halaman Kontak atau melalui kanal resmi Edulaw Project.',
             ],

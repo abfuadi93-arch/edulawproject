@@ -65,6 +65,9 @@
                                 @foreach ($section['content'] as $paragraph)
                                     <p>{{ $paragraph }}</p>
                                 @endforeach
+                                @if (isset($section['link']))
+                                    <p><a class="font-semibold underline underline-offset-4" href="{{ $section['link']['url'] }}">{{ $section['link']['label'] }}</a></p>
+                                @endif
                             </div>
                         </section>
                     @endforeach
