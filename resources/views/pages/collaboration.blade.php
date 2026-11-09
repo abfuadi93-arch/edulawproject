@@ -45,7 +45,7 @@
 
 @endphp
 
-<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     {{-- Hero --}}
     <x-shared.primary-hero
         title="Bangun Literasi Hukum Bersama Edulaw Project"
@@ -222,5 +222,5 @@
         :secondary-url="route('contact.index')"
         secondary-label="Hubungi Kami"
     />
-</main>
+</div>
 @endsection

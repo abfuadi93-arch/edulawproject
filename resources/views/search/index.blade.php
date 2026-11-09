@@ -6,8 +6,6 @@
 
 @section('content')
 @php
-    $query = request('q');
-
     $popularKeywords = [
         'Konstitusi',
         'Hak Warga Negara',
@@ -17,63 +15,9 @@
         'Beasiswa Hukum',
     ];
 
-    $contentTypes = [
-        'Semua',
-        'Editorial',
-        'Riset & Publikasi',
-        'Program',
-        'Multimedia',
-        'Opportunities',
-    ];
-
-    $results = [
-        [
-            'type' => 'Editorial',
-            'title' => 'Pembaruan Regulasi Perlindungan Data Pribadi: Apa yang Perlu Diketahui?',
-            'excerpt' => 'Menelaah perkembangan terbaru regulasi perlindungan data pribadi di Indonesia dan implikasinya bagi masyarakat, komunitas, dan pengelola data.',
-            'date' => '23 Mei 2026',
-            'url' => '/insight/pembaruan-regulasi-perlindungan-data-pribadi',
-            'meta' => '6 min read',
-        ],
-        [
-            'type' => 'Riset & Publikasi',
-            'title' => 'Reformasi Hukum Acara Perdata di Indonesia',
-            'excerpt' => 'Kajian ringkas mengenai arah pembaruan hukum acara perdata, efisiensi penyelesaian sengketa, dan penguatan akses keadilan.',
-            'date' => 'Mei 2026',
-            'url' => '/riset-publikasi/reformasi-hukum-acara-perdata-di-indonesia',
-            'meta' => 'Policy Brief',
-        ],
-        [
-            'type' => 'Program',
-            'title' => 'DIKSI: Diskusi Literasi Konstitusi',
-            'excerpt' => 'Forum diskusi tematik untuk membahas isu konstitusi, hukum publik, demokrasi, dan kebijakan negara secara terbuka dan reflektif.',
-            'date' => 'Program berjalan',
-            'url' => '/program/diksi-diskusi-literasi-konstitusi',
-            'meta' => 'Online',
-        ],
-        [
-            'type' => 'Opportunities',
-            'title' => 'Beasiswa Studi Hukum dan Kebijakan Publik',
-            'excerpt' => 'Kesempatan pendanaan studi untuk bidang hukum, kebijakan publik, demokrasi, dan tata kelola pemerintahan.',
-            'date' => 'Batas akhir: 30 Juli 2026',
-            'url' => '/opportunities',
-            'meta' => 'Beasiswa',
-        ],
-        [
-            'type' => 'Multimedia',
-            'title' => 'Memahami Konstitusi dalam Kehidupan Sehari-hari',
-            'excerpt' => 'Video singkat tentang bagaimana konstitusi hadir dalam perlindungan hak warga negara dan praktik kehidupan demokratis.',
-            'date' => '24 Mei 2026',
-            'url' => 'https://www.youtube.com/',
-            'meta' => 'YouTube',
-            'external' => true,
-        ],
-    ];
-
-    $shownResults = $query ? $results : [];
 @endphp
 
-<main class="bg-transparent">
+<div class="bg-transparent">
     {{-- Header --}}
     <x-shared.page-header
         title="Temukan Konten Edulaw"
@@ -103,6 +47,8 @@
                         <input
                             type="search"
                             name="q"
+                            aria-label="Kata kunci pencarian"
+                            maxlength="150"
                             value="{{ $query }}"
                             placeholder="Cari topik, artikel, publikasi, program..."
                             class="block w-full rounded-2xl border border-slate-200 bg-slate-50 py-3.5 pl-12 pr-4 text-sm text-brand-ink outline-none transition placeholder:text-slate-400 focus:border-brand-blue focus:bg-white focus:ring-4 focus:ring-brand-mist"
@@ -127,7 +73,7 @@
         <div class="mx-auto grid max-w-7xl gap-10 px-4 sm:px-6 lg:grid-cols-[minmax(0,1fr)_320px] lg:px-8">
             {{-- Results --}}
             <div>
-                @if ($query)
+                @if ($query !== '')
                     <div class="flex flex-col gap-5 sm:flex-row sm:items-end sm:justify-between">
                         <div>
                             <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">
@@ -139,19 +85,18 @@
                             </h2>
 
                             <p class="mt-3 text-sm leading-6 text-slate-600">
-                                Menampilkan hasil pencarian statis sementara. Nanti hasil ini dapat
-                                dihubungkan dengan database dan fitur pencarian dinamis.
+                                Menampilkan hingga delapan hasil dari setiap kanal.
                             </p>
                         </div>
 
                         <div class="edulaw-badge edulaw-badge-lg edulaw-badge-neutral normal-case tracking-normal">
                             <span class="h-2 w-2 rounded-full bg-brand-blue"></span>
-                            {{ count($shownResults) }} hasil ditemukan
+                            {{ count($results) }} hasil ditemukan
                         </div>
                     </div>
 
                     <div class="mt-8 space-y-5">
-                        @forelse ($shownResults as $result)
+                        @forelse ($results as $result)
                             <article class="group rounded-4xl border border-slate-200 bg-white p-5 shadow-sm transition duration-300 hover:-translate-y-0.5 hover:border-brand-silver hover:shadow-xl hover:shadow-slate-900/5 sm:p-6">
                                 <a
                                     href="{{ str_starts_with($result['url'], 'http') ? $result['url'] : url($result['url']) }}"
@@ -176,7 +121,7 @@
                                     </h3>
 
                                     <p class="mt-3 text-sm leading-6 text-slate-600 sm:text-[15px]">
-                                        {{ $result['excerpt'] }}
+                                        {{ \Illuminate\Support\Str::limit(\Illuminate\Support\Str::squish(strip_tags((string) $result['excerpt'])), 220) }}
                                     </p>
 
                                     <div class="mt-5 flex flex-wrap items-center justify-between gap-4">
@@ -232,7 +177,7 @@
 
                         <div class="mt-8">
                             <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">
-                                Kata Kunci Populer
+                                Contoh Kata Kunci
                             </p>
 
                             <div class="mt-4 flex flex-wrap gap-2">
@@ -252,27 +197,6 @@
 
             {{-- Sidebar --}}
             <aside class="space-y-6">
-                <div class="rounded-4xl border border-slate-200 bg-white p-6 shadow-sm">
-                    <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-navy">
-                        Jenis Konten
-                    </p>
-
-                    <div class="mt-5 grid gap-3">
-                        @foreach ($contentTypes as $index => $type)
-                            <button
-                                type="button"
-                                class="flex items-center justify-between rounded-2xl border px-4 py-3 text-left text-sm font-bold transition
-                                    {{ $index === 0
-                                        ? 'border-brand-black bg-brand-black text-white'
-                                        : 'border-slate-200 bg-white text-slate-700 hover:border-brand-silver hover:bg-brand-paper hover:text-brand-ink' }}"
-                            >
-                                <span>{{ $type }}</span>
-                                <span class="{{ $index === 0 ? 'text-white/60' : 'text-slate-400' }}">→</span>
-                            </button>
-                        @endforeach
-                    </div>
-                </div>
-
                 <div class="rounded-4xl bg-brand-navy p-6 text-white shadow-sm">
                     <p class="text-xs font-bold uppercase tracking-[0.18em] text-brand-silver">
                         Jelajahi Kanal
@@ -330,5 +254,5 @@
             </aside>
         </div>
     </section>
-</main>
+</div>
 @endsection

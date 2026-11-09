@@ -50,7 +50,7 @@
     $shortPlatform = fn ($item) => $item?->platform === 'youtube' ? 'youtube' : 'instagram';
 @endphp
 
-<main class="overflow-x-clip bg-transparent text-brand-ink">
+<div class="overflow-x-clip bg-transparent text-brand-ink">
     <x-shared.primary-hero
         title="Multimedia Literasi Hukum Edulaw"
         eyebrow="Kanal Multimedia"
@@ -202,5 +202,5 @@
         :secondary-url="$contactUrl"
         secondary-label="Hubungi Edulaw"
     />
-</main>
+</div>
 @endsection

@@ -119,7 +119,7 @@
     $relatedYear = fn ($item): string => $item->publication_year ?: 'Dokumen digital';
 @endphp
 
-<main class="publication-show">
+<div class="publication-show">
     <section data-publication-hero class="relative isolate overflow-hidden bg-brand-navy py-3 text-white">
         @if ($coverImage)
             <x-responsive-image
@@ -327,5 +327,5 @@
         :secondary-url="$indexUrl"
         secondary-label="Lihat Publikasi Lainnya"
     />
-</main>
+</div>
 @endsection

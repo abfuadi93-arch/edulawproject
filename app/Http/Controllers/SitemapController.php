@@ -119,13 +119,13 @@ class SitemapController extends Controller
             ->published()
             ->whereNotNull('slug')
             ->where('slug', '!=', '')
-            ->select(['title', 'slug', 'content', 'updated_at'])
+            ->select(['title', 'slug', 'content', 'published_at', 'content_modified_at'])
             ->latest('published_at')
             ->get()
             ->filter(fn (Insight $insight): bool => PublicContentQuality::insight($insight))
             ->map(fn (Insight $insight): array => [
                 'url' => route('insights.show', $insight->slug),
-                'lastmod' => $insight->updated_at,
+                'lastmod' => $insight->publicRevisionDate() ?? $insight->published_at,
                 'changefreq' => 'monthly',
                 'priority' => '0.8',
             ]);
@@ -139,7 +139,7 @@ class SitemapController extends Controller
             ->filter(fn (Publication $publication): bool => PublicContentIndexability::publication($publication))
             ->map(fn (Publication $publication): array => [
                 'url' => route('publications.show', $publication->slug),
-                'lastmod' => $publication->updated_at,
+                'lastmod' => $publication->publicRevisionDate() ?? $publication->published_at,
                 'changefreq' => 'monthly',
                 'priority' => '0.8',
             ]);

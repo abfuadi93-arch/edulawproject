@@ -1,6 +1,7 @@
 @extends('layouts.app')
 
 @php
+    $sourceUrl = config('diksi-editorial.'.$video->youtube_video_id.'.source');
     $indexReady = $isIndexable ?? \App\Support\PublicContentQuality::multimedia($video);
 @endphp
 
@@ -39,6 +40,11 @@
         <p class="mt-3 text-sm text-slate-500"><time datetime="{{ $video->published_at->toIso8601String() }}">{{ $video->published_at->translatedFormat('d F Y') }}</time></p>
     @endif
     <div class="mt-5 whitespace-pre-line text-base leading-7 text-slate-700">{{ trim(strip_tags($video->description ?? '')) }}</div>
+    @if ($sourceUrl)
+        <p class="mt-4 text-sm text-slate-700">
+            Bacaan pendamping: <a href="{{ $sourceUrl }}" class="font-semibold text-brand-navy underline underline-offset-4">Liputan resmi Mahkamah Konstitusi RI</a>.
+        </p>
+    @endif
     <a href="https://www.youtube.com/watch?v={{ $video->youtube_video_id }}" target="_blank" rel="noopener noreferrer" class="mt-6 inline-block font-bold text-brand-navy">Tonton di YouTube ↗</a>
 </article>
 @endsection

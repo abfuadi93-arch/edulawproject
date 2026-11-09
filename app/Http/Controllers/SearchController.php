@@ -14,7 +14,8 @@ class SearchController extends Controller
 {
     public function index(Request $request): View
     {
-        $query = trim((string) $request->query('q', ''));
+        $input = $request->query('q');
+        $query = is_string($input) ? mb_substr(trim($input), 0, 150) : '';
         $results = collect();
 
         if ($query !== '') {
@@ -34,12 +35,13 @@ class SearchController extends Controller
                     'excerpt' => $item->excerpt,
                     'date' => optional($item->published_at)->translatedFormat('d M Y'),
                     'url' => route('insights.show', $item->slug),
-                    'meta' => $item->reading_time ? $item->reading_time.' min read' : 'Editorial',
+                    'meta' => $item->reading_time ? $item->reading_time.' menit baca' : 'Editorial',
                     'sort_date' => optional($item->published_at)?->timestamp ?? 0,
                 ]);
 
             $publications = Publication::query()
-                ->where('status', 'published')
+                ->published()
+                ->with('type')
                 ->where(function ($q) use ($query) {
                     $q->where('title', 'like', "%{$query}%")
                         ->orWhere('excerpt', 'like', "%{$query}%")
@@ -59,10 +61,11 @@ class SearchController extends Controller
                 ]);
 
             $programs = Program::query()
-                ->published()
+                ->visible()
                 ->where(function ($q) use ($query) {
                     $q->where('name', 'like', "%{$query}%")
-                        ->orWhere('short_description', 'like', "%{$query}%");
+                        ->orWhere('short_description', 'like', "%{$query}%")
+                        ->orWhere('description', 'like', "%{$query}%");
                 })
                 ->orderByDesc('event_date')
                 ->limit(8)
@@ -113,9 +116,9 @@ class SearchController extends Controller
                     'title' => $item->title,
                     'excerpt' => $item->description,
                     'date' => optional($item->published_at)->translatedFormat('d M Y'),
-                    'url' => $item->media_url ?: route('multimedia.index'),
+                    'url' => $item->public_url ?: route('multimedia.index'),
                     'meta' => ucfirst((string) $item->platform),
-                    'external' => filled($item->media_url),
+                    'external' => $item->opens_externally,
                     'sort_date' => optional($item->published_at)?->timestamp ?? 0,
                 ]);
 

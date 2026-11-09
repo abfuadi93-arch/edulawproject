@@ -30,7 +30,7 @@
     ];
 @endphp
 
-<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.page-header
         title="Halaman tidak ditemukan"
         :compact="true"
@@ -86,5 +86,5 @@
             </nav>
         </div>
     </section>
-</main>
+</div>
 @endsection

@@ -52,7 +52,7 @@
     ];
 @endphp
 
-<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     {{-- Hero --}}
     <x-shared.primary-hero
         title="Terhubung dengan Edulaw Project"
@@ -261,5 +261,5 @@
         :secondary-url="route('programs.index')"
         secondary-label="Lihat Program"
     />
-</main>
+</div>
 @endsection

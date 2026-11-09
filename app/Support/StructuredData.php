@@ -100,13 +100,14 @@ class StructuredData
 
     public static function article(Insight $insight): array
     {
+        $publicAuthorIds = Author::query()->publicProfile()->whereKey($insight->authors->modelKeys())->pluck('id');
         $authors = $insight->authors
             ->filter(fn (Author $author): bool => filled($author->name))
-            ->map(fn (Author $author): array => [
+            ->map(fn (Author $author): array => self::clean([
                 '@type' => 'Person',
                 'name' => $author->name,
-                'url' => route('profiles.show', $author->slug),
-            ])
+                'url' => $publicAuthorIds->contains($author->id) ? route('profiles.show', $author->slug) : null,
+            ]))
             ->values()
             ->all();
 
@@ -119,7 +120,7 @@ class StructuredData
                 ? [$insight->og_image_url]
                 : null,
             'datePublished' => $insight->published_at?->toIso8601String(),
-            'dateModified' => self::modifiedDate($insight),
+            'dateModified' => $insight->publicRevisionDate()?->toIso8601String(),
             'mainEntityOfPage' => [
                 '@type' => 'WebPage',
                 '@id' => route('insights.show', $insight->slug),
@@ -249,13 +250,14 @@ class StructuredData
             default => 'CreativeWork',
         };
 
+        $publicAuthorIds = Author::query()->publicProfile()->whereKey($publication->authors->modelKeys())->pluck('id');
         $authors = $publication->authors
             ->filter(fn (Author $author): bool => filled($author->name))
-            ->map(fn (Author $author): array => [
+            ->map(fn (Author $author): array => self::clean([
                 '@type' => 'Person',
                 'name' => $author->name,
-                'url' => route('profiles.show', $author->slug),
-            ])
+                'url' => $publicAuthorIds->contains($author->id) ? route('profiles.show', $author->slug) : null,
+            ]))
             ->values()
             ->all();
 
@@ -269,7 +271,7 @@ class StructuredData
             'mainEntityOfPage' => route('publications.show', $publication->slug),
             'image' => $publication->cover_image_url,
             'datePublished' => $publication->published_at?->toIso8601String(),
-            'dateModified' => self::modifiedDate($publication),
+            'dateModified' => $publication->publicRevisionDate()?->toIso8601String(),
             'author' => $authors ?: [self::organizationReference()],
             'publisher' => self::publisher(),
             'pagination' => $publication->page_count ? (string) $publication->page_count : null,
@@ -325,15 +327,6 @@ class StructuredData
                 'url' => self::siteAsset('images/logo/edulaw-logo.png'),
             ],
         ];
-    }
-
-    private static function modifiedDate(Insight|Publication $model): ?string
-    {
-        if (! $model->updated_at || ! $model->created_at || $model->updated_at->lessThanOrEqualTo($model->created_at)) {
-            return null;
-        }
-
-        return $model->updated_at->toIso8601String();
     }
 
     private static function siteUrl(): string

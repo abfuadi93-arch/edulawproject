@@ -37,7 +37,7 @@
         : url('/opportunities');
 @endphp
 
-<main class="bg-transparent text-brand-ink">
+<div class="bg-transparent text-brand-ink">
     <x-program.hero
         :stats="$stats"
         :background-image="$heroImage"
@@ -89,5 +89,5 @@
         :secondary-url="$opportunitiesUrl"
         secondary-label="Lihat Opportunities"
     />
-</main>
+</div>
 @endsection

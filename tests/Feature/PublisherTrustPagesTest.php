@@ -49,7 +49,13 @@ test('insight editorial metadata uses existing records and never invents an edit
         'reviewed_by' => $editor->id,
     ]);
     $insight->authors()->attach($author, ['author_order' => 1, 'role' => 'Author']);
-    $insight->forceFill(['updated_at' => now()])->saveQuietly();
+    $insight->update(['featured' => true]);
+    $this->get(route('insights.show', $insight->slug))
+        ->assertOk()
+        ->assertDontSee('Terakhir diperbarui')
+        ->assertDontSee('dateModified');
+
+    $insight->update(['content' => '<p>Isi analisis hukum yang diperbarui.</p>']);
 
     $this->get(route('insights.show', $insight->slug))
         ->assertOk()
@@ -59,7 +65,8 @@ test('insight editorial metadata uses existing records and never invents an edit
         ->assertSee('Disunting oleh')
         ->assertSee('Editor Terverifikasi')
         ->assertSee('Tanggal terbit')
-        ->assertSee('Terakhir diperbarui');
+        ->assertSee('Terakhir diperbarui')
+        ->assertSee('dateModified');
 });
 
 test('author joined date is optional and never inferred from record creation', function () {

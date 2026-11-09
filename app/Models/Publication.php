@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Concerns\TracksContentRevision;
 use App\Services\PdfCoverGenerator;
 use App\Support\EdulawSite;
 use Illuminate\Database\Eloquent\Builder;
@@ -14,6 +15,9 @@ use Illuminate\Support\Str;
 class Publication extends Model
 {
     use HasFactory;
+    use TracksContentRevision;
+
+    private const PUBLIC_CONTENT_FIELDS = ['title', 'excerpt', 'description', 'research_questions', 'key_findings', 'methodology', 'contribution', 'implications', 'pdf_file'];
 
     protected $fillable = [
         'publication_type_id',
@@ -47,6 +51,7 @@ class Publication extends Model
     ];
 
     protected $casts = [
+        'content_modified_at' => 'datetime',
         'published_at' => 'date',
         'featured' => 'boolean',
         'page_count' => 'integer',

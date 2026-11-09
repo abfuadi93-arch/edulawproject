@@ -158,7 +158,7 @@
     $relatedPrograms = collect($relatedPrograms ?? []);
 @endphp
 
-<main class="bg-transparent">
+<div class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy py-3 text-white">
         <x-responsive-image
             :src="$heroBackground"
@@ -644,5 +644,5 @@
         :secondary-url="$collaborationUrl"
         secondary-label="Diskusikan Kolaborasi"
     />
-</main>
+</div>
 @endsection

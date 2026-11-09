@@ -32,7 +32,7 @@ test('publication detail hero contains eyebrow and title without body metadata',
         ->assertDontSee('data-edulaw-share-group', false)
         ->getContent();
 
-    $hero = Str::between($html, '<main class="publication-show">', '<section class="publication-body">');
+    $hero = Str::between($html, '<div class="publication-show">', '<section class="publication-body">');
 
     expect($hero)
         ->toContain('Judul Riset Fullwidth')

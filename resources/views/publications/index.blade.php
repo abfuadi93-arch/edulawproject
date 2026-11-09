@@ -142,7 +142,7 @@
     }
 @endphp
 
-<main data-publication-page class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div data-publication-page class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.primary-hero
         title="Riset & Publikasi"
         eyebrow="Kanal Riset & Publikasi"
@@ -346,5 +346,5 @@
         :secondary-url="route('publications.index')"
         secondary-label="Jelajahi Publikasi"
     />
-</main>
+</div>
 @endsection

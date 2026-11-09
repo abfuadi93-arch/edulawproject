@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Enums\InsightStatus;
+use App\Models\Concerns\TracksContentRevision;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
@@ -20,6 +21,9 @@ class Insight extends Model
     }
 
     use HasFactory;
+    use TracksContentRevision;
+
+    private const PUBLIC_CONTENT_FIELDS = ['title', 'excerpt', 'content'];
 
     private const DEFAULT_COVER_IMAGE = 'images/hero/hero-edulaw.jpg';
 
@@ -57,6 +61,7 @@ class Insight extends Model
     ];
 
     protected $casts = [
+        'content_modified_at' => 'datetime',
         'featured' => 'boolean',
         'editor_pick' => 'boolean',
         'status' => InsightStatus::class,

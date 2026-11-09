@@ -70,7 +70,7 @@
         : 'Peluang yang Masih Dibuka';
 @endphp
 
-<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.primary-hero
         title="Opportunities"
         eyebrow="Kanal Opportunities"
@@ -259,5 +259,5 @@
         :secondary-url="route('contact.index')"
         secondary-label="Hubungi Edulaw"
     />
-</main>
+</div>
 @endsection

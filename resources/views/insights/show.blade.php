@@ -43,14 +43,14 @@
         ->filter(fn ($author) => $author->is_active !== false)
         ->sortBy(fn ($author) => $author->pivot?->author_order ?? 999)
         ->first();
-    $authorName = $primaryAuthor?->name ?: $insight->creator?->name ?: $insight->reviewer?->name ?: 'Edulaw Project';
+    $authorName = $primaryAuthor?->name ?: 'Penulis tidak tercantum';
     $authorInstitution = collect([$primaryAuthor?->position, $primaryAuthor?->institution])->filter()->join(' · ') ?: 'Edulaw Project';
     $authorPhoto = $primaryAuthor?->photo_url;
-    $authorProfileUrl = $primaryAuthor?->slug ? route('profiles.show', $primaryAuthor->slug) : null;
-    $editorName = $insight->assignedEditor?->name ?: $insight->reviewer?->name;
-    $updatedDate = $insight->updated_at && $insight->published_at && $insight->updated_at->gt($insight->published_at)
-        ? $insight->updated_at->translatedFormat('d F Y')
+    $authorProfileUrl = $primaryAuthor && \App\Models\Author::query()->publicProfile()->whereKey($primaryAuthor->id)->exists()
+        ? route('profiles.show', $primaryAuthor->slug)
         : null;
+    $editorName = $insight->assignedEditor?->name ?: $insight->reviewer?->name;
+    $updatedDate = $insight->publicRevisionDate()?->locale('id')->translatedFormat('d F Y');
     $additionalAuthorsCount = max($insight->authors->count() - 1, 0);
     $authorInitials = \Illuminate\Support\Str::of($authorName)
         ->explode(' ')
@@ -72,7 +72,7 @@
         ->values();
 @endphp
 
-<main class="bg-transparent">
+<div class="bg-transparent">
     <section class="relative isolate overflow-hidden bg-brand-navy text-white">
         @if ($coverImage)
             <x-responsive-image
@@ -374,5 +374,5 @@
             </div>
         </section>
     @endif
-</main>
+</div>
 @endsection

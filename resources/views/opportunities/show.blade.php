@@ -46,7 +46,7 @@
 @endpush
 
 @section('content')
-<main class="bg-[#f7f8fa] text-brand-ink">
+<div class="bg-[#f7f8fa] text-brand-ink">
     <section class="relative isolate overflow-hidden bg-brand-navy py-3 text-white">
         <div class="absolute inset-0 bg-[radial-gradient(circle_at_80%_15%,rgba(60,181,165,.28),transparent_34%),linear-gradient(135deg,#07162d_0%,#173b67_62%,#205f73_100%)]"></div>
         <div class="relative mx-auto grid h-[440px] max-w-7xl content-center gap-6 px-5 py-7 sm:h-[400px] sm:px-6 sm:py-8 lg:h-[240px] lg:grid-cols-[minmax(0,3fr)_minmax(300px,2fr)] lg:items-center lg:gap-10 lg:px-8 lg:py-4">
@@ -198,5 +198,5 @@
             </section>
         </aside>
     </div>
-</main>
+</div>
 @endsection

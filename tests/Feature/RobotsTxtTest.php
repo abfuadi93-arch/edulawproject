@@ -29,7 +29,6 @@ test('robots allows public discovery and reserves content from AI training', fun
             '/password/',
             '/email/',
             '/filament/',
-            '/search',
         ])
         ->and($disallowedPaths)->not->toContain(
             '/insight',
@@ -38,6 +37,7 @@ test('robots allows public discovery and reserves content from AI training', fun
             '/opportunities',
             '/multimedia',
             '/profil',
+            '/search',
         );
 });
 

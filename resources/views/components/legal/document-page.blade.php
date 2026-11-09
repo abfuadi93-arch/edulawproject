@@ -12,7 +12,7 @@
     'asideBody' => 'Sampaikan pertanyaan melalui kanal resmi Edulaw Project.',
 ])
 
-<main class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
+<div class="overflow-x-clip bg-[#f7f8fa] text-brand-ink">
     <x-shared.primary-hero
         :title="$title"
         :eyebrow="$eyebrow"
@@ -96,4 +96,4 @@
             </aside>
         </div>
     </section>
-</main>
+</div>

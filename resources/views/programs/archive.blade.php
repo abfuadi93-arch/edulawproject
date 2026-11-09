@@ -27,7 +27,7 @@
     $heroImage = 'https://images.unsplash.com/photo-1524995997946-a1c2e315a42f?auto=format&fit=crop&w=1800&q=85';
 @endphp
 
-<main class="bg-transparent text-brand-ink">
+<div class="bg-transparent text-brand-ink">
     <x-shared.page-header
         title="Arsip Program Edulaw"
         eyebrow="Program Arsip"
@@ -112,5 +112,5 @@
             @endif
         </div>
     </section>
-</main>
+</div>
 @endsection
